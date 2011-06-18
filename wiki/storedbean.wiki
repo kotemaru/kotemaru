@@ -1,5 +1,5 @@
 = storedbean v1.0 =
-* 2011.06.18 kotemaru.org
+ * author 2011.06.18 kotemaru.org
 
 == 概要 ==
 
@@ -21,11 +21,11 @@ Serialize を使う方法も有りますが後々、互換性の問題を引き�
 
 == 使い方 ==
 
-# storedbean-1.0.x.jar をビルトパスに追加します。
-# 保存したい Bean に StoredBean インターフェースを実装します。
- * StoredBean にはメソッドはありません。
-# StoredBeanService#put で保存します。
-# StoredBeanService#get で取得します。
+ # storedbean-1.0.x.jar をビルトパスに追加します。
+ # 保存したい Bean に StoredBean インターフェースを実装します。
+  * StoredBean にはメソッドはありません。
+ # StoredBeanService#put で保存します。
+ # StoredBeanService#get で取得します。
 
 コード例：
 {{{
@@ -56,31 +56,30 @@ sbs.put(key, bean);
 TestBean restoreBean = (TestBean) sbs.get(key);
 }}}
 
-* 全体としてはほぼ Map と同じように使えます。
-* StoredBeanServiceコンストラクタの引数は保存先DataStoreのkindです。
-* key-name は保存先の名前で任意の文字列です。
-* 復元時は Memcache を利用しますので性能を気にする必要はありません。
-* 保存したデータは GAE の管理画面から編集する事が可能です。
-  * ※編集後は Memcache のクリアをしてください。
+
+ * 全体としてはほぼ Map と同じように使えます。
+ * StoredBeanServiceコンストラクタの引数は保存先DataStoreのkindです。
+ * key-name は保存先の名前で任意の文字列です。
+ * 復元時は Memcache を利用しますので性能を気にする必要はありません。
+ * 保存したデータは GAE の管理画面から編集する事が可能です。
+   * ※管理画面から編集後は Memcache のクリアをしてください。
 
 == 制限 ==
 
 StoredBean として保存可能な Bean には幾つかの制限があります。
 
-* Bean の制限
- * 一般的な Bean の規約に従っていなければなりません。
+ * Bean の制限
+  * 一般的な Bean の規約に従っていなければなりません。
 
-* 項目の型の制限
- * int,long,boolean,String,byte[],List,Set,StoredBean のみが利用可能です。
- * List,Setの項目は Integer,Long,Boolean,String,StoredBean のみが利用可能です。
+ * 項目の型の制限
+  * int,long,boolean,String,byte[],List,Set,StoredBean のみが利用可能です。
+  * List,Setの項目は Integer,Long,Boolean,String,StoredBean のみが利用可能です。
 
-* 復元時の制限
- * List,Set が復元されると実体として元の型とはならず ArrayList,HashSet となります。
+ * 復元時の制限
+  * List,Set が復元されると実体として元の型とはならず ArrayList,HashSet となります。
 
 
 == コンパイル ==
-Eclipseでビルドが build.xml の Ant実行 からターゲット jar を実行してください。
+Eclipseでビルド後 build.xml の Ant実行 からターゲット jar を実行してください。
 
 storedbean-1.0.x.jar が生成されます。
-
-
