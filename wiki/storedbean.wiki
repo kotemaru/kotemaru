@@ -23,6 +23,8 @@ Serialize を使う方法も有りますが後々、互換性の問題を引き�
  # StoredBeanService#put で保存します。
  # StoredBeanService#get で取得します。
 
+ * javadoc:http://kotemaru.googlecode.com/svn/trunk/storedbean/docs/javadoc/index.html
+
 === サンプルコード ===
 {{{
 import org.kotemaru.gae.storedbean.StoredBean;
