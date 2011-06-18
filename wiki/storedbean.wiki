@@ -23,7 +23,7 @@ Serialize を使う方法も有りますが後々、互換性の問題を引き�
  # StoredBeanService#put で保存します。
  # StoredBeanService#get で取得します。
 
-コード例：
+=== サンプルコード ===
 {{{
 import org.kotemaru.gae.storedbean.StoredBean;
 import org.kotemaru.gae.storedbean.StoredBeanService;
@@ -52,13 +52,27 @@ sbs.put(key, bean);
 TestBean restoreBean = (TestBean) sbs.get(key);
 }}}
 
-
  * 全体としてはほぼ Map と同じように使えます。
  * StoredBeanServiceコンストラクタの引数は保存先DataStoreのkindです。
  * key-name は保存先の名前で任意の文字列です。
  * 復元時は Memcache を利用しますので性能を気にする必要はありません。
  * 保存したデータは GAE の管理画面から編集する事が可能です。
    * ※管理画面から編集後は Memcache のクリアをしてください。
+
+=== DataStore の状態 ===
+
+サンプルを実行するとDataStoreは以下のような状態になります。
+
+||[http://kotemaru.googlecode.com/svn/trunk/storedbean/docs/storedbean-ds-view.png]||
+
+そのまま編集も可能です。
+
+
+||[http://kotemaru.googlecode.com/svn/trunk/storedbean/docs/storedbean-ds-edit.png]||
+
+
+
+
 
 == 制限 ==
 
