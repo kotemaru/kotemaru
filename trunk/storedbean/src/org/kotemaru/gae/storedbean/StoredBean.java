@@ -10,7 +10,7 @@ package org.kotemaru.gae.storedbean;
 <ul>
 <li>実装すべきメソッドは存在しない。
 </ul>
-@auth kotemaru@kotemaru.org
+@author kotemaru@kotemaru.org
 */
 public interface StoredBean extends java.io.Serializable {
 }

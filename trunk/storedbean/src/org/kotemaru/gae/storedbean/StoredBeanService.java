@@ -72,7 +72,7 @@ sbs.put("test", bean);
 TestBean restoreBean = (TestBean) sbs.get("test");
 </xmp>
 
-@auth kotemaru@kotemaru.org
+@author kotemaru@kotemaru.org
 */
 public class StoredBeanService {
 	private static final MemcacheService memcache = MemcacheServiceFactory.getMemcacheService(
