@@ -1,0 +1,97 @@
+<project name="SSO" default="compile" basedir=".">
+    <property file="build.properties" />
+
+    <property name="lib" value="${basedir}/lib" />
+    <property name="source" value="${basedir}/src" />
+    <property name="tests.src" value="${basedir}/tests/src" />
+    <property name="build" value="${basedir}/build" />
+    <property name="classes" value="war/WEB-INF/classes" />
+    <property name="optimize" value="on"/>
+    <property name="encoding" value="utf-8"/>
+    <property name="debug" value="on"/>
+    <property name="deprecation" value="off"/>
+    <property name="target.jar" value="storedbean-${version}.jar"/>
+
+    <path id="classpath">
+        <fileset dir="war/WEB-INF/classes">
+            <include name="**/*.class" />
+        </fileset>
+        <fileset dir="war/WEB-INF/lib">
+            <include name="**/*.jar" />
+        </fileset>
+<!--
+    	<fileset dir="lib">
+            <include name="**/*.jar" />
+        </fileset>
+-->
+    </path>
+
+   <target name="compile" >
+    <mkdir dir="${classes}"/>
+    <javac srcdir="${source}"
+           destdir="${classes}"
+           debug="${debug}"
+           deprecation="${deprecation}"
+           optimize="${optimize}"
+           encoding="${encoding}"
+	   classpathref="classpath"
+           includeAntRuntime="false"
+           includeJavaRuntime="true">
+<!-- <compilerarg value="-Xlint"/> -->
+    </javac>
+
+    <copy todir="${classes}">
+      <fileset dir="src">
+        <include name="**"/>
+        <exclude name="**/*.java"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="tests.compile" >
+    <mkdir dir="${classes}"/>
+    <javac srcdir="${tests.src}"
+           destdir="${classes}"
+           debug="${debug}"
+           deprecation="${deprecation}"
+           optimize="${optimize}"
+           encoding="${encoding}"
+	   classpathref="classpath"
+           includeAntRuntime="false"
+           includeJavaRuntime="true">
+    </javac>
+  </target>
+
+  <target name="jar" >
+    <jar jarfile="${target.jar}" >
+	<fileset dir="${classes}" includes="org/kotemaru/**/*.class" excludes="org/kotemaru/**/tests/**/*.class" />
+    </jar>
+  </target>
+
+  <target name="javadoc">
+    <javadoc
+    	packagenames="org.kotemaru.*"
+    	excludepackagenames="org.kotemaru.**.tests"
+           sourcepath="${source}"
+           defaultexcludes="yes"
+           destdir="docs/javadoc"
+           author="true"
+           version="true"
+           use="true"
+	   classpathref="classpath"
+           encoding="${encoding}"
+           charset="${encoding}"
+           windowtitle="API">
+      <doctitle><![CDATA[<h1>StoredBean ${version} API}</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2011 kotemru.org.</i>]]></bottom>
+      <link href="http://java.sun.com/javase/ja/6/docs/ja/api" />
+      <link href="http://code.google.com/intl/ja/appengine/docs/java/javadoc" />
+    </javadoc>
+  </target>
+
+  <target name="clean" >
+    <delete dir="${target.jar}" />
+    <delete dir="${classes}" />
+    <mkdir dir="${classes}" />
+  </target>
+</project>
