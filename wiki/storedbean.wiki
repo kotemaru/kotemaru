@@ -25,11 +25,11 @@ Serialize を使う方法も有りますが後々、互換性の問題を引き�
 
 コード例：
 {{{
-import org.kotemaru.storedbean.StoredBean;
-import org.kotemaru.storedbean.StoredBeanService;
+import org.kotemaru.gae.storedbean.StoredBean;
+import org.kotemaru.gae.storedbean.StoredBeanService;
 
 // Bean の定義
-class TestBean implements StoredBean {
+public class TestBean implements StoredBean {
 	private int item01;
 	private String item02;
 
