@@ -1,4 +1,4 @@
-<project name="SSO" default="compile" basedir=".">
+<project name="storedbean" default="compile" basedir=".">
     <property file="build.properties" />
 
     <property name="lib" value="${basedir}/lib" />
