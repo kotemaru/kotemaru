@@ -1,0 +1,12 @@
+
+
+<div>item01=${item01}, item02=${item02}</div>
+<br/>
+<form action="http://action/Main">
+item01:<input name="item01" value="${item01}"><br/>
+item02:<input name="item02" value="${item02}"><br/>
+<br/>
+<button type="submit" >Submit</button>
+<br/>
+<button type="submit" name="submit" value="Yahoo">Yahoo</button>
+</form>

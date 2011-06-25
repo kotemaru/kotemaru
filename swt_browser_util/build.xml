@@ -1,0 +1,16 @@
+<project name="swt_browser_util" default="jar" basedir=".">
+
+    <property name="classes" value="bin" />
+    <property name="target.jar" value="swt_browser_util-0.5.jar"/>
+
+
+  <target name="jar" >
+    <jar jarfile="${target.jar}" >
+	<fileset dir="${classes}" 
+		includes="org/kotemaru/**" 
+		excludes="org/kotemaru/**/sample/**/*.class" />
+    </jar>
+  </target>
+
+
+</project>
