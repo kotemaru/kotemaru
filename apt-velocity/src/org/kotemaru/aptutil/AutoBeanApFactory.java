@@ -11,7 +11,7 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
 public class AutoBeanApFactory implements AnnotationProcessorFactory {
-	private static final String PKG	= "kotemaru.autobean.annotation.";
+	private static final String PKG	= "org.kotemaru.aptutil.test.annotation.";
 	private static final String AUTO_BEAN	= PKG+"AutoBean";
 
 	private Collection supportedAnnotationTypes = Arrays.asList(
