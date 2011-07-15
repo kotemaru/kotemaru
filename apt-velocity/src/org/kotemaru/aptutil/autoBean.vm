@@ -1,0 +1,11 @@
+// BeanVisitor generated.
+package ${packageName};
+public class ${className}
+		extends ${coreClassName}
+{
+
+#foreach( $field in $coreClassDecl.fields )
+    <li>$field</li>
+#end
+
+}
