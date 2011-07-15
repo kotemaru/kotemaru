@@ -45,7 +45,12 @@ public class BeanVelocity {
 		Filer filer = env.getFiler();
 		PrintWriter writer = filer.createSourceFile(pkgName + "." + className);
 
+		
+		Velocity.setProperty("resource.loader","class");
+		Velocity.setProperty("class.resource.loader.class",
+					"org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader");
 
+		
         Velocity.init();
         VelocityContext context = new VelocityContext();
 		context.put("coreClassName", coreClassName);
@@ -53,10 +58,11 @@ public class BeanVelocity {
 		context.put("className", className);
 		context.put("packageName", pkgName);
 		context.put("coreClassDecl", coreClassDecl);
+		context.put("util", new AptUtil());
 
 		//Collection<FieldDeclaration> fields = coreClassDecl.getFields();
 
-        Template template = Velocity.getTemplate("autoBean.vm");
+        Template template = Velocity.getTemplate("/org/kotemaru/aptutil/autoBean.vm");
 
 //        BufferedWriter writer = writer = new BufferedWriter(
 //            new OutputStreamWriter(System.out));
