@@ -1,0 +1,15 @@
+//  generated.
+package ${targetClassInfo.packageName};
+public class ${targetClassInfo.simpleName}
+		extends ${masterClassDecl}
+{
+
+#foreach( $field in $masterClassDecl.fields )
+	#set($name = "${field.simpleName}")
+	#set($Name = "${util.getCaptalName(${name})}")
+
+	public ${field.type} get${Name}() {return this.${name};}
+	public void set${Name}(${field.type} ${name}) {this.${name} = ${name};}
+#end
+
+}

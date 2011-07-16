@@ -1,5 +1,5 @@
 package test;
-import  org.kotemaru.aptutil.test.annotation.*;
+import  org.kotemaru.aptvelocity.sample.annotation.*;
 
 @AutoBean(bean="test.TestBean")
 public abstract class TestCore {
