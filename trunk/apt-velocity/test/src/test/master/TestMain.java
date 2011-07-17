@@ -1,4 +1,5 @@
-package test;
+package test.master;
+//import test.autobean.*;
 
 public class TestMain {
 
@@ -6,6 +7,7 @@ public class TestMain {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+/*
 		TestBean bean = new TestBean();
 		bean.setAge(10);
 		bean.setEmail("abg@efg.com");
@@ -19,9 +21,9 @@ public class TestMain {
 				+","+bean.getFirstName()
 				+","+bean.getLastName()
 				+","+bean.getTel()
-	
+
 		);
-	
+*/
 	}
 
 }
