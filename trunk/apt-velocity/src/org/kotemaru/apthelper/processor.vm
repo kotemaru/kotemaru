@@ -1,6 +1,7 @@
 package ${packageName};
 
 import java.io.PrintWriter;
+import java.util.*;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -13,6 +14,7 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.Filer;
 import com.sun.mirror.declaration.TypeDeclaration;
 import org.kotemaru.apthelper.AptUtil;
+import org.kotemaru.apthelper.annotation.*;
 
 public class ${className} implements AnnotationProcessor
 {
@@ -40,13 +42,30 @@ public class ${className} implements AnnotationProcessor
 		VelocityContext context = initVelocity();
 		context.put("masterClassDecl", classDecl);
 		context.put("annotation", anno);
-		context.put("util", new AptUtil());
+		
+		String templ  = "${annotation.template()}";
+		String path   = "${annotation.path()}";
+		String suffix = "${annotation.suffix()}";
 
-		String pkgName = classDecl.getPackage().getQualifiedName();
-		String baseName = classDecl.getSimpleName();
+		ProcessorGenerate pgAnno = ${masterClassDecl.qualifiedName}.class.getAnnotation(ProcessorGenerate.class);
 
-		applyTemplate(context,pkgName,baseName+"${annotation.suffix()}",
-				"${annotation.template()}");
+		Object util   = pgAnno.util().newInstance();
+		context.put("util", util);
+
+		String orgPkgName = classDecl.getPackage().getQualifiedName();
+		String pkgName = applyPkgPath(orgPkgName, path);
+		if (orgPkgName.equals(pkgName) && suffix.length()==0) {
+			suffix = "Impl";
+		}
+		
+		String clsName = classDecl.getSimpleName()+suffix;
+
+		if (templ.length()==0) {
+			templ = classDecl.getSimpleName()+".vm";
+		}
+		templ = getResourceName(classDecl, templ);
+
+		applyTemplate(context, pkgName, clsName, templ);
 	}
 
 	protected VelocityContext initVelocity() {
@@ -57,12 +76,41 @@ public class ${className} implements AnnotationProcessor
 		VelocityContext context = new VelocityContext();
 		return context;
 	}
-
-	protected String getResourceName(String name) {
+	
+	protected String getResourceName(TypeDeclaration classDecl, String name) {
 		if (name.startsWith("/")) return name;
-		String pkg = this.getClass().getPackage().getName().replace('.', '/');
-		return pkg +'/'+name;
+		String pkg = classDecl.getPackage().getQualifiedName();
+		return pkg.replace('.', '/') +'/'+name;
 	}
+	protected String applyPkgPath(String orgPkg, String path) {
+		if (path.equals(".")) return orgPkg;
+		if (path.startsWith("/")) {
+			return path.replace('/', '.').substring(1);
+		}
+
+		path = orgPkg.replace('.', '/') +"/"+ path;
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(path.split("/")));
+		for (int i=0; i<list.size();) {
+			String cur = list.get(i);
+			if (cur.equals(".")) {
+				list.remove(i);
+			} else if (cur.equals("..")) {
+				i--;
+				list.remove(i);
+				list.remove(i);
+			} else {
+				i++;
+			}
+		}
+
+		StringBuffer sbuf = new StringBuffer();
+		for (int i=0; i<list.size(); i++) {
+			sbuf.append(".");
+			sbuf.append(list.get(i));
+		}
+		return sbuf.toString().substring(1);
+	}
+
 	public void applyTemplate(VelocityContext context,
 			String pkgName, String clsName, String templ) throws Exception {
 		context.put("packageName", pkgName);

@@ -4,6 +4,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.*;
+import java.lang.reflect.*;
 
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
@@ -11,12 +12,13 @@ import com.sun.mirror.apt.AnnotationProcessorFactory;
 import com.sun.mirror.apt.AnnotationProcessors;
 
 public class ${className} implements AnnotationProcessorFactory {
-	private static final String TYPE_NAME = ${masterClassDecl.qualifiedName}.class.getName();
 	private static final List OPTIONS = new ArrayList(0);
-	private static final List TYPES = new ArrayList(1);
-	static {
-		TYPES.add(TYPE_NAME);
-	}
+	private static final List<String> TYPES = Arrays.asList(new String[]{
+#foreach( $classDecl in $masterClassDecls )
+		${classDecl.qualifiedName}.class.getName(),
+#end
+	});
+	
 	public Collection supportedOptions() {
 		return OPTIONS;
 	}
@@ -26,10 +28,30 @@ public class ${className} implements AnnotationProcessorFactory {
 	}
 
 	public AnnotationProcessor getProcessorFor(Set atds, AnnotationProcessorEnvironment env) {
-		if (atds.contains(env.getTypeDeclaration(TYPE_NAME))) {
-			return new ${masterClassDecl.simpleName}Ap(env);
+		for(String type : TYPES) {
+			try {
+				if (atds.contains(env.getTypeDeclaration(type))) {
+					return createProcessor(type, env);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		return AnnotationProcessors.NO_OP;
 	}
+
+	private AnnotationProcessor createProcessor(String type, AnnotationProcessorEnvironment env) 
+				throws Exception 
+	{
+		int idx = type.lastIndexOf('.');
+		String pkg = type.substring(0,idx);
+		String simpleName = type.substring(idx+1);
+
+		String apname = pkg.replaceFirst("[^.]*$","apt")+"."+simpleName+"Ap";
+		Class apCls = Class.forName(apname);
+		Constructor constractor = apCls.getConstructor(env.getClass());
+		return (AnnotationProcessor) constractor.newInstance(env);
+	}
+
 
 }

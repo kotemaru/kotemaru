@@ -9,6 +9,7 @@ import java.lang.annotation.ElementType;
 @Target(ElementType.TYPE)
 public @interface ProcessorGenerate {
 	String template();
-	String pkg() default ".";
+	String path() default ".";
 	String suffix() ;
+	Class util() default Object.class;
 }
