@@ -1,5 +1,5 @@
 //  generated.
-package ${pkgName};
+package ${packageName};
 public class ${className}
 		extends ${masterClassDecl}
 {

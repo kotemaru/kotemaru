@@ -1,4 +1,4 @@
-package org.kotemaru.aptvelocity;
+package org.kotemaru.apthelper;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
