@@ -24,7 +24,6 @@
     </fileset>
     <pathelement location="${source}"/>
     <pathelement location="${classes}"/>
-    <pathelement location="test/classes"/>
   </path>
 
   <target name="compile" depends="init">
@@ -77,6 +76,8 @@
   </target>
 
   <target name="test">
+  	<delete dir="./test/classes"/>
+  	<mkdir dir="./test/classes"/>
 	<apt srcdir="./test/src"
              preprocessdir="./test/src"
 	     destdir="./test/classes"
