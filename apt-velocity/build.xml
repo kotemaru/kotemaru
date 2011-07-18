@@ -71,7 +71,9 @@
 
   <target name="jar" depends="compile">
 	<jar jarfile="apt-velocity.jar">
-		<fileset dir="${classes}" />
+		<fileset dir="${classes}" >
+			<include name="org/kotemaru/apthelper/**"/>
+		</fileset>
 	</jar>
   </target>
 

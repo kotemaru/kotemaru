@@ -1,6 +1,8 @@
 package org.kotemaru.apthelper;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.mozilla.javascript.NativeJavaPackage;
@@ -9,6 +11,12 @@ import com.sun.mirror.type.*;
 import com.sun.mirror.declaration.*;
 
 public class AptUtil {
+
+	public AptUtil(TypeDeclaration classDecl) {
+		// nop.
+	}
+
+
 	public static  boolean isPrivate(Declaration d)  {
 		Collection<Modifier> mods = d.getModifiers();
 		for (Modifier mod : mods)  {
@@ -86,10 +94,35 @@ public class AptUtil {
 	public static String getCaptalName( String name ) {
 		return name.substring(0,1).toUpperCase() + name.substring(1);
 	}
-	public static boolean hasAnnotation(TypeDeclaration d, Class cls ) throws Exception {
-System.out.println("--->"+cls.getName());
-return false;
-//		return d.getAnnotation((Class<Annotation>)Class.forName(cname)) != null;
+
+	public static String getPackageName(TypeDeclaration classDecl, String path) {
+		String orgPkg = classDecl.getPackage().getQualifiedName();
+		if (path.equals(".")) return orgPkg;
+		if (path.startsWith("/")) {
+			return path.replace('/', '.').substring(1);
+		}
+
+		path = orgPkg.replace('.', '/') +"/"+ path;
+		ArrayList<String> list = new ArrayList<String>(Arrays.asList(path.split("/")));
+		for (int i=0; i<list.size();) {
+			String cur = list.get(i);
+			if (cur.equals(".")) {
+				list.remove(i);
+			} else if (cur.equals("..")) {
+				i--;
+				list.remove(i);
+				list.remove(i);
+			} else {
+				i++;
+			}
+		}
+
+		StringBuffer sbuf = new StringBuffer();
+		for (int i=0; i<list.size(); i++) {
+			sbuf.append(".");
+			sbuf.append(list.get(i));
+		}
+		return sbuf.toString().substring(1);
 	}
 
 }
