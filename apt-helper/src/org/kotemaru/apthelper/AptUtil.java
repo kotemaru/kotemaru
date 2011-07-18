@@ -1,11 +1,11 @@
 package org.kotemaru.apthelper;
 
-import java.lang.annotation.Annotation;
+//import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.mozilla.javascript.NativeJavaPackage;
+//import org.mozilla.javascript.NativeJavaPackage;
 
 import com.sun.mirror.type.*;
 import com.sun.mirror.declaration.*;
@@ -13,6 +13,9 @@ import com.sun.mirror.declaration.*;
 public class AptUtil {
 
 	public AptUtil(TypeDeclaration classDecl) {
+		// nop.
+	}
+	public AptUtil() {
 		// nop.
 	}
 

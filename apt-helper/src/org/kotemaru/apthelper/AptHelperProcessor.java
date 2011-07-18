@@ -1,17 +1,14 @@
 package org.kotemaru.apthelper;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
+//import java.util.Arrays;
 import java.util.List;
 
-import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.kotemaru.apthelper.annotation.ProcessorGenerate;
 
-import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.Filer;
 import com.sun.mirror.declaration.TypeDeclaration;
@@ -43,6 +40,7 @@ public class AptHelperProcessor extends ApBase {
 
 		try {
 			generateFactory(list);
+			generateService(list);
 		} catch (Exception e)  {
 			e.printStackTrace();
 		}
@@ -75,6 +73,24 @@ public class AptHelperProcessor extends ApBase {
 		String templ = getResourceName(FACTORY_VM);
 
 		applyTemplate(context,pkgName, FACTORY_NAME, templ);
+		return true;
+	}
+	
+	protected boolean generateService(List<TypeDeclaration> list) throws Exception {
+		if(list.size() == 0) return false;
+		TypeDeclaration classDecl = list.get(0);
+
+		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
+		String factoryName = pkgName+"."+FACTORY_NAME;
+
+		Filer filer = environment.getFiler();
+		PrintWriter writer = filer.createTextFile(
+				Filer.Location.SOURCE_TREE,
+				"", 
+				new File("META-INF/services/com.sun.mirror.apt.AnnotationProcessorFactory"),
+				"UTF-8");
+		writer.write(factoryName);
+		writer.close();
 		return true;
 	}
 

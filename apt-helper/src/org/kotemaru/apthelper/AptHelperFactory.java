@@ -1,8 +1,5 @@
 package org.kotemaru.apthelper;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
 import java.util.*;
 
 import org.kotemaru.apthelper.annotation.ProcessorGenerate;
