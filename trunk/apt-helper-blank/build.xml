@@ -27,6 +27,11 @@
 	<path id="aptpath">
 	    <pathelement location="${classes}"/>
 	</path>
+	<path id="aptpath0">
+		<fileset dir="../apt-helper">
+			<include name="apt-helper.jar" />
+		</fileset>
+	</path>
 
 
 	<target name="test">
@@ -43,5 +48,22 @@
 			classpathref="cpath">
 		</apt>
 	</target>
+	
+	<target name="apt">
+		<delete dir="${classes}" />
+		<mkdir dir="${classes}" />
+		<apt
+			srcdir="${source}"
+			preprocessdir=".apt_generated"
+			destdir="${classes}"
+			debug="on" encoding="${encoding}"
+			compile="true"
+			factorypathref="aptpath0"
+			classpathref="cpath">
+		</apt>
+	</target>
+	
+	<!-- factory="org.kotemaru.apthelper.AptHelperFactory" -->
+
 
 </project>
