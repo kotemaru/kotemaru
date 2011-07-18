@@ -1,4 +1,4 @@
-package ${packageName};
+package test.apt;
 
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,14 +11,13 @@ import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessorFactory;
 import com.sun.mirror.apt.AnnotationProcessors;
 
-public class ${className} implements AnnotationProcessorFactory {
+public class ApFactory implements AnnotationProcessorFactory {
 	private static final String AP_SUFFIX = "Ap";
 
 	private static final List OPTIONS = new ArrayList(0);
 	private static final List<String> TYPES = Arrays.asList(new String[]{
-#foreach( $classDecl in $masterClassDecls )
-		${classDecl.qualifiedName}.class.getName(),
-#end
+		test.master.TestAnno.class.getName(),
+		test.master.TestAnno2.class.getName(),
 	});
 
 	public Collection supportedOptions() {

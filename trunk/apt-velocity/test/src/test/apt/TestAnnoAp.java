@@ -1,6 +1,12 @@
-package ${packageName};
+package test.apt;
 
+import java.io.PrintWriter;
+import java.util.*;
+
+import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import java.lang.annotation.Annotation;
 
 import com.sun.mirror.apt.AnnotationProcessor;
@@ -10,18 +16,18 @@ import com.sun.mirror.declaration.TypeDeclaration;
 import org.kotemaru.apthelper.*;
 import org.kotemaru.apthelper.annotation.*;
 
-public class ${className} extends ApBase
+public class TestAnnoAp extends ApBase
 {
-	public ${className}(AnnotationProcessorEnvironment env) {
+	public TestAnnoAp(AnnotationProcessorEnvironment env) {
 		super(env);
 	}
 
 	protected boolean processClass(TypeDeclaration classDecl) throws Exception {
-		Annotation anno = classDecl.getAnnotation(${masterClassDecl.qualifiedName}.class);
+		Annotation anno = classDecl.getAnnotation(test.master.TestAnno.class);
 		if(anno == null) return false;
 
 		ProcessorGenerate pgAnno =
-			${masterClassDecl.qualifiedName}.class.getAnnotation(ProcessorGenerate.class);
+			test.master.TestAnno.class.getAnnotation(ProcessorGenerate.class);
 
 		VelocityContext context = initVelocity();
 		context.put("masterClassDecl", classDecl);
@@ -41,9 +47,9 @@ public class ${className} extends ApBase
 	private String getResourceName(String name) {
 		if (name.startsWith("/")) return name;
 		if (name.length() == 0) {
-			name = "${masterClassDecl.simpleName}.vm";
+			name = "TestAnno.vm";
 		}
-		String pkg = "${masterClassDecl.getPackage().getQualifiedName()}";
+		String pkg = "test.master";
 		return pkg.replace('.', '/') +'/'+name;
 	}
 

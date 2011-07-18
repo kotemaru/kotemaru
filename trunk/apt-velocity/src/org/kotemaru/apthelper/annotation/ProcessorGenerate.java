@@ -5,11 +5,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.lang.annotation.ElementType;
 
-@Retention(RetentionPolicy.CLASS)
+import org.kotemaru.apthelper.AptUtil;
+
+@Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ProcessorGenerate {
 	String template();
 	String path() default ".";
 	String suffix() ;
-	Class util() default Object.class;
+	Class helper() default AptUtil.class;
 }
