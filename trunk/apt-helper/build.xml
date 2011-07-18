@@ -70,9 +70,10 @@
   </target>
 
   <target name="jar" depends="compile">
-	<jar jarfile="apt-velocity.jar">
+	<jar jarfile="apt-helper.jar">
 		<fileset dir="${classes}" >
 			<include name="org/kotemaru/apthelper/**"/>
+			<include name="META-INF/**"/>
 		</fileset>
 	</jar>
   </target>
