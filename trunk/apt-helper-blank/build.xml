@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="shift_jis"?>
+
+<project default="test" basedir=".">
+
+	<property name="lib" value="${basedir}/lib" />
+	<property name="source" value="${basedir}/src" />
+	<property name="classes" value="${basedir}/classes" />
+	<property name="optimize" value="on"/>
+	<property name="encoding" value="utf-8"/>
+	<property name="debug" value="on"/>
+	<property name="deprecation" value="off"/>
+	<property name="target.factory" value="org.kotemaru.apthelper.AptHelperFactory"/>
+
+	<property name="test" value="${basedir}/test"/>
+	<property name="test.source" value="${test}/src"/>
+	<property name="test.classes" value="${test}/classes"/>
+	<property name="test.apt_gen" value="${test}/.apt_generated"/>
+
+
+	<path id="cpath">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+	    <pathelement location="${source}"/>
+	    <pathelement location="${classes}"/>
+	</path>
+	<path id="aptpath">
+	    <pathelement location="${classes}"/>
+	</path>
+
+
+	<target name="test">
+		<delete dir="${test.classes}" />
+		<mkdir dir="${test.classes}" />
+		<mkdir dir="${test.apt_gen}" />
+		<apt
+			srcdir="${test.source}"
+			preprocessdir="${test.apt_gen}"
+			destdir="${test.classes}"
+			debug="on" encoding="${encoding}"
+			compile="true"
+			factorypathref="aptpath"
+			classpathref="cpath">
+		</apt>
+	</target>
+
+</project>
