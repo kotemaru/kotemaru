@@ -16,29 +16,16 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.app.Velocity;
 
-public abstract class ApBase implements AnnotationProcessor {
+public abstract class ClassProcessorBase implements ClassProcessor {
 	protected AnnotationProcessorEnvironment environment;
 
-	public ApBase(AnnotationProcessorEnvironment env) {
+	public ClassProcessorBase(AnnotationProcessorEnvironment env) {
 		this.environment = env;
 	}
 
 	public AnnotationProcessorEnvironment getEnvironment() {
 		return environment;
 	}
-
-	@Override
-	public void process() {
-		for (TypeDeclaration classDecl : environment.getTypeDeclarations())  {
-			try {
-				processClass(classDecl);
-			} catch (Throwable t)  {
-				error(t);
-			}
-		}
-	}
-
-	protected abstract boolean processClass(TypeDeclaration classDecl) throws Exception;
 
 
 	protected VelocityContext initVelocity() {

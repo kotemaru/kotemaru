@@ -6,20 +6,23 @@ import java.io.Reader;
 import java.util.*;
 import java.lang.reflect.*;
 
+import org.kotemaru.apthelper.AptUtil;
+import org.kotemaru.apthelper.MultiAp;
+
 import com.sun.mirror.apt.AnnotationProcessor;
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.AnnotationProcessorFactory;
 import com.sun.mirror.apt.AnnotationProcessors;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
 public class ${className} implements AnnotationProcessorFactory {
 	private static final String AP_SUFFIX = "Ap";
 
 	private static final List OPTIONS = new ArrayList(0);
-	private static final List<String> TYPES = Arrays.asList(new String[]{
-#foreach( $classDecl in $masterClassDecls )
-		${classDecl.qualifiedName}.class.getName(),
-#end
-	});
+	private static  List<String> TYPES = new ArrayList(1);
+	static {
+		TYPES.add("${annotationPackageName}.*");
+	}
 
 	public Collection supportedOptions() {
 		return OPTIONS;
@@ -29,31 +32,11 @@ public class ${className} implements AnnotationProcessorFactory {
 		return TYPES;
 	}
 
-	public AnnotationProcessor getProcessorFor(Set atds, AnnotationProcessorEnvironment env) {
-		for(String type : TYPES) {
-			try {
-				if (atds.contains(env.getTypeDeclaration(type))) {
-					return createProcessor(type, env);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return AnnotationProcessors.NO_OP;
+	public AnnotationProcessor getProcessorFor(
+			Set<AnnotationTypeDeclaration> atds, AnnotationProcessorEnvironment env) {
+		return new MultiAp(atds, env, "${annotationPackageName}");
 	}
 
-	private AnnotationProcessor createProcessor(String type, AnnotationProcessorEnvironment env)
-				throws Exception
-	{
-		int idx = type.lastIndexOf('.');
-		String pkg = type.substring(0,idx);
-		String simpleName = type.substring(idx+1);
-
-		String apname = pkg.replaceFirst("[^.]*$","apt")+"."+simpleName+AP_SUFFIX;
-		Class apCls = Class.forName(apname);
-		Constructor constractor = apCls.getConstructor(AnnotationProcessorEnvironment.class);
-		return (AnnotationProcessor) constractor.newInstance(env);
-	}
-
-
+	
+	
 }
