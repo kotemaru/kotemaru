@@ -32,16 +32,22 @@
 		<fileset dir="${lib}">
 			<include name="*.jar" />
 		</fileset>
+		<!--
 		<pathelement location="${source}" />
 		<pathelement location="${classes}" />
+		-->
+		<pathelement location="${target.jar}" />
 	</path>
 	
 	<path id="test-path">
 		<fileset dir="${lib}">
 			<include name="*.jar" />
 		</fileset>
+		<!--
 		<pathelement location="${source}" />
 		<pathelement location="${classes}" />
+		-->
+		<pathelement location="${target.jar}" />
 		<pathelement location="${test.classes}" />
 	</path>
 
