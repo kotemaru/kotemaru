@@ -1,5 +1,8 @@
 package org.kotemaru.apthelper;
 
+import java.io.IOException;
+import java.util.*;
+
 //import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,6 +12,14 @@ import java.util.Collection;
 
 import com.sun.mirror.type.*;
 import com.sun.mirror.declaration.*;
+
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
+import javax.tools.JavaFileManager;
+import javax.tools.JavaFileObject;
+import javax.tools.StandardLocation;
+import javax.tools.ToolProvider;
+
 
 public class AptUtil {
 
@@ -128,4 +139,26 @@ public class AptUtil {
 		return sbuf.toString().substring(1);
 	}
 
+	public static List<String> getClassesInPackage(String pkg) throws IOException {
+		List<String> result = new ArrayList<String>();
+		
+		JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+		JavaFileManager fm = compiler.getStandardFileManager(
+		    new DiagnosticCollector<JavaFileObject>(), null, null);
+
+		// 一覧に含めるオブジェクト種別。以下はクラスのみを含める。
+		Set<JavaFileObject.Kind> kind = new HashSet<JavaFileObject.Kind>();
+		kind.add(JavaFileObject.Kind.SOURCE);
+		kind.add(JavaFileObject.Kind.CLASS);
+
+		Iterable<JavaFileObject> list =
+			fm.list(StandardLocation.ANNOTATION_PROCESSOR_PATH  , pkg, kind, false);
+		for ( JavaFileObject item : list) {
+		   result.add(pkg+"."+item.getName().replaceFirst("[.]class$",""));
+		}
+		return result;
+	}
+
+	
+	
 }

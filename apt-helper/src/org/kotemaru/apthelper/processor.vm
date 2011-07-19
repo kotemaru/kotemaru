@@ -10,13 +10,13 @@ import com.sun.mirror.declaration.TypeDeclaration;
 import org.kotemaru.apthelper.*;
 import org.kotemaru.apthelper.annotation.*;
 
-public class ${className} extends ApBase
+public class ${className} extends ClassProcessorBase
 {
 	public ${className}(AnnotationProcessorEnvironment env) {
 		super(env);
 	}
 
-	protected boolean processClass(TypeDeclaration classDecl) throws Exception {
+	public boolean processClass(TypeDeclaration classDecl) throws Exception {
 		Annotation anno = classDecl.getAnnotation(${masterClassDecl.qualifiedName}.class);
 		if(anno == null) return false;
 

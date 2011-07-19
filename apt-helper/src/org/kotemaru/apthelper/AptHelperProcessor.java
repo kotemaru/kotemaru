@@ -6,11 +6,13 @@ import java.util.ArrayList;
 //import java.util.Arrays;
 import java.util.List;
 
+
 import org.apache.velocity.VelocityContext;
 import org.kotemaru.apthelper.annotation.ProcessorGenerate;
 
 import com.sun.mirror.apt.AnnotationProcessorEnvironment;
 import com.sun.mirror.apt.Filer;
+import com.sun.mirror.apt.Messager;
 import com.sun.mirror.declaration.TypeDeclaration;
 
 public class AptHelperProcessor extends ApBase {
@@ -35,16 +37,16 @@ public class AptHelperProcessor extends ApBase {
 			try {
 				boolean isProcess = processClass(classDecl);
 				if (isProcess) list.add(classDecl);
-			} catch (Exception e)  {
-				e.printStackTrace();
+			} catch (Throwable t)  {
+				error(t);
 			}
 		}
 
 		try {
 			generateFactory(list);
 			generateService(list);
-		} catch (Exception e)  {
-			e.printStackTrace();
+		} catch (Throwable t)  {
+			error(t);
 		}
 
 	}
@@ -71,6 +73,9 @@ public class AptHelperProcessor extends ApBase {
 
 		VelocityContext context = initVelocity();
 		context.put("masterClassDecls", list);
+		context.put("annotationPackageName",
+			classDecl.getPackage().getQualifiedName());
+
 		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
 		String templ = getResourceName(FACTORY_VM);
 
