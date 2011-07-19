@@ -14,7 +14,7 @@
 
 
 	<target name="jar">
-		<jar jarfile="${target.jar}">
+		<jar jarfile="${target.jar}" manifest="MANIFEST.MF">
 			<fileset dir="classes" >
 				<include name="org/kotemaru/apthelper/**"/>
 				<include name="META-INF/**"/>
