@@ -19,6 +19,8 @@ public class AptHelperProcessor extends ApBase {
 	private static final String FACTORY_NAME = "ApFactory";
 	private static final String PROCESSOR_VM = "processor.vm";
 	private static final String FACTORY_VM = "factory.vm";
+	private static final String SERVICE_FILE =
+		"META-INF/services/com.sun.mirror.apt.AnnotationProcessorFactory";
 
 
 	public AptHelperProcessor(AnnotationProcessorEnvironment env) {
@@ -85,10 +87,12 @@ public class AptHelperProcessor extends ApBase {
 
 		Filer filer = environment.getFiler();
 		PrintWriter writer = filer.createTextFile(
-				Filer.Location.SOURCE_TREE,
-				"", 
-				new File("META-INF/services/com.sun.mirror.apt.AnnotationProcessorFactory"),
-				"UTF-8");
+			Filer.Location.SOURCE_TREE, // eclipseのバグ？apt_genからMETA-INFがclassesにコピーされない。
+			//Filer.Location.CLASS_TREE,
+			"", 
+			new File(SERVICE_FILE),
+			"utf-8"
+		);
 		writer.write(factoryName);
 		writer.close();
 		return true;
