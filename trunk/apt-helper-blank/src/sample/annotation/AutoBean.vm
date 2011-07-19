@@ -1,17 +1,33 @@
 //  generated.
+#*
+定義済変数
+${packageName}      : このクラスのパッケージ名
+${className}        : このクラスのクラス名
+${masterClassDecl}  : アノテーションの定義された元クラスの TypeDeclaration
+${annotation}       : 元クラスに定義されたアノテーション
+${helper}           : ユーザ定義の補助クラスインスタンス
+*#
+
 package ${packageName};
 public class ${className}
 		extends ${masterClassDecl}
 {
 
+## 元クラスのフィールド一覧を取得
 #foreach( $field in $masterClassDecl.fields )
+	## フィールド名を取得
 	#set($name = "${field.simpleName}")
+	## 補助関数でフィールド名の先頭を英大文字に変換
 	#set($Name = "${helper.getCaptalName(${name})}")
+	## フィールド用の補助インスタンスを取得
 	#set($fh = ${helper.getFieldHelper($field)})
 
+## フィールドの @Attr アノテーションの getter をチェック
 #if( $fh.hasGetter() )
 	public ${field.type} get${Name}() {return this.${name};}
 #end
+
+## フィールドの @Attr アノテーションの setter をチェック
 #if( $fh.hasSetter() )
 	public void set${Name}(${field.type} ${name}) {this.${name} = ${name};}
 #end
