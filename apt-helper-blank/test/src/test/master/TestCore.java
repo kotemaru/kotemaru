@@ -10,5 +10,5 @@ public abstract class TestCore {
     protected String tel;
 
     @Attrs(setter=false)
-    protected String hoge;
+    protected String hoge = "hoge";
 }

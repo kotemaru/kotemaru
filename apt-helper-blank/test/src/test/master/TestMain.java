@@ -20,6 +20,7 @@ public class TestMain {
 				+","+bean.getFirstName()
 				+","+bean.getLastName()
 				+","+bean.getTel()
+				+","+bean.getHoge()
 
 		);
 
