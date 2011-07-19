@@ -12,6 +12,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/apt-velocity.jar"/>
+	<classpathentry kind="lib" path="lib/apt-helper-1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
