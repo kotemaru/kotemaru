@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="no" ?>
 
 <project default="jar" basedir=".">
-	<import file="build.xml" />
 
 	<property name="target.jar" value="${basedir}/apt-helper-1.0.jar"/>
 	<property name="source" value="${basedir}/src"/>
@@ -14,13 +13,17 @@
 	<property name="test.apt_gen" value="${test}/.apt_generated"/>
 
 
-	<target name="jar" depends="build">
+	<target name="jar">
 		<jar jarfile="${target.jar}">
 			<fileset dir="classes" >
 				<include name="org/kotemaru/apthelper/**"/>
 				<include name="META-INF/**"/>
 			</fileset>
 		</jar>
+	</target>
+	
+	<target name="clean">
+		<delete file="${target.jar}" />
 	</target>
 
 	<path id="apt-path">
