@@ -1,69 +1,68 @@
-<?xml version="1.0" encoding="shift_jis"?>
-
-<project default="test" basedir=".">
-
-	<property name="lib" value="${basedir}/lib" />
-	<property name="source" value="${basedir}/src" />
-	<property name="classes" value="${basedir}/classes" />
-	<property name="optimize" value="on"/>
-	<property name="encoding" value="utf-8"/>
-	<property name="debug" value="on"/>
-	<property name="deprecation" value="off"/>
-	<property name="target.factory" value="org.kotemaru.apthelper.AptHelperFactory"/>
-
-	<property name="test" value="${basedir}/test"/>
-	<property name="test.source" value="${test}/src"/>
-	<property name="test.classes" value="${test}/classes"/>
-	<property name="test.apt_gen" value="${test}/.apt_generated"/>
-
-
-	<path id="cpath">
-		<fileset dir="${lib}">
-			<include name="*.jar" />
-		</fileset>
-	    <pathelement location="${source}"/>
-	    <pathelement location="${classes}"/>
-	</path>
-	<path id="aptpath">
-	    <pathelement location="${classes}"/>
-	</path>
-	<path id="aptpath0">
-		<fileset dir="../apt-helper">
-			<include name="apt-helper.jar" />
-		</fileset>
-	</path>
-
-
-	<target name="test">
-		<delete dir="${test.classes}" />
-		<mkdir dir="${test.classes}" />
-		<mkdir dir="${test.apt_gen}" />
-		<apt
-			srcdir="${test.source}"
-			preprocessdir="${test.apt_gen}"
-			destdir="${test.classes}"
-			debug="on" encoding="${encoding}"
-			compile="true"
-			factorypathref="aptpath"
-			classpathref="cpath">
-		</apt>
-	</target>
-	
-	<target name="apt">
-		<delete dir="${classes}" />
-		<mkdir dir="${classes}" />
-		<apt
-			srcdir="${source}"
-			preprocessdir=".apt_generated"
-			destdir="${classes}"
-			debug="on" encoding="${encoding}"
-			compile="true"
-			factorypathref="aptpath0"
-			classpathref="cpath">
-		</apt>
-	</target>
-	
-	<!-- factory="org.kotemaru.apthelper.AptHelperFactory" -->
-
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="apt-helper-blank">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../usr/local/lib/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="apt-helper-blank.classpath">
+        <pathelement location="classes"/>
+        <pathelement location="lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="lib/commons-lang-2.4.jar"/>
+        <pathelement location="lib/commons-logging-1.1.jar"/>
+        <pathelement location="lib/tools.jar"/>
+        <pathelement location="lib/velocity-1.7.jar"/>
+        <pathelement location="lib/apt-helper-1.0.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="classes"/>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir=".apt_generated">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="classes" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="apt-helper-blank.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="classes" source="${source}" target="${target}">
+            <src path=".apt_generated"/>
+            <classpath refid="apt-helper-blank.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
 </project>
