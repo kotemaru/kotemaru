@@ -6,10 +6,16 @@ public class ${className}
 
 #foreach( $field in $masterClassDecl.fields )
 	#set($name = "${field.simpleName}")
-	#set($Name = "${util.getCaptalName(${name})}")
+	#set($Name = "${helper.getCaptalName(${name})}")
+	#set($fh = ${helper.getFieldHelper($field)})
 
+#if( $fh.hasGetter() )
 	public ${field.type} get${Name}() {return this.${name};}
+#end
+#if( $fh.hasSetter() )
 	public void set${Name}(${field.type} ${name}) {this.${name} = ${name};}
+#end
+
 #end
 
 }

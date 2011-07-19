@@ -1,4 +1,4 @@
-package test.annotation;
+package sample.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
