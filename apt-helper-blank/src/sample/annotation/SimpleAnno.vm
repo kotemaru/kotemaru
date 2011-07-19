@@ -1,0 +1,16 @@
+//  generated.
+#*
+定義済変数
+${packageName}      : このクラスのパッケージ名
+${className}        : このクラスのクラス名
+${masterClassDecl}  : アノテーションの定義された元クラスの TypeDeclaration
+${annotation}       : 元クラスに定義されたアノテーション
+${helper}           : ユーザ定義の補助クラスインスタンス
+*#
+
+package ${packageName};
+public class ${className} {
+	public boolean ${annotation.name()}(${annotation.type()} arg) {
+		return arg.equals(${annotation.value()});
+	}
+}
