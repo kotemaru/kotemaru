@@ -1,96 +1,58 @@
-<?xml version="1.0" encoding="utf-8"?>
-
-<project default="compile" basedir=".">
-  <property file="build.properties" />
-
-    <property name="war" value="${basedir}/war" />
-    <property name="webinf" value="${basedir}/war/WEB-INF" />
-    <property name="lib" value="${basedir}/lib" />
-    <property name="source" value="${basedir}/src" />
-    <property name="classes" value="${basedir}/classes" />
-    <property name="optimize" value="on"/>
-    <property name="encoding" value="utf-8"/>
-    <property name="debug" value="on"/>
-    <property name="deprecation" value="off"/>
-    <property name="target.factory" value="org.kotemaru.apthelper.AptHelperFactory"/>
-
-  <target name="init">
-  </target>
-
-
-  <path id="cpath">
-    <fileset dir="${lib}">
-      <include name="*.jar"/>
-    </fileset>
-    <pathelement location="${source}"/>
-    <pathelement location="${classes}"/>
-  </path>
-
-  <target name="compile" depends="init">
-    <mkdir dir="${classes}"/>
-    <javac srcdir="${source}"
-           destdir="${classes}"
-           debug="${debug}"
-           deprecation="${deprecation}"
-           optimize="${optimize}"
-           encoding="${encoding}"
-           classpathref="cpath"
-           includeAntRuntime="false"
-           includeJavaRuntime="true">
-      <include name="**/*.java"/>
-    </javac>
-
-    <copy todir="${classes}">
-      <fileset dir="${source}">
-        <include name="**"/>
-        <exclude name="**/*.java"/>
-      </fileset>
-    </copy>
-  </target>
-
-  <target name="clean" depends="init">
-    <delete dir="${classes}"/>
-  </target>
-
-  <target name="javadoc" depends="init">
-    <mkdir dir="docs/javadoc"/>
-    <javadoc packagenames="org.kotemaru.*"
-           sourcepath="${source}"
-           defaultexcludes="yes"
-           destdir="docs/javadoc"
-           author="true"
-           version="true"
-           use="true"
-	   classpathref="cpath"
-           encoding="${encoding}"
-           windowtitle="WSJS API">
-      <doctitle><![CDATA[<h1></h1>]]></doctitle>
-      <bottom><![CDATA[<i>Copyright &#169; 2009 kotemaru.</i>]]></bottom>
-    </javadoc>
-  </target>
-
-  <target name="jar" depends="compile">
-	<jar jarfile="apt-helper.jar">
-		<fileset dir="${classes}" >
-			<include name="org/kotemaru/apthelper/**"/>
-			<include name="META-INF/**"/>
-		</fileset>
-	</jar>
-  </target>
-
-  <target name="test">
-  	<delete dir="./test/classes"/>
-  	<mkdir dir="./test/classes"/>
-	<apt srcdir="./test/src"
-             preprocessdir="./test/src"
-	     destdir="./test/classes"
-	     debug="on"
-		encoding="${encoding}"
-	     compile="true"
-	     factory="${target.factory}"
-	     classpathref="cpath">
-		<option name="script" value="test/autoBean.js" />
-	</apt>
-  </target>
-
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="apt-helper">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../usr/local/lib/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="apt-helper.classpath">
+        <pathelement location="classes"/>
+        <pathelement location="lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="lib/commons-lang-2.4.jar"/>
+        <pathelement location="lib/commons-logging-1.1.jar"/>
+        <pathelement location="lib/velocity-1.7.jar"/>
+        <pathelement location="lib/tools.jar"/>
+        <pathelement location="lib/js.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="classes"/>
+        <copy includeemptydirs="false" todir="classes">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="classes" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="apt-helper.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
 </project>
