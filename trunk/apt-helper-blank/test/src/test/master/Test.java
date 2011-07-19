@@ -2,7 +2,7 @@ package test.master;
 import  sample.annotation.*;
 
 @AutoBean()
-public abstract class TestCore {
+public abstract class Test {
     protected String firstName;
     protected String lastName;
     protected int age;

@@ -14,14 +14,14 @@ public class TestMain {
 		bean.setLastName("smith");
 		bean.setTel("090-1234-5678");
 
-		System.out.println(
-				bean.getAge()
-				+","+bean.getEmail()
-				+","+bean.getFirstName()
-				+","+bean.getLastName()
-				+","+bean.getTel()
-				+","+bean.getHoge()
-
+		System.out.println("["
+				+"\nAge="+bean.getAge()
+				+"\nEmail="+bean.getEmail()
+				+"\nName="+bean.getFirstName()
+				+" "+bean.getLastName()
+				+"\nTel="+bean.getTel()
+				+"\nHoge="+bean.getHoge()
+				+"\n]"
 		);
 
 	}
