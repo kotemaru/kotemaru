@@ -43,12 +43,11 @@ public abstract class ApBase implements AnnotationProcessor {
 
 
 	protected VelocityContext initVelocity() {
-/*
  		Velocity.setProperty("resource.loader","class");
 		Velocity.setProperty("class.resource.loader.class",
 							ClasspathResourceLoader.class.getName());
 		Velocity.init();
-*/
+
 		VelocityContext context = new VelocityContext();
 		return context;
 	}
