@@ -31,13 +31,13 @@ public abstract class ClassProcessorBase implements ClassProcessor {
 
 
 	protected VelocityContext initVelocity() {
-/*
+
 		Velocity.setProperty("runtime.log.logsystem.class","");
 		Velocity.setProperty("resource.loader","class");
 		Velocity.setProperty("class.resource.loader.class",
 							ClasspathResourceLoader.class.getName());
 		Velocity.init();
-*/
+
 		VelocityContext context = new VelocityContext();
 		return context;
 	}

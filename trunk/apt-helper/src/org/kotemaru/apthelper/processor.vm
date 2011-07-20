@@ -23,8 +23,8 @@ public class ${className} extends ClassProcessorBase
 		ProcessorGenerate pgAnno =
 			${masterClassDecl.qualifiedName}.class.getAnnotation(ProcessorGenerate.class);
 
-		//VelocityContext context = initVelocity();
-		VelocityContext context = new VelocityContext();
+		VelocityContext context = initVelocity();
+		//VelocityContext context = new VelocityContext();
 		context.put("masterClassDecl", classDecl);
 		context.put("annotation", anno);
 
