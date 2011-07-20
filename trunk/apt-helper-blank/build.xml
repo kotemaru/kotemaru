@@ -13,11 +13,10 @@
     <path id="apt-helper-blank.classpath">
         <pathelement location="classes"/>
         <pathelement location="lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="lib/apt-helper-1.0.jar"/>
         <pathelement location="lib/commons-lang-2.4.jar"/>
-        <pathelement location="lib/commons-logging-1.1.jar"/>
         <pathelement location="lib/tools.jar"/>
         <pathelement location="lib/velocity-1.7.jar"/>
-        <pathelement location="lib/apt-helper-1.0.jar"/>
     </path>
     <target name="init">
         <mkdir dir="classes"/>
@@ -29,6 +28,8 @@
         </copy>
         <copy includeemptydirs="false" todir="classes">
             <fileset dir=".apt_generated">
+                <include name="**"/>
+                <include name="META-INF/**"/>
                 <exclude name="**/*.launch"/>
                 <exclude name="**/*.java"/>
             </fileset>
@@ -48,6 +49,8 @@
         </javac>
         <javac debug="true" debuglevel="${debuglevel}" destdir="classes" source="${source}" target="${target}">
             <src path=".apt_generated"/>
+            <include name="**"/>
+            <include name="META-INF/**"/>
             <classpath refid="apt-helper-blank.classpath"/>
         </javac>
     </target>
