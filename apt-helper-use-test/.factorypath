@@ -1,9 +1,9 @@
 <factorypath>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/velocity-1.7.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-collections-3.2.1.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-lang-2.4.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/tools.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-logging-1.1.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/apt-helper-1.0.jar" enabled="true" runInBatchMode="true"/>
-    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/apt-sample-1.0.jar" enabled="true" runInBatchMode="true"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/velocity-1.7.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-collections-3.2.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-lang-2.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/tools.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/commons-logging-1.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/apt-helper-1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/apt-helper-use-test/lib/apt-sample-1.0.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
