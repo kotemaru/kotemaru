@@ -7,6 +7,8 @@ import java.util.*;
 
 
 import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.kotemaru.apthelper.annotation.ProcessorGenerate;
 
 import com.sun.mirror.apt.AnnotationProcessor;
@@ -34,6 +36,12 @@ public class MultiAp implements AnnotationProcessor {
 		this.init();
 	}
 	private void init() {
+		Velocity.setProperty("runtime.log.logsystem.class","");
+		Velocity.setProperty("resource.loader","class");
+		Velocity.setProperty("class.resource.loader.class",
+							ClasspathResourceLoader.class.getName());
+		Velocity.init();
+		
 		for (TypeDeclaration annoDecl : atds) {
 			String type = annoDecl.getQualifiedName();
 			if (type.startsWith(packageName)) {
@@ -63,6 +71,7 @@ public class MultiAp implements AnnotationProcessor {
 
 	@Override
 	public void process() {
+
 		List<TypeDeclaration> list = new ArrayList<TypeDeclaration>();
 		for (TypeDeclaration classDecl : env.getTypeDeclarations())  {
 			for (ClassProcessor cp : cps) {

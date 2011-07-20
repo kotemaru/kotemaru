@@ -16,8 +16,6 @@ import com.sun.mirror.apt.AnnotationProcessors;
 import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
 public class ${className} implements AnnotationProcessorFactory {
-	private static final String AP_SUFFIX = "Ap";
-
 	private static final List OPTIONS = new ArrayList(0);
 	private static  List<String> TYPES = new ArrayList(1);
 	static {
@@ -36,7 +34,4 @@ public class ${className} implements AnnotationProcessorFactory {
 			Set<AnnotationTypeDeclaration> atds, AnnotationProcessorEnvironment env) {
 		return new MultiAp(atds, env, "${annotationPackageName}");
 	}
-
-	
-	
 }
