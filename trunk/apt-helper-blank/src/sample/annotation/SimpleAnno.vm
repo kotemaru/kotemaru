@@ -9,7 +9,7 @@ ${helper}           : ユーザ定義の補助クラスインスタンス
 *#
 
 package ${packageName};
-public class ${className} {
+public class ${className} implements ${masterClassDecl} {
 	public boolean ${annotation.name()}(${annotation.type()} arg) {
 		return arg.equals(${annotation.value()});
 	}
