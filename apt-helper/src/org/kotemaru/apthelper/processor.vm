@@ -23,7 +23,8 @@ public class ${className} extends ClassProcessorBase
 		ProcessorGenerate pgAnno =
 			${masterClassDecl.qualifiedName}.class.getAnnotation(ProcessorGenerate.class);
 
-		VelocityContext context = initVelocity();
+		//VelocityContext context = initVelocity();
+		VelocityContext context = new VelocityContext();
 		context.put("masterClassDecl", classDecl);
 		context.put("annotation", anno);
 
@@ -33,8 +34,10 @@ public class ${className} extends ClassProcessorBase
 		String pkgName = getPackageName(classDecl, pgAnno.path());
 		String clsName = classDecl.getSimpleName() + pgAnno.suffix();
 		String templ = getResourceName(pgAnno.template());
+		//String templ = pgAnno.template();
 
 		applyTemplate(context, pkgName, clsName, templ);
+		//applyTemplate(context, pkgName, clsName, anno.getClass(), templ);
 		return true;
 	}
 

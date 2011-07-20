@@ -64,6 +64,7 @@ public class AptHelperProcessor extends ApBase {
 		String templ = getResourceName(PROCESSOR_VM);
 
 		applyTemplate(context, pkgName, clsName, templ);
+		//applyTemplate(context, pkgName, clsName, this.getClass(), PROCESSOR_VM);
 		return true;
 	}
 
@@ -80,6 +81,7 @@ public class AptHelperProcessor extends ApBase {
 		String templ = getResourceName(FACTORY_VM);
 
 		applyTemplate(context,pkgName, FACTORY_NAME, templ);
+		//applyTemplate(context, pkgName, FACTORY_NAME, this.getClass(), FACTORY_VM);
 		return true;
 	}
 	

@@ -15,6 +15,7 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.app.Velocity;
+import org.kotemaru.util.IOUtil;
 
 public abstract class ApBase implements AnnotationProcessor {
 	protected AnnotationProcessorEnvironment environment;
@@ -42,10 +43,12 @@ public abstract class ApBase implements AnnotationProcessor {
 
 
 	protected VelocityContext initVelocity() {
-		Velocity.setProperty("resource.loader","class");
+/*
+ 		Velocity.setProperty("resource.loader","class");
 		Velocity.setProperty("class.resource.loader.class",
 							ClasspathResourceLoader.class.getName());
 		Velocity.init();
+*/
 		VelocityContext context = new VelocityContext();
 		return context;
 	}
@@ -60,6 +63,18 @@ public abstract class ApBase implements AnnotationProcessor {
 		Filer filer = environment.getFiler();
 		PrintWriter writer = filer.createSourceFile(pkgName+'.'+clsName);
 		template.merge(context, writer);
+		writer.close();
+	}
+	
+	public void applyTemplate(VelocityContext context,
+			String pkgName, String clsName, Class baseTempl, String templ) throws Exception {
+		context.put("packageName", pkgName);
+		context.put("className", clsName);
+
+		String template = IOUtil.getResource(baseTempl, templ);
+		Filer filer = environment.getFiler();
+		PrintWriter writer = filer.createSourceFile(pkgName+'.'+clsName);
+		Velocity.evaluate(context, writer, templ, template);
 		writer.close();
 	}
 
