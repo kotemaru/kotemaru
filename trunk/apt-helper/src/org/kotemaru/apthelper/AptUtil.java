@@ -47,22 +47,16 @@ public class AptUtil {
 	
 	public static  boolean isPublic(Declaration d)  {
 		Collection<Modifier> mods = d.getModifiers();
-		for (Modifier mod : mods)  {
-			if (Modifier.PUBLIC.equals(mod))  {
-				return true;
-			}
-		}
-		return false;
+		return mods.contains(Modifier.PUBLIC);
+	}
+	public static  boolean isStatic(Declaration d)  {
+		Collection<Modifier> mods = d.getModifiers();
+		return mods.contains(Modifier.STATIC);
 	}
 
 	public static  boolean isAbstract(Declaration d)  {
 		Collection<Modifier> mods = d.getModifiers();
-		for (Modifier mod : mods)  {
-			if (Modifier.ABSTRACT.equals(mod))  {
-				return true;
-			}
-		}
-		return false;
+		return mods.contains(Modifier.ABSTRACT);
 	}
 
 	public static String getModifiers(Declaration d, Modifier ignore) {
