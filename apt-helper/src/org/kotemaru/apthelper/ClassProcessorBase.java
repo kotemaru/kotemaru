@@ -2,8 +2,10 @@ package org.kotemaru.apthelper;
 
 //import java.util.ArrayList;
 //import java.util.Arrays;
+import java.io.File;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.util.List;
 import java.util.Properties;
 
 import com.sun.mirror.apt.AnnotationProcessor;
@@ -75,6 +77,34 @@ public abstract class ClassProcessorBase implements ClassProcessor {
 		Velocity.evaluate(context, writer, templ, template);
 		writer.close();
 	}
+	
+	public void applyTemplateText(VelocityContext context,
+			String pkgName, String resName, String templ) throws Exception {
+		context.put("packageName", pkgName);
+		context.put("resourceName", resName);
+
+		String resFullPath = pkgName.replace('.', '/')+"/"+resName;
+		
+		Template template;
+		try {
+			template = Velocity.getTemplate("/"+templ);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(
+				"Template "+templ+" not found. "
+				+e.toString());
+		}
+		Filer filer = environment.getFiler();
+		PrintWriter writer = filer.createTextFile(
+				Filer.Location.SOURCE_TREE,
+				"", 
+				new File(resFullPath),
+				"utf-8"
+			);
+		template.merge(context, writer);
+		writer.close();
+	}
+
 	
 	
 	protected Object getHelper(TypeDeclaration classDecl, Class helperCls) throws Exception {
