@@ -36,7 +36,11 @@ public class ${className} extends ClassProcessorBase
 		String templ = getResourceName(pgAnno.template());
 		//String templ = pgAnno.template();
 
-		applyTemplate(context, pkgName, clsName, templ);
+		if (pgAnno.isResource()) {
+			applyTemplateText(context, pkgName, clsName, templ);
+		} else {
+			applyTemplate(context, pkgName, clsName, templ);
+		}
 		//applyTemplate(context, pkgName, clsName, anno.getClass(), templ);
 		return true;
 	}
