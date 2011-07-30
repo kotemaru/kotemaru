@@ -44,6 +44,16 @@ public class AptUtil {
 		}
 		return false;
 	}
+	
+	public static  boolean isPublic(Declaration d)  {
+		Collection<Modifier> mods = d.getModifiers();
+		for (Modifier mod : mods)  {
+			if (Modifier.PUBLIC.equals(mod))  {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public static  boolean isAbstract(Declaration d)  {
 		Collection<Modifier> mods = d.getModifiers();
