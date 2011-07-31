@@ -1,0 +1,38 @@
+html, body {
+	height: 100%;
+	margin: 0px; 
+	padding: 0px;
+}
+
+#mapCanvas {
+	width: 100%;
+	height: 100%;
+}
+#waitingIcon {
+	z-index: 10000;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	display: none;
+}
+#balloon {
+	display: none;
+}
+.BalloonForm table {
+	font-size: 8pt;
+	width: 95%;
+}
+.BalloonText {
+	font-size: 8pt;
+	width: 100%;
+	border: 1px solid gray;
+	
+}
+
+#menuButton {
+	font-size: 12px;
+	margin: 5px;
+	padding: 2px;
+	border: 2px solid gray;
+	background: white;
+}
