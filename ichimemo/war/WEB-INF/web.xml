@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns="http://java.sun.com/xml/ns/javaee"
+xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	<servlet>
+		<servlet-name>Calljava</servlet-name>
+		<servlet-class>org.kotemaru.jsrpc.CalljavaServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Calljava</servlet-name>
+		<url-pattern>/classes/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Stub</servlet-name>
+		<servlet-class>org.kotemaru.jsrpc.ResourceServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Stub</servlet-name>
+		<url-pattern>/stub/*</url-pattern>
+	</servlet-mapping>
+	
+	<servlet>
+		<servlet-name>Image</servlet-name>
+		<servlet-class>org.kotemaru.ichimemo.servlet.ImageServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Image</servlet-name>
+		<url-pattern>/image</url-pattern>
+	</servlet-mapping>
+	
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+	</welcome-file-list>
+</web-app>

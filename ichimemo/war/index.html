@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+		<meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+		<title>IchiMemo</title>
+		<link rel="stylesheet" href="pc.css" type="text/css">
+
+		<script src="/lib/json2.js" ></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.js" ></script>
+		<script src="http://maps.google.com/maps/api/js?sensor=true" type="text/javascript" ></script>
+		<script src="/stub/org/kotemaru/ichimemo/jsrpc/IchiMemo.js"></script>
+		<script src="main.js"></script>
+	</head>
+	<body >
+		<div id="mapCanvas"></div>
+		<img id="waitingIcon" src="waiting.gif" />
+
+		<div id="balloon">
+			<form class="BalloonForm" id="${formName}" name="${formName}"
+				enctype="multipart/form-data" method="POST"
+				action="/classes/org/kotemaru/ichimemo/jsrpc/IchiMemo.register" >
+
+				<input name="id" type="hidden"/>
+				<input name="lat" type="hidden"/>
+				<input name="lng" type="hidden"/>
+				<table border=0 cellspacing=0>
+					<tr><td rowspan=6 style="border:1px solid gray; margin-right:8px;">
+						<div style="width:128px;overflow:hidden;">
+						<img id="balloonImg" alt="画像" width="128px" src="http://maps.google.co.jp/mapfiles/ms/icons/blue-pushpin.png"/>
+						<input id="balloonImgInput" name="file" type="file"
+								onchange="onImageSelect(this, event)"/>
+						</div>
+					    </td>
+					    <td><nobr>住所</nobr></td><td>:</td><td width="99%">
+						<input class="BalloonText" name="address" type="text" />
+					</td></tr>
+					<tr><td><nobr>コメント</nobr></td><td>:</td><td>
+						<input class="BalloonText" name="comment" type="text" />
+					</td></tr>
+					<tr><td><nobr>タグ</nobr></td><td>:</td><td>
+						<input class="BalloonText" name="tags" type="text" />
+					</td></tr>
+					<tr><td><nobr>重要度</nobr></td><td>:</td><td>
+						<input name="level" type="radio" value="3" />高
+						<input name="level" type="radio" value="2" checked />中
+						<input name="level" type="radio" value="1" />低
+					</td></tr>
+					<tr><td><nobr>評価</nobr></td><td>:</td><td>
+						<input name="appraise" type="radio" value="-1"  checked />未	
+
+						&nbsp&nbsp&nbsp&nbsp
+						1<input name="appraise" type="radio" value="1"
+						/><input name="appraise" type="radio" value="2"
+						/><input name="appraise" type="radio" value="3"
+						/><input name="appraise" type="radio" value="4"
+						/><input name="appraise" type="radio" value="5"
+						/>5
+					</td></tr>
+					<tr><td></td><td></td><td></td></tr>
+
+					<tr><td colspan=4 align="right"><button type="submit">送信</button></td></tr>
+				</table>
+			</form>
+		</div>
+
+	</body>
+</html>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="dummy" basedir=".">
+
+	<property name="target.jar" value="${basedir}/apt-helper-1.0.jar"/>
+	<property name="source" value="${basedir}/src"/>
+	<property name="classes" value="${basedir}/war/WEB-INF/classes"/>
+	<property name="lib" value="${basedir}/war/WEB-INF/lib"/>
+	<property name="apt_gen" value="${basedir}/.apt_generated"/>
+	
+	<property name="pre" value="${basedir}/pre"/>
+	<property name="pre.source" value="${source}"/>
+	<property name="pre.classes" value="${pre}/classes"/>
+	<property name="pre.apt_gen" value="${pre}/.apt_generated"/>
+
+
+	<path id="apt-path">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="./lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${pre.source}" />
+		<pathelement location="${pre.classes}" />
+	</path>
+	<target name="dummy">
+	</target>
+
+	<target name="precompile">
+		<mkdir dir="${pre}" />
+		<mkdir dir="${pre.apt_gen}" />
+		<mkdir dir="${pre.classes}" />
+		<apt 
+			srcdir="${pre.source}"
+			preprocessdir="${pre.apt_gen}" 
+			destdir="${pre.classes}" 
+			debug="on" 
+			encoding="utf-8" 
+			compile="true" 
+			factorypathref="apt-path"
+			classpathref="apt-path"
+		>
+		    <include name="org/kotemaru/jsrpc/annotation/**"/>
+		    <include name="org/kotemaru/jsrpc/apt/**"/>
+		</apt>
+
+		<copy todir="${pre.classes}">
+			<fileset dir="${source}">
+				<exclude name="**/*.java"/>
+			</fileset>
+			<fileset dir="${pre.apt_gen}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		
+		<jar jarfile="${pre}/apt-jsrpc.jar">
+			<fileset dir="${pre.classes}" />
+		</jar>
+	</target>
+
+	<target name="compile" depends="precompile" >
+
+		<mkdir dir="${classes}" />
+		<apt 
+			srcdir="${source}"
+			preprocessdir="${apt_gen}" 
+			destdir="${classes}" 
+			debug="on" 
+			encoding="utf-8" 
+			compile="true" 
+			factorypathref="apt-path"
+			classpathref="apt-path"
+		>
+		    <exclude name="org/kotemaru/calljava/apt/**"/>
+		</apt>
+		<copy todir="${classes}">
+			<fileset dir="${apt_gen}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+
+	</target>
+	
+
+	<target name="clean">
+		<delete dir="${apt_gen}" />
+		<delete dir="${pre.apt_gen}" />
+		<delete dir="${pre.classes}" />
+	</target>
+</project>

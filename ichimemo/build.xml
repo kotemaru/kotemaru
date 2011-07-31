@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="calljava">
+    <property environment="env"/>
+    <property name="ECLIPSE_HOME" value="../../../../usr/local/lib/eclipse"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="App Engine SDK [appengine-java-sdk-1.5.0.1 - 1.5.0].libraryclasspath">
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp/repackaged-appengine-ant-1.7.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp/repackaged-appengine-ant-launcher-1.7.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp/repackaged-appengine-jasper-6.0.29.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp/repackaged-appengine-jasper-el-6.0.29.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp/repackaged-appengine-tomcat-juli-6.0.29.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/appengine-local-runtime-shared.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/el-api.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/jsp-api.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/shared/servlet-api.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/datanucleus-appengine-1.0.8.final.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/datanucleus-core-1.1.5.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/datanucleus-jpa-1.1.5.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/geronimo-jpa_3.0_spec-1.1.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/geronimo-jta_1.1_spec-1.1.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/orm/jdo2-api-2.3-eb.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/appengine-api-1.0-sdk-1.5.0.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/appengine-api-labs-1.5.0.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/appengine-jsr107cache-1.5.0.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/user/jsr107cache-1.1.jar"/>
+        <pathelement location="../../work/appengine-java-sdk-1.5.0.1/lib/appengine-tools-api.jar"/>
+    </path>
+    <path id="calljava.classpath">
+        <pathelement location="war/WEB-INF/classes"/>
+        <path refid="App Engine SDK [appengine-java-sdk-1.5.0.1 - 1.5.0].libraryclasspath"/>
+        <pathelement location="war/WEB-INF/lib/apt-helper-1.0.jar"/>
+        <pathelement location="war/WEB-INF/lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="war/WEB-INF/lib/commons-lang-2.4.jar"/>
+        <pathelement location="war/WEB-INF/lib/tools.jar"/>
+        <pathelement location="war/WEB-INF/lib/velocity-1.7.jar"/>
+    </path>
+    <target name="init">
+        <mkdir dir="war/WEB-INF/classes"/>
+        <copy includeemptydirs="false" todir="war/WEB-INF/classes">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="war/WEB-INF/classes"/>
+    </target>
+    <target depends="clean" name="cleanall"/>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects"/>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="war/WEB-INF/classes" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="calljava.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+</project>
