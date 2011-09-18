@@ -1,0 +1,290 @@
+// ecma262r3 JavaScript syntax E-BNF;
+
+// Attributes.
+
+// Tokens
+
+WhiteSpace     ::= /[ \t\u000B\u000C\u0020\u00A0]+/      skipped;
+LineTerminator ::= /[\n\r\u2028\u2029]+/                 skipped;
+
+Keyword ::=
+	"break"|"case"|"catch"|"continue"|"default"|"delete"|"do"|"else"
+	|"finally"|"for"|"function"|"if"|"in"|"instanceof"|"new"|"return"
+	|"switch"|"this"|"throw"|"try"|"typeof"|"var"|"void"|"while"|"with"
+;
+
+FutureReservedWord ::=
+	"abstract"|"boolean"|"byte"|"char"|"class"|"const"|"debugger"
+	|"double"|"enum"|"export"|"extends"|"final"|"float"|"goto"
+	|"implements"|"import"|"interface"|"int"|"long"|"native"|"package"
+	|"private"|"protected"|"public"|"short"|"static"|"super"
+	|"synchronized"|"throws"|"transient"|"volatile"
+;
+
+
+NullLiteral    ::= "null";
+BooleanLiteral ::= "true" | "false";
+
+Punctuator ::=
+	"{"|"}"|"("|")"|"["|"]"|"."|";"|","|"<"|">"|"<="|">="|"=="|"!=" 
+	|"==="|"!=="|"+"|"-"|"*"|"%"|"++"|"--"|"<<"|">>"|">>>"|"&"
+	|"|"|"^"|"!"|"~"|"&&"|"||"|"?"|":"|"="|"+="|"-="|"*="|"%="|"<<=" 
+	|">>="|">>>="|"&="|"|="|"^="
+	|"/"|"/="
+;
+
+DecimalLiteral ::= $Tokenizer();
+//DecimalLiteral     ::= DecimalLiteral_2|DecimalLiteral_1|DecimalLiteral_0;
+//DecimalLiteral_0   ::= /[0-9]+([eE]-?[0-9]+)?/;
+//DecimalLiteral_1   ::= /[.][0-9]+([eE]-?[0-9]+)?/;
+//DecimalLiteral_2   ::= /[0-9]+[.][0-9]*([eE]-?[0-9]+)?/;
+
+HexIntegerLiteral  ::= /0[xX][0-9a-fA-F]+/;
+//StringLiteralQuote ::= /"([^\\"]|\\['"\\bfnrtv]|\\\r\n|\\0[0-9]*|\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4})*"/;
+//StringLiteralApos  ::= /'([^\\']|\\['"\\bfnrtv]|\\\r\n|\\0[0-9]*|\\x[0-9a-zA-Z]{2}|\\u[0-9a-zA-Z]{4})*'/;
+StringLiteral ::= $Tokenizer();
+
+RegularExprLiteral ::= /\/([^\/\\]|\\.)+\/[a-zA-Z]*/;
+
+MultiLineComment   ::= $Tokenizer()   skipped;
+SingleLineComment  ::= /\/\/.*\r?\n/   skipped;
+
+Identifier ::= $Tokenizer();
+
+// Syntax.
+
+Comment ::= MultiLineComment | SingleLineComment;
+
+ReservedWord ::=
+	Keyword
+	|FutureReservedWord
+	|NullLiteral
+	|BooleanLiteral
+;
+
+
+Literal ::=
+	NullLiteral
+	|BooleanLiteral
+	|NumericLiteral
+	|StringLiteral
+	|RegularExprLiteral
+;
+NumericLiteral ::= HexIntegerLiteral | DecimalLiteral;
+
+PrimaryExpr ::=
+	Identifier
+	|"this"
+	|Literal
+	|ArrayLiteral
+	|ObjectLiteral
+	|"(" Expr ")"
+	|YieldExpr
+;
+YieldExpr ::= "yield" [Expr];
+
+ArrayLiteral ::= "[" [AssignmentExpr] ["," [AssignmentExpr]]... "]";
+ObjectLiteral ::= "{" [PropertyNameAndValueList] "}";
+
+PropertyNameAndValueList ::=
+	PropertyName ":" AssignmentExpr
+	["," PropertyName ":" AssignmentExpr]...
+;
+
+PropertyName ::= Identifier | StringLiteral | NumericLiteral;
+
+MemberExpr ::=	
+	MemberItem 
+	["." Identifier 
+	| "[" Expr "]"]...;
+MemberItem ::=
+	PrimaryExpr 
+	| FunctionExpr
+	|"new" MemberExpr Arguments
+;
+
+
+CallExpr ::=
+	MemberExpr [Arguments
+		[Arguments | "." Identifier |"[" Expr "]"]...]
+;
+
+Arguments ::= "(" [ArgumentList] ")";
+ArgumentList ::= AssignmentExpr ["," AssignmentExpr]...;
+
+LeftHandSideExpr ::= NewExpr | CallExpr; //| MemberExpr
+NewExpr ::=	"new" MemberExpr !"(";
+
+PostfixExpr ::= LeftHandSideExpr ["++"|"--"];
+UnaryExpr ::=
+	[
+		 "delete"
+		|"void"
+		|"typeof"
+		|"++"
+		|"--"
+		|"+"
+		|"-"
+		|"~"
+		|"!"
+	]... PostfixExpr 
+;
+
+
+MultiplicativeExpr ::=
+	UnaryExpr [{"*"|"/"|"%"} UnaryExpr]...;
+
+AdditiveExpr ::=
+	MultiplicativeExpr [{"+"|"-"} MultiplicativeExpr]...;
+
+ShiftExpr ::=
+	AdditiveExpr [{"<<"|">>"|">>>"} AdditiveExpr]...;
+
+RelationalExpr ::=
+	ShiftExpr [{"<="|">="|"<"|">"|"instanceof"|"in"} ShiftExpr]...;
+RelationalExprNoIn ::=
+	ShiftExpr [{"<="|">="|"<"|">"|"instanceof"} ShiftExpr]...;
+	                          
+EqualityExpr ::=
+	RelationalExpr [{"==="|"!=="|"=="|"!="} RelationalExpr]...;
+EqualityExprNoIn ::=
+	RelationalExprNoIn [{"==="|"!=="|"=="|"!="} RelationalExprNoIn]...;
+
+BitwiseANDExpr ::=    
+	EqualityExpr ["&" EqualityExpr]...;
+BitwiseANDExprNoIn ::=
+	EqualityExprNoIn ["&" EqualityExprNoIn]...;
+
+BitwiseXORExpr ::=
+	BitwiseANDExpr ["^" BitwiseANDExpr]...;
+BitwiseXORExprNoIn ::=
+	BitwiseANDExprNoIn ["^" BitwiseANDExprNoIn]...;
+
+BitwiseORExpr ::=
+	BitwiseXORExpr ["|" BitwiseXORExpr]...;
+BitwiseORExprNoIn ::=
+	BitwiseXORExprNoIn ["|" BitwiseXORExprNoIn]...;
+
+LogicalANDExpr ::=
+	BitwiseORExpr ["&&" BitwiseORExpr]...;
+LogicalANDExprNoIn ::=
+	BitwiseORExprNoIn ["&&" BitwiseORExprNoIn]...;
+
+LogicalORExpr ::=
+	LogicalANDExpr ["||" LogicalANDExpr]...;
+LogicalORExprNoIn ::=
+	LogicalANDExprNoIn ["||" LogicalANDExprNoIn]...;
+
+ConditionalExpr ::=
+	LogicalORExpr ["?" AssignmentExpr ":" AssignmentExpr]...;
+ConditionalExprNoIn ::=
+	LogicalORExprNoIn ["?" AssignmentExprNoIn ":" AssignmentExprNoIn]...;
+
+AssignmentExpr ::=
+	{ConditionalExpr | LeftHandSideExpr} 
+		[AssignmentOperator AssignmentValue]...
+;
+AssignmentValue ::= {ConditionalExpr | LeftHandSideExpr};
+
+AssignmentExprNoIn ::=
+	LeftHandSideExpr AssignmentOperator AssignmentExprNoIn
+	|ConditionalExprNoIn
+;
+AssignmentOperator ::=
+	"=" | "*=" | "/=" | "%=" | "+=" | "-=" | "<<=" | ">>=" | ">>>=" | "&=" | "^=" | "|="
+;
+Expr ::=
+	AssignmentExpr ["," AssignmentExpr]...;
+ExprNoIn ::=
+	AssignmentExprNoIn ["," AssignmentExprNoIn]...;
+
+Statement ::= Block | ProcStatement | CtrlStatement;
+
+ProcStatement ::=
+	 VariableStatement 
+	|EmptyStatement 
+	|ExprStatement 
+//	|LabelledStatement // TODO
+;
+CtrlStatement ::=
+	 IfStatement 
+	|DoWhileStatement 
+	|WhileStatement 
+	|For1Statement 
+	|For2Statement 
+	|For3Statement 
+	|For4Statement 
+	|ContinueStatement 
+	|BreakStatement 
+	|ReturnStatement 
+	|WithStatement 
+	|SwitchStatement 
+	|ThrowStatement 
+	|TryStatement
+;
+
+Block ::= "{" [Statement...] "}";
+
+VariableStatement ::= "var" VariableDeclList [";"];
+VariableDeclList ::= VariableDecl ["," VariableDecl]...;
+	
+
+VariableDeclListNoIn ::= VariableDeclNoIn ["," VariableDeclNoIn]...;
+VariableDecl ::= Identifier [Initialiser];
+VariableDeclNoIn ::= Identifier [InitialiserNoIn];
+Initialiser ::= "=" AssignmentExpr;
+InitialiserNoIn ::= "=" AssignmentExprNoIn;
+EmptyStatement ::= ";" ;
+//ExprStatement ::= !{"{"|"function"}  Expr [";"];
+ExprStatement ::= !"{" Expr [";"];
+
+IfStatement ::= "if" "(" Expr ")" Statement ["else" Statement];
+DoWhileStatement ::= "do" Statement "while" "(" Expr ")" [";"];
+WhileStatement ::= "while" "(" Expr ")" Statement;
+For1Statement ::= "for" "(" ForCond1 ")" Statement;
+For2Statement ::= "for" "(" ForCond2 ")" Statement;
+For3Statement ::= "for" "(" ForCond3 ")" Statement;
+For4Statement ::= "for" "(" ForCond4 ")" Statement;
+
+ForCondition ::= ForCond1 | ForCond2 | ForCond3 | ForCond4;
+ForCond1 ::= ForExprInit ";" ForExprCont ";" ForExprAdd;
+ForCond2 ::= "var" VariableDeclListNoIn ";" ForExprCont ";" ForExprAdd;
+ForCond3 ::= LeftHandSideExpr "in" Expr;
+ForCond4 ::= "var" VariableDeclNoIn "in" Expr;
+ForExprInit ::= [ExprNoIn];
+ForExprCont ::= [Expr];
+ForExprAdd  ::= [Expr];
+
+
+ContinueStatement ::= "continue" [Identifier] [";"];
+BreakStatement    ::= "break"  [Identifier] [";"];
+ReturnStatement   ::= "return"  [Expr] [";"];
+WithStatement     ::= "with" "(" Expr ")" Statement;
+SwitchStatement   ::= "switch" "(" Expr ")" "{" [Case]... [DefaultCase] "}";
+Case ::= "case" Expr ":" Statements;
+DefaultCase ::= "default" ":" Statements;
+Statements ::= [Statement...];
+
+
+LabelledStatement ::= Identifier ":" Statement;
+ThrowStatement ::= "throw" Expr [";"];
+
+TryStatement ::= TryBlock [CatchBlock] [FinallyBlock];
+TryBlock     ::= "try" Block;
+CatchBlock   ::= "catch" "(" Identifier ")" Block;
+FinallyBlock ::= "finally" Block;
+
+
+FunctionExpr ::= "function" [Identifier] FunctionParameter FunctionBody;
+FunctionDecl ::= "function" Identifier FunctionParameter FunctionBody;
+FunctionParameter ::=	"(" [Identifier ["," Identifier]...] ")";
+//FunctionBody ::=	"{" [SourceElement]... "}";
+FunctionBody ::= Block;
+
+SourceElement  ::= FunctionDecl | Statement;
+SourceElements ::= [SourceElement]... ;
+
+//Main ::= ["<!--"] SourceElements ["-->"];
+Main ::= SourceElements;
+
+
