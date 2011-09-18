@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="jar" basedir=".">
+
+	<property name="target.jar" value="${basedir}/exjs-1.0.jar"/>
+	<property name="source" value="${basedir}/src"/>
+	<property name="classes" value="${basedir}/classes"/>
+
+
+	<target name="jar">
+		<jar jarfile="${target.jar}">
+			<fileset dir="${classes}" />
+		</jar>
+	</target>
+
+
+</project>

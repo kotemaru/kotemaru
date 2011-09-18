@@ -1,0 +1,701 @@
+
+
+$PROPERTIES
+xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+ignore-space-token=true
+$END
+
+#---------------------------------------------------------------
+# 仕様：https://developer.mozilla.org/ja/New_in_JavaScript_1.7
+# 制限事項
+# 1. yield は文としてしか使えない。
+# 2. yield を含むブロック内での with の使用。
+# 3. break, continue のラベル指定。
+#---------------------------------------------------------------
+
+$DEFINE(main)
+	if (!StopIteration) {
+		var StopIteration = function(){};
+		StopIteration.prototype = new Error();
+		StopIteration.name = "StopIteration"
+		StopIteration.message = "StopIteration";
+	}
+	$FOR(*)$element()$END
+$END
+
+$DEFINE(element)
+	$IF(.//YieldExpr)
+		$IF(./FunctionDecl//YieldExpr)
+			$FOR(FunctionDecl)$functionDecl()$END;
+		$ELSE
+			$IF(./FunctionExpr//YieldExpr)
+				$FOR(FunctionExpr)$functionExpr()$END;
+			$ELSE
+				$IF(text())
+					$(text())
+				$ELSE
+					$FOR(*)$element()$END
+				$END
+			$END
+		$END
+	$ELSE
+		$(.)
+	$END
+$END
+
+
+$DEFINE(functionDecl)
+	var $(Identifier) = $functionExpr()
+$END
+
+$DEFINE(functionExpr)
+	$IF(.//MemberItem/FunctionExpr//YieldExpr)
+		$ERROR(Error: Unsupport yield for inner function., .//MemberItem/FunctionExpr//YieldExpr)
+	$END
+(function(){
+	var func = function$(FunctionParameter) {
+		var ite = new __iterator__$(FunctionParameter);
+		ite.__originThis = this;
+		return ite;
+	}
+	var __iterator__ = $iteratorFunc();
+	__iterator__.prototype = $iteratorPrototype();
+	return func;
+})()
+$END
+
+$DEFINE(iteratorFunc)
+	function$(FunctionParameter) {
+		// Arguments variable
+		$FOR(FunctionParameter/Identifier)
+			this.$(.) = $(.);
+		$END
+		// Local variable
+		$FOR(.//VariableStatement/VariableDeclList)
+			this.$(VariableDecl/Identifier) = undefined;
+		$END
+		$FOR(.//ForCond2/VariableDeclListNoIn/VariableDeclNoIn)
+			this.$(Identifier) = undefined;
+		$END
+		$FOR(.//ForCond4/VariableDeclNoIn)
+			this.$(Identifier) = undefined;
+		$END
+		$FOR(.//CacheBlock)
+			this.$(Identifier) = undefined;
+		$END
+
+		// System variable
+		this.__pc = this.__step.addr_1;
+		this.__sp = [];
+		this.__each = {};
+		this.__error = null;
+		this.__errorCopy = null;
+		this.__isBreak = false;
+		this.__isContinue = false;
+		this.__isClose = false;
+		this.__isStop = false;
+		this.__isReturn = false;
+	}
+$END
+
+$DEFINE(iteratorPrototype)
+	{
+		next: function() {
+			return this.send();
+		},
+		send: function(val) {
+			if (this.__isStop) throw StopIteration;
+
+			var rv = null;
+			this.__isReturn = false;
+			while (!this.__isReturn) {
+				var func = this.__pc;
+				this.__pc = null;
+				while (func == null || this.__isExitMode()) {
+					if (this.__sp.length == 0) {
+						if (this.__error) throw this.__error;
+						if (this.__isBreak) throw "break out range.";
+						if (this.__isContinue) throw "continue out range.";
+						break;
+					}
+					func = this.__getPoperNextFunc();
+				}
+				if (func != null) {
+					try {
+						rv = func.call(this.__originThis, this, val);
+					} catch (__e) {
+						this.__error = __e;
+					}
+				} else {
+					this.__isStop = true;
+					this.__isReturn = true;
+				}
+			}
+			if (this.__error) {
+				throw this.__error;
+			}
+			return rv;
+		},
+		__isExitMode: function() {
+			return this.__isBreak || this.__isContinue || this.__isClose || this.__error;
+		},
+		__getPoperNextFunc: function() {
+
+			var spItem = this.__sp.pop();
+			while (spItem == null && this.__sp.length>0) {
+				spItem = this.__sp.pop();
+			}
+			if (spItem == null) return null;
+
+			if (this.__error && spItem.hasCatch) {
+				this.__errorCopy = this.__error;
+				this.__error = null;
+				return spItem._catch;
+			}
+			if (this.__isBreak && spItem.isBreak) {
+				this.__isBreak = false;
+				return spItem._break;
+			}
+			if (this.__isContinue && spItem.isContinue) {
+				this.__isContinue = false;
+				return spItem._continue;
+			}
+			if (spItem.hasFinally) return spItem._finally;
+			if (this.__isClose) return null;
+			return spItem.next;
+		},
+		"throw": function(err) {
+			this.__error = err;
+			this.next();
+		},
+		close: function() {
+			this.__isClose = true;
+			if (!this.__isStop) this.next();
+		},
+
+		__step: {
+			$FOR(FunctionBody/Block)$block(pre="addr")$END
+			dummy: null
+		}
+	}
+$END
+
+#-----------------------------------------------------------------
+# Block ::= "{" [Statement...] "}";
+#-----------------------------------------------------------------
+$DEFINE(block(pre="", pos=""))
+	$IF(.//YieldExpr|.//ReturnStatement)
+		$yieldBlock(pre=$pre,pos=$pos)
+	$ELSE
+		$normalBlock(pre=$pre,pos=$pos)
+	$END
+$END
+
+#-------------
+# yield を含むブロック。
+# - 各Statementにばらして出力。
+#-------------
+$DEFINE(yieldBlock(pre="", pos=""))
+	$FOR(Statement)$statement(pre=$pre,pos=position())$END
+$END
+
+#-------------
+# yield を含まないブロック。
+# - JavaScript コードをそのまま出力。
+# - 但し、return,break,continue を拾う細工が必要
+#-------------
+$DEFINE(normalBlock(pre="", pos=""))
+	$($pre)_$($pos): function(__This, __var) {
+		var __isNormally = false;
+		try {
+  $IF(.//BreakStatement | .//ContinueStatement)
+			var __cnt;
+			for (__cnt=0;;__cnt++) {
+				if (__cnt==0) {
+  $END
+					with (__This) {
+						$IF(*/VariableStatement)
+							$(*/*/VariableDeclList);
+						$ELSE
+							$(.)
+						$END
+					}
+					__This.__pc = __This.__step.$($pre)_$($pos+1);
+					__isNormally = true;
+  $IF(.//BreakStatement | .//ContinueStatement)
+				}
+			}
+			if (!__isNormally) {
+				if (__cnt == 0) {
+					__This.__isBreak = true;
+				} else {
+					__This.__isContinue = true;
+				}
+			}
+  $END
+		} finally {
+			__This.__isReturn = !__isNormally;
+		}
+	},
+$END
+
+#-----------------------------------------------------------------
+# Statement ::= Block | ProcStatement | CtrlStatement;
+# CtrlStatement ::=
+# 	 IfStatement 
+# 	|DoWhileStatement 
+# 	|WhileStatement 
+# 	|For1Statement 
+# 	|For2Statement 
+# 	|For3Statement 
+# 	|For4Statement 
+# 	|ContinueStatement 
+# 	|BreakStatement 
+# 	|ReturnStatement 
+# 	|WithStatement 
+# 	|SwitchStatement 
+# 	|ThrowStatement 
+# 	|TryStatement
+# ;
+#-----------------------------------------------------------------
+$DEFINE(statement(pre="", pos=""))
+	$IF(Block)
+		$FOR(Block)$block(pre=$pre,pos=$pos)$END
+	$ELSE $IF(CtrlStatement)
+		$FOR(*/*)
+			$SWITCH(.)
+				$CASE(../IfStatement)$ifStatement(pre=$pre,pos=$pos)$END
+				$CASE(../WhileStatement)$whileStatement(pre=$pre,pos=$pos)$END
+				$CASE(../For1Statement)$for12Statement(pre=$pre,pos=$pos)$END
+				$CASE(../For2Statement)$for12Statement(pre=$pre,pos=$pos)$END
+				$CASE(../For3Statement)$for34Statement(pre=$pre,pos=$pos)$END
+				$CASE(../For4Statement)$for34Statement(pre=$pre,pos=$pos)$END
+				$CASE(../SwitchStatement)$switchStatement(pre=$pre,pos=$pos)$END
+				$CASE(../TryStatement)$tryStatement(pre=$pre,pos=$pos)$END
+				$CASE(../BreakStatement)$breakStatement(pre=$pre,pos=$pos)$END
+				$CASE(../ContinueStatement)$continueStatement(pre=$pre,pos=$pos)$END
+				$CASE(../ReturnStatement)$returnStatement(pre=$pre,pos=$pos)$END
+				$CASE(../ThrowStatement)$throwStatement(pre=$pre,pos=$pos)$END
+				$CASE(../WithStatement)$ERROR(!!! Unsupported "with" statement.)$END
+				$DEFAULT
+					$ERROR(!!! Unsupported statement)
+				$END
+			$END
+		$END
+	$ELSE
+		$IF(.//YieldExpr|.//ReturnStatement)
+			$yieldStatement(pre=$pre,pos=$pos)
+		$ELSE
+			$normalBlock(pre=$pre,pos=$pos)
+		$END
+	$END $END
+$END
+
+
+#---------------------------------------------------------------------
+# IfStatement ::= "if" "(" Expr ")" Statement ["else" Statement];
+#---------------------------------------------------------------------
+$DEFINE(ifStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			if ($(Expr)) {
+				__This.__pc = __This.__step.$($childAddr);
+			} else {
+				__This.__pc = __This.__step.$($thisAddr)e_1;
+			}
+			__This.__sp.push({next: __This.__step.$($nextAddr)});
+		}
+	},
+	$FOR(Statement[1])$statement(pre=$thisAddr,pos=1)$END
+	$FOR(Statement[2])$statement(pre=concat($thisAddr,"e"),pos=1)$END
+$END
+
+#---------------------------------------------------------------------
+# WhileStatement ::= "while" "(" Expr ")" Statement;
+#---------------------------------------------------------------------
+$DEFINE(whileStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"while",
+				isBreak: true,
+				isContinue: true,
+				_break: __This.__step.$($nextAddr),
+				_continue: __This.__step.$($thisAddr)
+			};
+			if ($(Expr)) {
+				__This.__pc = __This.__step.$($childAddr);
+				__spItem.next = __spItem._continue;
+			} else {
+				__spItem.next = __spItem._break;
+			}
+			__This.__sp.push(__spItem);
+		}
+	},
+	$FOR(Statement[1])$statement(pre=$thisAddr)$END
+$END
+
+#---------------------------------------------------------------------
+# DoWhileStatement ::= "do" Statement "while" "(" Expr ")" [";"];
+#---------------------------------------------------------------------
+$DEFINE(doWhileStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"do-while",
+				isBreak: true,
+				isContinue: true,
+				next: __This.__step.$($thisAddr)while,
+				_break: __This.__step.$($nextAddr),
+				_continue: __This.__step.$($childAddr)
+			};
+			__This.__pc = __This.__step.$($childAddr);
+			__This.__sp.push(__spItem);
+		}
+	},
+	$($thisAddr)while: function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"do-while",
+				isBreak: true,
+				isContinue: true,
+				next: __This.__step.$($nextAddr)while,
+				_break: __This.__step.$($nextAddr),
+				_continue: __This.__step.$($childAddr)
+			};
+			if ($(Expr)) {
+				__This.__pc = __spItem._continue;
+			} else {
+				__This.__pc = null;
+			}
+			__This.__sp.push(__spItem);
+		}
+	},
+	$FOR(Statement[1])$statement(pre=$thisAddr)$END
+$END
+
+
+#---------------------------------------------------------------------
+# For1Statement ::= "for" "(" ForCond1 ")" Statement;
+# For2Statement ::= "for" "(" ForCond2 ")" Statement;
+# ForCond1 ::= ForExprInit ";" ForExprCont ";" ForExprAdd;
+# ForCond2 ::= "var" VariableDeclListNoIn ";" ForExpr2 ";" ForExpr3;
+#---------------------------------------------------------------------
+$DEFINE(for12Statement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			$IF(*/ForExprInit/Expr)
+				$(*/ForExprInit);
+			$ELSE
+				$(*/VariableDeclListNoIn);
+			$END
+			__This.__pc = __This.__step.$($thisAddr)cont;
+		}
+	},
+	$($thisAddr)cont: function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"for12",
+				isBreak: true,
+				isContinue: true,
+				_break: __This.__step.$($nextAddr),
+				_continue: __This.__step.$($thisAddr)add
+			};
+			$IF(*/ForExprCont/Expr)
+			if ($(*/ForExprCont)) {
+			$ELSE
+			if (true) {
+			$END
+				__This.__pc = __This.__step.$($childAddr);
+				__spItem.next = __spItem._continue;
+			} else {
+				__spItem.next = __spItem._break;
+			}
+			__This.__sp.push(__spItem);
+		}
+	},
+	$($thisAddr)add: function(__This, __var) {
+		with (__This) {
+			$(*/ForExprAdd);
+			__This.__pc = __This.__step.$($thisAddr)cont;
+		}
+	},
+	$FOR(Statement[1])$statement(pre=$thisAddr)$END
+$END
+
+#---------------------------------------------------------------------
+# For3Statement ::= "for" "(" ForCond3 ")" Statement;
+# For4Statement ::= "for" "(" ForCond4 ")" Statement;
+# ForCond3 ::= LeftHandSideExpr "in" Expr;
+# ForCond4 ::= "var" VariableDeclNoIn "in" Expr;
+#---------------------------------------------------------------------
+$DEFINE(for34Statement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			var __list = [];
+			for (var __v in $(*/Expr)) __list.push(__v);
+			__This.__each.$($thisAddr) = {idx: 0, list: __list};
+			__This.__pc = __This.__step.$($thisAddr)cont;
+		}
+	},
+	$($thisAddr)cont: function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"foreach",
+				isBreak: true,
+				isContinue: true,
+				_break: __This.__step.$($nextAddr),
+				_continue: __This.__step.$($thisAddr)cont
+			};
+			if (__This.__each.$($thisAddr).list.length > __This.__each.$($thisAddr).idx) {
+				$IF(*/LeftHandSideExpr)
+					$(*/LeftHandSideExpr)
+				$ELSE
+					$(*/VariableDeclNoIn) 
+				$END
+						= __This.__each.$($thisAddr).list[__This.__each.$($thisAddr).idx++];
+				__This.__pc = __This.__step.$($childAddr);
+				__spItem.next = __spItem._continue;
+			} else {
+				__This.__pc = __spItem._break;
+			}
+			__This.__sp.push(__spItem);
+		}
+		}
+	},
+	$FOR(Statement[1])$statement(pre=$thisAddr)$END
+$END
+
+#---------------------------------------------------------------------
+# SwitchStatement   ::= "switch" "(" Expr ")" "{" [Case]... [DefaultCase] "}";
+# Case ::= "case" Expr ":" Statements;
+# DefaultCase ::= "default" ":" Statements;
+# Statements ::= [Statement...];
+#---------------------------------------------------------------------
+$DEFINE(switchStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			__This.__sp.push({
+				debug:"switch",
+				isBreak: true,
+				next: __This.__step.$($nextAddr),
+				_break: __This.__step.$($nextAddr)
+			});
+			switch($(Expr)) {
+			$FOR(Case)
+				case $(Expr):
+					__This.__pc = __This.__step.$($thisAddr)case$(position())_1;
+					$IF(position()=last())
+						__This.__sp.push({next:__This.__step.$($thisAddr)default_1});
+					$ELSE
+						__This.__sp.push({next:__This.__step.$($thisAddr)case$(position()+1)_1});
+					$END
+				break;
+			$END
+				default: 
+					__This.__pc = __This.__step.$($thisAddr)default_1;
+					__This.__sp.push({debug:"default"});
+				break;
+			}
+		}
+	},
+	$FOR(Case/Statements)$yieldBlock(pre=concat($thisAddr,"case",position()))$END
+	$FOR(DefaultCase/Statements)$yieldBlock(pre=concat($thisAddr,"default"))$END
+$END
+
+#---------------------------------------------------------------------
+# TryStatement ::= TryBlock [CatchBlock] [FinallyBlock];
+# TryBlock     ::= "try" Block;
+# CatchBlock   ::= "catch" "(" Identifier ")" Block;
+# FinallyBlock ::= "finally" Block;# TryStatement ::=
+#---------------------------------------------------------------------
+$DEFINE(tryStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			var __spItemOuter = {
+				debug:"try-outer",
+				hasFinally: true,
+				next: __This.__step.$($nextAddr),
+				_finally: __This.__step.$($thisAddr)final
+			};
+			var __spItemInner = {
+				debug:"try-inner",
+				hasCatch: true,
+				_catch: __This.__step.$($thisAddr)catch
+			};
+			__This.__pc = __This.__step.$($childAddr);
+			__This.__sp.push(__spItemInner);
+			__This.__sp.push(__spItemOuter);
+		}
+	},
+	$FOR(TryBlock/Block)$block(pre=$thisAddr)$END
+	$FOR(CatchBlock)$catchBlock(pre=$thisAddr)$END
+	$FOR(FinallyBlock)$finalBlock(pre=$thisAddr)$END
+$END
+$DEFINE(catchBlock(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"catch"))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			$(Identifier) = __This.__errorCopy;
+
+			var __spItem = {
+				debug:"catch",
+				isCatch: true
+			};
+			__This.__pc = __This.__step.$($childAddr);
+			__This.__sp.push(__spItem);
+		}
+	},
+	$FOR(Block)$block(pre=$thisAddr,pos=position())$END
+$END
+$DEFINE(finalBlock(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"final"))
+	$VAR(childAddr=concat($thisAddr,"_1"))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			var __spItem = {
+				debug:"final",
+				isFinally: true
+			};
+			__This.__pc = __This.__step.$($childAddr);
+			__This.__sp.push(__spItem);
+		}
+	},
+	$FOR(Block)$block(pre=$thisAddr,pos=position())$END
+$END
+
+#---------------------------------------------------------------------
+# BreakStatement    ::= "break"  [Identifier] [";"];
+#---------------------------------------------------------------------
+$DEFINE(breakStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+
+	$($thisAddr): function(__This, __var) {
+		$IF(Identifier)
+			$ERROR(!!! Unsupported break label)
+		$END
+		__This.__isBreak = true;
+	},
+$END
+
+#---------------------------------------------------------------------
+# ContinueStatement ::= "continue" [Identifier] [";"];
+#---------------------------------------------------------------------
+$DEFINE(continueStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+
+	$($thisAddr): function(__This, __var) {
+		$IF(Identifier)
+			$ERROR(!!! Unsupported continue label)
+		$END
+		__This.__isContinue = true;
+	},
+$END
+
+
+
+
+#---------------------------------------------------------------------
+# ReturnStatement   ::= "return"  [Expr] [";"];
+#---------------------------------------------------------------------
+$DEFINE(returnStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			__This.__isClose = true;
+			__This.__isReturn = true;
+			return $(Expr);
+		}
+	},
+$END
+
+
+#---------------------------------------------------------------------
+# ThrowStatement ::= "throw" Expr [";"];
+#---------------------------------------------------------------------
+$DEFINE(throwStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$($thisAddr): function(__This, __var) {
+		throw $(Expr);
+	},
+$END
+
+#---------------------------------------------------------------------
+# yieldを含むStatement。
+# YieldExpr ::= "yield" [Expr];
+# VariableStatement ::= "var" VariableDeclList [";"];
+# VariableDeclList ::= VariableDecl ["," VariableDecl]...;
+# VariableDecl ::= Identifier [Initialiser];
+# Initialiser ::= "=" AssignmentExpr;
+#
+#---------------------------------------------------------------------
+$DEFINE(yieldStatement(pre="",pos=""))
+	$VAR(thisAddr=concat($pre,"_",$pos))
+	$VAR(nextAddr=concat($pre,"_",$pos+1))
+	$VAR(yieldAddr=concat($pre,"y_",$pos))
+
+	$($thisAddr): function(__This, __var) {
+		with (__This) {
+			__This.__pc = __This.__step.$($yieldAddr);
+			__This.__isReturn = true;
+			return $(.//YieldExpr/Expr);
+		}
+	},
+	// -- YIELD --
+	$($yieldAddr): function(__This, __var) {
+		with (__This) {
+			$IF(*/VariableStatement)
+				$FOR(*/*/VariableDeclList)$yieldExpr()$END;
+			$ELSE
+				$yieldExpr();
+			$END
+		}
+		__This.__pc = __This.__step.$($nextAddr);
+	},
+$END
+
+$DEFINE(yieldExpr)
+	$IF(YieldExpr)
+		__var
+	$ELSE
+		$IF(.//YieldExpr)
+			$FOR(./*|text())$yieldExpr()$END
+		$ELSE
+			$(.)
+		$END
+	$END
+$END
+
+#-- EOF --
+
