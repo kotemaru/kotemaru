@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="test" basedir=".">
+
+	<property name="target.jar" value="${basedir}/yuicompress-ant-task.jar"/>
+	<property name="source" value="${basedir}/src"/>
+	<property name="classes" value="${basedir}/classes"/>
+	<property name="tests" value="${basedir}/tests"/>
+
+	<taskdef name="yuicompress"
+		classname="org.kotemaru.yui.YuiCompressTask"
+		classpath="${target.jar};lib/yuicompressor-2.4.6.jar" />
+
+	<target name="test">
+		<concat destfile="${tests}/allfile.js">
+			<fileset dir="${tests}/js" ></fileset>
+		</concat>
+			
+		<yuicompress
+			file="tests/allfile-min.js"
+			verbose="true"
+			type="js"
+			charset="utf-8"
+			column="40"
+	
+			munge="true"
+			semi="false"
+			optimize="true"
+		>
+			<fileset file="${tests}/allfile.js" />
+		</yuicompress>
+		
+		<gzip src="${tests}/allfile-min.js" zipfile="${tests}/allfile-min.js.gz"/>
+	</target>
+
+
+</project>
