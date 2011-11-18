@@ -1,0 +1,204 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp test page</title> 
+	<link rel="stylesheet" href="jq/jqm/jquery.mobile-1.0.css" />
+	<script src="jq/jquery-1.6.4.js"></script>
+	<script src="js/jquery.jqmdp-1.0b.js"></script>
+	<script src="jq/jqm/jquery.mobile-1.0.js"></script>
+
+</head>
+
+<body >
+	<div data-role="page" id="main" data-theme="e" dp-scope="({a:100})">
+		<div data-role="header" >
+			<h3>jqmdp</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>JQM Dynamic Page plugin</h3>
+			<a data-role="button" href="#test1">Replace test</a>
+			<a data-role="button" href="#test2">Nested scope test</a>
+			<a data-role="button" href="#test3">Dynamic list test</a>
+			<a data-role="button" href="#test4">Control sentence test</a>
+			<a data-role="button" href="#test5">Parts(Template) test</a>
+		</div>
+	</div>
+	
+
+	<div data-role="page" id="test1" data-theme="e" dp-scope="(test1_data[0])">
+		<div data-role="header" >
+			<h3>test1</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>Replace test</h3>
+			<div>
+				<div>dp-text:<span dp-text="(a)"></span></div>
+				<div>dp-html:<span dp-html="(b)"></span></div>
+				<div>dp-src:<img dp-src="(c)"></span></div>
+				<div>dp-href:<a dp-href="(d)" dp-text="(d)" ></a></div>
+				<div>dp-value:<input dp-value="(e)" /></div>
+				<div>dp-show:<span dp-show="(f)" />SHOW/HIDE</div>
+				<br/>
+				<a data-role="button" href="#" onclick="test1_1(this)">change</a>
+				<script>
+					var test1_data = [{
+						next: 1,
+						a : "<text>",
+						b : "<font color=red>red</font>",
+						c : "images/face-0.png",
+						d : "http://google.com",
+						e : "te<>xt",
+						f : true
+					},{
+						next: 0,
+						a : "xxxxxxxxx",
+						b : "<font color=blue>blue</font>",
+						c : "images/face-4.png",
+						d : "http://yahoo.com",
+						e : "xxxxxxxxx",
+						f : false
+					}];
+					function test1_1(elem) {
+						var next = $(elem).jqmdp("scope").next;
+						$(elem).jqmdp("scope",test1_data[next]).jqmdp("refresh");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+		
+	<div data-role="page" id="test2" data-theme="e" 
+		dp-scope="({a:'page-scope'})">
+		<div data-role="header" >
+			<h3>test2</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>Nested scope test</h3>
+			<div>pege-before:a=<span dp-text="(a)"></span></div>
+			<div dp-scope="({a:'nest1-scope'})">
+				<div>_nest1-before:a=<span dp-text="(a)"></span></div>
+				<div dp-scope="({a:'nest2-scope'})">
+					<div>__nest2-before:a=<span dp-text="(a)"></span></div>
+					<div dp-scope="({a:'nest3-scope'})">
+						<div>___nest3:a=<span dp-text="(a)"></span></div>
+					</div>
+					<div>__nest2-after:a=<span dp-text="(a)"></span></div>
+				</div>
+				<div>_next1-after:a=<span dp-text="(a)"></span></div>
+			</div>
+			<div>pege-after:a=<span dp-text="(a)"></span></div>
+		</div>
+	</div>
+	
+	
+	<div data-role="page" id="test3" data-theme="e" 
+		dp-scope="({a:'page-scope'})">
+		<div data-role="header" >
+			<h3>test3</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>Dynamic list test</h3>
+			<div dp-scope="({list:{a:'init-data',b:2,c:9,d:3},key:0})">
+				<div>Properties list：</div>
+				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, location)">location</a>
+				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, document.body)">document.body</a>
+				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, $.mobile)">$.mobile</a>
+				<br/><hr/><br/>
+				
+				<ul data-role="listview" dp-for="(key in list)" >
+					<li><span dp-text="(key)"></span>=<span dp-text="(list[key])"></span></li>
+				</ul>
+				<script>
+					function changeList(elem, data) {
+						$(elem).jqmdp("scope",{list:data,key:0}).jqmdp("refresh");
+					}
+				</script>
+			</div>
+		</div>
+	</div>
+	
+	<div data-role="page" id="test4" data-theme="e" >
+		<div data-role="header" >
+			<h3>test4</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>Control sentence test</h3>
+			
+			<table border=1 cellspacing=0
+					dp-scope="({a:[[1,5,9],[8,3,4],[2,3,3]],j:0,i:0})" >
+				<tbody dp-for="(i=0; i<a.length; i++)">
+					<tr dp-for="(j=0; j<a[i].length; j++)">
+						<td>
+							<span dp-text="(i+','+j)"></span>=
+							<span dp-if="(a[i][j]<6)"><span dp-text="(a[i][j])"></span></span>
+							<span dp-if="(a[i][j]>=6)"><span>BIG</span></span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	
+	<div data-role="page" id="test5" data-theme="e" >
+		<div data-role="header" >
+			<h3>test5</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<h3>Parts(Template) test</h3>
+			
+			<div dp-scope="(new Parts($this))"></div>
+			<br/><br/><hr/><br/><br/>
+			<div dp-scope="(new Parts($this))"></div>
+			<br/><br/><hr/><br/><br/>
+			<div dp-scope="(new Parts($this))"></div>
+		</div>
+	</div>
+	<script>
+		function Parts($this) {
+			this.elem = $this[0];
+			this.list = {a:1, b:2};
+			this.key = null; // dummy.
+			this.count = 0;
+			
+			$this.jqmdp("template",$("#PartsTemplate"));
+		}
+		Parts.prototype = {
+			getCount: function() {
+				return "count is "+this.count;
+			},
+			add: function() {
+				this.count++;
+				return this;
+			},
+			refresh: function() {
+				$(this.elem).jqmdp("refresh");
+				return this;
+			}
+		}
+	</script>
+
+	<div data-role="none" id="PartsTemplate" comment="This is template.">
+		<div dp-text="(getCount())"></div>
+		<a data-role="button" href="#" onclick="$(this).jqmdp('scope').add().refresh()">count</a>
+		<br/><br/>
+		<ul data-role="listview" dp-for="(key in list)" >
+			<li><span dp-text="(key)"></span>=<span dp-text="(list[key])"></span></li>
+		</ul>
+	</div>
+
+</body>
+<script>
+	//Jqmdp.init(document.body);
+</script>
+</html>
