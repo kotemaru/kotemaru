@@ -1,0 +1,399 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp document</title> 
+	<link rel="stylesheet" href="jq/jqm/jquery.mobile-1.0.css" />
+	<script src="jq/jquery-1.6.4.js"></script>
+	<script src="js/jquery.jqmdp-1.0b.js"></script>
+	<script src="jq/jqm/jquery.mobile-1.0.js"></script>
+	<style>
+		blockquote {
+			font-size: 80%;
+			border: 1px solid black;
+			padding: 8px;
+			margin-left: 2em;
+			margin-right: 2em;
+		}
+		xmp,pre {
+			font-size: 80%;
+			border: 1px solid black;
+			padding: 8px;
+			margin-left: 2em;
+			margin-right: 2em;
+		}
+		table {
+			margin-top: 1em;
+		}
+		.Template {
+			display:none;
+		}
+		
+	</style>
+
+</head>
+
+<body >
+	<div data-role="page" id="main" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+<h2>jqmdpとは</h2>
+<p>jqmdpは jQuery Mobile Dynamic Page plugin の略である。</p>
+<p>
+	jqmdpは jQuery Mobile のページを動的に変化させる為のプラグインであり
+	「dp-」ではじまる幾つかの拡張属性を使用する事により簡便に可変なページを定義する事ができる。
+</p>
+
+もっとも簡単な例を示す。
+
+<pre>&lt;div>Date: &lt;span <font color="green">dp-text="(new Date())"</font>>&lt;/span>&lt;/div></pre>
+
+このコードは以下のように表示される。
+<blockquote>
+<div>Date: <span dp-text="(new Date())"></span></div>
+</blockquote>
+
+<hr/>
+目次<br/>
+<a href="#attrs1">置換属性</a><br/>
+<a href="#attrs2">制御構文属性</a><br/>
+<a href="#handler">イベントハンドラ</a><br/>
+<a href="#api">API</a><br/>
+<a href="#topics">Topics</a><br/>
+<hr/>
+Write by kotemaru@kotemaru.org 2011
+
+		</div>
+	</div>
+
+	<!-- ===================================================================================== -->
+	<div data-role="page" id="attrs1" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+
+<h3>置換属性</h3>
+
+要素の属性値や子要素を動的に設定できる属性である。
+
+<table border=1 cellspacing=0>
+<tr><th>属性名</th><th>説明</th></tr>
+<tr><td>dp-text</td><td>属性値を評価した結果の文字列を子要素に設定する。「&lt;」や「&amp;」はエスケープされる。</td></tr>
+<tr><td>dp-html</td><td>属性値を評価した結果の文字列をhtmlとして子要素に設定される。</td></tr>
+<tr><td>dp-src</td><td>属性値を評価した結果の文字列を src 属性に設定される。&lt;img>タグ用。</td></tr>
+<tr><td>dp-href</td><td>属性値を評価した結果の文字列を href 属性に設定される。&lt;a>タグ用。</td></tr>
+<tr><td>dp-value</td><td>属性値を評価した結果の文字列を&lt;input>要素の値に設定される。</td></tr>
+<tr><td>dp-show</td><td>属性値を評価した結果の真偽値から表示／非表示を設定される。</td></tr>
+<tr><td><nobr>dp-template</nobr></td><td>属性値をjQueryのセレクタとする要素の子要素が複製される。</td></tr>
+</table>
+
+<ul>
+<li>属性値の評価はeval()関数によって行われる。
+<li>したがって式を記述する場合は括弧で括らなければならない。
+<li>eval()関数の実行時のスコープは後述の dp-scope によって決定される。
+<li>但し、グローバルスコープは常に参照可能である。
+<li>属性値はJavaScriptの式であれば変数名、関数呼出し等任意の記述が可能である。
+</ul>
+
+使用例：
+<xmp><div>dp-text:<span dp-text="('text')"></span></div>
+<div>dp-html:<span dp-html="('<font color=red>red</font>')"></span></div>
+<div>dp-src:<img dp-src="('images/face-4.png')" /></div>
+<div>dp-href:<a dp-href="('http://google.com')" dp-text="('http://google.com')" ></a></div>
+<div>dp-value:<input dp-value="('text value')" /></div>
+<div>dp-show:<span dp-show="(true)" >SHOW/HIDE</span></div>
+<div>dp-show:<span dp-show="(false)" >SHOW/HIDE</span></div>
+<div>dp-template:<span dp-template="#sampleTemplate" /></div>
+
+<div id="sampleTemplate" style="display:none;">
+<a data-role="button" data-inline="true" href="#" >A</a>
+<a data-role="button" data-inline="true" href="#" >B</a>
+<a data-role="button" data-inline="true" href="#" >C</a>
+</div>
+</xmp>
+
+結果：
+<blockquote>
+<div>dp-text:<span dp-text="('text')"></span></div>
+<div>dp-html:<span dp-html="('<font color=red>red</font>')"></span></div>
+<div>dp-src:<img dp-src="('images/face-4.png')" /></div>
+<div>dp-href:<a dp-href="('http://google.com')" dp-text="('http://google.com')" ></a></div>
+<div>dp-value:<input dp-value="('text value')" /></div>
+<div>dp-show:<span dp-show="(true)" >SHOW/HIDE</span></div>
+<div>dp-show:<span dp-show="(false)" >SHOW/HIDE</span></div>
+<div>dp-template:<span dp-template="#sampleTemplate" /></div>
+
+<div id="sampleTemplate" style="display:none;">
+<a data-role="button" data-inline="true" href="#" >A</a>
+<a data-role="button" data-inline="true" href="#" >B</a>
+<a data-role="button" data-inline="true" href="#" >C</a>
+</div>
+
+</blockquote>
+				</div>
+	</div>
+
+	<!-- ===================================================================================== -->
+	<div data-role="page" id="attrs2" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+
+<h3>制御構文属性</h3>
+
+条件やループを実現する為の属性である。
+
+<table border=1 cellspacing=0>
+<tr><th>属性名</th><th>説明</th></tr>
+<tr><td>dp-if</td><td>属性値を評価した結果の真偽値がtrueであれば子要素が有効になる。</td></tr>
+<tr><td><nobr>dp-if-self</nobr></td><td>属性値を評価した結果の真偽値がtrueであれば要素が有効になる。</td></tr>
+<tr><td>dp-for</td><td>属性値はfor文の条件の形式である。子要素はループの回数分複製される。</td></tr>
+<tr><td>dp-scope</td><td>属性値を評価する為のスコープが定義される。</td></tr>
+</table>
+
+<ul>
+<li>制御構文はネストすることができる。
+<li>但し、dp-if,dp-if-self,dp-for の内側に dp-scope を使用する事はできない。
+</ul>
+
+<h4>dp-ifの詳細</h4>
+<ul>
+<li>dp-show と似ているが dp-if は結果がfalseの場合、子要素のノード自体が無くなる。
+<li>特定の条件下で実行されると例外となる場合や高負荷な子要素を持つ場合に有効である。
+<li>それ以外は dp-show を使用する事をお勧めする。
+</ul>
+
+<h4>dp-if-selfの詳細</h4>
+<ul>
+<li>dp-if-self は結果がfalseの場合、自要素のノード自体が無くなる。
+<li>したがって dp-if,dp-for の子要素以外に現れると一度しか評価されない。
+<li>それ以外は db-if と同じである。
+</ul>
+<h4>dp-forの詳細</h4>
+<ul>
+<li>dp-for の属性値は JavaScript の for文の条件である。
+<li>文字列 "for" と合成してから eval()関数により評価される。
+</ul><ul>
+<li>条件のなかで使用する変数は所属するスコープに存在しなければならない。
+<li>そうでない場合、グローバルスコープを参照してしまうためバグの原因となるだろう。
+</ul><ul>
+<li>ループによって複製される子要素は初期状態の要素である。
+<li>dp-for属性を持つ要素の子要素は評価によって破壊されるが
+初期状態は保存されているので繰り返し評価することができる。
+</ul>
+
+<h4>dp-scopeの詳細</h4>
+<ul>
+<li>dp-scope は特別な属性である。
+<li>dp-scope属性はページが初期化される時に一度だけ評価される。
+<li>評価結果はその要素に関連付けられ保存される。
+<li>この評価におけるスコープには $this へ要素のjQuery Objectが設定されているだけである。
+</ul><ul>
+<li>dp-scope属性を持つ要素の内側の各「dp-」属性はこの評価結果値をスコープとする。
+<li>dp-scope属性はネストする事ができる。
+</ul>
+
+
+使用例：
+<xmp><div dp-scope="({list:window.location, key:0})">
+	<ul dp-for="(key in list)" data-role="listview"  >
+		<li dp-if-self="(key=='hostname' || key=='port')">
+			<span dp-text="(key)"></span> = <span dp-text="(list[key])"></span>
+		</li>
+	</ul>
+</div></xmp>
+
+結果：
+<blockquote style="padding:16px;">
+<div dp-scope="({list:window.location, key:0})">
+	<ul dp-for="(key in list)" data-role="listview"  >
+		<li dp-if-self="(key=='hostname' || key=='port')">
+			<span dp-text="(key)"></span> = <span dp-text="(list[key])"></span>
+		</li>
+	</ul>
+</div>
+</blockquote>
+			</div>
+	</div>
+
+	<!-- ===================================================================================== -->
+	<div data-role="page" id="handler" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+
+<h2>イベントハンドラ</h2>
+
+dp-scope属性の評価値は幾つかのプロパティ名を予約する。
+それはイベントハンドラとして使用する。
+
+<table border=1 cellspacing=0>
+<tr><th><nobr>プロパティ名</nobr></th><th>イベント</th></tr>
+<tr><td>onPageInit</td><td>ページの初期化</td></tr>
+<tr><td>onBeforeShow</td><td>ページ表示前</td></tr>
+<tr><td>onShow</td><td>ページ表示</td></tr>
+<tr><td>onHide</td><td>ページ非表示</td></tr>
+</table>
+
+<ul>
+<li>いずれも関数であり引数は (event,$this) となる。
+<li>$thisはdp-scope属性を持つ要素のjQuery Objectである。
+</ul>
+			</div>
+	</div>
+
+	<!-- ===================================================================================== -->
+	<div data-role="page" id="handler" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+
+<h2>API</h2>
+
+<h4>$.jqmdp.refresh($this) or $(this).jqmdp('refresh')</h4>
+<ul>
+<li>$this要素が再評価される。
+<li>但し、$this要素が所属するスコープ全体が再評価される。
+<li>$thisを帰す。
+</ul>
+
+<h4>$.jqmdp.scope($this) or $(this).jqmdp('scope')</h4>
+<ul>
+<li>$this要素の所属する dp-scope属性の評価値を帰す。
+<li>見付からない場合 null を帰す。
+</ul>
+
+<h4>$.jqmdp.scope($this, val) or $(this).jqmdp('scope', val)</h4>
+<ul>
+<li>$this要素の所属する dp-scope属性の評価値を設定する。
+<li>$thisを帰す。
+</ul>
+
+
+<h4>$.jqmdp.getScopeNode($this) or $().jqmdp('getScopeNode')</h4>
+<ul>
+<li>$this要素の所属する dp-scope属性を持つ要素を帰す。
+<li>見付からない場合 null を帰す。
+</ul>
+
+<h4>$.jqmdp.template($this, $src) or $(this).jqmdp('template')</h4>
+<ul>
+<li>$src の子要素を $this の子要素に複製する。dp-template属性と同じ。
+<li>$thisを帰す。
+</ul>
+
+<h4>$.jqmdp.init($this) or $(this).jqmdp('init')</h4>
+<ul>
+<li>$this要素の子孫を初期化する。
+<li>jQuery mobaile はページが表示されるまで初期化を行わないため
+その前にdp-scope属性の値が必要な場合にこの関数を呼ぶ。
+<li>$thisを帰す。
+</ul>
+
+<h4>$.jqmdp.debug(b)</h4>
+<ul>
+<li>デバッグモード設定。コンソールに幾つかのメッセージが出るようになる。
+</ul>
+			</div>
+	</div>
+
+
+	<!-- ===================================================================================== -->
+	<div data-role="page" id="topics" data-theme="e">
+		<div data-role="header" >
+			<h3>jqmdp仕様</h3>
+			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+
+<h2>Topics</h2>
+<h3>部品化</h3>
+
+dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を作ることができる。
+
+例：
+
+<xmp><div dp-scope="(new Parts($this))"></div>
+</xmp>
+
+部品定義：
+<xmp><!-- ページの外に配置 -->
+<script>
+	function Parts($this) {
+		this.elem = $this.get(0);
+		this.count = 0;
+		$this.jqmdp("template",$("#PartsTemplate"));
+	}
+	Parts.prototype = {
+		add: function(delta) {
+			this.count += delta;
+			$(this.elem).jqmdp("refresh");
+			return this;
+		},
+		getCount: function() {
+			var s = ("00000"+this.count);
+			return s.substr(s.length-5);
+		},
+	}
+</script>
+
+<div data-role="none" id="PartsTemplate" class="Template" comment="This is template.">
+	<span style="font-size:48px;" dp-text="(getCount())"></span>
+	<a data-role="button" href="#" data-icon="plus" data-iconpos="notext" data-inline="true" 
+		onclick="$(this).jqmdp('scope').add(1)"></a>
+	<a data-role="button" href="#" data-icon="minus" data-iconpos="notext" data-inline="true" 
+		onclick="$(this).jqmdp('scope').add(-1)"></a>
+</div>
+
+</xmp>
+
+実行結果：
+<blockquote style="padding:16px;">
+	<div dp-scope="(new Parts($this))"></div>
+</blockquote>
+		</div>
+	</div>
+	
+	<script>
+		function Parts($this) {
+			this.elem = $this.get(0);
+			this.count = 0;
+			$this.jqmdp("template",$("#PartsTemplate"));
+		}
+		Parts.prototype = {
+			add: function(delta) {
+				this.count += delta;
+				$(this.elem).jqmdp("refresh");
+				return this;
+			},
+			getCount: function() {
+				var s = ("00000"+this.count);
+				return s.substr(s.length-5);
+			},
+		}
+	</script>
+	<div data-role="none" id="PartsTemplate" class="Template" comment="This is template.">
+		<span style="font-size:48px;" dp-text="(getCount())"></span>
+		<a data-role="button" href="#" data-icon="plus" data-iconpos="notext" data-inline="true" 
+			onclick="$(this).jqmdp('scope').add(1)"></a>
+		<a data-role="button" href="#" data-icon="minus" data-iconpos="notext" data-inline="true" 
+			onclick="$(this).jqmdp('scope').add(-1)"></a>
+	</div>
+	
+
+</body>
+</html>
