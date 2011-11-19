@@ -19,7 +19,9 @@
 	var HTML  = PRE+"html";
 	var TEXT  = PRE+"text";
 	var VALUE = PRE+"value";
+	var TEMPLATE = PRE+"template";
 	var IF    = PRE+"if";
+	var IFSELF= PRE+"if-self";
 	var FOR   = PRE+"for";
 
 	var XP_SCOPE = "*["+SCOPE+"]";
@@ -29,7 +31,9 @@
 	var XP_HTML  = "*["+HTML+"]";
 	var XP_TEXT  = "*["+TEXT+"]";
 	var XP_VALUE = "*["+VALUE+"]";
+	var XP_TEMPLATE = "*["+TEMPLATE+"]";
 	var XP_IF    = "*["+IF+"]";
+	var XP_IFSELF= "*["+IFSELF+"]";
 	var XP_FOR   = "*["+FOR+"]";
 
 
@@ -75,10 +79,9 @@
 	function doScopes(ev, $elem, hander, afterHander) {
 		try {
 			hander(ev, $elem);
-			var $locals = $elem.find(XP_SCOPE);
-			for (var i = 0; i < $locals.length; i++) {
-				hander(ev, $($locals[i]));
-			}
+			$elem.find(XP_SCOPE).each(function(){
+				hander(ev, $(this));
+			});
 			if (afterHander) afterHander($elem, ev);
 		} catch(e) {
 			// Because JQM stops when I throw an exception.
@@ -95,15 +98,17 @@
 	 * @param $elem Page or other jQuery object.
 	 */
 	function onPageInit(ev, $elem) {
-		var scope = $elem[0].jqmdp_scope;
+		var scope = $elem.get(0).jqmdp_scope;
 		if (scope != null) return;
 		
 		var scopeSrc = $elem.attr(SCOPE);
 		if (scopeSrc != null) {
 			scope = localEval(scopeSrc, {$this:$elem});
+		} else {
+			scope = {};
 		}
 		if (scope != null) {
-			$elem[0].jqmdp_scope = scope;
+			$elem.get(0).jqmdp_scope = scope;
 			if (scope.onPageInit) {
 				scope.onPageInit(ev,$elem);
 			}
@@ -117,7 +122,7 @@
 	 * @param mname Hander function name.
 	 */
 	function onOther(ev, $elem, mname) {
-		var scope = $elem[0].jqmdp_scope;
+		var scope = $elem.get(0).jqmdp_scope;
 		if (scope && scope[mname]) {
 			scope[mname](ev,$elem);
 		}
@@ -148,7 +153,7 @@
 		}
 
 		// Processing DynamicPage attributs.
-		process($page, $page[0].jqmdp_scope);
+		process($page, $page.get(0).jqmdp_scope);
 		for (var i = 0; i < scopes.length; i++) {
 			try {
 				process($(backups[i]), scopes[i]);
@@ -214,9 +219,14 @@
 			var $e = $(this);
 			$e.html(localEval($e.attr(HTML), scope));
 		});
+		$elem.find(XP_TEMPLATE).each(function(){
+			var $e = $(this);
+			$.jqmdp.template($e, $($e.attr(TEMPLATE)));
+		});
 
 		// Control sentence structure processing.
 		processCond($elem, XP_IF, "if", IF, scope);
+		processCond($elem, XP_IFSELF, "if", IFSELF, scope);
 		processCond($elem, XP_FOR, "for", FOR, scope);
 		
 		return $elem;
@@ -236,23 +246,24 @@
 	 * @param scope     scope instance.
 	 */
 	function processCond($parent, xpath, cmd, attr, scope) {
-		var $items = $parent.find(xpath);
-		for (var i = 0; i < $items.length; i++) {
-			var $elem = $($items[i]);
-			var $body = $items[i].jqmdp_body;
-			if (isDebug) console.log("for-body="+$body.html());
+		$parent.find(xpath).each(function(){
+			var $elem = $(this);
+			var $body = this.jqmdp_body;
+			if (isDebug) console.log(cmd+"-body="+$body.html());
 
 			$elem.html("");
 			var script = cmd+$elem.attr(attr)+"{"
 				+"processClone($elem, $body, scope);"
 				+"}"
 			;
+			if (attr == IFSELF) {
+				script += "else {$elem.remove();}";
+			}
 			if (isDebug) console.log("cond-Eval:"+script);
 			with (scope) {
 				eval(script);
 			}
-		};
-	
+		});
 	}
 
 	/**
@@ -266,7 +277,7 @@
 	function processClone($elem, $body, scope) {
 		var $clone = $body.clone();
 		process($clone, scope);
-		$elem.append($clone.children());
+		$elem.append($clone.contents());
 	}
 
 
@@ -294,6 +305,7 @@
 	function preProcess($elem){
 		preProcess0($elem, XP_FOR);
 		preProcess0($elem, XP_IF);
+		preProcess0($elem, XP_IFSELF);
 		return $elem;
 	}
 	
@@ -306,13 +318,12 @@
 	 * @param xpath   XPath to search an attribute.
 	 */
 	function preProcess0($elem, xpath) {
-		var $items = $elem.find(xpath);
-		for (var i = 0; i < $items.length; i++) {
-			if ($items[i].jqmdp_body == null) {
-				var $body = $($items[i]).clone();
-				$items[i].jqmdp_body = $body;
+		$elem.find(xpath).each(function(){
+			if (this.jqmdp_body == null) {
+				var $body = $(this).clone();
+				this.jqmdp_body = $body;
 			}
-		}
+		})
 		$elem.find(xpath).html("");
 	}
 	
@@ -344,10 +355,10 @@
 		var $scopeNode = getScopeNode($this);
 		if ($scopeNode == null) return null;
 		if (val) {
-			$scopeNode[0].jqmdp_scope = val;
+			$scopeNode.get(0).jqmdp_scope = val;
 			return $this;
 		} else {
-			return $scopeNode[0].jqmdp_scope;
+			return $scopeNode.get(0).jqmdp_scope;
 		}
 	}
 
@@ -358,8 +369,8 @@
 	 * @param $src   Template jQuery object.
 	 */
 	$.jqmdp.template = function($this, $src) {
-		$.mobile.loadPage("#"+$src[0].id);
-		$this.append($src.clone().children());
+		$.mobile.loadPage("#"+$src.get(0).id);
+		$this.append($src.clone().contents());
 		return $this;
 	}
 	/**
