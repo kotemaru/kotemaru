@@ -39,8 +39,8 @@
 <body >
 	<div data-role="page" id="main" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
-			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
+			<h3>jqmdp-1.0b</h3>
+			<a href="index.html" data-ajax="false" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
 <h2>jqmdpとは</h2>
@@ -75,7 +75,7 @@ Write by kotemaru@kotemaru.org 2011
 	<!-- ===================================================================================== -->
 	<div data-role="page" id="attrs1" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
+			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
@@ -144,7 +144,7 @@ Write by kotemaru@kotemaru.org 2011
 	<!-- ===================================================================================== -->
 	<div data-role="page" id="attrs2" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
+			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
@@ -229,7 +229,7 @@ Write by kotemaru@kotemaru.org 2011
 	<!-- ===================================================================================== -->
 	<div data-role="page" id="handler" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
+			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
@@ -257,7 +257,7 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 	<!-- ===================================================================================== -->
 	<div data-role="page" id="handler" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
+			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
@@ -315,7 +315,7 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 	<!-- ===================================================================================== -->
 	<div data-role="page" id="topics" data-theme="e">
 		<div data-role="header" >
-			<h3>jqmdp仕様</h3>
+			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
@@ -325,7 +325,8 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 
 dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を作ることができる。
 
-例：
+
+<div>使用例：</div>
 
 <xmp><div dp-scope="(new Parts($this))"></div>
 </xmp>
@@ -351,7 +352,7 @@ dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を
 	}
 </script>
 
-<div data-role="none" id="PartsTemplate" class="Template" comment="This is template.">
+<div data-role="none" id="PartsTemplate"  comment="This is template.">
 	<span style="font-size:48px;" dp-text="(getCount())"></span>
 	<a data-role="button" href="#" data-icon="plus" data-iconpos="notext" data-inline="true" 
 		onclick="$(this).jqmdp('scope').add(1)"></a>
@@ -386,7 +387,7 @@ dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を
 			},
 		}
 	</script>
-	<div data-role="none" id="PartsTemplate" class="Template" comment="This is template.">
+	<div data-role="none" id="PartsTemplate" comment="This is template.">
 		<span style="font-size:48px;" dp-text="(getCount())"></span>
 		<a data-role="button" href="#" data-icon="plus" data-iconpos="notext" data-inline="true" 
 			onclick="$(this).jqmdp('scope').add(1)"></a>

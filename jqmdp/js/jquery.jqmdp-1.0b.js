@@ -99,13 +99,11 @@
 	 */
 	function onPageInit(ev, $elem) {
 		var scope = $elem.get(0).jqmdp_scope;
-		if (scope != null) return;
+		if (scope !== undefined) return;
 		
 		var scopeSrc = $elem.attr(SCOPE);
 		if (scopeSrc != null) {
 			scope = localEval(scopeSrc, {$this:$elem});
-		} else {
-			scope = {};
 		}
 		if (scope != null) {
 			$elem.get(0).jqmdp_scope = scope;
@@ -134,7 +132,7 @@
 
 	/**
 	 * Dynamic page attributes processes all scopes of the descendant of the page.
-	 * I take off the scope of the descendant from DOM tree temporarily. 
+	 * The range of the descendant is removed from the DOM tree temporarily.
 	 * After having handled it independently, each scope is put back.
 	 * TODO: This implementation is not stylish.
 	 * @param $page Page jQuery object.
@@ -185,9 +183,9 @@
 	 */
 	function process($elem, scope) {
 		// If there is not a scope, I do nothing. An irregular case.
-		if (scope == null) {
-			console.warn(SCOPE+" is null.");
-			return $elem;
+		if (scope === undefined) {
+			console.warn(SCOPE+" is undefined.");
+			//return $elem;
 		}
 		
 		// Predisposal to handle health of "if" and "for".
@@ -290,10 +288,16 @@
 	 */
 	function localEval(script, scope){
 		if (isDebug) console.log("localEval:"+script);
-		with (scope) {
+		if (scope == null) {
 			var res = eval(script);
-			if (isDebug) console.log("localEval="+res);
+			if (isDebug) console.log("localEval=" + res);
 			return res;
+		} else {
+			with (scope) {
+				var res = eval(script);
+				if (isDebug) console.log("localEval=" + res);
+				return res;
+			}
 		}
 	}
 	
@@ -334,7 +338,7 @@
 	 */
 	function getScopeNode(elem) {
 		var $this = elem.length ? elem : $(elem);
-		while ($this != null) {
+		while ($this != null && $this.get(0) != window) {
 			if ($this.attr(SCOPE)) return $this;
 			$this = $this.parent();
 		}
@@ -358,6 +362,9 @@
 			$scopeNode.get(0).jqmdp_scope = val;
 			return $this;
 		} else {
+			if (undefined === $scopeNode.get(0).jqmdp_scope) {
+				doScopes(null, $this, onPageInit);
+			}
 			return $scopeNode.get(0).jqmdp_scope;
 		}
 	}
@@ -403,6 +410,10 @@
 	 * @param a?      Any arguments.
 	 */
 	$.fn.jqmdp = function(method,a1,a2,a3,a4,a5,a6){
+		if (this.get(0) === window) {
+			alert("JQMDP alert!\nThis is window. \nhref='javascript:$(this)' is not usable.\nPlease use onclick.");
+			return;
+		}
 		return $.jqmdp[method](this,a1,a2,a3,a4,a5,a6);
 	}
 

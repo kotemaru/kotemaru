@@ -1,0 +1,33 @@
+{
+	"status": "OK",
+	"html_attributions": ["copy right"],
+	"result": {
+		"address_components": [
+			{
+				"long_name": "JP",
+				"short_name": "JP",
+				"types": ["country","political"]
+			},
+			{
+				"long_name": "100-0005",
+				"short_name": "100-0005",
+				"types": ["postal_code"]
+			}
+		],
+		"formatted_address": "日本, 東京都千代田区丸の内２丁目７−３",
+		"formatted_phone_number": "03-3216-2336",
+		"geometry": {
+			"location": {"lat": 35.678555,"lng": 139.764753}
+		},
+		"icon": "http://maps.gstatic.com/mapfiles/place_api/icons/restaurant-71.png",
+		"id": "d1534e8b57a2fad4856744787f277024192e1531",
+		"international_phone_number": "+81 3-3216-2336",
+		"name": "インデアンカレー",
+		"rating": 4.2,
+		"reference": "CnRwAAAA7hua...",
+		"types": ["restaurant","food","establishment"],
+		"url": "http://maps.google.com/maps/place?cid=13618664654404771710",
+		"vicinity": "東京都千代田区丸の内２丁目７−３",
+		"website": "http://www.indiancurry.jp/"
+	}
+}
