@@ -103,7 +103,7 @@ function Place(){this.constractor.apply(this, arguments)};
 	This.onBeforeShow = function (ev, $this) {
 		if (this.detail == DUMMY_DETAIL) {
 			var _this = this;
-			GPlace.getDetail(this.listItem.reference, function(json, status){
+			GPlace.getDetail(this.listItem, function(json, status){
 				GPlace.checkError(json, status);
 				_this.detail = json.result;
 				$(_this.page).jqmdp("refresh");
@@ -117,28 +117,33 @@ function GPlace(){this.constractor.apply(this, arguments)};
 	var This = Class.prototype;
 	This.constractor = function() {}
 
-	var KEY = "AIzaSyAvupK0sGEXAAu2FPi69iJZOasSXVtvF0c";
-	var URL_SEARCH = "test-data/place-list.json";
-	var URL_DETAIL = "test-data/place-detail.json";
+	var URL_SEARCH = "place-list.ssjs";
+	var URL_DETAIL = "place-detail.ssjs";
+	var cache = {};
 	
 	Class.getPlaces = function (params, callback) {
-		params.key = KEY;
 		params.sensor = false;
 		$.getJSON(URL_SEARCH, params, callback);
 	}
 
-	Class.getDetail = function (ref, callback) {
+	Class.getDetail = function (listItem, callback) {
+		if (cache[listItem.id]) {
+			callback(cache[listItem.id], "success");
+			return;
+		}
 		var params = {};
-		params.key = KEY;
 		params.sensor = true;
-		params.reference = ref;
-		$.getJSON(URL_DETAIL, params, callback);
+		params.reference = listItem.reference;
+		$.getJSON(URL_DETAIL, params, function(json,status){
+			callback(json, status);
+			cache[json.result.id] = json;
+		});
 	}
 
 	Class.checkError = function (json, status) {
 		if (status != "success" || json.status != "OK") {
-			alert("Google place error.");
-			throw "Google place error.";
+			alert("Google place error. "+json.status);
+			throw "Google place error. "+json.status;
 		}
 	}
 })(GPlace);
