@@ -10,6 +10,10 @@
 	<script src="jq/jquery-1.6.4.js"></script>
 	<script src="js/jquery.jqmdp-1.0b.js"></script>
 	<script src="jq/jqm/jquery.mobile-1.0.js"></script>
+	<script src="js/parts/rating/Rating.js"></script>
+
+
+
 	<style>
 		blockquote {
 			font-size: 80%;
@@ -46,8 +50,12 @@
 <h2>jqmdpとは</h2>
 <p>jqmdpは jQuery Mobile Dynamic Page plugin の略である。</p>
 <p>
-	jqmdpは jQuery Mobile ページの動的な変化を補助するプラグインです。
-	「dp-」ではじまる幾つかの拡張属性によって簡単に可変なページは作成される。
+jQuery mobile は単独では動的なWebページを表示する機能をほとんど持たない。
+そのためクライアント側で動的なページを作成しようとした場合、
+多くのJavaScriptコードを記述する必要がある。
+</p>
+<p>
+jqmdp はこの問題を解決する為の拡張プラグインである。
 </p>
 
 準備、jquery.jqmdp-1.0b.jsをjquery.mobile-1.0.jsの直前に読み込む必要がある。
@@ -62,7 +70,7 @@
 
 <pre>&lt;div>Date: &lt;span <font color="green">dp-text="(new Date())"</font>>&lt;/span>&lt;/div></pre>
 
-このコードは以下のように表示される。
+このコードは以下のように このページを表示した日時が表示される。
 <blockquote>
 <div>Date: <span dp-text="(new Date())"></span></div>
 </blockquote>
@@ -218,7 +226,7 @@ Write by kotemaru@kotemaru.org 2011
 使用例：
 <xmp><div dp-scope="({list:window.location, key:0})">
 	<ul dp-for="(key in list)" data-role="listview"  >
-		<li dp-if-self="(key=='hostname' || key=='port')">
+		<li dp-if-self="(key=='hostname' || key=='port' || key=='hash')">
 			<span dp-text="(key)"></span> = <span dp-text="(list[key])"></span>
 		</li>
 	</ul>
@@ -228,7 +236,7 @@ Write by kotemaru@kotemaru.org 2011
 <blockquote style="padding:16px;">
 <div dp-scope="({list:window.location, key:0})">
 	<ul dp-for="(key in list)" data-role="listview"  >
-		<li dp-if-self="(key=='hostname' || key=='port')">
+		<li dp-if-self="(key=='hostname' || key=='port' || key=='hash')">
 			<span dp-text="(key)"></span> = <span dp-text="(list[key])"></span>
 		</li>
 	</ul>
@@ -262,6 +270,8 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 <li>いずれも関数であり引数は (event,$this) となる。
 <li>$thisはdp-scope属性を持つ要素のjQuery Objectである。
 </ul>
+
+使用例：TODO
 			</div>
 	</div>
 
@@ -275,10 +285,15 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 
 <h2>API</h2>
 
-<h4>$.jqmdp.refresh($this) or $(this).jqmdp('refresh')</h4>
+<h4>$.jqmdp.refresh($this) or $(this).jqmdp('refresh', delay)</h4>
 <ul>
-<li>$this要素が再評価される。
-<li>但し、$this要素が所属するスコープ全体が再評価される。
+<li>$this要素が再描画される。
+<li>厳密には $this要素が所属するスコープ全体が再描画される。
+<li>delay が指定されていれば delayミリ秒 再描画を遅延させる。
+<ul>
+	<li>その間にrefresh()が呼ばれたらならば最初のrefresh()は無効となる。
+	<li>これは再描画に時間がかかる場合、ユーザの操作を優先させる効果が有る。
+</ul>
 <li>$thisを帰す。
 </ul>
 
@@ -295,15 +310,24 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 </ul>
 
 
-<h4>$.jqmdp.getScopeNode($this) or $().jqmdp('getScopeNode')</h4>
+<h4>$.jqmdp.getScopeNode($this) or $(this).jqmdp('getScopeNode')</h4>
 <ul>
 <li>$this要素の所属する dp-scope属性を持つ要素を帰す。
 <li>見付からない場合 null を帰す。
 </ul>
 
-<h4>$.jqmdp.template($this, $src) or $(this).jqmdp('template')</h4>
+<h4>$.jqmdp.template($this, $src) or $(this).jqmdp('template', $src)</h4>
 <ul>
-<li>$src の子要素を $this の子要素に複製する。dp-template属性と同じ。
+<li>テンプレート適用。dp-template属性と同じ。
+<li>$src の子要素を $this の子要素に複製する。
+<li>$thisを帰す。
+</ul>
+
+<h4>$.jqmdp.exTemplate($this, url) or $(this).jqmdp('exTemplate', url)</h4>
+<ul>
+<li>外部テンプレート適用。
+<li>url のHTMLを読み込んで $this の子要素に複製する。
+<li>読み込みは非同期で行われる為、反映は遅れる場合が有る。
 <li>$thisを帰す。
 </ul>
 
@@ -313,6 +337,12 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 <li>jQuery mobaile はページが表示されるまで初期化を行わないため
 その前にdp-scope属性の値が必要な場合にこの関数を呼ぶ。
 <li>$thisを帰す。
+</ul>
+
+<h4>$.jqmdp.absPath(url)</h4>
+<ul>
+<li>実行中の JavaScript ファイルを起点とする相対パスから絶対パスに変換する。
+<li>基本的に外部部品が相対パスでリソースにアクセスする為の物。
 </ul>
 
 <h4>$.jqmdp.debug(b)</h4>
@@ -336,31 +366,41 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 
 dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を作ることができる。
 
+<h4>同じHTMLに記述する場合</h4>
 
 <div>使用例：</div>
 
 <xmp><div dp-scope="(new Parts($this))"></div>
+<div dp-scope="(new Parts($this))"></div>
 </xmp>
 
-部品定義：
-<xmp><!-- ページの外に配置 -->
-<script>
-	function Parts($this) {
-		this.elem = $this.get(0);
+実行結果：
+<blockquote style="padding:16px;">
+	<div dp-scope="(new Parts($this))"></div>
+	<div dp-scope="(new Parts($this))"></div>
+</blockquote>
+
+部品定義：(これらは&lt;body>の直下に配置)
+<xmp><script>
+function Parts(){this.constractor.apply(this, arguments)};
+(function(Class){
+	var This = Class.prototype;
+
+	This.constractor = function($this) {
+		this.$this = $this;
 		this.count = 0;
 		$this.jqmdp("template",$("#PartsTemplate"));
 	}
-	Parts.prototype = {
-		add: function(delta) {
-			this.count += delta;
-			$(this.elem).jqmdp("refresh");
-			return this;
-		},
-		getCount: function() {
-			var s = ("00000"+this.count);
-			return s.substr(s.length-5);
-		},
+	This.add = function(delta) {
+		this.count += delta;
+		this.$this.jqmdp("refresh");
+		return this;
 	}
+	This.getCount = function() {
+		var s = ("00000"+this.count);
+		return s.substr(s.length-5);
+	}
+})(Parts);
 </script>
 
 <div data-role="none" id="PartsTemplate"  comment="This is template.">
@@ -370,33 +410,82 @@ dp-scope,dp-template と JavaScript関数を組み合わせて動的な部品を
 	<a data-role="button" href="#" data-icon="minus" data-iconpos="notext" data-inline="true" 
 		onclick="$(this).jqmdp('scope').add(-1)"></a>
 </div>
+</xmp>
 
+<h4>外部HTMLに記述する場合</h4>
+
+<div>使用例：</div>
+
+<xmp><script src="js/parts/rating/Rating.js"></script>
+	
+<div dp-scope="(new Rating($this))"></div>
+<div dp-scope="(new Rating($this))"></div>
 </xmp>
 
 実行結果：
 <blockquote style="padding:16px;">
-	<div dp-scope="(new Parts($this))"></div>
+	<div dp-scope="(new Rating($this))"></div>
+	<div dp-scope="(new Rating($this))"></div>
 </blockquote>
+
+部品コード定義：(js/parts/rating/Rating.jsに配置)
+<xmp>function Rating(){this.constractor.apply(this, arguments)};
+(function(Class){
+	var This = Class.prototype;
+
+	var TEMPL   = $.jqmdp.absPath("Rating.html");
+	var IMG_ON  = $.jqmdp.absPath("star-1.0.png");
+	var IMG_OFF = $.jqmdp.absPath("star-0.0.png");
+
+	This.constractor = function($this) {
+		this.$this = $this;
+		this.value = 0;
+		$.jqmdp.exTemplate($this, TEMPL);
+	}
+	This.val = function(v){
+		this.value = v;
+		$.jqmdp.refresh(this.$this);
+	}
+	This.star = function(v){
+		return (this.value>=v) ? IMG_ON : IMG_OFF;
+	}
+})(Rating);
+</xmp>
+
+部品テンプレート定義：(js/parts/rating/Rating.htmlに配置)
+<xmp><div>
+	<img dp-src="(star(1))" onclick="$(this).jqmdp('scope').val(1)" />
+	<img dp-src="(star(2))" onclick="$(this).jqmdp('scope').val(2)" />
+	<img dp-src="(star(3))" onclick="$(this).jqmdp('scope').val(3)" />
+	<img dp-src="(star(4))" onclick="$(this).jqmdp('scope').val(4)" />
+	<img dp-src="(star(5))" onclick="$(this).jqmdp('scope').val(5)" />
+</div>
+</xmp>
+
+
 		</div>
 	</div>
-	
+<!-- ================================================================ -->
 	<script>
-		function Parts($this) {
-			this.elem = $this.get(0);
-			this.count = 0;
-			$this.jqmdp("template",$("#PartsTemplate"));
-		}
-		Parts.prototype = {
-			add: function(delta) {
-				this.count += delta;
-				$(this.elem).jqmdp("refresh");
-				return this;
-			},
-			getCount: function() {
-				var s = ("00000"+this.count);
-				return s.substr(s.length-5);
-			},
-		}
+function Parts(){this.constractor.apply(this, arguments)};
+(function(Class){
+	var This = Class.prototype;
+
+	This.constractor = function($this) {
+		this.$this = $this;
+		this.count = 0;
+		$this.jqmdp("template",$("#PartsTemplate"));
+	}
+	This.add = function(delta) {
+		this.count += delta;
+		this.$this.jqmdp("refresh");
+		return this;
+	}
+	This.getCount = function() {
+		var s = ("00000"+this.count);
+		return s.substr(s.length-5);
+	}
+})(Parts);
 	</script>
 	<div data-role="none" id="PartsTemplate" comment="This is template.">
 		<span style="font-size:48px;" dp-text="(getCount())"></span>
