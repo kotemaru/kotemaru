@@ -11,11 +11,11 @@ function Rating(){this.constractor.apply(this, arguments)};
 	This.constractor = function($this) {
 		this.$this = $this;
 		this.value = 0;
-		$this.jqmdp("exTemplate", TEMPL);
+		$.jqmdp.exTemplate($this, TEMPL);
 	}
 	This.val = function(v){
 		this.value = v;
-		this.$this.jqmdp("refresh");
+		$.jqmdp.refresh(this.$this);
 	}
 	This.star = function(v){
 		return (this.value>=v) ? IMG_ON : IMG_OFF;
