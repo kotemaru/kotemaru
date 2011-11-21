@@ -46,10 +46,18 @@
 <h2>jqmdpとは</h2>
 <p>jqmdpは jQuery Mobile Dynamic Page plugin の略である。</p>
 <p>
-	jqmdpは jQuery Mobile のページを動的に変化させる為のプラグインであり
-	「dp-」ではじまる幾つかの拡張属性を使用する事により簡便に可変なページを定義する事ができる。
+	jqmdpは jQuery Mobile ページの動的な変化を補助するプラグインです。
+	「dp-」ではじまる幾つかの拡張属性によって簡単に可変なページは作成される。
 </p>
 
+準備、jquery.jqmdp-1.0b.jsをjquery.mobile-1.0.jsの直前に読み込む必要がある。
+
+<xmp><script src="js/jquery-1.6.4.js"></script>
+<script src="js/jquery.jqmdp-1.0b.js"></script>
+<script src="js/jquery.mobile-1.0.js"></script>
+</xmp>
+　　Download: <a target="_blank" href="js/jquery.jqmdp-1.0b.js">jquery.jqmdp-1.0b.js</a>
+<p/>
 もっとも簡単な例を示す。
 
 <pre>&lt;div>Date: &lt;span <font color="green">dp-text="(new Date())"</font>>&lt;/span>&lt;/div></pre>
@@ -59,13 +67,16 @@
 <div>Date: <span dp-text="(new Date())"></span></div>
 </blockquote>
 
+
 <hr/>
 目次<br/>
-<a href="#attrs1">置換属性</a><br/>
-<a href="#attrs2">制御構文属性</a><br/>
-<a href="#handler">イベントハンドラ</a><br/>
-<a href="#api">API</a><br/>
-<a href="#topics">Topics</a><br/>
+<ul>
+<li><a href="#attrs1">置換属性</a>
+<li><a href="#attrs2">制御構文属性</a>
+<li><a href="#handler">イベントハンドラ</a>
+<li><a href="#api">API</a>
+<li><a href="#topics">Topics</a>
+</ul>
 <hr/>
 Write by kotemaru@kotemaru.org 2011
 
@@ -255,7 +266,7 @@ dp-scope属性の評価値は幾つかのプロパティ名を予約する。
 	</div>
 
 	<!-- ===================================================================================== -->
-	<div data-role="page" id="handler" data-theme="e">
+	<div data-role="page" id="api" data-theme="e">
 		<div data-role="header" >
 			<h3>jqmdp-1.0b</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
