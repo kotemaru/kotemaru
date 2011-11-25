@@ -13,7 +13,7 @@
 	<script src="http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=true"></script>
 
 	<script>
-function Map(){this.constractor.apply(this, arguments)};
+function Map(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var This = Class.prototype;
 	var LatLng = google.maps.LatLng;
@@ -27,7 +27,7 @@ function Map(){this.constractor.apply(this, arguments)};
 		mapTypeId: google.maps.MapTypeId.ROADMAP
 	};
 
-	This.constractor = function($page) {
+	This.initialize = function($page) {
 		var $canvas = $page.find("div[data-role='content']");
 		$canvas.css("padding","0");
 	
@@ -85,12 +85,12 @@ function Map(){this.constractor.apply(this, arguments)};
 })(Map);
 
 
-function Place(){this.constractor.apply(this, arguments)};
+function Place(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var This = Class.prototype;
 	var DUMMY_DETAIL = {website: "",url: "",formatted_phone_number: ""};
 
-	This.constractor = function($page) {
+	This.initialize = function($page) {
 		this.page = $page.get(0);
 		this.listItem = null;
 		this.detail = null;
@@ -112,10 +112,10 @@ function Place(){this.constractor.apply(this, arguments)};
 	}
 })(Place);
 
-function GPlace(){this.constractor.apply(this, arguments)};
+function GPlace(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var This = Class.prototype;
-	This.constractor = function() {}
+	This.initialize = function() {}
 
 	var URL_SEARCH = "place-list.ssjs";
 	var URL_DETAIL = "place-detail.ssjs";
@@ -157,7 +157,7 @@ $(function(){
 </head>
 
 <body >
-	<div id="Map" data-role="page" dp-scope="(new Map($this))">
+	<div id="Map" data-role="page" data-dp-scope="(new Map($this))">
 		<div data-role="header" data-position="fixed" >
 			<h1>Map</h1>
 			<a href="#" onclick="$(this).jqmdp('scope').setCenterFromGPS()" data-role="button" data-icon="home" data-iconpos="left">Here</a>
@@ -167,19 +167,19 @@ $(function(){
 		</div>
 	</div>
 
-	<div id="Place" data-role="page" dp-scope="(new Place($this))">
+	<div id="Place" data-role="page" data-dp-scope="(new Place($this))">
 		<div data-role="header" data-position="fixed" >
 			<h1>Place</h1>
 			<a data-icon="back" data-rel="back" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content">
-			<img dp-src="(listItem.icon)" />
-			<div>Name: <span dp-text="(listItem.name)" ></span></div>
-			<div>Addr: <span dp-text="(listItem.vicinity)" ></span></div>
+			<img data-dp-src="(listItem.icon)" />
+			<div>Name: <span data-dp-text="(listItem.name)" ></span></div>
+			<div>Addr: <span data-dp-text="(listItem.vicinity)" ></span></div>
 			<br/>
-			<div>Phone: <span dp-text="(detail.formatted_phone_number)" ></span></div>
-			<div>Google Places: <a dp-href="(detail.url)" dp-text="(detail.url)" target="_brank"></a></div>
-			<div dp-show="(detail.website!=null)">Place web site: <a dp-href="(detail.website)" dp-text="(detail.website)" target="_brank"></a></div>
+			<div>Phone: <span data-dp-text="(detail.formatted_phone_number)" ></span></div>
+			<div>Google Places: <a data-dp-href="(detail.url)" data-dp-text="(detail.url)" target="_brank"></a></div>
+			<div data-dp-show="(detail.website!=null)">Place web site: <a data-dp-href="(detail.website)" data-dp-text="(detail.website)" target="_brank"></a></div>
 		</div>
 	</div>
 </body>

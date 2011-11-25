@@ -12,7 +12,10 @@
 	<script src="js/jquery.jqmdp-1.0b.js"></script>
 	<script src="jq/jqm/jquery.mobile-1.0.js"></script>
 	<script src="js/parts/rating/Rating.js"></script>
-
+	<script src="js/parts/radio/Radio.js"></script>
+	<script src="js/parts/calendar/Calendar.js"></script>
+	<link rel="stylesheet" href="js/parts/calendar/Calendar.css" />
+	<script src="js/parts/input-btn.js"></script>
 
 <script>
 $(function(){
@@ -40,7 +43,7 @@ $(function(){
 	</div>
 	
 
-	<div data-role="page" id="test1" data-theme="e" dp-scope="(test1_data[0])">
+	<div data-role="page" id="test1" data-theme="e" data-dp-scope="(test1_data[0])">
 		<div data-role="header" >
 			<h3>test1</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
@@ -48,12 +51,12 @@ $(function(){
 		<div data-role="content" >
 			<h3>Replace test</h3>
 			<div>
-				<div>dp-text:<span dp-text="(a)"></span></div>
-				<div>dp-html:<span dp-html="(b)"></span></div>
-				<div>dp-src:<img dp-src="(c)"></span></div>
-				<div>dp-href:<a dp-href="(d)" dp-text="(d)" ></a></div>
-				<div>dp-value:<input dp-value="(e)" /></div>
-				<div>dp-show:<span dp-show="(f)" />SHOW/HIDE</div>
+				<div>data-dp-text:<span data-dp-text="(a)"></span></div>
+				<div>data-dp-html:<span data-dp-html="(b)"></span></div>
+				<div>data-dp-src:<img data-dp-src="(c)"></span></div>
+				<div>data-dp-href:<a data-dp-href="(d)" data-dp-text="(d)" ></a></div>
+				<div>data-dp-value:<input data-dp-value="(e)" /></div>
+				<div>data-dp-show:<span data-dp-show="(f)" />SHOW/HIDE</div>
 				<br/>
 				<a data-role="button" href="#" onclick="test1_1(this)">change</a>
 				<script>
@@ -84,47 +87,47 @@ $(function(){
 	</div>
 		
 	<div data-role="page" id="test2" data-theme="e" 
-		dp-scope="({a:'page-scope'})">
+		data-dp-scope="({a:'page-scope'})">
 		<div data-role="header" >
 			<h3>test2</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
 			<h3>Nested scope test</h3>
-			<div>pege-before:a=<span dp-text="(a)"></span></div>
-			<div dp-scope="({a:'nest1-scope',b:1,c:1})">
-				<div>_nest1-before:a=<span dp-text="(a)"></span>,b=<span dp-text="(b)"></span>,c=<span dp-text="(c)"></div>
-				<div dp-scope="({a:'nest2-scope',b:2})">
-					<div>__nest2-before:a=<span dp-text="(a)"></span>,b=<span dp-text="(b)"></span>,c=<span dp-text="(c)"></span></div>
-					<div dp-scope="({a:'nest3-scope',c:3})">
-						<div>___nest3:a=<span dp-text="(a)"></span>,b=<span dp-text="(b)"></span>,c=<span dp-text="(c)"></div>
+			<div>pege-before:a=<span data-dp-text="(a)"></span></div>
+			<div data-dp-scope="({a:'nest1-scope',b:1,c:1})">
+				<div>_nest1-before:a=<span data-dp-text="(a)"></span>,b=<span data-dp-text="(b)"></span>,c=<span data-dp-text="(c)"></div>
+				<div data-dp-scope="({a:'nest2-scope',b:2})">
+					<div>__nest2-before:a=<span data-dp-text="(a)"></span>,b=<span data-dp-text="(b)"></span>,c=<span data-dp-text="(c)"></span></div>
+					<div data-dp-scope="({a:'nest3-scope',c:3})">
+						<div>___nest3:a=<span data-dp-text="(a)"></span>,b=<span data-dp-text="(b)"></span>,c=<span data-dp-text="(c)"></div>
 					</div>
-					<div>__nest2-after:a=<span dp-text="(a)"></span></div>
+					<div>__nest2-after:a=<span data-dp-text="(a)"></span></div>
 				</div>
-				<div>_next1-after:a=<span dp-text="(a)"></span></div>
+				<div>_next1-after:a=<span data-dp-text="(a)"></span></div>
 			</div>
-			<div>pege-after:a=<span dp-text="(a)"></span></div>
+			<div>pege-after:a=<span data-dp-text="(a)"></span></div>
 		</div>
 	</div>
 	
 	
 	<div data-role="page" id="test3" data-theme="e" 
-		dp-scope="({a:'page-scope'})">
+		data-dp-scope="({a:'page-scope'})">
 		<div data-role="header" >
 			<h3>test3</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
 			<h3>Dynamic list test</h3>
-			<div dp-scope="({list:{a:'init-data',b:2,c:9,d:3},key:0})">
+			<div data-dp-scope="({list:{a:'init-data',b:2,c:9,d:3},key:0})">
 				<div>Properties list：</div>
 				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, location)">location</a>
 				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, document.body)">document.body</a>
 				<a data-role="button" data-inline="true" href="#" onclick="changeList(this, $.mobile)">$.mobile</a>
 				<br/><hr/><br/>
 				
-				<ul data-role="listview" dp-for="(key in list)" >
-					<li><span dp-text="(key)"></span>=<span dp-text="(list[key])"></span></li>
+				<ul data-role="listview" data-dp-for="(key in list)" >
+					<li><span data-dp-text="(key)"></span>=<span data-dp-text="(list[key])"></span></li>
 				</ul>
 				<script>
 					function changeList(elem, data) {
@@ -140,7 +143,7 @@ $(function(){
 			<h3>test4</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
-		<div data-role="content" dp-scope="({w:2, h:2})">
+		<div data-role="content" data-dp-scope="({w:2, h:2})">
 			<h3>Control sentence test</h3>
 
 			<a data-role="button" href="#" data-icon="arrow-u" data-iconpos="notext" data-inline="true" 
@@ -152,11 +155,11 @@ $(function(){
 			<a data-role="button" href="#" data-icon="arrow-r" data-iconpos="notext" data-inline="true" 
 				onclick="$(this).jqmdp('scope').w++;$(this).jqmdp('refresh',400)"></a>
 
-			<table border=1 cellspacing=0 dp-scope="({y:0,x:0})" >
-				<tbody dp-for="(y=0; y<h; y++)">
-					<tr dp-for="(x=0; x<w; x++)">
+			<table border=1 cellspacing=0 data-dp-scope="({y:0,x:0})" >
+				<tbody data-dp-for="(y=0; y<h; y++)">
+					<tr data-dp-for="(x=0; x<w; x++)">
 						<td>
-							<span dp-text="(x+','+y)">
+							<span data-dp-text="(x+','+y)">
 						</td>
 					</tr>
 				</tbody>
@@ -165,23 +168,54 @@ $(function(){
 	</div>
 
 	
-	<div data-role="page" id="test5" data-theme="e" >
+	<div data-role="page" id="test5" data-theme="e" data-dp-scope="({todo:'need-dummy'})">
 		<div data-role="header" >
 			<h3>test5</h3>
 			<a href="#main" data-icon="home" data-role="button" data-iconpos="notext"></a>
 		</div>
 		<div data-role="content" >
 			<h3>Parts(Template) test</h3>
-			<div dp-scope="(new Rating($this))"></div>
+
+			<br/>Calender:
+			<span data-dp-scope="(new Calendar($this))" ></span>
+			
+			<div data-dp-scope="{dummy:null}">
+				<input data-dp-id="inputCal" type="date" style="width:10em;display:inline;"
+					data-dp-value="($this.jqmdp().scopeById('popupCal').yyyy_mm_dd())"/>
+				<a href="#" data-role="button" data-inline="true" data-icon="grid" 
+					data-iconpos="notext" style="vertical-align:bottom;"
+					onclick="$(this).jqmdp().scopeById('popupCal').open()"
+				></a>
+				<span data-dp-id="popupCal" 
+					data-dp-scope="(new Calendar($this,{dialog:true,target:'inputCal'}))" ></span>
+			</div>
+			<hr/>
+			<br/>Radio:
+			<span data-dp-scope="(new Radio($this))" >
+				<a data-dp-val="a">a</a>
+				<a data-dp-val="b">b</a>
+				<a data-dp-val="c">c</a>
+			</span>
+			<br/><br/>Selector:
+			<span data-dp-scope="(new Radio($this,{multi:true}))" >
+				<a data-dp-val="a">a</a>
+				<a data-dp-val="b">b</a>
+				<a data-dp-val="c" data-dp-checked>c</a>
+				<a data-dp-val="d" data-dp-checked>d</a>
+				<a data-dp-val="e">e</a>
+			</span>
+			<hr/>
+
+			<div data-dp-scope="(new Rating($this))"></div>
 			<br/><br/>
-			<div dp-scope="(new Rating($this))"></div>
+			<div data-dp-scope="(new Rating($this))"></div>
 				<br/><br/><hr/><br/><br/>
 	
-			<div dp-scope="(new Parts($this))"></div>
+			<div data-dp-scope="(new Parts($this))"></div>
 			<br/><br/><hr/><br/><br/>
-			<div dp-scope="(new Parts($this))"></div>
+			<div data-dp-scope="(new Parts($this))"></div>
 			<br/><br/><hr/><br/><br/>
-			<div dp-scope="(new Parts($this))"></div>
+			<div data-dp-scope="(new Parts($this))"></div>
 		</div>
 	</div>
 	<script>
@@ -209,11 +243,11 @@ $(function(){
 	</script>
 
 	<div data-role="none" id="PartsTemplate" comment="This is template.">
-		<div dp-text="(getCount())"></div>
+		<div data-dp-text="(getCount())"></div>
 		<a data-role="button" href="#" onclick="$(this).jqmdp('scope').add().refresh()">count</a>
 		<br/><br/>
-		<ul data-role="listview" dp-for="(key in list)" >
-			<li><span dp-text="(key)"></span>=<span dp-text="(list[key])"></span></li>
+		<ul data-role="listview" data-dp-for="(key in list)" >
+			<li><span data-dp-text="(key)"></span>=<span data-dp-text="(list[key])"></span></li>
 		</ul>
 	</div>
 

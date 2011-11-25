@@ -1,0 +1,66 @@
+.dp-calendar {
+	display: inline-block;
+	background: #fff;
+
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+	
+	-moz-box-shadow: 1px 1px 8px #000;
+	-webkit-box-shadow: 1px 1px 8px #000;
+	box-shadow: 1px 1px 8px #000;
+}
+.dp-calendar-dialog {
+	position: absolute;
+	z-index: 10;
+	vertical-align
+}
+.dp-calendar table td.dp-calendar-select {
+	border: 2px solid gray;
+}
+
+.dp-calendar table  {
+	/*border-collapse:collapse;*/
+	width: 250px;
+	overflow: hidden;
+	margin:2px;
+}
+.dp-calendar table tr:nth-child(1) th {
+	background: #fff;
+	font-size: 20px;
+	font-family: monospace;
+}
+.dp-calendar table tr:nth-child(1) th a {
+	margin: 6px;
+}
+.dp-calendar table tr:nth-child(2) td {
+	font-size: 12px;
+	width: 32px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.dp-calendar table td {
+	text-align: right;
+	background: #f0f0f0;
+	margin: 0;
+	font-size: 20px;
+	border: 2px solid white;
+}
+.dp-calendar table td[onclick] {
+	cursor: pointer;
+}
+
+.dp-calendar table tr td:nth-child(1) {
+	background: #ffeeee;
+}
+.dp-calendar table tr td:nth-last-child(1) {
+	background: #e0e0ff;
+}
+
+.dp-calendar table tr td:nth-child(1) {
+	background: #ffeeee;
+}
+.dp-calendar table tr td:nth-last-child(1) {
+	background: #e0e0ff;
+}
