@@ -1,0 +1,114 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=auto; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp demo page</title> 
+
+	<link rel="stylesheet" href="../../docs.css" />
+	<link rel="stylesheet" href="../../../jq/jqm/jquery.mobile-1.0.css" />
+	<script src="../../../jq/jquery-1.6.4.js"></script>
+
+	<script src="../../../js/jquery.mobile.jqmdp-1.0b.js"></script>
+	<script src="../../../jq/jqm/jquery.mobile-1.0.js"></script>
+
+</head>
+
+<body >
+	<div data-role="page" id="index" >
+		<div data-role="header" data-theme="e" >
+			<h1>Scope</h1>
+			<a href="../../" data-icon="home" data-role="button" 
+				data-direction="reverse" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+				<ul data-role="listview" data-inset="true" 
+						data-dividertheme="e">
+					<li data-role="list-divider">Overview</li>
+					<li><a href="../../docs/about/intro.html">Intro to JQMDP</a></li>
+					<li><a href="../../docs/about/getting-start.html">Quick start guide</a></li>	
+				</ul>
+			</nav>
+
+			<div class="right-nav" >
+<h2>スコープの概念</h2>
+<p>
+HTML の id は HTML 文書全体を通して一意である事が求められる。
+さらに jQuery mobile では遷移先の HTML 文書をインポートする為、
+複数の HTML 文書に対して id の一意性を担保しなければならない。
+</p>
+
+<p>
+この問題を回避する為、JQMDP では HTML にスコープの概念を導入する。
+スコープは任意の HTML 要素に設定されその要素の子孫の範囲をスコープとする。
+スコープ内の要素にスコープを設定して入れ子にする事ができる。
+</p>
+
+<p>
+スコープを設定するには data-dp-scope 属性の値に JavaScript
+の式を指定する。
+式の評価値はスコープ内で評価される他の属性のローカル・スコープとなる。
+
+<xmp><div data-dp-scope="({dummy:'scope-1', through:'through-1'})">
+    <div>
+        <span data-dp-text="(dummy)">
+            <!-- "scope-1" となる -->
+        </span>
+    </div>
+    </div data-dp-scope="({dummy:'scope-2'})>
+        <span data-dp-text="(dummy)">
+            <!-- "scope-2" となる -->
+        </span>
+        <span data-dp-text="(through)">
+            <!-- "through-1" となる -->
+        </span>
+    </div>
+    <span data-dp-text="(dummy)">
+        <!-- "scope-1" となる -->
+    </span>
+</div>
+</xmp>
+</p>
+
+<p>
+入れ子になったスコープで親のスコープとプロパティ名が衝突する場合は
+子のスコープが有効となる。
+衝突しない場合は祖先のプロパティが参照される。
+</p>
+
+<h3>スコープ内 id</h3>
+
+<p>
+スコープ内の HTML 要素にはスコープ内でのみ通用する id を設定する事ができる。
+この id は JQMDP の API を使用して参照する事ができる。
+
+<xmp><div data-dp-scope="({})">
+    <div>
+        <span data-dp-id="mySpan">scope-text-1</span>
+    </div>
+    </div data-dp-scope="({})>
+        <span data-dp-id="mySpan">scope-text-2</span>
+        <span data-dp-text="($.jqmdp.byId($this,'mySpan').text())">
+            <!-- "scope-text-2" となる -->	
+        </span>
+    </div>
+    <span data-dp-text="($.jqmdp.byId($this,'mySpan').text())">
+	    <!-- "scope-text-1" となる -->	
+    </span>
+</div>
+</xmp>
+注：$this は当該 HTML 要素の jQuery object である。
+
+</p>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+</body>
+
+</html>
