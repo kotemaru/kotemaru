@@ -1,0 +1,214 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=auto; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp demo page</title> 
+
+	<base href="../../">
+
+	<link rel="stylesheet" href="docs.css" />
+	<link rel="stylesheet" href="../jq/jqm/jquery.mobile-1.0.css" />
+	<script src="../jq/jquery-1.6.4.js"></script>
+
+	<script src="../js/jquery.mobile.jqmdp-1.0b.js"></script>
+	<script src="../jq/jqm/jquery.mobile-1.0.js"></script>
+
+</head>
+
+<body >
+<!-- ======================================================================== -->
+	<div data-role="page" id="index" >
+		<div data-role="header" data-theme="e" >
+			<h1>Replace attributes</h1>
+			<a href="index.html" data-icon="back"
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+				<div data-dp-template="docs/attrs/navi.html"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>置換属性</h2>
+<p>
+データ置換にかかわるカスタム属性の定義である。
+</p>
+	
+<p>
+属性値は JavaScript の式であり
+data-dp-scope 属性によって定義されたスコープの中で評価される。
+スコープの中では属性の指定された要素の jQuery object が $this として参照できる。
+</p>
+
+<p>
+置換属性が評価されるのは pagebeforeshow イベントのタイミングである。
+ページ表示以外のタイミングで評価する為の API $.jqmdp.refresh() が用意されている。
+</p>
+
+<div data-dp-template="#replaceAttrLinkList"></div>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+	<div data-role="template" id="replaceAttrLinkList"   >
+		<ul data-role="listview" data-inset="true" >
+			<li><a href="#data-dp-text">data-dp-text属性</a></li>
+			<li><a href="#data-dp-html">data-dp-html属性</a></li>
+			<li><a href="#data-dp-src">data-dp-src属性</a></li>
+			<li><a href="#data-dp-href">data-dp-href属性</a></li>
+			<li><a href="#data-dp-value">data-dp-value属性</a></li>
+			<li><a href="#data-dp-show">data-dp-show属性</a></li>
+			<li><a href="#data-dp-template">data-dp-template属性</a></li>
+		</ul>
+	</div>
+
+<!-- ======================================================================== -->
+
+	<div data-role="page" id="data-dp-text"  data-dp-scope="({})">
+		<div data-role="header" data-theme="e" >
+			<h1>Replace attributes</h1>
+			<a href="#index" data-icon="back" 
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+<div data-dp-template="#replaceAttrLinkList"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>data-dp-text 属性</h2>
+<p>
+この属性を設定された HTML 要素の子要素が属性値の評価結果に置き換わる。
+評価結果は文字列に変換され「&lt;」や「&amp;」はエスケープされる。
+
+</p>
+
+<p>
+記述例：
+<pre data-dp-text="($this.jqmdp().byId('example').html().replace(/^\s/,''))"></pre>
+
+実行結果：
+<blockquote data-dp-id="example">
+<div data-dp-scope="(new Date())">
+	<div>Date:
+		<span data-dp-text="(getFullYear())"></span> /
+		<span data-dp-text="(getMonth()+1)"></span> /
+		<span data-dp-text="(getDate())"></span>
+	</div>
+</div>
+</blockquote>
+<p/>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+<!-- ======================================================================== -->
+
+	<div data-role="page" id="data-dp-html"  data-dp-scope="({})">
+		<div data-role="header" data-theme="e" >
+			<h1>Replace attributes</h1>
+			<a href="#index" data-icon="back" 
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+<div data-dp-template="#replaceAttrLinkList"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>data-dp-html 属性</h2>
+<p>
+この属性を設定された HTML 要素の子要素が属性値の評価結果に置き換わる。
+評価結果は HTML に変換される
+
+</p>
+
+<p>
+記述例：
+<xmp><div data-dp-scope="({list:{itaric:'i',bold:'b',strike:'s'},k:0})">
+  <ul data-dp-for="(k in list)">
+    <li data-dp-html="('<'+list[k]+'>'+k+'</'+list[k]+'>')"></li>
+  </ul>
+</div>
+</xmp>
+
+実行結果：
+<blockquote data-dp-id="example">
+<div data-dp-scope="({list:{itaric:'i',bold:'b',strike:'s'},k:0})">
+	<ul data-dp-for="(k in list)">
+		<li data-dp-html="('<'+list[k]+'>'+k+'</'+list[k]+'>')"></li>
+	</ul>
+</div>
+</blockquote>
+<p/>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+<!-- ======================================================================== -->
+
+	<div data-role="page" id="data-dp-src"  data-dp-scope="({})">
+		<div data-role="header" data-theme="e" >
+			<h1>Replace attributes</h1>
+			<a href="#index" data-icon="back" 
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+<div data-dp-template="#replaceAttrLinkList"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>data-dp-src 属性</h2>
+<p>
+この属性を設定された IMG 要素の src 属性が data-dp-src 属性値の評価結果に置き換わる。
+</p>
+
+<p>
+記述例：
+<pre data-dp-text="($this.jqmdp().byId('example').html().replace(/^\s/,''))"></pre>
+
+実行結果：
+<blockquote data-dp-id="example">
+[<img data-dp-src="('')" />
+<div data-dp-scope="({list:{itaric:'i',bold:'b',strike:'s'},k:0})">
+	<ul data-dp-for="(k in list)">
+		<li data-dp-html="('<'+list[k]+'>'+k+'</'+list[k]+'>')"></li>
+	</ul>
+</div>
+</blockquote>
+<p/>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+<!-- ======================================================================== -->
+
+
+	
+</body>
+
+</html>

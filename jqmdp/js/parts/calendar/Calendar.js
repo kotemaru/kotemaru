@@ -27,12 +27,12 @@
 			$this.hide();
 		}
 	}
-	This.open = function(event, elem) {
-		var offset = this.$this.parent().jqmdp(this.opts.target).offset();
-		this.$this.css(offset);
-
-		this.$this.fadeIn(0);
-		this.$this.show();
+	This.open = function() {
+		var $this = this.$this;
+		var offset = $this.parent().jqmdp().byId(this.opts.target).offset();
+		$this.css(offset);
+		$this.fadeIn(0);
+		$this.show();
 	}
 	This.close = function() {
 		var _this = this;
@@ -103,7 +103,7 @@
 		}
 		$.jqmdp.refresh(this.$this);
 		if (this.opts.target) {
-			this.$this.parent().jqmdp().byId(this.opts.target).refresh();
+			this.$this.parent().jqmdp(this.opts.target).refresh();
 		}
 		if (this.opts.dialog) this.close();
 	}

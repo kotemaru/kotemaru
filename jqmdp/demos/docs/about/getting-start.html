@@ -1,0 +1,80 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=auto; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp demo page</title> 
+
+	<link rel="stylesheet" href="../../docs.css" />
+	<link rel="stylesheet" href="../../../jq/jqm/jquery.mobile-1.0.css" />
+	<script src="../../../jq/jquery-1.6.4.js"></script>
+
+	<script src="../../../js/jquery.mobile.jqmdp-1.0b.js"></script>
+	<script src="../../../jq/jqm/jquery.mobile-1.0.js"></script>
+
+</head>
+
+<body >
+	<div data-role="page" id="index" >
+		<div data-role="header" data-theme="e" >
+			<h1>Quick start guide</h1>
+			<a href="../../" data-icon="home" data-role="button" 
+				data-direction="reverse" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+				<ul data-role="listview" data-inset="true" 
+						data-dividertheme="e">
+					<li data-role="list-divider">Overview</li>
+					<li><a href="../../docs/about/intro.html">Intro to JQMDP</a></li>
+					<li><a href="../../docs/about/getting-start.html">Quick start guide</a></li>	
+				</ul>
+			</nav>
+			
+			<div class="right-nav" >
+				<div>
+<h2>Getting Started with JQMDP</h2>
+<p>
+前提条件として jQuery mobile を利用する準備が整っていなければならない。
+<br/>jQuery mobile の準備については
+<a target="_blank" href="http://jquerymobile.com">こちらへ(http://jquerymobile.com)</a></div>
+</p>
+
+<p>
+まずは <a target="_blank" href="../../../js/jquery.mobile.jqmdp-1.0b.js">
+jquery.mobile.jqmdp-1.0.js</a>
+をダウンロードして自分のWebサイトに配置する。
+<br/>
+配置した jquery.mobile.jqmdp-1.0.js を jquery.mobile-1.0.js の直前に読み込めば準備完了である。
+<br/>
+<xmp><script src="jquery-1.6.4.js"></script>
+<script src="jquery.mobile.jqmdp-1.0.js"></script>
+<script src="jquery.mobile-1.0.js"></script>
+</xmp>
+</p>
+
+もっとも簡単な例を示す。
+
+<pre>&lt;div>Date: &lt;span <font color="green">data-dp-text="(new Date())"</font>>&lt;/span>&lt;/div></pre>
+
+このコードは以下のように このページを表示した日時が表示される。
+<blockquote>
+<div>Date: <span data-dp-text="(new Date())"></span></div>
+</blockquote>
+
+<p>
+このように JQMDP は data-dp- で始まるカスタム属性を利用し簡単に動的なページを作成できる。
+</p>
+
+				<div>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+</body>
+
+</html>

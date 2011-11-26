@@ -6,12 +6,14 @@
 */
 /*
  * Warn: My English is very doubtful.
- * Note: JQM and $.data() combination has a bug? 
+ * Note: JQM and $.data() problem. Data are cleared.
  */
 (function($) {
 	var isDebug = false;
 
 	var PRE = "data-dp-";
+	var DP_ID = PRE+"id";
+	
 	var SCOPE = PRE+"scope";
 	var SHOW  = PRE+"show";
 	var SRC   = PRE+"src";
@@ -42,6 +44,12 @@
 	var XP_IFSELF= "*["+IFSELF+"]";
 	var XP_FOR   = "*["+FOR+"]";
 	
+	/**
+	 * The preservation of the outside template.
+	 * Key is url, Value is {q:[], node: $(DOM fragment)}.
+	 * q is queue of the template application of the load waiting.
+	 * @see $.jqmdp.exTemplate()
+	 */
 	var exTemplates = {};
 
 	/**
@@ -50,28 +58,18 @@
 	 */
 	function init(root) {
 		var $pages = $(root).find("div[data-role='page']");
-		$pages.each(function() {
-			setEventListener(this);
-		});
-	}
 
-	/**
-	 * The function sets an event handler of jqmdp in a JQM Page.
-	 * Suppoted events id init/beforeshow/show/hide.
-	 * @param pageId Page element id.
-	 */
-	function setEventListener(page) {
-		var $page = $("#"+page.id); // Note: When it is $(page), live() does not work.
-		$page.live('pageinit', function(ev) {
+		$pages.live('pageinit', function(ev) {
+			var $page = $(ev.target);
 			doScopes(ev, $page, initScope);
 			doScopes(ev, $page, onPageInit);
 		}).live('pagebeforeshow', function(ev) {
 			// The 'pagebeforeshow' event is accompanied by DynamicPage processing.
-			doScopes(ev, $page, onBeforeShow, processPage);
+			doScopes(ev, $(ev.target), onBeforeShow, processPage);
 		}).live('pageshow', function(ev) {
-			doScopes(ev, $page, onShow);
+			doScopes(ev, $(ev.target), onShow);
 		}).live('pagehide', function(ev) {
-			doScopes(ev, $page, onHide);
+			doScopes(ev, $(ev.target), onHide);
 		})
 		;
 	}
@@ -262,7 +260,7 @@
 		attrs.TEMPLATE.each(function(){
 			var $e = $(this);
 			localScope.$this = $e;
-			$.jqmdp.template($e, $($e.attr(TEMPLATE)));
+			$.jqmdp.template($e, $e.attr(TEMPLATE));
 		});
 		attrs.ACTIVE_CLASS.each(function(){
 			var $e = $(this);
@@ -420,9 +418,26 @@
 		return null;
 	}
 
+	/**
+	 * An element having data-dp-id in the scope returns.
+	 * The parent scope is not targeted for a search.
+	 * 
+	 * @param $this   Any element or jQuery object.
+	 * @param name    data-dp-id value.
+	 * @return scope  jQuery object or null.
+	 */
+	function byId($this, name) {
+		var $scopeNode = getScopeNode($this);
+		if ($scopeNode == null) return null;
+		return $($scopeNode[0]).find("*["+DP_ID+"='"+name+"']");
+	}
+
+	//----------------------------------------------------------------------
+	// Public functions.
 	$.jqmdp = function Jqmdp(){};
 	$.jqmdp.getScopeNode = getScopeNode;
-	
+	$.jqmdp.byId = byId;
+
 	/**
 	 * The scope instance to belong to of the element is returned.
 	 * If a value is appointed, I replace scope instance.
@@ -443,30 +458,31 @@
 			return $scopeNode[0].jqmdp_scope;
 		}
 	}
-	/**
-	 * 
-	 * 
-	 * @param $this   Any element or jQuery object.
-	 * @param name    scope name.
-	 * @return scope instance or null.
-	 */
-	$.jqmdp.byId = function($this, name) {
-		var $scopeNode = getScopeNode($this);
-		if ($scopeNode == null) return null;
-		return $($scopeNode[0]).find("*[data-dp-id='"+name+"']");
-	}
 
 	/**
 	 * A supporting function to make a part.
 	 * The reproduction which applied conversion handling of JQM is added.
 	 * @param $this  template target jQuery object.
-	 * @param $src   Template jQuery object.
+	 * @param src    Template jQuery object or url string.
 	 */
-	$.jqmdp.template = function($this, $src) {
-		$src.page();
-		$this.append($src.clone().contents());
+	$.jqmdp.template = function($this, src) {
+		if ( typeof src === "string") {
+			if (src.indexOf("#") == 0) {
+				template($this, $(src));
+			} else {
+				$.jqmdp.exTemplate($this, src);
+			}
+		} else {
+			template($this, src);
+		}
 		return $this;
 	}
+	function template($this, $src) {
+		$src.page();
+		$this.html("");
+		$this.append($src.clone().contents());
+	}
+
 	/**
 	 * An outside template is applied.
 	 * Because it is load by async, the outside template may be behind with the real application.
@@ -495,6 +511,8 @@
 			$.jqmdp.refresh(q[i]);
 		};
 	}
+
+	
 	/**
 	 * Handling JQM attribute.
 	 * Note: use the unofficial JQM function.
@@ -531,6 +549,7 @@
 
 		return $this;
 	}
+
 	/**
 	 * Scope instance can call this function before 'pageinit' event, if necessary.
 	 * @param $this  Any jQuery object.
@@ -565,30 +584,40 @@
 	 * @param a?      Any arguments.
 	 */
 	$.fn.jqmdp = function(method,a1,a2,a3,a4,a5,a6){
-		if (method === undefined) return new jqmdp(this);
-		if (this[0] === window) {
+		var $this = this;
+		if (method === undefined) return new Handle($this);
+		if ($this[0] === window) {
 			alert("JQMDP alert!\nThis is window. \nhref='javascript:$(this)' is not usable.\nPlease use onclick.");
 			return;
 		}
 		if ($.jqmdp[method]) {
-			return $.jqmdp[method](this,a1,a2,a3,a4,a5,a6);
+			return $.jqmdp[method]($this,a1,a2,a3,a4,a5,a6);
 		}
 		
-		return $.jqmdp.byId(this,method,a1);
+		return new Handle($.jqmdp.byId($this,method));
 	}
 
-	function jqmdp($this) {
+	/**
+	 * Handle class for convenience.
+	 * @param $this  Target jQuery object.
+	 */
+	function Handle($this) {
 		this.$this = $this;
 	}
-	jqmdp.prototype = {
-		scope: function(val){return $.jqmdp.scope(this.$this,val);},
-		refresh: function(delay){$.jqmdp.refresh(this.$this,delay);return this;},
-		byId: function(id){return new jqmdp($.jqmdp.byId(this.$this,id));},
-		scopeById: function(id,val){return this.byId(id).scope(val);}
+	Handle.prototype = {
+		scope:     function(val){return $.jqmdp.scope(this.$this,val);},
+		refresh:   function(delay){$.jqmdp.refresh(this.$this,delay);return this;},
+		byId:      function(id){return byId(this.$this,id);},
+		jqmdp:     function(id){return new Handle(byId(this.$this,id));},
+		handle:    function(id){return new Handle(byId(this.$this,id));},
+		scopeById: function(id,val){return this.jqmdp(id).scope(val);},
+		template:  function($src){$.jqmdp.template(this.$this,$src);return this;},
+		exTemplate:function(url){$.jqmdp.exTemplate(this.$this,url);return this;},
+		markup:    function(){$.jqmdp.markup(this.$this);return this;}
 	}
 
-
-	// Auto init.
+	//------------------------------------------------------------------------
+	// bootup.
 	// TODO: $(document).bind("mobileinit", function(){init(document.body);});
 	if ($.mobile != null) alert("You must load 'jqmdp' before than 'jQuery mobile'.");
 	$(function(){init(document.body);});

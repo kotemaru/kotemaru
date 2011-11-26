@@ -1,0 +1,185 @@
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta id="viewport" name="viewport"
+		content="width=auto; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" />
+	<title>jqmdp demo page</title> 
+
+	<base href="../../">
+
+	<link rel="stylesheet" href="docs.css" />
+	<link rel="stylesheet" href="../jq/jqm/jquery.mobile-1.0.css" />
+	<script src="../jq/jquery-1.6.4.js"></script>
+
+	<script src="../js/jquery.mobile.jqmdp-1.0b.js"></script>
+	<script src="../jq/jqm/jquery.mobile-1.0.js"></script>
+
+</head>
+
+<body >
+<!-- ======================================================================== -->
+	<div data-role="page" id="index" >
+		<div data-role="header" data-theme="e" >
+			<h1>Scope attributes</h1>
+			<a href="index.html" data-icon="back"
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+				<div data-dp-template="docs/attrs/navi.html"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>スコープ属性</h2>
+<p>
+スコープ制御にかかわるカスタム属性の定義である。
+</p>
+<div data-dp-template="#scopeAttrLinkList"></div>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+	<div data-role="template" id="scopeAttrLinkList"   >
+		<ul data-role="listview" data-inset="true" >
+			<li><a href="#data-dp-scope">data-dp-scope属性</a></li>
+			<li><a href="#data-dp-id">data-dp-id属性</a></li>
+		</ul>
+	</div>
+
+<!-- ======================================================================== -->
+
+	<div data-role="page" id="data-dp-scope" >
+		<div data-role="header" data-theme="e" >
+			<h1>Scope attributes</h1>
+			<a href="#index" data-icon="back" 
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+<div data-dp-template="#scopeAttrLinkList"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>data-dp-scope属性</h2>
+<p>
+この属性を設定された HTML 要素にスコープが設定される。
+属性値は JavaScript の式として評価されスコープの値となる。
+</p>
+<p>
+この属性が評価されるのは pageinit イベントのタイミングである。
+pageinit イベントはページが実際に表示されるまで発生しないため、
+data-dp-scope属性のみを評価するAPI $.jqmdp.init() が用意されている。
+</p>
+
+<p>
+記述例：
+<xmp><div data-dp-scope="({dummy:'scope-1', through:'through-1'})">
+    <div>
+        <span data-dp-text="(dummy)">
+            <!-- "scope-1" となる -->
+        </span>
+    </div>
+    </div data-dp-scope="({dummy:'scope-2'})>
+        <span data-dp-text="(dummy)">
+            <!-- "scope-2" となる -->
+        </span>
+        <span data-dp-text="(through)">
+            <!-- "through-1" となる -->
+        </span>
+    </div>
+    <span data-dp-text="(dummy)">
+        <!-- "scope-1" となる -->
+    </span>
+</div>
+</xmp>
+
+この例では定数が指定されているがグローバル変数の参照や new 演算子で有っても構わない。
+JavaScriptとして評価結果を帰す必要がかるため括弧は必須である。
+</p>
+<p>
+この属性値の中で参照できる変数はグローバル変数と $this がある。
+$this はこの属性の定義された HTML 要素の jQuery object である。
+</p>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+<!-- ======================================================================== -->
+
+	<div data-role="page" id="data-dp-id" >
+		<div data-role="header" data-theme="e" >
+			<h1>Scope attributes</h1>
+			<a href="#index" data-icon="back" 
+				data-direction="reverse" data-iconpos="notext"></a>
+			<a href="index.html" data-icon="home" 
+				data-transition="none" data-iconpos="notext"></a>
+		</div>
+		<div data-role="content" >
+			<nav class="left-nav">
+				<h1>JQMDP v1.0</h1>
+				<hr/>
+<div data-dp-template="#scopeAttrLinkList"></div>
+			</nav>
+
+			<div class="right-nav" >
+<h2>data-dp-id属性</h2>
+<p>
+この属性を設定された HTML 要素にスコープ内でのみ有効な id が振られる。
+属性値は任意の文字列であり命名規則は特に無い。
+<br/>
+但し、以下の名前はシステム予約とする。
+<ul>
+	<li>英数字以外の記号から始まる名前</li>
+</ul>
+</p>
+<p>
+data-dp-id属性は JQMDP の API からのみ参照可能である。
+<ul>
+	<li>$.jqmdp.byId() は当該要素の jQuery object を帰す。</li>
+	<li>$.jqmdp.scopeById() は当該要素のスコープを帰す。</li>
+</ul>
+</p>
+
+<p>
+記述例：
+<xmp><div data-dp-scope="({})">
+    <div>
+        <div data-dp-id="mySpan">scope-text-1</div>
+    </div>
+    </div data-dp-scope="({})>
+        <div data-dp-id="mySpan">scope-text-2</div>
+        <span data-dp-text="($.jqmdp.byId($this,'mySpan').text())">
+            <!-- "scope-text-2" となる -->	
+        </span>
+    </div>
+    <span data-dp-text="($.jqmdp.byId($this,'mySpan').text())">
+	    <!-- "scope-text-1" となる -->	
+    </span>
+</div>
+</xmp>
+注：$this は span 要素の jQuery object である。
+
+</p>
+			</div>
+		</div>
+		<div data-role="footer">(c)2011 kotemaru.org</div>
+	</div>
+	
+	
+	
+	
+</body>
+
+</html>

@@ -1,0 +1,33 @@
+.left-nav {
+	min-width:300px;
+	width:35%;
+	display:block;
+	float:left;
+	margin-right:20px;
+}
+.right-nav {
+	min-width:300px;
+	width:60%;
+	display:block;
+	float:left;
+}
+.right-nav  blockquote {
+	font-size: 80%;
+	border: 1px solid black;
+	padding: 8px;
+	margin-left: 2em;
+	margin-right: 2em;
+}
+.right-nav xmp,pre {
+	font-size: 80%;
+	border: 1px solid black;
+	padding: 8px;
+	margin-left: 2em;
+	margin-right: 2em;
+}
+.right-nav table {
+	margin-top: 1em;
+}
+.Template {
+	display:none;
+}

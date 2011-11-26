@@ -147,11 +147,11 @@ $(function(){
 			<h3>Control sentence test</h3>
 
 			<a data-role="button" href="#" data-icon="arrow-u" data-iconpos="notext" data-inline="true" 
-				onclick="$(this).jqmdp('scope').h--;$(this).jqmdp('refresh',400)"></a>
+				onclick="$(this).jqmdp().refresh(400).scope().h--"></a>
 			<a data-role="button" href="#" data-icon="arrow-d" data-iconpos="notext" data-inline="true" 
 				onclick="$(this).jqmdp('scope').h++;$(this).jqmdp('refresh',400)"></a>
 			<a data-role="button" href="#" data-icon="arrow-l" data-iconpos="notext" data-inline="true" 
-				onclick="$(this).jqmdp('scope').w--;$(this).jqmdp('refresh',400)"></a>
+				onclick="$.jqmdp.scope($(this)).w--;$.jqmdp.refresh($(this),400);"></a>
 			<a data-role="button" href="#" data-icon="arrow-r" data-iconpos="notext" data-inline="true" 
 				onclick="$(this).jqmdp('scope').w++;$(this).jqmdp('refresh',400)"></a>
 
