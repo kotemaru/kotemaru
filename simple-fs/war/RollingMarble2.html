@@ -1,0 +1,155 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=640,user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<script src="js/Util.js"></script>
+	<script src="js/Dialog.js"></script>
+	<script src="js/Sound.js"></script>
+	<script src="js/RollingMarble.js"></script>
+	<script src="js/StageData.js"></script>
+	<script src="js/Marble.js"></script>
+	<script src="js/MyMarble.js"></script>
+	<script src="js/Jammer.js"></script>
+	<script src="js/JammerG.js"></script>
+	<script src="js/JammerGbig.js"></script>
+	<script src="js/BlackHole.js"></script>
+	<script src="js/Bonus.js"></script>
+	<script src="js/Actor.js"></script>
+
+	<script src="js/Block.js"></script>
+	<script src="js/BlockGoal.js"></script>
+	<script src="js/BlockNil.js"></script>
+	<script src="js/BlockSlow.js"></script>
+	<script src="js/BlockWall.js"></script>
+	<script src="js/BlockNone.js"></script>
+	<script src="js/Stage.js"></script>
+
+	<script>
+
+const SOUND_PARTS  = {
+		boyon : {s:0.0,   e:1.55,   },
+		drop  : {s:1.9,   e:2.40,   },
+		kin   : {s:3.293, e:3.75,   },
+		goal  : {s:4.228, e:14.051, },
+	};
+
+function onLoad() {
+
+	var frame = document.getElementById("stageFrame");
+	frame.style.height = (window.innerHeight-frame.offsetTop-4)+"px";
+
+	//Dialog.open("d_init",function(level){
+		//Sound.load("sound/all.mp3", SOUND_PARTS, function(){
+			RollingMarble.init(1);
+		//});
+	//});
+
+}
+
+	</script>
+
+	<style>
+		body{
+			color: white;
+			background: black;
+			margin: 0;
+			width:640px;
+		}
+		#header{
+			height: 32px;
+			width: 638px;
+			border: 1px solid gray;
+			font-size: 24px;
+			font-family: sans-serif;
+			font-weight: 900; 
+			margin-bottom: 8px;
+			//-webkit-text-stroke: 1px black;
+			z-index: 10000;
+			//opacity: 0.5;
+			background: black;
+			//position: absolute;
+			//left: 0px;
+			//top: 0px;
+		}
+		#stageFrame{
+			//border: 1px solid gray;
+			overflow: hidden;
+		}
+		#stage{
+			background: url(img/gray-check.png);
+			margin: 0 auto;
+			position: absolute;
+			left: 0px;
+			top: 0px;
+		}
+		.dialog {
+			display: none;
+			position: absolute;
+			width: 80%;
+			//height: 100px;
+			top: 40%;
+			left: 10%;
+			background: #444444;
+			opacity: 0.9;
+			text-align: center;
+			font: 32px sans-serif;
+			padding: 8px;
+			z-index: 10000;
+			border-radius: 10px;
+		}
+		.dialog button{
+			font: 24px sans-serif;
+		}
+	</style>
+</head>
+
+<body onload="onLoad()">
+
+	<div id="header">
+		Stage:<b id="stageNo">--</b>
+		&nbsp;&nbsp;
+		Time:<b id="timer">---.--</b>
+		&nbsp;&nbsp;
+		&nbsp;&nbsp;
+		<b onlick="Sound.load("sound/all.mp3", SOUND_PARTS);">♪</b>
+	</div>
+
+	<div id="stageFrame">
+		<div id="stage">
+		</div>
+	</div>
+
+	<div class="dialog" id="d_init">
+		ビー玉ころころ ゲーム<br/>
+		<font size="2">難易度を選んでください。<br/><br/></font>
+		<button  onclick="Dialog.other(1)">Easy</button>
+		<button  onclick="Dialog.other(2)">Normal</button>
+		<button  onclick="Dialog.other(3)">Hard</button>
+	</div>
+
+	<div class="dialog" id="d_start">
+		<div>Time Limit: <b id="timelimit">000.00</b></div>
+		<br/>
+		<button  onclick="Dialog.ok()">Go!</button>
+	</div>
+
+	<div class="dialog" id="d_retry">
+		<div><b>Time up!</b></div>
+		<br/>
+		<button  onclick="Dialog.ok()">Retry</button>
+		<button  onclick="Dialog.ng()">Exit</button>
+	</div>
+
+	<div class="dialog" id="d_goal">
+		<div><b>GOAL!</b></div>
+		<br/>
+		<button  onclick="Dialog.ok()">Next Stage</button>
+	</div>
+
+</body>
+
+</html>
