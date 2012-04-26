@@ -1,0 +1,431 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+	<script src="js/Util.js"></script>
+	<script src="js/Dialog.js"></script>
+	<script src="js/Block.js"></script>
+	<script src="js/BlockGoal.js"></script>
+	<script src="js/BlockNil.js"></script>
+	<script src="js/BlockSlow.js"></script>
+	<script src="js/BlockWall.js"></script>
+	<script src="js/BlockNone.js"></script>
+
+	<script src="js/Actor.js"></script>
+	<script src="js/Marble.js"></script>
+	<script src="js/MyMarble.js"></script>
+	<script src="js/Jammer.js"></script>
+	<script src="js/JammerG.js"></script>
+	<script src="js/JammerGbig.js"></script>
+	<script src="js/BlackHole.js"></script>
+	<script src="js/Bonus.js"></script>
+
+	<style>
+html, body {
+	width:100%;
+	height:100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+}
+
+#outFrame {
+	margin: 5% auto;
+
+	width: 960px;
+	height: 90%;
+	border: 0px solid black;
+}
+#leftPanel {
+	float: left;
+	width: 350px;
+	height: 90%;
+	margin: 0px;
+	padding: -8px;
+	border: 1px solid black;
+}
+
+#rightPanel {
+	float: right;
+	width: 600px;
+	overflow: scroll;
+	height: 90%;
+	margin: 0px;
+	padding: 0px;
+	border: 0px solid gray;
+}
+
+
+#map {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	background: url("img/gray-check.png");
+}
+
+.SelButton {
+	position: static;
+	border: 2px outset lightgray;
+	padding: 2px;
+	margin: 4px;
+}
+
+
+	</style>
+
+	<script>
+
+var Login = {};
+(function(){
+	var xreq = new XMLHttpRequest();
+	xreq.open("GET","/user/current", false);
+	xreq.send();
+	if (xreq.status >= 400) {
+		location = "/user/login?url=/editor.html"
+	}
+	var userInfo = JSON.parse(xreq.responseText);
+	if (userInfo.isRegister == false) {
+		location = "/register.html";
+	}
+	Login.userInfo = userInfo;
+})();
+
+
+
+
+function Map(id,data){this.initialize.apply(this, arguments)};
+(function(Class){
+	Class.prototype.initialize = function(id,data) {
+		this.elem = Util.byId(id);
+		this.data = data;
+
+		var self = this;
+		this.elem.onclick = function(ev) {self.onClick(ev);}
+		this.elem.ondrop = function(ev) {
+			var id = ev.dataTransfer.getData("number");
+			var actor = self.actors[id];
+			actor.x = ev.target.offsetLeft + ev.offsetX;
+			actor.y = ev.target.offsetTop + ev.offsetY;
+			actor.reflect();
+			ev.preventDefault();
+		}
+		//this.elem.ondragover =  function(ev) {
+		//	ev.preventDefault();return false;
+		//}
+
+		this.initMap(data);
+		this.initActors(data);
+	}
+
+	Class.prototype.initMap = function(data) {
+		this.elem.innerHTML = "";
+		Util.css(this.elem,{
+			width: (data.w*32)+"px", height: (data.h*32)+"px", 
+		})
+
+		this.map = [];
+		for (var y=0 ; y<data.h; y++) {
+			var line = [];
+			this.map.push(line);
+			for (var x=0 ; x<data.w; x++) {
+				var block = new EBlock(x,y);
+				line.push(block);
+				this.elem.appendChild(block.elem);
+			}
+		}
+	}
+	Class.prototype.initActors = function(data) {
+		this.actors = {};
+		this.actorId = 0;
+	}
+
+	Class.prototype.onClick = function(ev) {
+		var btn = Global.mapItemGroup.current;
+		if (btn.opts.type != "actor") return;
+
+		const x = ev.target.offsetLeft + ev.offsetX;
+		const y = ev.target.offsetTop + ev.offsetY;
+		this.addActor(btn.name, x,y);
+	}
+	Class.prototype.addActor = function(name, x,y){
+		if (name == "my" && this.myMarble) {
+			this.myMarble.x = x;
+			this.myMarble.y = y;
+			this.myMarble.reflect();
+			return;
+		}
+
+
+		var actor = Actor.create(this, name, x,y);
+		actor.id = this.actorId++;
+		actor.elem.ondragstart = function (ev) {
+			ev.dataTransfer.setData("number", actor.id);
+			//ev.dataTransfer.setDragImage(actor.elem, -16, -16);
+		}
+
+		this.actors[actor.id] = actor;
+		this.elem.appendChild(actor.elem);
+		
+		if (name == "my") {
+			this.myMarble = actor;
+		}
+		
+	}
+
+	Class.prototype.save = function(ev) {
+		var strs = [];
+		const data = this.data;
+		
+		strs.push('{\n');
+		strs.push('"w":'+data.w+',\n');
+		strs.push('"h":'+Util.byId('mapHeight').value+',\n');
+		strs.push('"time":'+Util.byId('mapTime').value+',\n');
+		strs.push('"map": [\n');
+		for (var y=0 ; y<data.h; y++) {
+			strs.push('"');
+			for (var x=0 ; x<data.w; x++) {
+				strs.push(Block.CHARS[this.map[y][x].name]);
+			}
+			strs.push('"');
+			strs.push(',\n');
+		}
+		strs.pop();
+		strs.push('\n],\n');
+
+		strs.push('"actors":[\n');
+		for (var id in this.actors) {
+			var a = this.actors[id];
+			strs.push('{"name":"'+a.name+'","x":'+a.x+',"y":'+a.y+'}');
+			strs.push(',\n');
+		}
+		strs.pop();
+		strs.push('\n]\n');
+		strs.push('}');
+
+		return strs.join("");
+	}
+
+	Class.prototype.load = function(data) {
+		this.data = data;
+		
+		Util.byId("mapHeight").value = data.h;
+		Util.byId("mapTime").value = data.time;
+
+		this.initMap(data);
+		for (var y=0; y<data.map.length && y<data.h; y++) {
+			var line = data.map[y];
+			for (var x=0 ; x<line.length; x++) {
+				var name = Block.RCHARS[line.charAt(x)];
+				this.map[y][x].setValue(name);
+			}
+		}
+
+		this.initActors(data);
+		for (var i=0; i<data.actors.length; i++) {
+			var a = data.actors[i];
+			this.addActor(a.name, a.x,a.y);
+		}
+
+	}
+
+})(Map);
+
+
+
+function EBlock(x,y){this.initialize.apply(this, arguments)};
+(function(Class){
+	var mounseDown = false;
+	Class.prototype.initialize = function(x,y) {
+		this.elem = Util.createImg("img/transparent.png",{
+			left:(x*32)+"px", top:(y*32)+"px"
+		});
+		this.elem.width = 32;
+		this.elem.draggable = false;
+		this.elem.ondragover = function(ev) {ev.preventDefault();return false;}
+		this.name = "none";
+		this.x = x;
+		this.y = y;
+
+		var self = this;
+		this.elem.onclick = function(ev){self.onClick(ev);};
+		this.elem.onmousedown = function(ev){
+			mounseDown = true;
+		};
+		this.elem.onmouseup = function(ev){
+			mounseDown = false;
+		};
+		this.elem.onmousemove = function(ev){
+			if (mounseDown) self.onClick(ev);
+		};
+	}
+	Class.prototype.onClick = function(ev) {
+		var btn = Global.mapItemGroup.current;
+		if (btn.opts.type != "block") return;
+		this.setValue(btn.name);
+	}
+	Class.prototype.setValue = function(name) {
+		var btn = Global.mapItemGroup.names[name];
+		this.elem.src = btn.elem.src;
+		this.name = name;
+	}
+})(EBlock);
+
+function SelButtonGroup(id){this.initialize.apply(this, arguments)};
+(function(Class){
+	Class.prototype.initialize = function(id) {
+		this.elem = Util.byId(id);
+		this.list = [];
+		this.names = {};
+		this.current = null;
+	}
+	Class.prototype.add = function(btn) {
+		btn.group = this;
+		this.elem.appendChild(btn.elem);
+		this.list.push(btn);
+		this.names[btn.name] = btn;
+	}
+	Class.prototype.reset = function(btn) {
+		for (var name in this.names) {
+			this.names[name].reset();
+		}
+		this.current = null;
+	}
+})(SelButtonGroup);
+
+function SelButton(name,src,opts){this.initialize.apply(this, arguments)};
+(function(Class){
+	Class.prototype.initialize = function(name,entity,opts) {
+		this.elem = entity.elem;
+		this.elem.className = "SelButton";
+		this.elem.style.position = "static";
+		this.elem.style.display = "inline";
+		this.name = name;
+		this.value = false;
+		this.opts = opts;
+
+		var self = this;
+		this.elem.onclick = function(ev) {self.on();}
+	}
+
+	Class.prototype.on = function() {
+		this.group.reset();
+		this.value = true;
+		this.group.current = this;
+		this.elem.style.border = "2px inset lightgray";
+	}
+	Class.prototype.off = function() {
+		this.group.reset();
+	}
+	Class.prototype.reset = function() {
+		this.value = false;
+		this.elem.style.border = "2px outset lightgray";
+	}
+
+})(SelButton);
+
+var Global = {};
+
+function onLoad() {
+	Global.map = new Map("map",{w:18, h:100});
+
+	Global.mapItemGroup = new SelButtonGroup("mapItem");
+	for (var name in Block.FACTORY) {
+		var block = Block.create(Global.map, name, 0,0);
+		Global.mapItemGroup.add(new SelButton(name, block, {type:"block"}));
+	}
+
+	Global.mapItemGroup.elem.appendChild(Util.createElem("hr"));
+	for (var name in Actor.FACTORY) {
+		var actor = Actor.create(Global.map, name, 0,0);
+		Global.mapItemGroup.add(new SelButton(name, actor, {type:"actor"}));
+	}
+
+	Util.byId("nickName").value = Login.userInfo.nickName;
+	load();
+}
+function resize(){
+	var str = Global.map.save();
+	Util.byId("text").value = str;
+	var data = JSON.parse(str);
+	Global.map.load(data);
+}
+
+function save(){
+	var fname = getFileName();
+	var str = Global.map.save();
+	var xreq = new XMLHttpRequest();
+	xreq.open("PUT", fname, false);
+	xreq.setRequestHeader("Content-type", "application/json; charset=utf-8");
+	xreq.send(str);
+	if (xreq.status >= 400) {
+		alert(xreq.responseText);
+	}
+	Util.byId("text").value = str;
+}
+
+function load() {
+	var fname = getFileName();
+	var xreq = new XMLHttpRequest();
+	xreq.open("GET",fname, false);
+	xreq.send();
+	if (xreq.status >= 400) {
+		alert(xreq.responseText);
+		return;
+	}
+	Util.byId("text").value = xreq.responseText;
+	var data = JSON.parse(xreq.responseText);
+	Global.map.load(data);
+}
+function getFileName(){
+	return "/fs/"+Login.userInfo.nickName
+		+"/"+Util.byId("stageNo").value;
+}
+
+	</script>
+
+
+</head>
+<body onload="onLoad()">
+
+	<div id="outFrame">
+		<div id="leftPanel">
+			<div>
+				
+				<input id="nickName" size=20 />
+				Stage:<select id="stageNo">
+					<option>01</option>
+					<option>02</option>
+					<option>03</option>
+					<option>04</option>
+					<option>05</option>
+					<option>06</option>
+					<option>07</option>
+					<option>08</option>
+					<option>09</option>
+					<option>10</option>
+				</select>
+				<br/>
+			</div>
+			<hr/>
+			<div>
+				Height: <input id="mapHeight" size=2 value="100"/>block
+				<button onclick="resize()">Resize</button>
+				<br/>
+				Time: <input id="mapTime" size=3 value="10"/>sec
+			</div>
+			<hr/>
+			<div id="mapItem"></div>
+			<hr/>
+			<button onclick="save()">Save</button>
+			<button onclick="location='/user/logout';">Logout</button>
+			<textarea id="text" style="width:100%;" rows=10></textarea>
+		</div>
+
+		<div id="rightPanel">
+			<div id="map" ></div>
+		</div>
+	<div>
+
+
+</body>
+</html>

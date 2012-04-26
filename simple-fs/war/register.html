@@ -1,0 +1,35 @@
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<script src="js/Util.js"></script>
+	<script>
+function register() {
+	var nn = Util.byId("nickName").value;
+	location = "/user/register?nickName="+nn+"&url=/editor.html";
+}
+
+function onLoad(){
+	var xreq = new XMLHttpRequest();
+	xreq.open("GET","/user/current", false);
+	xreq.send();
+	if (xreq.status >= 400) {
+		location = "/user/login?url=/editor.html"
+	}
+	var userInfo = JSON.parse(xreq.responseText);
+	Util.byId("nickName").value = userInfo.nickName.replace(/@.*$/,"");
+};
+
+	</script>
+
+</head>
+<body onload="onLoad()">
+
+<center>
+<h2>ニックネームを登録してください。</h2>
+NickName:<input id="nickName" size="20" />
+<button onclick="register()">登録</button>
+</center>
+
+
+</body>
+</html>
