@@ -10,17 +10,8 @@ function Stage(id) {
 	Class.H = 600;
 	const BLOCK_NIL = new BlockNil();
 
-	function readData(url) {
-		var xreq = new XMLHttpRequest();
-		xreq.open("GET", url, false);
-		xreq.send();
-		var data = eval("("+xreq.responseText+")");
-		return data;
-	}
-	
-	Class.prototype.makeStage = function(mapData) {
-		var data = readData("/fs/test.json");
-
+	Class.prototype.makeStage = function(stageName) {
+		var data = Server.file(stageName);
 
 		var lines = data.map;
 		this.timelimit = data.time*1000;

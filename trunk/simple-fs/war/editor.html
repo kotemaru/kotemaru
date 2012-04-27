@@ -1,6 +1,7 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>ビー玉ころころマップエディタ</title>
 
 	<script src="js/Util.js"></script>
 	<script src="js/Dialog.js"></script>
@@ -19,6 +20,7 @@
 	<script src="js/JammerGbig.js"></script>
 	<script src="js/BlackHole.js"></script>
 	<script src="js/Bonus.js"></script>
+	<script src="js/Server.js"></script>
 
 	<style>
 html, body {
@@ -27,31 +29,64 @@ html, body {
 	margin: 0px;
 	padding: 0px;
 	overflow: hidden;
+	font-size: 14px;
+}
+#header {
+	box-sizing: border-box;
+	position: fixed;
+	width: 960px;
+	height: 30px;
+	
+	left:0;
+	top:0;
+	border: 1px outset black;
+}
+input {
+	border: 1px inset lightgray;
+}
+
+.tabs > b {
+	display: inline-block;
+	padding: 2px 4px;
+	margin: 4px;
+	margin-bottom: 0px;
+	border: 1px outset lightgray;
+	border-bottom: 0px;
+	cursor: pointer;
+	height: 20px;
+}
+.tabPanel {
+	box-sizing: border-box;
+	border: 1px solid black;
+	padding: 4px;
 }
 
 #outFrame {
-	margin: 5% auto;
-
+	margin: 0;
+	box-sizing: border-box;
 	width: 960px;
-	height: 90%;
+	height: 100%;
 	border: 0px solid black;
+	padding: 32px 0 0 0;
+	
 }
 #leftPanel {
+	box-sizing: border-box;
 	float: left;
 	width: 350px;
-	height: 90%;
-	margin: 0px;
-	padding: -8px;
-	border: 1px solid black;
+	height: 100%;
+	margin: 0px 0px;
+	padding: 0px;
 }
 
 #rightPanel {
+	box-sizing: border-box;
 	float: right;
 	width: 600px;
 	overflow: scroll;
-	height: 90%;
-	margin: 0px;
-	padding: 0px;
+	height: 100%;
+	margin: 0px 0px;
+	padding: 0px 0px;
 	border: 0px solid gray;
 }
 
@@ -70,6 +105,13 @@ html, body {
 	margin: 4px;
 }
 
+#balloon {
+	display: none;
+	position: absolute;
+	border: 1px solid black;
+	background: #ffeeaa;
+	padding: 2px 4px;
+}
 
 	</style>
 
@@ -119,6 +161,8 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 
 	Class.prototype.initMap = function(data) {
 		this.elem.innerHTML = "";
+		this.myMarble = null;
+		
 		Util.css(this.elem,{
 			width: (data.w*32)+"px", height: (data.h*32)+"px", 
 		})
@@ -155,14 +199,18 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 			return;
 		}
 
-
+		var self = this;
 		var actor = Actor.create(this, name, x,y);
 		actor.id = this.actorId++;
 		actor.elem.ondragstart = function (ev) {
 			ev.dataTransfer.setData("number", actor.id);
 			//ev.dataTransfer.setDragImage(actor.elem, -16, -16);
 		}
-
+		actor.elem.oncontextmenu = function(ev){
+			delete self.actors[actor.id];
+			self.elem.removeChild(actor.elem);
+		}
+		
 		this.actors[actor.id] = actor;
 		this.elem.appendChild(actor.elem);
 		
@@ -192,7 +240,8 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 		strs.pop();
 		strs.push('\n],\n');
 
-		strs.push('"actors":[\n');
+		strs.push('"actors":[');
+		strs.push('\n');
 		for (var id in this.actors) {
 			var a = this.actors[id];
 			strs.push('{"name":"'+a.name+'","x":'+a.x+',"y":'+a.y+'}');
@@ -248,6 +297,7 @@ function EBlock(x,y){this.initialize.apply(this, arguments)};
 
 		var self = this;
 		this.elem.onclick = function(ev){self.onClick(ev);};
+		this.elem.oncontextmenu = function(ev){self.setValue("none");}
 		this.elem.onmousedown = function(ev){
 			mounseDown = true;
 		};
@@ -255,7 +305,10 @@ function EBlock(x,y){this.initialize.apply(this, arguments)};
 			mounseDown = false;
 		};
 		this.elem.onmousemove = function(ev){
-			if (mounseDown) self.onClick(ev);
+			if (mounseDown) {
+				if (ev.button == 0) self.onClick(ev);
+				if (ev.button == 2) self.setValue("none");
+			}
 		};
 	}
 	Class.prototype.onClick = function(ev) {
@@ -305,6 +358,12 @@ function SelButton(name,src,opts){this.initialize.apply(this, arguments)};
 
 		var self = this;
 		this.elem.onclick = function(ev) {self.on();}
+		this.elem.onmouseover = function(ev) {
+			showBalloon(ev, self.opts.comment);
+		}
+		this.elem.onmouseout = function(ev) {
+			hideBalloon();
+		}
 	}
 
 	Class.prototype.on = function() {
@@ -331,16 +390,22 @@ function onLoad() {
 	Global.mapItemGroup = new SelButtonGroup("mapItem");
 	for (var name in Block.FACTORY) {
 		var block = Block.create(Global.map, name, 0,0);
-		Global.mapItemGroup.add(new SelButton(name, block, {type:"block"}));
+		Global.mapItemGroup.add(new SelButton(name, block, {
+			type:"block", comment: Block.COMMENT[name]
+		}));
 	}
 
 	Global.mapItemGroup.elem.appendChild(Util.createElem("hr"));
 	for (var name in Actor.FACTORY) {
 		var actor = Actor.create(Global.map, name, 0,0);
-		Global.mapItemGroup.add(new SelButton(name, actor, {type:"actor"}));
+		Global.mapItemGroup.add(new SelButton(name, actor, {
+			type:"actor", comment: Actor.COMMENT[name]
+		}));
 	}
 
 	Util.byId("nickName").value = Login.userInfo.nickName;
+
+	selectTab("mapItem");
 	load();
 }
 function resize(){
@@ -353,46 +418,63 @@ function resize(){
 function save(){
 	var fname = getFileName();
 	var str = Global.map.save();
-	var xreq = new XMLHttpRequest();
-	xreq.open("PUT", fname, false);
-	xreq.setRequestHeader("Content-type", "application/json; charset=utf-8");
-	xreq.send(str);
-	if (xreq.status >= 400) {
-		alert(xreq.responseText);
-	}
+	Server.putJson(fname, str, errorHander);
 	Util.byId("text").value = str;
+}
+
+function errorHander(xreq) {
+	alert(xreq.responseText);
 }
 
 function load() {
 	var fname = getFileName();
-	var xreq = new XMLHttpRequest();
-	xreq.open("GET",fname, false);
-	xreq.send();
-	if (xreq.status >= 400) {
-		alert(xreq.responseText);
-		return;
-	}
-	Util.byId("text").value = xreq.responseText;
-	var data = JSON.parse(xreq.responseText);
+	var text = Server.getText(fname, errorHander);
+	Util.byId("text").value = text;
+	var data = JSON.parse(text);
 	Global.map.load(data);
 }
+
+function apply() {
+	var text = Util.byId("text").value;
+	var data = JSON.parse(text);
+	Global.map.load(data);
+}
+
 function getFileName(){
 	return "/fs/"+Login.userInfo.nickName
 		+"/"+Util.byId("stageNo").value;
 }
+function play() {
+	var url = "/play.html?"+Login.userInfo.nickName
+			+"#"+Util.byId("stageNo").value;
+	window.open(url);
+}
+function selectTab(id) {
+	Util.byId("mapItem").style.display="none";
+	Util.byId("config").style.display="none";
+	Util.byId(id).style.display="block";
+}
 
+function showBalloon(ev, text) {
+	Util.byId("balloon").innerText = text;
+	var style = Util.byId("balloon").style;
+	style.display = "inline-block";
+	style.left = (ev.x+0)+"px";
+	style.top = (ev.y+0)+"px";
+}
+function hideBalloon(ev, text) {
+	Util.byId("balloon").style.display = "none";
+}
 	</script>
 
 
 </head>
 <body onload="onLoad()">
 
-	<div id="outFrame">
-		<div id="leftPanel">
-			<div>
+	<div id="header">
 				
-				<input id="nickName" size=20 />
-				Stage:<select id="stageNo">
+		Name:<input id="nickName" size=20 disabled/>
+		Stage:<select id="stageNo" onchange="load()">
 					<option>01</option>
 					<option>02</option>
 					<option>03</option>
@@ -403,28 +485,40 @@ function getFileName(){
 					<option>08</option>
 					<option>09</option>
 					<option>10</option>
-				</select>
-				<br/>
+		</select>
+
+		&nbsp;&nbsp;&nbsp;
+
+		<button onclick="play()">Play</button>
+		<button onclick="save()">Save</button>
+		<button onclick="location='/user/logout';">Logout</button>
+		
+	</div>
+	<div id="outFrame">
+		<div id="leftPanel">
+			<div class="tabs">
+				<b onclick="selectTab('mapItem')">Edit</b>
+				<b onclick="selectTab('config')">Config</b>
 			</div>
-			<hr/>
-			<div>
-				Height: <input id="mapHeight" size=2 value="100"/>block
+
+			<div class="tabPanel" id="mapItem">	</div>
+			<div class="tabPanel" id="config">
+				Size: <input size=2 value="18" disabled/>x<input id="mapHeight" size=2 value="100"/>
 				<button onclick="resize()">Resize</button>
 				<br/>
 				Time: <input id="mapTime" size=3 value="10"/>sec
+				<hr/>
+				Source: <button onclick="apply()">Apply</button>
+				<textarea id="text" style="width:100%;" rows=10></textarea>
 			</div>
-			<hr/>
-			<div id="mapItem"></div>
-			<hr/>
-			<button onclick="save()">Save</button>
-			<button onclick="location='/user/logout';">Logout</button>
-			<textarea id="text" style="width:100%;" rows=10></textarea>
 		</div>
 
-		<div id="rightPanel">
+		<div id="rightPanel" onContextmenu="return false;">
 			<div id="map" ></div>
 		</div>
 	<div>
+		
+	<div id="balloon"></div>
 
 
 </body>

@@ -100,6 +100,8 @@ public class SimpleFsServlet extends HttpServlet {
 			fb = (FileBean) sbs.get(pathInfo);
 		} catch (EntityNotFoundException e) {
 			res.setStatus(404);
+			res.setContentType("text/plain;charset=utf-8");
+			res.getWriter().write("このファイル("+pathInfo+")は存在しません。");
 			return;
 		}
 		byte[] body = fb.getBody();
@@ -138,11 +140,11 @@ public class SimpleFsServlet extends HttpServlet {
 			Boolean directory = (Boolean)e.getProperty("directory");
 
 			if (count++ > 0) writer.write(",");
-			writer.write("'"+lastName+"':{");
-			writer.write("length:"+length);
-			writer.write(",lastModified:"+lastModified);
-			writer.write(",nickName:\""+nickName+"\"");
-			writer.write(",directory:"+directory);
+			writer.write("\""+lastName+"\":{");
+			writer.write("\"length\":"+length);
+			writer.write(",\"lastModified\":"+lastModified);
+			writer.write(",\"nickName\":\""+nickName+"\"");
+			writer.write(",\"directory\":"+directory);
 			writer.write("}\n");
 		}
 		writer.write("}");

@@ -59,5 +59,17 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 		actor.name = name;
 		return actor;
 	}
+	// for editor
+	Class.COMMENT = {
+		'my': "自玉(１個のみ)",
+		'red': "普通の敵玉",
+		'black': "重たい敵玉",
+		'yellow': "弾ける敵玉",
+		'green': "追って来る敵玉",
+		'greenBig': "大きな追って来る敵玉",
+		'fixGray': "動かない障害物",
+		'fixYellow': "弾ける障害物",
+		'hole': "吸い込まれる",
+	};
 
 })(Actor);

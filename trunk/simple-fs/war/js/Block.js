@@ -57,5 +57,14 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		if (f == null) f = Class.FACTORY["none"];
 		return f(stage,  x, y);
 	}
+	
+	// for editor
+	Class.COMMENT = {
+		"none": "通常の床面",
+		"nil":  "無(落ちる)",
+		"wall": "壁(侵入不可)",
+		"goal": "ゴール",
+		"slow": "低速エリア",
+	};
 
 })(Block);

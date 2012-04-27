@@ -1,10 +1,11 @@
 
 function RollingMarble() {
 	this.stage  = new Stage("stage");
-	this.timer = document.getElementById("timer");
+	this.timer = Util.byId("timer");
 	this.time = 0;
 	this.isStart = false;
-	this.stageNo = 1;
+	this.stageNo = 0;
+	this.stageNames = RollingMarble.getStageNames();
 }
 (function(Class) {
 	var INTERVAL = 50; //ms
@@ -15,8 +16,12 @@ function RollingMarble() {
 	}
 
 	Class.prototype.start = function() {
-		this.stage.makeStage();
+		this.stage.makeStage(this.stageNames[this.stageNo]);
 		this.marble = this.stage.marble;
+		if (this.marble == null) {
+			this.stageNo++;
+			return this.start();
+		}
 
 		this.startTime = (new Date()).getTime();
 		this.time += this.stage.timelimit;
@@ -25,7 +30,7 @@ function RollingMarble() {
 
 		var self = this;
 		setTimeout(function() {
-			Util.byId("stageNo").innerText = self.stageNo;
+			Util.byId("stageNo").innerText = (self.stageNo+1);
 			Util.byId("timelimit").innerText = toSecStr(self.time)+" sec";
 			Dialog.open("d_start",function(){
 				self.isStart = true;
@@ -45,6 +50,10 @@ function RollingMarble() {
 	}
 	Class.prototype.stop = function() {
 		this.isStart = false;
+	}
+	Class.prototype.resume = function() {
+		this.isStart = true;
+		ticker();
 	}
 	Class.prototype.action = function() {
 		//Sound.autoStop();
@@ -95,6 +104,25 @@ function RollingMarble() {
 		var ms = "000000"+time;
 		return ms.substr(ms.length-6,3)+"."+ms.substr(ms.length-3,2);
 	}
+
+	Class.getStageNames = function(){
+		var dir = location.search!="" ? location.search.replace(/^[?]/,"") : "default";
+		var stageNames = [];
+
+		if (location.hash == "") {
+			var list = Server.list(dir);
+			for (var k in list) {
+				if (!list[k].isDir) stageNames.push(dir+ "/"+k);
+			}
+			stageNames.sort();
+		} else {
+			stageNames.push(dir+"/"+location.hash.replace(/^#/,""));
+		}
+		
+		return stageNames;
+	}
+
+
 
 	Class.init = function(level) {
 		RollingMarble.instance = new RollingMarble();
