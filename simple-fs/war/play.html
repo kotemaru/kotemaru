@@ -6,6 +6,8 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
+	<title>ビー玉ころころ</title>
+
 	<script src="js/Util.js"></script>
 	<script src="js/Dialog.js"></script>
 	<script src="js/Sound.js"></script>
@@ -27,6 +29,7 @@
 	<script src="js/BlockWall.js"></script>
 	<script src="js/BlockNone.js"></script>
 	<script src="js/Stage.js"></script>
+	<script src="js/Server.js"></script>
 
 	<script>
 
@@ -39,7 +42,7 @@ const SOUND_PARTS  = {
 
 function onLoad() {
 
-	var frame = document.getElementById("stageFrame");
+	var frame = Util.byId("stageFrame");
 	frame.style.height = (window.innerHeight-frame.offsetTop-4)+"px";
 
 	//Dialog.open("d_init",function(level){
@@ -48,6 +51,30 @@ function onLoad() {
 		//});
 	//});
 
+}
+
+function config(){
+	RollingMarble.instance.stop();
+
+	var sel = Util.byId("mapSelect");
+	sel.innerHTML = "";
+	var list = Server.list("");
+	for (var k in list) {
+		var opt = document.createElement("option");
+		opt.innerText = k;
+		opt.value = k;
+		sel.appendChild(opt);
+	}
+
+	Dialog.open("d_config",{
+		other: function(val){
+			var name = sel.value;
+			location = "/play.html?"+name;
+		},
+		ng: function() {
+			RollingMarble.instance.resume();
+		}
+	});
 }
 
 	</script>
@@ -101,7 +128,7 @@ function onLoad() {
 			z-index: 10000;
 			border-radius: 10px;
 		}
-		.dialog button{
+		.dialog button,select{
 			font: 24px sans-serif;
 		}
 	</style>
@@ -115,7 +142,8 @@ function onLoad() {
 		Time:<b id="timer">---.--</b>
 		&nbsp;&nbsp;
 		&nbsp;&nbsp;
-		<b onlick="Sound.load("sound/all.mp3", SOUND_PARTS);">♪</b>
+		&nbsp;&nbsp;
+		<img src="img/config.png" onclick="config()"/>
 	</div>
 
 	<div id="stageFrame">
@@ -148,6 +176,15 @@ function onLoad() {
 		<div><b>GOAL!</b></div>
 		<br/>
 		<button  onclick="Dialog.ok()">Next Stage</button>
+	</div>
+	
+	<div class="dialog" id="d_config">
+		<div><b>Config</b></div>
+		<br/>
+		Map:<select id="mapSelect" ></select>
+		<button  onclick="Dialog.other('play')">Play</button>
+		<br/><br/>
+		<button  onclick="Dialog.ng()">Cansel</button>
 	</div>
 
 </body>
