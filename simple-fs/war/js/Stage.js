@@ -10,8 +10,7 @@ function Stage(id) {
 	Class.H = 600;
 	const BLOCK_NIL = new BlockNil();
 
-	Class.prototype.makeStage = function(stageName) {
-		var data = Server.file(stageName);
+	Class.prototype.makeStage = function(data) {
 
 		var lines = data.map;
 		this.timelimit = data.time*1000;

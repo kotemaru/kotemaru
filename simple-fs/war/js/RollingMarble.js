@@ -16,7 +16,14 @@ function RollingMarble() {
 	}
 
 	Class.prototype.start = function() {
-		this.stage.makeStage(this.stageNames[this.stageNo]);
+		var stageName = this.stageNames[this.stageNo];
+		var data = Server.file(stageName);
+		if (data == null) {
+			alert(stageName+"が有りません。");
+			return;
+		}
+	
+		this.stage.makeStage(data);
 		this.marble = this.stage.marble;
 		if (this.marble == null) {
 			this.stageNo++;
@@ -30,7 +37,7 @@ function RollingMarble() {
 
 		var self = this;
 		setTimeout(function() {
-			Util.byId("stageNo").innerText = (self.stageNo+1);
+			Util.byId("stageNo").innerText = self.stageNames[self.stageNo];
 			Util.byId("timelimit").innerText = toSecStr(self.time)+" sec";
 			Dialog.open("d_start",function(){
 				self.isStart = true;
@@ -43,10 +50,16 @@ function RollingMarble() {
 		this.stop();
 		Sound.play("goal");
 		var self = this;
-		Dialog.open("d_goal", function(){
-			self.stageNo++;
-			self.start();
-		});
+		self.stageNo++;
+		if (self.stageNo >= self.stageNames.length) {
+			Dialog.open("d_finish", function(){
+				config();
+			});
+		} else {
+			Dialog.open("d_goal", function(){
+				self.start();
+			});
+		}
 	}
 	Class.prototype.stop = function() {
 		this.isStart = false;
@@ -106,10 +119,12 @@ function RollingMarble() {
 	}
 
 	Class.getStageNames = function(){
-		var dir = location.search!="" ? location.search.replace(/^[?]/,"") : "default";
+		var dir = location.search!="" 
+			? decodeURIComponent(location.search.replace(/^[?]/,""))
+			: "default";
 		var stageNames = [];
 
-		if (location.hash == "") {
+		if (location.hash == "" || location.hash == "#") {
 			var list = Server.list(dir);
 			for (var k in list) {
 				if (!list[k].isDir) stageNames.push(dir+ "/"+k);

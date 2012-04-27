@@ -18,8 +18,8 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 		},
 		'green': function(stage,x,y) {
 			return new JammerG(stage,"img/ball-green.png", {
-				x:x, y:y,
-				friction:0.8, repulsion:1.5, bonusSec:3
+				x:x, y:y, weight:0.7,
+				friction:0.8, repulsion:1.1, bonusSec:3
 			});
 		},
 		'greenBig': function(stage,x,y) {
