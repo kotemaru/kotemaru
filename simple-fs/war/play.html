@@ -60,10 +60,12 @@ function config(){
 	sel.innerHTML = "";
 	var list = Server.list("");
 	for (var k in list) {
-		var opt = document.createElement("option");
-		opt.innerText = k;
-		opt.value = k;
-		sel.appendChild(opt);
+		if (list[k].directory) {
+			var opt = document.createElement("option");
+			opt.innerText = k;
+			opt.value = k;
+			sel.appendChild(opt);
+		}
 	}
 
 	Dialog.open("d_config",{
@@ -101,6 +103,9 @@ function config(){
 			//position: absolute;
 			//left: 0px;
 			//top: 0px;
+		}
+		#header>*{
+			vertical-align: bottom;
 		}
 		#stageFrame{
 			//border: 1px solid gray;
