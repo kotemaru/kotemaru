@@ -4,12 +4,12 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 	Util.extend(Class, Super);
 
 	Class.prototype.initialize = function(stage, src, initval) {
-		this.super.initialize.apply(this, arguments);
+		this._super.initialize.apply(this, arguments);
 	}
 	Class.prototype.isMyMarble = true;
 
 	Class.prototype.reset = function(stage, src, initval) {
-		this.super.reset.apply(this);
+		this._super.reset.apply(this);
 		this.log = [];
 		this.count = 0;
 		for (var i=0; i<6; i++) this.log.push({x:this.x, y:this.y});
@@ -31,12 +31,12 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 				count = 0;
 			}
 		}
-		this.super.action.apply(this);
+		this._super.action.apply(this);
 	}
 	Class.prototype.recover = function(maxCount) {
 		if (!maxCount) maxCount = 30;
 		Sound.play("boyon");
-		this.super.reset.apply(this);
+		this._super.reset.apply(this);
 
 		with (this) {
 			for (var i=log.length-1; i>=0; i--) {

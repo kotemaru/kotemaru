@@ -3,7 +3,7 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 (function(Class, Super) {
 	Util.extend(Class, Super);
 	Class.prototype.initialize = function(stage, src, initval) {
-		this.super.initialize.apply(this, arguments);
+		this._super.initialize.apply(this, arguments);
 		this.bonusTimeCount = 0;
 	}
 
@@ -21,7 +21,7 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 			}
 			if (bonusTimeCount>0) bonusTimeCount--;
 		}
-		this.super.action.apply(this, arguments);
+		this._super.action.apply(this, arguments);
 	}
 	Class.prototype.touch = function(actor) {
 		if (actor.isMyMarble) {
@@ -29,7 +29,7 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 		}
 	}
 	Class.prototype.drop = function(x,y) {
-		this.super.drop.apply(this, arguments);
+		this._super.drop.apply(this, arguments);
 		if (this.bonusTimeCount>0) {
 			RollingMarble.instance.time += (this.bonusSec * 1000);
 			this.stage.bonusActor.show(this.x, this.y, "+"+this.bonusSec+"sec");

@@ -3,7 +3,7 @@ function JammerGbig(stage, src, initval){this.initialize.apply(this, arguments)}
 (function(Class, Super) {
 	Util.extend(Class, Super);
 	Class.prototype.initialize = function(stage, src, initval) {
-		this.super.initialize.apply(this, arguments);
+		this._super.initialize.apply(this, arguments);
 		this.bonusTimeCount = 0;
 
 		this.w = 64;

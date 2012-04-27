@@ -2,7 +2,7 @@ function Util() {}
 (function(Class) {
 	Class.extend = function(dst, src) {
 		if (src == null) return dst;
-		dst.prototype.super = src.prototype;
+		dst.prototype._super = src.prototype;
 		for (var k in src.prototype) {
 			dst.prototype[k] = src.prototype[k];
 		}
