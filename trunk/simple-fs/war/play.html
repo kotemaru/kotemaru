@@ -8,28 +8,28 @@
 
 	<title>ビー玉ころころ</title>
 
-	<script src="js/Util.js"></script>
-	<script src="js/Dialog.js"></script>
-	<script src="js/Sound.js"></script>
-	<script src="js/RollingMarble.js"></script>
-	<script src="js/StageData.js"></script>
-	<script src="js/Marble.js"></script>
-	<script src="js/MyMarble.js"></script>
-	<script src="js/Jammer.js"></script>
-	<script src="js/JammerG.js"></script>
-	<script src="js/JammerGbig.js"></script>
-	<script src="js/BlackHole.js"></script>
-	<script src="js/Bonus.js"></script>
-	<script src="js/Actor.js"></script>
+	<script src="js/Util.js?v=0.1"></script>
+	<script src="js/Dialog.js?v=0.1"></script>
+	<script src="js/Sound.js?v=0.1"></script>
+	<script src="js/RollingMarble.js?v=0.1"></script>
+	<script src="js/StageData.js?v=0.1"></script>
+	<script src="js/Marble.js?v=0.1"></script>
+	<script src="js/MyMarble.js?v=0.1"></script>
+	<script src="js/Jammer.js?v=0.1"></script>
+	<script src="js/JammerG.js?v=0.1"></script>
+	<script src="js/JammerGbig.js?v=0.1"></script>
+	<script src="js/BlackHole.js?v=0.1"></script>
+	<script src="js/Bonus.js?v=0.1"></script>
+	<script src="js/Actor.js?v=0.1"></script>
 
-	<script src="js/Block.js"></script>
-	<script src="js/BlockGoal.js"></script>
-	<script src="js/BlockNil.js"></script>
-	<script src="js/BlockSlow.js"></script>
-	<script src="js/BlockWall.js"></script>
-	<script src="js/BlockNone.js"></script>
-	<script src="js/Stage.js"></script>
-	<script src="js/Server.js"></script>
+	<script src="js/Block.js?v=0.1"></script>
+	<script src="js/BlockGoal.js?v=0.1"></script>
+	<script src="js/BlockNil.js?v=0.1"></script>
+	<script src="js/BlockSlow.js?v=0.1"></script>
+	<script src="js/BlockWall.js?v=0.1"></script>
+	<script src="js/BlockNone.js?v=0.1"></script>
+	<script src="js/Stage.js?v=0.1"></script>
+	<script src="js/Server.js?v=0.1"></script>
 
 	<script>
 
@@ -71,7 +71,8 @@ function config(){
 	Dialog.open("d_config",{
 		other: function(val){
 			var name = sel.value;
-			location = "/play.html?"+name;
+			var stage = Util.byId("stageSelect").value;
+			location.replace("/play.html?"+name+"#"+stage);
 		},
 		ng: function() {
 			RollingMarble.instance.resume();
@@ -146,8 +147,6 @@ function config(){
 		&nbsp;&nbsp;
 		Time:<b id="timer">---.--</b>
 		&nbsp;&nbsp;
-		&nbsp;&nbsp;
-		&nbsp;&nbsp;
 		<img src="img/config.png" onclick="config()"/>
 	</div>
 
@@ -183,10 +182,29 @@ function config(){
 		<button  onclick="Dialog.ok()">Next Stage</button>
 	</div>
 	
+	<div class="dialog" id="d_finish">
+		<div><b>Finish!</b></div>
+		<br/>
+		<button  onclick="Dialog.ok()">Next Map</button>
+	</div>
+	
 	<div class="dialog" id="d_config">
 		<div><b>Config</b></div>
 		<br/>
 		Map:<select id="mapSelect" ></select>
+		Stage:<select id="stageSelect" >
+					<option value="">ALL</option>
+					<option>01</option>
+					<option>02</option>
+					<option>03</option>
+					<option>04</option>
+					<option>05</option>
+					<option>06</option>
+					<option>07</option>
+					<option>08</option>
+					<option>09</option>
+					<option>10</option>
+		</select>
 		<button  onclick="Dialog.other('play')">Play</button>
 		<br/><br/>
 		<button  onclick="Dialog.ng()">Cansel</button>

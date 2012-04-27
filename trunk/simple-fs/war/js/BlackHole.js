@@ -14,9 +14,18 @@ function BlackHole(stage, src, initval){this.initialize.apply(this, arguments)};
 
 		this.x = initval.x;
 		this.y = initval.y;
-
-		this.elem.style.left = (this.x-64)+"px";
-		this.elem.style.top  = (this.y-64)+"px";
+		this.w = 128;
+		this.h = 128;
+		this.w2 = this.w/2;
+		this.h2 = this.h/2;
+		this.reflect();
+	}
+	Class.prototype.reflect = function() {
+		with (this) {
+			const st = elem.style;
+			st.left = Math.floor(x-w2)+"px";
+			st.top  = Math.floor(y-h2)+"px";
+		}
 	}
 
 	var R = 200;

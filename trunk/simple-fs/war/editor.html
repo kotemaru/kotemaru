@@ -3,24 +3,24 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>ビー玉ころころマップエディタ</title>
 
-	<script src="js/Util.js"></script>
-	<script src="js/Dialog.js"></script>
-	<script src="js/Block.js"></script>
-	<script src="js/BlockGoal.js"></script>
-	<script src="js/BlockNil.js"></script>
-	<script src="js/BlockSlow.js"></script>
-	<script src="js/BlockWall.js"></script>
-	<script src="js/BlockNone.js"></script>
+	<script src="js/Util.js?v=0.1"></script>
+	<script src="js/Dialog.js?v=0.1"></script>
+	<script src="js/Block.js?v=0.1"></script>
+	<script src="js/BlockGoal.js?v=0.1"></script>
+	<script src="js/BlockNil.js?v=0.1"></script>
+	<script src="js/BlockSlow.js?v=0.1"></script>
+	<script src="js/BlockWall.js?v=0.1"></script>
+	<script src="js/BlockNone.js?v=0.1"></script>
 
-	<script src="js/Actor.js"></script>
-	<script src="js/Marble.js"></script>
-	<script src="js/MyMarble.js"></script>
-	<script src="js/Jammer.js"></script>
-	<script src="js/JammerG.js"></script>
-	<script src="js/JammerGbig.js"></script>
-	<script src="js/BlackHole.js"></script>
-	<script src="js/Bonus.js"></script>
-	<script src="js/Server.js"></script>
+	<script src="js/Actor.js?v=0.1"></script>
+	<script src="js/Marble.js?v=0.1"></script>
+	<script src="js/MyMarble.js?v=0.1"></script>
+	<script src="js/Jammer.js?v=0.1"></script>
+	<script src="js/JammerG.js?v=0.1"></script>
+	<script src="js/JammerGbig.js?v=0.1"></script>
+	<script src="js/BlackHole.js?v=0.1"></script>
+	<script src="js/Bonus.js?v=0.1"></script>
+	<script src="js/Server.js?v=0.1"></script>
 
 	<style>
 html, body {
@@ -142,18 +142,19 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 		this.data = data;
 
 		var self = this;
-		this.elem.onclick = function(ev) {self.onClick(ev);}
-		this.elem.ondrop = function(ev) {
-			var id = ev.dataTransfer.getData("number");
-			var actor = self.actors[id];
-			actor.x = ev.target.offsetLeft + ev.offsetX;
-			actor.y = ev.target.offsetTop + ev.offsetY;
-			actor.reflect();
-			ev.preventDefault();
+		this.elem.onmousemove = function (ev) {
+			if (self.drag == null) return;
+			self.drag.x = ev.target.offsetLeft + ev.offsetX;
+			self.drag.y = ev.target.offsetTop + ev.offsetY;
+			self.drag.reflect();
 		}
-		//this.elem.ondragover =  function(ev) {
-		//	ev.preventDefault();return false;
-		//}
+		this.elem.onmouseup = function (ev) {
+			if (self.drag) {
+				self.drag = null;
+			} else {
+				self.onClick(ev);
+			}
+		}
 
 		this.initMap(data);
 		this.initActors(data);
@@ -202,10 +203,13 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 		var self = this;
 		var actor = Actor.create(this, name, x,y);
 		actor.id = this.actorId++;
-		actor.elem.ondragstart = function (ev) {
-			ev.dataTransfer.setData("number", actor.id);
-			//ev.dataTransfer.setDragImage(actor.elem, -16, -16);
+
+		actor.elem.draggable = false;
+		actor.elem.onmousedown = function (ev) {
+			self.drag = actor;
 		}
+
+
 		actor.elem.oncontextmenu = function(ev){
 			delete self.actors[actor.id];
 			self.elem.removeChild(actor.elem);
@@ -489,8 +493,9 @@ function hideBalloon(ev, text) {
 
 		&nbsp;&nbsp;&nbsp;
 
-		<button onclick="play()">Play</button>
 		<button onclick="save()">Save</button>
+		&nbsp;
+		<button onclick="play()">Play</button>
 		<button onclick="location='/user/logout';">Logout</button>
 		
 	</div>
