@@ -100,7 +100,7 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 		const w = b.x - a.x;
 		const h = b.y - a.y;
 		const l = Math.sqrt((w*w) + (h*h));
-		if (l>(a.w2+b.w2) || l ==0) {
+		if (l>(a.w2+b.w2) || l==0) {
 			a.ignoreImpact[b.id] = false;
 			b.ignoreImpact[a.id] = false;
 			return false;

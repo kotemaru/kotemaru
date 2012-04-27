@@ -15,6 +15,7 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 			const W = b.x - a.x;
 			const H = b.y - a.y;
 			const l = Math.sqrt((W*W) + (H*H));
+			if (isNaN(l)) alert("nan");
 			if (l < 200 && l > 32 && !b.isWating && !b.isDropping  ) {
 				gx += (W>0?SPEED:-SPEED);
 				gy += (H>0?SPEED:-SPEED);

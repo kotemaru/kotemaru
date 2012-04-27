@@ -54,6 +54,7 @@ function Stage(id) {
 		for (var i=0; i<data.actors.length; i++) {
 			var a = data.actors[i];
 			var actor = Actor.create(this, a.name, a.x,a.y);
+			actor.id = this.idCount++;
 			this.addActor(actor);
 			if (actor.isMyMarble) this.marble = actor;
 		}
