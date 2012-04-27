@@ -5,7 +5,7 @@ function BlockWall(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.name = "wall";
 
 	Class.prototype.initialize = function(stage, src, initval) {
-		this.super.initialize.apply(this, arguments);
+		this._super.initialize.apply(this, arguments);
 /*
 		this.x = initval.x*32;
 		this.y = initval.y*32;
