@@ -6,6 +6,7 @@ function BlockNil(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function(stage, src, initval) {
 		if (stage == null) return; // for dummy
 		this._super.initialize.apply(this, arguments);
+		//this.elem.style.display = "none";
 	}
 
 	Class.prototype.isNil = function() {

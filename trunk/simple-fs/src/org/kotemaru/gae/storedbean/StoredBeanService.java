@@ -459,4 +459,12 @@ public class StoredBeanService {
 		return pq.asIterator();
 	}
 	
+	public void remove(String name) {
+		Key key = key(null,name);
+		if (isMemcacheEnable) {
+			memcache.delete(key);
+		}
+		DS.delete(key); // TODO:nest
+	}
+
 }

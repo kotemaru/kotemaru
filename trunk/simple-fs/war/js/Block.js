@@ -37,14 +37,63 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		'slow':function(stage,x,y) {
 			return new BlockSlow(stage,"img/slow.png",{x:x,y:y});
 		},
-	}
+		
+		'arrow-rD':function(stage,x,y) {
+			return new BlockArrow(stage,"img/arrow-rD.png",{x:x,y:y, gx:0, gy:2.0});
+		},
+		'arrow-rU':function(stage,x,y) {
+			return new BlockArrow(stage,"img/arrow-rU.png",{x:x,y:y, gx:0, gy:-2.0});
+		},
+		'arrow-rL':function(stage,x,y) {
+			return new BlockArrow(stage,"img/arrow-rL.png",{x:x,y:y, gx:-2.0, gy:0});
+		},
+		'arrow-rR':function(stage,x,y) {
+			return new BlockArrow(stage,"img/arrow-rR.png",{x:x,y:y, gx:2.0, gy:0});
+		},
+		
+		'arrow-yD':function(stage,x,y) {
+			return new BlockArrow(stage, "img/arrow-yD.png", {x:x,y:y, gx:0, gy:0.5});
+		},
+		'arrow-yU':function(stage,x,y) {
+			return new BlockArrow(stage, "img/arrow-yU.png", {x:x,y:y, gx:0, gy:-0.5});
+		},
+		'arrow-yL':function(stage,x,y) {
+			return new BlockArrow(stage, "img/arrow-yL.png", {x:x,y:y, gx:-0.5, gy:0});
+		},
+		'arrow-yR':function(stage,x,y) {
+			return new BlockArrow(stage, "img/arrow-yR.png", {x:x,y:y, gx:0.5, gy:0});
+		},
+	};
 	Class.CHARS = {
 		"none": "o",
 		"nil":  ".",
 		"wall": "w",
 		"goal": "g",
 		"slow": "s",
+
+		"arrow-rD": "D",
+		"arrow-rU": "U",
+		"arrow-rR": "R",
+		"arrow-rL": "L",
+		
+		"arrow-yD": "d",
+		"arrow-yU": "u",
+		"arrow-yR": "r",
+		"arrow-yL": "l",
 	};
+	// for editor
+	Class.COMMENT = {
+		"none": "通常の床面",
+		"nil":  "無(落ちる)",
+		"wall": "壁(侵入不可)",
+		"goal": "ゴール",
+		"slow": "低速エリア",
+		"arrow-rD": "D",
+		"arrow-yD": "d",
+	};
+
+	
+	
 	Class.RCHARS = {};
 	for (var name in Class.CHARS) {
 		Class.RCHARS[Class.CHARS[name]] = name;
@@ -58,13 +107,5 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		return f(stage,  x, y);
 	}
 	
-	// for editor
-	Class.COMMENT = {
-		"none": "通常の床面",
-		"nil":  "無(落ちる)",
-		"wall": "壁(侵入不可)",
-		"goal": "ゴール",
-		"slow": "低速エリア",
-	};
 
 })(Block);

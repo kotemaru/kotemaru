@@ -5,6 +5,9 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 
 	Class.prototype.initialize = function(stage, src, initval) {
 		this._super.initialize.apply(this, arguments);
+		if (RollingMarble.instance) {
+			this.sensitive = RollingMarble.instance.params.sensitive;
+		}
 	}
 	Class.prototype.isMyMarble = true;
 
@@ -17,9 +20,23 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 	}
 
 	Class.prototype.accele = function(grav) {
-		this.gx += grav.x * RollingMarble.instance.params.sensitive;
-		this.gy -= grav.y * RollingMarble.instance.params.sensitive;
-		this.gLimit();
+		with (this) {
+			gx += grav.x * sensitive;
+			gy -= grav.y * sensitive;
+			gLimit();
+		}
+	}
+	Class.prototype.acceleXX = function(grav) {
+		with (this) {
+			const xx = (grav.x*100);
+			const yy = (grav.y*100);
+			const sx = xx>=0 ? 1 : -1;
+			const sy = yy>=0 ? 1 : -1;
+
+			gx += (xx*xx*sx)/10000 * sensitive;
+			gy -= (yy*yy*sy)/10000 * sensitive;
+			gLimit();
+		}
 	}
 
 	Class.prototype.action = function() {

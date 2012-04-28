@@ -36,12 +36,13 @@ function BlockWall(stage, src, initval){this.initialize.apply(this, arguments)};
 
 
 	Class.prototype.contact = function(actor) {
-		const x1 = this.x1;
-		const x2 = this.x2;
-		const y1 = this.y1;
-		const y2 = this.y2;
 
 	with (actor) {
+		const x1 = this.x-w2;
+		const x2 = this.x+32+w2;
+		const y1 = this.y-w2;
+		const y2 = this.y+32+w2;
+		
 		var min = 999999, m, hit=null;
 		if (this.hasU) {
 			const xu = calc_1(y, y1, gx, gy, x);
