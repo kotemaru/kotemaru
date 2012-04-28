@@ -5,17 +5,20 @@
 
 	<script src="js/Util.js?v=0.1"></script>
 	<script src="js/Dialog.js?v=0.1"></script>
+	<script src="js/RollingMarble.js?v=0.1"></script>
 	<script src="js/Block.js?v=0.1"></script>
 	<script src="js/BlockGoal.js?v=0.1"></script>
 	<script src="js/BlockNil.js?v=0.1"></script>
 	<script src="js/BlockSlow.js?v=0.1"></script>
 	<script src="js/BlockWall.js?v=0.1"></script>
 	<script src="js/BlockNone.js?v=0.1"></script>
+	<script src="js/BlockArrow.js?v=0.1"></script>
 
 	<script src="js/Actor.js?v=0.1"></script>
 	<script src="js/Marble.js?v=0.1"></script>
 	<script src="js/MyMarble.js?v=0.1"></script>
 	<script src="js/Jammer.js?v=0.1"></script>
+	<script src="js/JammerFixed.js?v=0.1"></script>
 	<script src="js/JammerG.js?v=0.1"></script>
 	<script src="js/JammerGbig.js?v=0.1"></script>
 	<script src="js/BlackHole.js?v=0.1"></script>
@@ -152,7 +155,7 @@ function Map(id,data){this.initialize.apply(this, arguments)};
 			if (self.drag) {
 				self.drag = null;
 			} else {
-				self.onClick(ev);
+				if (ev.button==0) self.onClick(ev);
 			}
 		}
 
@@ -361,7 +364,9 @@ function SelButton(name,src,opts){this.initialize.apply(this, arguments)};
 		this.opts = opts;
 
 		var self = this;
-		this.elem.onclick = function(ev) {self.on();}
+		this.elem.onmouseup = function(ev) {
+			self.on();
+		}
 		this.elem.onmouseover = function(ev) {
 			showBalloon(ev, self.opts.comment);
 		}
@@ -424,6 +429,12 @@ function save(){
 	var str = Global.map.save();
 	Server.putJson(fname, str, errorHander);
 	Util.byId("text").value = str;
+}
+function remove(){
+	var fname = getFileName();
+	if (confirm(fname+"を削除します。")) {
+		Server.remove(fname, errorHander);
+	}
 }
 
 function errorHander(xreq) {
@@ -494,6 +505,10 @@ function hideBalloon(ev, text) {
 		&nbsp;&nbsp;&nbsp;
 
 		<button onclick="save()">Save</button>
+		&nbsp;
+		<button onclick="remove()">Remove</button>
+		&nbsp;
+		&nbsp;
 		&nbsp;
 		<button onclick="play()">Play</button>
 		<button onclick="location='/user/logout';">Logout</button>

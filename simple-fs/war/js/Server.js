@@ -48,5 +48,18 @@ function Server() {}
 		}
 		return true;
 	}
+	Class.remove = function(url, errorHandler) {
+		var xreq = new XMLHttpRequest();
+		xreq.open("DELETE", url, false);
+		xreq.send();
+		if (xreq.status >= 400) {
+			if (errorHandler) {
+				return errorHandler(xreq);
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 })(Server);

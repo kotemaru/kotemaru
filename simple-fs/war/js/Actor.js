@@ -8,13 +8,14 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 			);
 		},
 		'red': function(stage,x,y) {
-			return makeJammar(stage,"ball-red",x,y,{bonusSec:1});
+			return makeJammar(stage,"ball-red",x,y,{bonusSec:1, friction:0.95});
 		},
 		'black': function(stage,x,y) {
 			return makeJammar(stage,"ball-black",x,y,{weight:5, friction:0.8, bonusSec:5});
 		},
 		'yellow': function(stage,x,y) {
-			return makeJammar(stage,"ball-yellow",x,y,{weight:1, repulsion:4.0, bonusSec:3});
+			return makeJammar(stage,"ball-yellow",x,y,
+					{weight:1, repulsion:4.0, bonusSec:3, friction:0.96});
 		},
 		'green': function(stage,x,y) {
 			return new JammerG(stage,"img/ball-green.png", {
@@ -30,13 +31,13 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 			});
 		},
 		'fixGray': function(stage,x,y) {
-			return makeJammar(stage,"fix-gray",x,y,{
-				w:20, h:20, weight:999999, repulsion:0.75, bonusSec:0
+			return new JammerFixed(stage,"img/fix-gray.png", {
+				x:x, y:y, w:20, h:20, weight:9999, repulsion:0.75, bonusSec:0
 			});
 		},
 		'fixYellow': function(stage,x,y) {
-			return makeJammar(stage,"fix-yellow",x,y,{
-				w:20, h:20, weight:999999, repulsion:2.0, bonusSec:0
+			return new JammerFixed(stage,"img/fix-yellow.png", {
+				x:x, y:y, w:20, h:20, weight:9999, repulsion:2.0, bonusSec:0
 			});
 		},
 		'hole': function(stage,x,y) {

@@ -80,10 +80,46 @@ public class SimpleFsServlet extends HttpServlet {
 		res.setContentType("text/plain");
 		res.getWriter().write(Integer.toString(body.length));
 	}
+
 	
-	public void doGet(HttpServletRequest req, HttpServletResponse res)
+	public void doDelete(HttpServletRequest req, HttpServletResponse res)
 					throws IOException, ServletException {
-		//if (checkLogin(req,res) == null) return;
+		UserBean ub = getLoginUser(req,res);
+		if (ub == null) {
+			res.setStatus(403);
+			res.setContentType("text/plain;charset=utf-8");
+			res.getWriter().write("このファイルの所有者では有りません。");
+			return;
+		}
+		String owner = ub.getEmail();
+		
+		// filename
+		String pathInfo = req.getPathInfo();
+		boolean isDir = pathInfo.endsWith("/");
+		if (isDir) pathInfo = pathInfo.replaceFirst("/$","");
+		
+		FileBean fb = null;
+		try {
+			fb = (FileBean) sbs.get(pathInfo);
+			if (!owner.equals(fb.getOwner())) {
+				res.setStatus(403);
+				res.setContentType("text/plain;charset=utf-8");
+				res.getWriter().write("このファイルの所有者では有りません。");
+				return;
+			}
+		} catch (EntityNotFoundException e) {
+			res.setStatus(404);
+			res.setContentType("text/plain;charset=utf-8");
+			res.getWriter().write("このファイル("+pathInfo+")は存在しません。");
+			return;
+		}
+		sbs.remove(pathInfo);
+		
+	}
+
+	public void doGet(HttpServletRequest req, HttpServletResponse res)
+			throws IOException, ServletException {
+		// if (checkLogin(req,res) == null) return;
 		String pathInfo = req.getPathInfo();
 		if (pathInfo.endsWith("/")) {
 			doGetDir(req, res);

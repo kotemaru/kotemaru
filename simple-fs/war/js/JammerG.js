@@ -16,7 +16,7 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 			const H = b.y - a.y;
 			const l = Math.sqrt((W*W) + (H*H));
 			if (isNaN(l)) alert("nan");
-			if (l < 200 && l > 32 && !b.isWating && !b.isDropping  ) {
+			if (l < 160 && l > 32 && !b.isWating && !b.isDropping  ) {
 				gx += (W>0?SPEED:-SPEED);
 				gy += (H>0?SPEED:-SPEED);
 			}
@@ -37,4 +37,4 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 		}
 	}
 
-})(JammerG, Marble);
+})(JammerG, Jammer);

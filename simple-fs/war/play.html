@@ -16,6 +16,7 @@
 	<script src="js/Marble.js?v=0.1"></script>
 	<script src="js/MyMarble.js?v=0.1"></script>
 	<script src="js/Jammer.js?v=0.1"></script>
+	<script src="js/JammerFixed.js?v=0.1"></script>
 	<script src="js/JammerG.js?v=0.1"></script>
 	<script src="js/JammerGbig.js?v=0.1"></script>
 	<script src="js/BlackHole.js?v=0.1"></script>
@@ -28,6 +29,7 @@
 	<script src="js/BlockSlow.js?v=0.1"></script>
 	<script src="js/BlockWall.js?v=0.1"></script>
 	<script src="js/BlockNone.js?v=0.1"></script>
+	<script src="js/BlockArrow.js?v=0.1"></script>
 	<script src="js/Stage.js?v=0.1"></script>
 	<script src="js/Server.js?v=0.1"></script>
 
@@ -53,32 +55,6 @@ function onLoad() {
 
 }
 
-function config(){
-	RollingMarble.instance.stop();
-
-	var sel = Util.byId("mapSelect");
-	sel.innerHTML = "";
-	var list = Server.list("");
-	for (var k in list) {
-		if (list[k].directory) {
-			var opt = document.createElement("option");
-			opt.innerText = k;
-			opt.value = k;
-			sel.appendChild(opt);
-		}
-	}
-
-	Dialog.open("d_config",{
-		other: function(val){
-			var name = sel.value;
-			var stage = Util.byId("stageSelect").value;
-			location.replace("/play.html?"+name+"#"+stage);
-		},
-		ng: function() {
-			RollingMarble.instance.resume();
-		}
-	});
-}
 
 	</script>
 
@@ -148,7 +124,7 @@ function config(){
 		&nbsp;&nbsp;
 		Time:<b id="timer">---.--</b>
 		&nbsp;&nbsp;
-		<img src="img/config.png" onclick="config()"/>
+		<img src="img/config.png" onclick="RollingMarble.config()"/>
 	</div>
 
 	<div id="stageFrame">
@@ -179,21 +155,25 @@ function config(){
 
 	<div class="dialog" id="d_goal">
 		<div><b>GOAL!</b></div>
+		<div>Time: <span id="goalTime">000.00</span></div>
 		<br/>
 		<button  onclick="Dialog.ok()">Next Stage</button>
 	</div>
 	
 	<div class="dialog" id="d_finish">
-		<div><b>Finish!</b></div>
+		<div><b>All Stage Clear!</b></div>
+		<div>Total time: <span id="totalTime">000.00</span></div>
 		<br/>
-		<button  onclick="Dialog.ok()">Next Map</button>
+		<button  onclick="Dialog.ok()">OK</button>
 	</div>
 	
 	<div class="dialog" id="d_config">
 		<div><b>Config</b></div>
 		<br/>
-		Map:<select id="mapSelect" ></select>
-		Stage:<select id="stageSelect" >
+		<div align="left">
+		Map:<select id="mapSelect"  style="width:180px;" ></select>
+		&nbsp;
+		Stage:<select id="stageSelect"  >
 					<option value="">ALL</option>
 					<option>01</option>
 					<option>02</option>
@@ -206,8 +186,15 @@ function config(){
 					<option>09</option>
 					<option>10</option>
 		</select>
-		<button  onclick="Dialog.other('play')">Play</button>
-		<br/><br/>
+		<br/>
+		Level:<select id="levelSelect"  >
+					<option value=0 >Easy</option>
+					<option value=1 selected>Normal</option>
+					<option value=2 >Hard</option>
+		</select>
+		</div>
+		<br/>
+		<button  onclick="Dialog.other('play')">&nbsp;&nbsp;Play&nbsp;&nbsp;</button>
 		<button  onclick="Dialog.ng()">Cansel</button>
 	</div>
 
