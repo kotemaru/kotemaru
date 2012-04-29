@@ -18,7 +18,7 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 		this.ny = 0;
 		this.gx = 0;
 		this.gy = 0;
-		this.friction = RollingMarble.instance.params.friction;
+		this.friction = RollingMarble.instance ? RollingMarble.instance.params.friction : 0.94;
 		this.repulsion = 1.0;
 		this.weight = 1.0;
 		this.spling = 0.0;

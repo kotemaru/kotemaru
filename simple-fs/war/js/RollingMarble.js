@@ -183,36 +183,45 @@ function RollingMarble() {
 	
 
 	Class.getStageNames = function(){
-		var path = getParams().path;
+		var config = getConfig();
+		
 		var stageNames = [];
-
-		if (path.match(/\/$/)) {
+		if (config.stage == "") {
+			var path = config.map+"/";
 			var list = Server.list(path);
 			for (var k in list) {
 				if (!list[k].isDir) stageNames.push(path+k);
 			}
 			stageNames.sort();
 		} else {
-			stageNames.push(path);
+			stageNames.push(config.map+"/"+config.stage);
 		}
-		
 		return stageNames;
 	}
-	function getParams() {
-		if (location.search == "") {
-			return {path:"default/", level:1};
+	function getConfig() {
+		const DEFAULT = {map:"default", stage:"", level: 1};
+		var config;
+		var json = window.localStorage.getItem("config");
+		try {
+			if (json) {
+				config = JSON.parse(json);
+			} else {
+				config = DEFAULT;
+			}
+		} catch (e) {
+			config = DEFAULT;
 		}
-		var param = decodeURIComponent(location.search.replace(/^[?]/,""));	
-		var params = param.split(/,/);
-		return {path:params[0], level:parseInt(params[1])};
+		return config;		
 	}
-
+	function setConfig(config) {
+		window.localStorage.setItem("config",JSON.stringify(config));
+	}
 		
 	Class.config = function(){
 		RollingMarble.instance.stop();
-	
-		var params = getParams();
-		var mapName = params.path.replace(/\/[0-9]*$/,"");
+
+		var config = getConfig();
+
 		var sel = Util.byId("mapSelect");
 		sel.innerHTML = "";
 		var list = Server.list("");
@@ -221,21 +230,23 @@ function RollingMarble() {
 				var opt = document.createElement("option");
 				opt.innerText = k;
 				opt.value = k;
-				if (k == mapName) opt.selected = "selected";
 				sel.appendChild(opt);
 			}
 		}
 		
-		//var stage = Util.byId("stageSelect").value;
-		//Util.byId("levelSelect").value;
+		Util.setSelect(Util.byId("mapSelect"), config.map);
+		Util.setSelect(Util.byId("stageSelect"), config.stage);
+		Util.setSelect(Util.byId("levelSelect"), config.level);
 
 		Dialog.open("d_config",{
 			other: function(val){
-				var name = sel.value;
-				var stage = Util.byId("stageSelect").value;
-				var level = Util.byId("levelSelect").value;
-				location.replace("/play.html?"+name+"/"+stage+","+level);
-				//location.reload(true);
+				var config = {
+					map: sel.value,
+					stage: Util.byId("stageSelect").value,
+					level: Util.byId("levelSelect").value,
+				};
+				setConfig(config);
+				location.reload(true);
 			},
 			ng: function() {
 				RollingMarble.instance.resume();
