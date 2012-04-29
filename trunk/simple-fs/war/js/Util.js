@@ -36,4 +36,15 @@ function Util() {}
 	Class.createElem = function(name) {
 		return document.createElement(name);
 	}
+	
+	Class.setSelect = function(select, val) {
+		var opts = select.options;
+		for (var i=0; i<opts.length; i++) {
+			if (val == opts[i].value) {
+				select.selectedIndex = i;
+				return;
+			}
+		}
+	}
+	
 })(Util);
