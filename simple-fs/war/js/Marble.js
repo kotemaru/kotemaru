@@ -12,12 +12,15 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 		this.isDropping = false;
 		this.x = 0;
 		this.y = 0;
+		this.z = 0;
 		this.w = 32;
 		this.h = 32;
 		this.nx = 0;
 		this.ny = 0;
+		this.nz = 0;
 		this.gx = 0;
 		this.gy = 0;
+		this.gz = 0;
 		this.friction = RollingMarble.instance ? RollingMarble.instance.params.friction : 0.94;
 		this.repulsion = 1.0;
 		this.weight = 1.0;
@@ -44,6 +47,15 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 			const st = elem.style;
 			st.left = Math.floor(x-w2)+"px";
 			st.top  = Math.floor(y-h2)+"px";
+			if (z != 0) {
+				if (z>0) {
+					elem.width = w*(1.0+z/10);
+				} else {
+					elem.width = w*(1.0-z/10);
+				}
+			} else {
+				elem.width = w;
+			}
 		}
 	}
 	Class.prototype.action = function() {
@@ -51,10 +63,11 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 			if (isDropping) return dropping();
 			nx = x+gx;
 			ny = y+gy;
-			var block = stage.getBlock(x,y);
+			nz = z+gz;
+			var block = stage.getBlock(x,y,z);
 			if (block.rideOn) block.rideOn(this);
 
-			var blocks = stage.getBlocks(nx,ny);
+			var blocks = stage.getBlocks(nx,ny,nz);
 			for (var i=0; i<blocks.length; i++) {
 				block = blocks[i];
 				if (block.contact) {
@@ -64,8 +77,14 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 
 			x = nx;
 			y = ny;
+			z = nz;
 			gx *= friction;
 			gy *= friction;
+			gz -= 1;
+
+			if (!block.isNil()) {
+				if (z < 0) z = gz = 0;
+			}
 			reflect();
 		}
 	}

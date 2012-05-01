@@ -63,6 +63,9 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		'arrow-yR':function(stage,x,y) {
 			return new BlockArrow(stage, "img/arrow-yR.png", {x:x,y:y, gx:0.5, gy:0});
 		},
+		'highland':function(stage,x,y) {
+			return new BlockHighland(stage, "img/highland.png", {x:x,y:y});
+		},
 	};
 	Class.CHARS = {
 		"none": "o",
@@ -80,6 +83,8 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		"arrow-yU": "u",
 		"arrow-yR": "r",
 		"arrow-yL": "l",
+		
+		"highland": "h",
 	};
 	// for editor
 	Class.COMMENT = {
@@ -88,8 +93,18 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		"wall": "壁(侵入不可)",
 		"goal": "ゴール",
 		"slow": "低速エリア",
-		"arrow-rD": "D",
-		"arrow-yD": "d",
+
+		"arrow-rD": "↓↓",
+		"arrow-rU": "↑↑",
+		"arrow-rR": "←←",
+		"arrow-rL": "→→",
+		
+		"arrow-yD": "↓",
+		"arrow-yU": "↑",
+		"arrow-yR": "→",
+		"arrow-yL": "←",
+		
+		"highland": "台地",
 	};
 
 	

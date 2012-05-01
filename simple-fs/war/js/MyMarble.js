@@ -21,6 +21,7 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 
 	Class.prototype.accele = function(grav) {
 		with (this) {
+			if (z > 0) return;
 			gx += grav.x * sensitive;
 			gy -= grav.y * sensitive;
 			gLimit();
