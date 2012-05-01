@@ -4,6 +4,7 @@ function BlockNone(stage, src, initval){this.initialize.apply(this, arguments)};
 	Util.extend(Class, Super);
 
 	Class.prototype.name = "none";
+	
 
 })(BlockNone, Block);
 

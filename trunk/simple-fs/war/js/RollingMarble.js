@@ -246,7 +246,7 @@ function RollingMarble() {
 					level: Util.byId("levelSelect").value,
 				};
 				setConfig(config);
-				location.reload(true);
+				location.reload();
 			},
 			ng: function() {
 				RollingMarble.instance.resume();
