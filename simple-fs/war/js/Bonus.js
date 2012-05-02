@@ -8,6 +8,7 @@ function Bonus(stage, src, initval){this.initialize.apply(this, arguments)};
 		elem.style.font = "bold 24px sans-serif";
 		elem.style.position = "absolute";
 		elem.style.webkitTextStroke = "2px gray";
+		elem.style.zIndex = 11;
 		elem.innerText = text;
         
 		this.stage = stage;

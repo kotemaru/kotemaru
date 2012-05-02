@@ -80,14 +80,22 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 			z = nz;
 			gx *= friction;
 			gy *= friction;
-			if (gz>0) gz -= 1;
+			if (z>0) gz -= 1;
 			
 			if (!block.isNil() && z<0) z = gz = 0;
 		}
 	}
 	Class.prototype.drop = function(x, y) {
-		this.isDropping = true;
-		Sound.play("drop");
+		const floor = this.stage.onFloor(this);
+		if (floor) {
+			floor.putActor(this);
+			return false;
+		} else if (this.z<=0) {
+			this.isDropping = true;
+			Sound.play("drop");
+			return true;
+		}
+		return false;
 	}
 	Class.prototype.dropping = function() {
 		with (this) {

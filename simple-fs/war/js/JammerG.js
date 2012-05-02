@@ -30,8 +30,8 @@ function JammerG(stage, src, initval){this.initialize.apply(this, arguments)};
 		}
 	}
 	Class.prototype.drop = function(x,y) {
-		this._super.drop.apply(this, arguments);
-		if (this.bonusTimeCount>0) {
+		const b = this._super.drop.apply(this, arguments);
+		if (b && this.bonusTimeCount>0) {
 			RollingMarble.instance.time += (this.bonusSec * 1000);
 			this.stage.bonusActor.show(this.x, this.y, "+"+this.bonusSec+"sec");
 		}

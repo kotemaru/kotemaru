@@ -66,6 +66,9 @@ function MovingFloor(stage, src, initval){this.initialize.apply(this, arguments)
 				var a = onActors[id];
 				a.x += gx;
 				a.y += gy;
+				if (!onFloor(a)) {
+					delete onActors[id];
+				}
 			}
 
 			if (x1 > x || x > x2 || y1 > y || y > y2) {
@@ -99,5 +102,15 @@ function MovingFloor(stage, src, initval){this.initialize.apply(this, arguments)
 			}
 		}
 	}
-	
+
+	Class.prototype.putActor = function(actor){
+		this.onActors[actor.id] = actor;
+	}
+	Class.prototype.onFloor = function(actor){
+		const ax = actor.x;
+		const ay = actor.y;
+		with (this) {
+			return (x <= ax && ax <= x + 64 && y <= ay && ay <= y + 64);
+		}
+	}
 })(MovingFloor);
