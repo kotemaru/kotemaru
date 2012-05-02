@@ -13,7 +13,10 @@ function BlockNil(stage, src, initval){this.initialize.apply(this, arguments)};
 		return true;
 	}
 	Class.prototype.rideOn = function(actor) {
-		if (actor.z <= 1) actor.drop();
+		with (actor) {
+			drop();
+			gz = -1;
+		}
 	}
 
 })(BlockNil, Block);

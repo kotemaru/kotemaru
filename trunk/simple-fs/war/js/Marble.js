@@ -8,6 +8,7 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 		this.ignoreImpact = {};
 		this.reset();
 	}
+		
 	Class.prototype.reset = function() {
 		this.isDropping = false;
 		this.x = 0;
@@ -45,16 +46,15 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.reflect = function() {
 		with (this) {
 			const st = elem.style;
-			st.left = Math.floor(x-w2)+"px";
-			st.top  = Math.floor(y-h2)+"px";
 			if (z != 0) {
-				if (z>0) {
-					elem.width = w*(1.0+z/10);
-				} else {
-					elem.width = w*(1.0-z/10);
-				}
+				elem.width = w*(1.0+(z>-10?z:-1)/10);
+				const ww = elem.width/2;
+				st.left = (x-ww)+"px";
+				st.top  = (y-ww)+"px";
 			} else {
-				elem.width = w;
+				if (elem.width != w) elem.width = w;
+				st.left = (x-w2)+"px";
+				st.top  = (y-h2)+"px";
 			}
 		}
 	}
@@ -80,12 +80,9 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 			z = nz;
 			gx *= friction;
 			gy *= friction;
-			gz -= 1;
-
-			if (!block.isNil()) {
-				if (z < 0) z = gz = 0;
-			}
-			reflect();
+			if (gz>0) gz -= 1;
+			
+			if (!block.isNil() && z<0) z = gz = 0;
 		}
 	}
 	Class.prototype.drop = function(x, y) {
@@ -94,10 +91,8 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 	}
 	Class.prototype.dropping = function() {
 		with (this) {
-			elem.width *= 0.9;
-			elem.style.left = Math.floor(x-(elem.width/2))+"px";
-			elem.style.top  = Math.floor(y-(elem.width/2))+"px";
-			if (elem.width < 1) recover();
+			z -= 1;
+			if (z <= -10) recover();
 		}
 	}
 

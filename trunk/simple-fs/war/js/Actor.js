@@ -44,15 +44,21 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 			return new BlackHole(stage,"img/spiral.png",
 				{x:x, y:y});
 		},
+		'floorUD': function(stage,x,y) {
+			return new MovingFloor(stage,"img/floor-UD.png",
+				{x:x, y:y, dir:"D"});
+		},
+		'floorRL': function(stage,x,y) {
+			return new MovingFloor(stage,"img/floor-RL.png",
+				{x:x, y:y, dir:"R"});
+		},
 	};
-
 
 	function makeJammar(stage,src,x,y,initval) {
 		initval.x = x;
 		initval.y = y;
 		return new Jammer(stage,"img/"+src+".png", initval);
 	};
-
 
 	Class.create = function(stage, name,  x, y) {
 		var f = Class.FACTORY[name];
@@ -71,6 +77,8 @@ function Actor(stage, src, initval){this.initialize.apply(this, arguments)};
 		'fixGray': "動かない障害物",
 		'fixYellow': "弾ける障害物",
 		'hole': "吸い込まれる",
+		'floorUD': "移動する床↑↓",
+		'floorRL': "移動する床←→",
 	};
 
 })(Actor);

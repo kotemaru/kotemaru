@@ -27,6 +27,7 @@ function BlockHighland(stage, src, initval){this.initialize.apply(this, argument
 	with (actor) {
 		if (z != 0) return false;
 		if (x1 > nx || nx > x2 || y1 > ny || ny > y2) return false;
+		if (x1 <= x && x <= x2 && y1 <= y && y <= y2) return false;
 
 		var min = 999999, m, hit=null;
 			const xu = calc_1(y, y1, gx, gy, x);
@@ -51,7 +52,7 @@ function BlockHighland(stage, src, initval){this.initialize.apply(this, argument
 			var agy = Math.abs(gy);
 			if (agy>5) {
 				gz = agy *0.3;
-				gy = gy *0.5;
+				gy = gy *0.7;
 				nz = 1;
 			} else {
 				ny = y;
@@ -60,8 +61,8 @@ function BlockHighland(stage, src, initval){this.initialize.apply(this, argument
 		} else  {
 			var agx = Math.abs(gx);
 			if (agx>5) {
-				gz = agy *0.3;
-				gx = gx *0.5;
+				gz = agx *0.3;
+				gx = gx *0.7;
 				nz = 1;
 			} else {
 				nx = x;

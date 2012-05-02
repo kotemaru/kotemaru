@@ -15,6 +15,9 @@ function Bonus(stage, src, initval){this.initialize.apply(this, arguments)};
 		this.elem = elem;
 		this.hide();
 	}
+	Class.prototype.reflect = function(){
+	}
+	
 	Class.prototype.show = function(x,y,text) {
 		with (this) {
 			elem.innerText = text;
