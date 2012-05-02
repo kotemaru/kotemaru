@@ -78,7 +78,8 @@ function RollingMarble() {
 		//Sound.autoStop();
 		with (this) {
 			if (!isStart) return;
-			var entities = stage.entities;
+			const entities = stage.entities;
+			const floors = stage.floors;
 			for (var i=0; i<entities.length; i++) {
 				for (var j=i+1; j<entities.length; j++) {
 					entities[i].contact(entities[j]);
@@ -86,10 +87,19 @@ function RollingMarble() {
 			}
 			var actors = stage.actors;
 			for (var i=0; i<actors.length; i++) {
-				actors[i].action();
+				var a = actors[i];
+				a.action();
+				if (a.contact) {
+					for (var k = 0; k < floors.length; k++) {
+						floors[k].onThe(a);
+					}
+				}
+				if (a.reflect) a.reflect();
 			}
 			stage.scroll(marble.x, marble.y);
-	
+
+			//-----
+
 			time -= INTERVAL;
 			goalTime += INTERVAL;
 			totalTime += INTERVAL;

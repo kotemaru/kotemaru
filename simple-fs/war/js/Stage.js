@@ -24,6 +24,8 @@ function Stage(id) {
 
 		this.actors = [];
 		this.entities = [];
+		this.floors = [];
+		
 		this.elem.innerHTML = "";
 		this.elem.style.position = "relative";
 		//this.elem.style.backgroundColor = "white";
@@ -68,6 +70,9 @@ function Stage(id) {
 		this.actors.push(actor);
 		if (actor.contact) {
 			this.entities.push(actor);
+		}
+		if (actor.onThe) {
+			this.floors.push(actor);
 		}
 		this.elem.appendChild(actor.elem);
 	}

@@ -6,6 +6,7 @@ function BlockWall(stage, src, initval){this.initialize.apply(this, arguments)};
 
 	Class.prototype.initialize = function(stage, src, initval) {
 		this._super.initialize.apply(this, arguments);
+		this.elem.style.zIndex = 5;
 /*
 		this.x = initval.x*32;
 		this.y = initval.y*32;

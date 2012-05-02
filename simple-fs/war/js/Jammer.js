@@ -10,8 +10,10 @@ function Jammer(stage, src, initval){this.initialize.apply(this, arguments)};
 	}
 	Class.prototype.recover = function() {
 		const self = this;
+		this.elem.style.display = "none";
 		setTimeout(function(){
 			self.reset();
+			self.elem.style.display = "block";
 		}, 3000);
 	}
 
