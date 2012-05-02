@@ -76,7 +76,14 @@ function Stage(id) {
 		}
 		this.elem.appendChild(actor.elem);
 	}
-
+	Class.prototype.onFloor = function(actor){
+		const floors = this.floors;
+		for (var i=0; i<floors.length; i++) {
+			if (floors[i].onFloor(actor)) return floors[i];
+		}
+		return null;
+	}
+	
 	Class.prototype.getBlockRaw = function(x,y) {
 		if (x<0 || x>=this.map[0].length) return BLOCK_NIL;
 		if (y<0 || y>=this.map.length) return BLOCK_NIL;

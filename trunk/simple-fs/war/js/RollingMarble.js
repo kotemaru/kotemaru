@@ -89,11 +89,11 @@ function RollingMarble() {
 			for (var i=0; i<actors.length; i++) {
 				var a = actors[i];
 				a.action();
-				if (a.contact) {
-					for (var k = 0; k < floors.length; k++) {
-						floors[k].onThe(a);
-					}
-				}
+				//if (a.contact) {
+				//	for (var k = 0; k < floors.length; k++) {
+				//		floors[k].onThe(a);
+				//	}
+				//}
 				if (a.reflect) a.reflect();
 			}
 			stage.scroll(marble.x, marble.y);
@@ -153,10 +153,10 @@ function RollingMarble() {
 		document.onkeydown = function(ev){
 			var g = {x:0, y:0};
 			switch(ev.keyCode) {
-				case 37: g={x:-0.5, y:0};  break; //←
-				case 38: g={x:0,   y:0.5}; break; //↑
-				case 39: g={x:0.5, y:0};    break; //→
-				case 40: g={x:0,   y:-0.5}; break; //↓
+				case 37: g={x:-20.5, y:0};  break; //←
+				case 38: g={x:0,   y:20.5}; break; //↑
+				case 39: g={x:20.5, y:0};    break; //→
+				case 40: g={x:0,   y:-24.0}; break; //↓
 				default:
 			}
 			RollingMarble.instance.marble.accele(g);

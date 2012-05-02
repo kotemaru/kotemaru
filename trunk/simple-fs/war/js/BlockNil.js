@@ -15,7 +15,6 @@ function BlockNil(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.rideOn = function(actor) {
 		with (actor) {
 			drop();
-			gz = -1;
 		}
 	}
 
