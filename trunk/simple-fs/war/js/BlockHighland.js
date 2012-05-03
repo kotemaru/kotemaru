@@ -52,7 +52,7 @@ function BlockHighland(stage, src, initval){this.initialize.apply(this, argument
 			var agy = Math.abs(gy);
 			if (agy>5) {
 				gz = agy *0.3;
-				gy = gy *0.7;
+				gy = gy *0.8;
 				nz = 1;
 			} else {
 				ny = y;
@@ -62,7 +62,7 @@ function BlockHighland(stage, src, initval){this.initialize.apply(this, argument
 			var agx = Math.abs(gx);
 			if (agx>5) {
 				gz = agx *0.3;
-				gx = gx *0.7;
+				gx = gx *0.8;
 				nz = 1;
 			} else {
 				nx = x;

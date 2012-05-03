@@ -7,6 +7,7 @@ package org.kotemaru.gae.storedbean;
 import java.util.*;
 import java.lang.reflect.*;
 import com.google.appengine.api.datastore.*;
+import com.google.appengine.api.datastore.Query.SortDirection;
 import com.google.appengine.api.memcache.*;
 
 /**
@@ -112,6 +113,19 @@ public class StoredBeanService {
 	}
 
 	/**
+	 * Keyの作成。nameがnullならnull。
+	 * <li>項目にBeanが有る場合は null は使えない。
+	 * @param name keyの名前
+	 * @param bean 永続化するBean
+	 * @return Key
+	 */
+	private Key createKey(String name) {
+		if (name == null) return null;
+		return KeyFactory.createKey(kind, name);
+	}
+	
+	
+	/**
 	 * Beanの保存。
 	 * @param name keyの名前
 	 * @param bean 永続化するBean
@@ -120,7 +134,7 @@ public class StoredBeanService {
 	public Key put(String name, StoredBean bean) {
 		Transaction tx = DS.beginTransaction();
 		try {
-			return put(tx, KeyFactory.createKey(kind, name), bean);
+			return put(tx, createKey(name), bean);
 		} finally {
 			tx.commit();
 			// TODO: rollback
@@ -208,7 +222,7 @@ public class StoredBeanService {
 	protected Key puts(Transaction tx, Key key, StoredBean bean) 
 			throws InvocationTargetException, IllegalAccessException {
 		Class cls = bean.getClass();
-		Entity entity = new Entity(key);
+		Entity entity = key==null ? new Entity(kind) : new Entity(key);
 		entity.setProperty(CLASS, cls.getName());
 		entity.setProperty(PATH, getPath(key));
 
@@ -455,6 +469,14 @@ public class StoredBeanService {
 	public Iterator<Entity> iterate(String name, String value) {
 		Query q = new Query(this.kind);
 		q.addFilter(name, Query.FilterOperator.EQUAL, value);
+		PreparedQuery pq = DS.prepare(q);
+		return pq.asIterator();
+	}
+	public Iterator<Entity> iterate(String name, String value, 
+									String sortName, boolean asc) {
+		Query q = new Query(this.kind);
+		q.addFilter(name, Query.FilterOperator.EQUAL, value);
+		q.addSort(sortName, asc ? SortDirection.ASCENDING : SortDirection.DESCENDING);
 		PreparedQuery pq = DS.prepare(q);
 		return pq.asIterator();
 	}

@@ -28,7 +28,7 @@ function BlackHole(stage, src, initval){this.initialize.apply(this, arguments)};
 		}
 	}
 
-	var R = 140;
+	var R = 130;
 	Class.prototype.action = function() {
 		var a = this, b = this.stage.marble;
 		var w = b.x - a.x;

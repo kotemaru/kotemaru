@@ -71,7 +71,7 @@ function Stage(id) {
 		if (actor.contact) {
 			this.entities.push(actor);
 		}
-		if (actor.onThe) {
+		if (actor.onFloor) {
 			this.floors.push(actor);
 		}
 		this.elem.appendChild(actor.elem);

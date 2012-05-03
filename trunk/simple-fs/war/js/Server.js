@@ -5,8 +5,12 @@ function Server() {}
 	Class.list = function(dir, errorHandler) {
 		return Class.getJson(CONTEXT_PATH+dir+"/", errorHandler);
 	}
+
+	var cache = {};
 	Class.file = function(name, errorHandler) {
-		return Class.getJson(CONTEXT_PATH+name, errorHandler);
+		if (cache[name]) return cache[name];
+		cache[name] = Class.getJson(CONTEXT_PATH+name, errorHandler);
+		return cache[name];
 	}
 
 	Class.getJson = function(url, errorHandler) {
@@ -61,5 +65,30 @@ function Server() {}
 		}
 		return true;
 	}
+	
+	Class.postScore = function(name, stage, time) {
+		var url = "/score/post?game=bcoro&stage="
+							+stage+"&name="+name+"&score="+time;
+		var xreq = new XMLHttpRequest();
+		xreq.open("POST", url, false);
+		xreq.send();
+		if (xreq.status >= 400) {
+			return false;
+		}
+		return true;
+	}
+
+	Class.listScore = function(name, stage) {
+		var url = "/score/post?game=bcoro&stage="+stage+"&limit=10";
+		var text = Class.getText(url);
+		if (text == null) return null;
+		try {
+			return JSON.parse(text);
+		} catch (e) {
+			alert(e+"\n"+text);
+			throw e;
+		}
+	}
+	
 	
 })(Server);
