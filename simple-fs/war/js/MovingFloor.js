@@ -48,7 +48,7 @@ function MovingFloor(stage, src, initval){this.initialize.apply(this, arguments)
 
 	const SPEED = 3;
 	const SLEEP = 30;
-	const LEN = 32*3;
+	const LEN = 32*4;
 	const DIRS = {
 		"U":{rv:"D", gx:0, gy:-SPEED},
 		"D":{rv:"U", gx:0, gy:SPEED},
@@ -85,23 +85,6 @@ function MovingFloor(stage, src, initval){this.initialize.apply(this, arguments)
 		}
 	}
 	
-	Class.prototype.onThe = function(actor){
-		const ax = actor.x;
-		const ay = actor.y;
-		with (this) {
-			if (x <= ax && ax <= x+64 && y <= ay && ay <= y+64) {
-				onActors[actor.id] = actor;
-				if (actor.z<0) {
-					actor.z = actor.gz = 0;
-				}
-				actor.isDropping = false;
-			} else if (onActors[actor.id]) {
-				delete onActors[actor.id];
-				if (actor.z<0) actor.z = actor.gz = 0;
-				actor.isDropping = false;
-			}
-		}
-	}
 
 	Class.prototype.putActor = function(actor){
 		this.onActors[actor.id] = actor;

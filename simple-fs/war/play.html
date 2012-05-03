@@ -113,7 +113,7 @@ function onLoad() {
 			z-index: 10000;
 			border-radius: 10px;
 		}
-		.dialog button,select{
+		.dialog button,select,input{
 			font: 24px sans-serif;
 		}
 	</style>
@@ -165,10 +165,26 @@ function onLoad() {
 	<div class="dialog" id="d_finish">
 		<div><b>All Stage Clear!</b></div>
 		<div>Total time: <span id="totalTime">000.00</span></div>
+		<div>Name: <input id="scoreName" /></div>
 		<br/>
 		<button  onclick="Dialog.ok()">OK</button>
 	</div>
-	
+
+	<div class="dialog" id="d_score">
+		<div><b>High Scores!</b></div>
+		<div>Stage: <span id="stageName"></span></div>
+		<table border="0">
+			<tr><th>name</th><th>Finish time</th></tr>
+			<tr><td></td><td></td></tr>
+			<tr><td></td><td></td></tr>
+			<tr><td></td><td></td></tr>
+			<tr><td></td><td></td></tr>
+			<tr><td></td><td></td></tr>
+		</table>
+		<br/>
+		<button  onclick="Dialog.ok()">OK</button>
+	</div>
+
 	<div class="dialog" id="d_config">
 		<div><b>Config</b></div>
 		<br/>
@@ -189,7 +205,7 @@ function onLoad() {
 					<option>10</option>
 		</select>
 		<br/>
-		Level:<select id="levelSelect" disabled >
+		Level:<select id="levelSelect" >
 					<option value=0 >Easy</option>
 					<option value=1 selected>Normal</option>
 					<option value=2 >Hard</option>

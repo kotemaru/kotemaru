@@ -15,7 +15,7 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 		this._super.reset.apply(this);
 		this.log = [];
 		this.count = 0;
-		for (var i=0; i<6; i++) this.log.push({x:this.x, y:this.y});
+		for (var i=0; i<30; i++) this.log.push({x:this.x, y:this.y});
 		this.isWating = false;
 	}
 
@@ -44,6 +44,7 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 		with (this) {
 			if (isWating) return blink();
 			if (count++>5 && !isDropping) {
+			//if (!isDropping) {
 				log.shift();
 				log.push({x:x, y:y});
 				count = 0;
@@ -58,9 +59,11 @@ function MyMarble(stage, src, initval){this.initialize.apply(this, arguments)};
 
 		with (this) {
 			for (var i=log.length-1; i>=0; i--) {
-				if (!stage.getBlock(log[i].x,log[i].y).isNil()) {
+				var block = stage.getBlock(log[i].x,log[i].y);
+				if (!block.isNil() && !block.isWall) {
 					this.x = log[i].x;
 					this.y = log[i].y;
+					break;
 				}
 			}
 			this.reflect();

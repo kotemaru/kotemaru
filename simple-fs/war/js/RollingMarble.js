@@ -60,12 +60,20 @@ function RollingMarble() {
 			if (self.stageNo < self.stageNames.length) {
 				self.start();
 			} else {
+				var config = getConfig();
+				Util.byId("scoreName").value = config.name;
 				Dialog.open("d_finish", function(){
-					location = "/";
+					config.name = Util.byId("scoreName").value;
+					setConfig(config);
+					var stageName = config.map+"/"+config.stage;
+					Server.postScore(config.name, stageName, self.totalTime);
+					location="/";
 				});
 			}
 		});
 	}
+	
+	
 	Class.prototype.stop = function() {
 		this.isStart = false;
 	}
@@ -139,7 +147,7 @@ function RollingMarble() {
 		return ms.substr(ms.length-6,3)+"."+ms.substr(ms.length-3,2);
 	}
 
-	Class.init = function(level) {
+	Class.init = function() {
 		RollingMarble.instance = new RollingMarble();
 
 		// 加速度センサ イベント登録
@@ -153,10 +161,10 @@ function RollingMarble() {
 		document.onkeydown = function(ev){
 			var g = {x:0, y:0};
 			switch(ev.keyCode) {
-				case 37: g={x:-20.5, y:0};  break; //←
-				case 38: g={x:0,   y:20.5}; break; //↑
-				case 39: g={x:20.5, y:0};    break; //→
-				case 40: g={x:0,   y:-24.0}; break; //↓
+				case 37: g={x:-0.5,y:0};    break; //←
+				case 38: g={x:0,   y:0.5};  break; //↑
+				case 39: g={x:0.5, y:0};    break; //→
+				case 40: g={x:0,   y:-0.5}; break; //↓
 				default:
 			}
 			RollingMarble.instance.marble.accele(g);
@@ -181,12 +189,11 @@ function RollingMarble() {
 
 		var levels = [
 			//感度        ,  反発力,        摩擦係数
-			{sensitive: 0.5, repulsion:2.0, friction:0.90},
+			{sensitive: 0.5, repulsion:1.3, friction:0.92},
 			{sensitive: 0.5, repulsion:1.5, friction:0.94},
-			{sensitive: 0.8, repulsion:1.6, friction:0.97},
+			{sensitive: 0.7, repulsion:1.6, friction:0.96},
 		]
-		//RollingMarble.instance.params = levels[level-1];
-		RollingMarble.instance.params = levels[1];
+		RollingMarble.instance.params = levels[getConfig().level];
 
 		RollingMarble.instance.start();
 	}
@@ -206,10 +213,15 @@ function RollingMarble() {
 		} else {
 			stageNames.push(config.map+"/"+config.stage);
 		}
+		// cacheに読み込み
+		for (var i=0; i<stageNames.length; i++) {
+			Server.file(stageNames[i]);
+		}
 		return stageNames;
 	}
+	
 	function getConfig() {
-		const DEFAULT = {map:"default", stage:"", level: 1};
+		const DEFAULT = {map:"default", stage:"", level: 1, name:"no name"};
 		var config;
 		var json = window.localStorage.getItem("config");
 		try {
@@ -256,7 +268,8 @@ function RollingMarble() {
 					level: Util.byId("levelSelect").value,
 				};
 				setConfig(config);
-				location.reload();
+				//location.reload();
+				RollingMarble.init();
 			},
 			ng: function() {
 				RollingMarble.instance.resume();

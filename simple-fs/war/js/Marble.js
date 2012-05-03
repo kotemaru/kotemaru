@@ -86,11 +86,12 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 		}
 	}
 	Class.prototype.drop = function(x, y) {
+		if (this.z>0) return false;
 		const floor = this.stage.onFloor(this);
 		if (floor) {
 			floor.putActor(this);
 			return false;
-		} else if (this.z<=0) {
+		} else {
 			this.isDropping = true;
 			Sound.play("drop");
 			return true;
@@ -119,6 +120,9 @@ function Marble(stage, src, initval){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.contact = function(b) {
 		const a = this;
+		const zz = b.z-a.z;
+		if (zz < -0.1 || 0.1 < zz) return false;
+
 		const w = b.x - a.x;
 		const h = b.y - a.y;
 		const l = Math.sqrt((w*w) + (h*h));

@@ -7,23 +7,7 @@ function BlockWall(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function(stage, src, initval) {
 		this._super.initialize.apply(this, arguments);
 		this.elem.style.zIndex = 5;
-/*
-		this.x = initval.x*32;
-		this.y = initval.y*32;
 
-		this.elem = document.createElement("div");
-		Util.css(this.elem, {
-			position: "absolute",
-			width: "30px", height: "30px", 
-			border: "1px solid gray",
-			background: "gray",
-			left:this.x, top:this.y,
-		});
-		stage.elem.appendChild(this.elem);
-        
-		this.stage = stage;
-		this.initval = initval;
-*/
 	}
 
 	function calc_1(a,b,ga,gb,c) {
@@ -39,10 +23,12 @@ function BlockWall(stage, src, initval){this.initialize.apply(this, arguments)};
 	Class.prototype.contact = function(actor) {
 
 	with (actor) {
-		const x1 = this.x-w2;
-		const x2 = this.x+32+w2;
-		const y1 = this.y-w2;
-		const y2 = this.y+32+w2;
+		if (z>0.5) return false;
+		const _w2 = w2-1;
+		const x1 = this.x-_w2;
+		const x2 = this.x+32+_w2;
+		const y1 = this.y-_w2;
+		const y2 = this.y+32+_w2;
 		
 		var min = 999999, m, hit=null;
 		if (this.hasU) {
