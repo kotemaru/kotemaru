@@ -472,17 +472,35 @@ public class StoredBeanService {
 		PreparedQuery pq = DS.prepare(q);
 		return pq.asIterator();
 	}
-	public Iterator<Entity> iterate(String name, String value, 
+	
+	public Iterator<Entity> iterateKeys(String name, String value, 
 									String sortName, boolean asc) {
 		Query q = new Query(this.kind);
 		q.addFilter(name, Query.FilterOperator.EQUAL, value);
 		q.addSort(sortName, asc ? SortDirection.ASCENDING : SortDirection.DESCENDING);
+		q.setKeysOnly();
 		PreparedQuery pq = DS.prepare(q);
 		return pq.asIterator();
 	}
-	
+
+	public Iterator<Entity> iterate(String name, String value, String sortName,
+			boolean asc) {
+		Query q = new Query(this.kind);
+		q.addFilter(name, Query.FilterOperator.EQUAL, value);
+		q.addSort(sortName, asc ? SortDirection.ASCENDING
+				: SortDirection.DESCENDING);
+		PreparedQuery pq = DS.prepare(q);
+		return pq.asIterator();
+	}
+
 	public void remove(String name) {
 		Key key = key(null,name);
+		if (isMemcacheEnable) {
+			memcache.delete(key);
+		}
+		DS.delete(key); // TODO:nest
+	}
+	public void remove(Key key) {
 		if (isMemcacheEnable) {
 			memcache.delete(key);
 		}

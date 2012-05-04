@@ -67,12 +67,36 @@ function RollingMarble() {
 					setConfig(config);
 					var stageName = config.map+"/"+config.stage;
 					Server.postScore(config.name, stageName, self.totalTime);
-					location="/";
+					listScores();
 				});
 			}
 		});
 	}
-	
+
+	function listScores() {
+		var config = getConfig();
+		var stageName = config.map+"/"+config.stage;
+		Util.byId("scoreStage").innerText = stageName;
+		
+		var list = Server.listScore(config.name, stageName, self.totalTime);
+		if (list == null) return;
+		var tbl = Util.byId("scoreTable");
+		var tds = tbl.getElementsByTagName("td");
+
+		for (var i=0; i<tds.length/2; i++) {
+			if (i < list.length-1) {
+				tds[i*2+0].innerText = list[i].name;
+				tds[i*2+1].innerText = toSecStr(list[i].score);
+			} else {
+				tds[i*2+0].innerText = "-";
+				tds[i*2+1].innerText = "-";
+			}
+		}
+		Dialog.open("d_score", function(){
+			RollingMarble.init();
+		});
+	}
+
 	
 	Class.prototype.stop = function() {
 		this.isStart = false;

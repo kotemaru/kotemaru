@@ -50,6 +50,8 @@ public class ScoreServlet extends HttpServlet {
 		putItem(writer, ent, "name");
 		writer.write(", ");
 		putItem(writer, ent, "score");
+		writer.write(", ");
+		putItem(writer, ent, "stage");
 		writer.write("}\n");
 	}
 	
@@ -81,8 +83,29 @@ public class ScoreServlet extends HttpServlet {
 		sb.setName(req.getParameter("name"));
 		sb.setStage(req.getParameter("stage"));
 		sb.setScore(Long.valueOf(req.getParameter("score")));
-
 		sbs.put(null, sb);
+
+		boolean asc = Boolean.valueOf(req.getParameter("asc"));
+		int no = 0;
+		Iterator<Entity> ite = sbs.iterateKeys("game", game, "score", asc);
+		while (ite.hasNext()) {
+			Entity ent = (Entity) ite.next();
+			if (no++ >= 20) {
+				sbs.remove(ent.getKey());
+			}
+		}
+	}
+
+	public void doDelete(HttpServletRequest req, HttpServletResponse res)
+			throws IOException, ServletException {
+
+		String game = req.getParameter("game") + ":"
+				+ req.getParameter("stage");
+		Iterator<Entity> ite = sbs.iterateKeys("game", game);
+		while (ite.hasNext()) {
+			Entity ent = (Entity) ite.next();
+			sbs.remove(ent.getKey());
+		}
 	}
 
 }
