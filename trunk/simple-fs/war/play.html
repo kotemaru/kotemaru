@@ -44,7 +44,36 @@ const SOUND_PARTS  = {
 		goal  : {s:4.228, e:14.051, },
 	};
 
+const IMAGES = [
+			"img/wall.png",
+			"img/black.png",
+			"img/goal.png",
+			"img/slow.png",
+			"img/arrow-rD.png",
+			"img/arrow-rU.png",
+			"img/arrow-rL.png",
+			"img/arrow-rR.png",
+			"img/arrow-yD.png",
+			"img/arrow-yU.png",
+			"img/arrow-yL.png",
+			"img/arrow-yR.png",
+			"img/highland.png",
+			"img/ball-blue.png",
+			"img/ball-red.png",
+			"img/ball-black.png",
+			"img/ball-yellow.png",
+			"img/ball-green.png", 
+			"img/ball-green.png",
+			"img/fix-gray.png",
+			"img/fix-yellow.png",
+			"img/spiral.png",
+			"img/floor-UD.png",
+			"img/floor-RL.png",
+];
+
+
 function onLoad() {
+	Util.preload(IMAGES);
 
 	var frame = Util.byId("stageFrame");
 	frame.style.height = (window.innerHeight-frame.offsetTop-4)+"px";

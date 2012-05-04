@@ -286,11 +286,9 @@ function RollingMarble() {
 
 		Dialog.open("d_config",{
 			other: function(val){
-				var config = {
-					map: sel.value,
-					stage: Util.byId("stageSelect").value,
-					level: Util.byId("levelSelect").value,
-				};
+				config.map   = sel.value;
+				config.stage = Util.byId("stageSelect").value;
+				config.level = Util.byId("levelSelect").value;
 				setConfig(config);
 				//location.reload();
 				RollingMarble.init();
