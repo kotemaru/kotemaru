@@ -46,5 +46,11 @@ function Util() {}
 			}
 		}
 	}
+	Class.preload = function(images) {
+		for (var i=0; i<images.length; i++) {
+			var img = new Image();
+			img.src = images[i];
+		}
+	}
 	
 })(Util);
