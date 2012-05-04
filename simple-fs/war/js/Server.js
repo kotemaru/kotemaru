@@ -23,63 +23,40 @@ function Server() {}
 			throw e;
 		}
 	}
+	
 	Class.getText = function(url, errorHandler) {
 		url = url.replace(/\/\//,"/");
 		var xreq = new XMLHttpRequest();
 		xreq.open("GET", url, false);
-		xreq.send();
-		if (xreq.status >= 400) {
-			if (errorHandler) {
-				return errorHandler(xreq);
-			} else {
-				return null;
-			}
+		if (send(xreq,undefined,errorHandler)) {
+			return xreq.responseText;
 		}
-		return xreq.responseText;
+		return null;
 	}
 	
 	Class.putJson = function(url, json, errorHandler) {
 		var xreq = new XMLHttpRequest();
 		xreq.open("PUT", url, false);
 		xreq.setRequestHeader("Content-type", "application/json; charset=utf-8");
-		xreq.send(json);
-		if (xreq.status >= 400) {
-			if (errorHandler) {
-				return errorHandler(xreq);
-			} else {
-				return false;
-			}
-		}
-		return true;
+		return send(xreq,json,errorHandler);
 	}
+	
 	Class.remove = function(url, errorHandler) {
 		var xreq = new XMLHttpRequest();
 		xreq.open("DELETE", url, false);
-		xreq.send();
-		if (xreq.status >= 400) {
-			if (errorHandler) {
-				return errorHandler(xreq);
-			} else {
-				return false;
-			}
-		}
-		return true;
+		return send(xreq,undefined,errorHandler);
 	}
 	
 	Class.postScore = function(name, stage, time) {
 		var url = "/score/post?game=bcoro&stage="
-							+stage+"&name="+name+"&score="+time;
+					+stage+"&name="+name+"&score="+time+"&asc=true";
 		var xreq = new XMLHttpRequest();
 		xreq.open("POST", url, false);
-		xreq.send();
-		if (xreq.status >= 400) {
-			return false;
-		}
-		return true;
+		return send(xreq);
 	}
 
 	Class.listScore = function(name, stage) {
-		var url = "/score/post?game=bcoro&stage="+stage+"&limit=10";
+		var url = "/score/get?game=bcoro&stage="+stage+"&limit=10&asc=true";
 		var text = Class.getText(url);
 		if (text == null) return null;
 		try {
@@ -90,5 +67,32 @@ function Server() {}
 		}
 	}
 	
+	Class.clearScore = function(stage, errorHandler) {
+		var url = "/score/get?game=bcoro&stage="+stage+"&limit=10&asc=true";
+		var xreq = new XMLHttpRequest();
+		xreq.open("DELETE", url, false);
+		return send(xreq);
+	}
+	
+	function send(xreq, body, errorHandler){
+		try {
+			xreq.send(body);
+		} catch (e) {
+			if (errorHandler) {
+				return errorHandler(xreq, e);
+			} else {
+				alert("通信に失敗しました。");
+			}
+			return false;
+		}
+		if (xreq.status >= 400) {
+			if (errorHandler) {
+				return errorHandler(xreq);
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
 	
 })(Server);

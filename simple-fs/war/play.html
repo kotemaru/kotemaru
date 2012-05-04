@@ -116,6 +116,9 @@ function onLoad() {
 		.dialog button,select,input{
 			font: 24px sans-serif;
 		}
+		#d_score td {
+			text-align: center;
+		}
 	</style>
 </head>
 
@@ -132,14 +135,6 @@ function onLoad() {
 	<div id="stageFrame">
 		<div id="stage">
 		</div>
-	</div>
-
-	<div class="dialog" id="d_init">
-		ビー玉ころころ ゲーム<br/>
-		<font size="2">難易度を選んでください。<br/><br/></font>
-		<button  onclick="Dialog.other(1)">Easy</button>
-		<button  onclick="Dialog.other(2)">Normal</button>
-		<button  onclick="Dialog.other(3)">Hard</button>
 	</div>
 
 	<div class="dialog" id="d_start">
@@ -172,14 +167,14 @@ function onLoad() {
 
 	<div class="dialog" id="d_score">
 		<div><b>High Scores!</b></div>
-		<div>Stage: <span id="stageName"></span></div>
-		<table border="0">
-			<tr><th>name</th><th>Finish time</th></tr>
-			<tr><td></td><td></td></tr>
-			<tr><td></td><td></td></tr>
-			<tr><td></td><td></td></tr>
-			<tr><td></td><td></td></tr>
-			<tr><td></td><td></td></tr>
+		<div>Stage: <span id="scoreStage"></span></div>
+		<table border="0" id="scoreTable" width="300px" align="center">
+			<tr><th>No.</th><th>Player</th><th>Finish time</th></tr>
+			<tr><th>1</th> <td></td><td></td></tr>
+			<tr><th>2</th> <td></td><td></td></tr>
+			<tr><th>3</th> <td></td><td></td></tr>
+			<tr><th>4</th> <td></td><td></td></tr>
+			<tr><th>5</th> <td></td><td></td></tr>
 		</table>
 		<br/>
 		<button  onclick="Dialog.ok()">OK</button>
@@ -204,8 +199,9 @@ function onLoad() {
 					<option>09</option>
 					<option>10</option>
 		</select>
+
 		<br/>
-		Level:<select id="levelSelect" >
+		Level:<select id="levelSelect" disabled>
 					<option value=0 >Easy</option>
 					<option value=1 selected>Normal</option>
 					<option value=2 >Hard</option>

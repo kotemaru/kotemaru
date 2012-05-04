@@ -438,7 +438,17 @@ function remove(){
 		Server.remove(fname, errorHander);
 	}
 }
-
+function clearScore(){
+	var fname = getFileName();
+	if (confirm("このマップのスコアを削除します。")) {
+		var map = Login.userInfo.nickName;
+		Server.clearScore(map+"/");
+		for (var i=1; i<10; i++) {
+			Server.clearScore(map+"/0"+i);
+		} 
+		Server.clearScore(map+"/10");
+	}
+}
 function errorHander(xreq) {
 	alert(xreq.responseText);
 }
@@ -509,6 +519,8 @@ function hideBalloon(ev, text) {
 		<button onclick="save()">Save</button>
 		&nbsp;
 		<button onclick="remove()">Remove</button>
+		&nbsp;
+		<button onclick="clearScore()">ClearScore</button>
 		&nbsp;
 		&nbsp;
 		&nbsp;
