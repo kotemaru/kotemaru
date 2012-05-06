@@ -1,0 +1,58 @@
+body{
+	color: white;
+	background: black;
+	margin: 0;
+	width:640px;
+}
+#header{
+	height: 32px;
+	width: 638px;
+	border: 1px solid gray;
+	font-size: 24px;
+	font-family: sans-serif;
+	font-weight: 900; 
+	margin-bottom: 8px;
+	//-webkit-text-stroke: 1px black;
+	z-index: 10000;
+	//opacity: 0.5;
+	background: black;
+	//position: absolute;
+	//left: 0px;
+	//top: 0px;
+}
+#header>*{
+	vertical-align: bottom;
+}
+#stageFrame{
+	//border: 1px solid gray;
+	overflow: hidden;
+}
+#stage{
+	box-sizing: border-box;
+//	background: url(../img/gray-check.png);
+	margin: 30px auto;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+}
+.dialog {
+	display: none;
+	position: absolute;
+	width: 80%;
+	//height: 100px;
+	top: 40%;
+	left: 10%;
+	background: #444444;
+	opacity: 0.9;
+	text-align: center;
+	font: 32px sans-serif;
+	padding: 8px;
+	z-index: 10000;
+	border-radius: 10px;
+}
+.dialog button,select,input{
+	font: 24px sans-serif;
+}
+#d_score td {
+	text-align: center;
+}
