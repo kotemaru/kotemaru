@@ -4,7 +4,25 @@ xmlns="http://java.sun.com/xml/ns/javaee"
 xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
-	<servlet>
+
+  <filter>
+    <filter-name>BasicAuth</filter-name>
+    <filter-class>org.kotemaru.gae.util.BasicAuthFilter</filter-class>
+    <init-param> 
+      <param-name>realm</param-name>
+      <param-value>BASIC</param-value> 
+    </init-param>
+    <init-param> 
+      <param-name>user.0</param-name>
+      <param-value>guest:guest0510</param-value> 
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>BasicAuth</filter-name>
+    <url-pattern>/private/*</url-pattern>
+  </filter-mapping> 
+  
+  	<servlet>
 		<servlet-name>bcorofs</servlet-name>
 		<servlet-class>org.kotemaru.gae.bcoro.SimpleFsServlet</servlet-class>
 	</servlet>
@@ -37,4 +55,5 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
 	</welcome-file-list>
+
 </web-app>

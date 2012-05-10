@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+                   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja"
+      xmlns:jscp="http://jscp/">
+	<head>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8"></meta>
+		<link rel="stylesheet" type="text/css" href="gocha.css" />
+
+		<script src="Actor.js"></script>
+		<script>
+Array.prototype.shuffle = function() {
+    var i = this.length;
+    while(i){
+        var j = Math.floor(Math.random()*i);
+        var t = this[--i];
+        this[i] = this[j];
+        this[j] = t;
+    }
+    return this;
+}
+
+var actors = [];
+
+function action() {
+	for (var i=0; i<actors.length; i++) {
+		actors[i].action();
+	}
+	setTimeout(function(){action()},200);
+}
+
+function _onload() {
+	var map = document.getElementById("map");
+
+	for (var i=0; i<10; i++) {
+		var white = new Actor("w2s",{team: "white",x:i*2+5,y:6});
+		white.deploy(map, actors);
+
+		var black = new Actor("b2s",{team: "black",x:i*2+5,y:25});
+		black.deploy(map, actors);
+
+		var white = new Actor("w2s",{team: "white",x:i*2+5,y:3});
+		white.deploy(map, actors);
+
+		var black = new Actor("b2s",{team: "black",x:i*2+5,y:28});
+		black.deploy(map, actors);
+
+	}
+
+	actors.shuffle();
+	action();
+}
+
+		</script>
+	</head>
+	<body onload="_onload();">
+		<div>
+			<div class="Map" id="map"></div>
+		<div>
+	</body>
+</httml>
+
