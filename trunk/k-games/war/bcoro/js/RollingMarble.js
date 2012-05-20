@@ -176,8 +176,27 @@ function RollingMarble() {
 			RollingMarble.instance.marble.accele(ev.accelerationIncludingGravity);
 		}
 	}
+	function onDeviceMotionAndroid(ev) {
+		if (RollingMarble.instance && RollingMarble.instance.isStart) {
+			RollingMarble.instance.marble.accele({
+				x: ev.gamma*0.15, y: ev.beta* -0.15, 
+			});
+		}
+	}
 	// 加速度センサ イベント登録
-	window.addEventListener("devicemotion", onDeviceMotion, true);
+	const is_iPhone  = (navigator.userAgent.indexOf("iPhone")>0);
+	const is_android = (navigator.userAgent.indexOf("Android")>0);
+	const is_pc      = true;
+	//const is_iPhone  = false;
+	//const is_android = true;
+	
+	if (is_iPhone){
+		window.addEventListener("devicemotion", onDeviceMotion, true);
+	} else if (is_android){
+		window.addEventListener("deviceorientation", onDeviceMotionAndroid, true);
+	} else { // PC
+		
+	}
 
 	Class.init = function() {
 		RollingMarble.instance = new RollingMarble();
