@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=320,user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+	<title>tatesyu</title>
+	<link rel="stylesheet" href="css/play.css?20120506_1350" />
+
+
+	<script>
+const IS_IPHONE  = (navigator.userAgent.indexOf("iPhone")>0);
+const IS_ANDROID = (navigator.userAgent.indexOf("Android")>0);
+const IS_PC      = !(IS_IPHONE || IS_ANDROID);
+//if (IS_IPHONE) alert("Mode: iPhone");
+//if (IS_ANDROID) alert("Mode: Android");
+//if (IS_PC) alert("Mode: PC");
+	</script>
+
+	<script src="js/Util.js"></script>
+	<script src="js/Chip.js"></script>
+	<script src="js/Game.js"></script>
+	<script src="js/Actor.js"></script>
+	<script src="js/Bullet.js"></script>
+	<script src="js/Ground.js"></script>
+	<script src="js/Lodge.js"></script>
+	<script src="js/Arsenal.js"></script>
+	<script src="js/Cannon.js"></script>
+	<script src="js/EnemyBullet.js"></script>
+	<script src="js/Plane.js"></script>
+	<script src="js/F4f.js"></script>
+	<script src="js/P38.js"></script>
+	<script src="js/Game.js"></script>
+	<script src="js/Input.js"></script>
+	<script src="js/Map.js"></script>
+	<script src="js/MyBullet.js"></script>
+	<script src="js/MyBulletG.js"></script>
+	<script src="js/MyShip.js"></script>
+	<script src="js/MyShipDummy.js"></script>
+	<script src="js/ItemSpanner.js"></script>
+	<script src="js/Item20mm.js"></script>
+	<script src="js/Bridge.js"></script>
+
+	<script src="js/Stage01.js"></script>
+
+
+	<script>
+var Config = {
+	useOrient: true, muteki: false, interval: 50
+}
+Util.copy(Config, JSON.parse(window.localStorage.getItem("tatesyu.config")));
+
+window.ontouchmove = function(ev) {
+	ev.preventDefault();//スクロール禁止
+}
+
+
+function onLoad(){
+	if (Chip.loading > 0) {
+		Chip.onload = onLoad2;
+	} else {
+		setTimeout(function(){onLoad2();},100);
+	}
+}
+
+var INTERVAL = 50;
+var thisGame = null;
+function onLoad2() {
+	runDemo();
+	ticker();
+}
+
+
+function runDemo() {
+	window.scrollTo(0,1);
+	INTERVAL = 10;
+	thisGame = Game.demo(runDemo);
+	document.body.onmousedown = runStage01;
+	document.body.ontouchstart = function(ev){runStage01(ev.touches[0]);};
+}
+
+function runStage01(ev) {
+	document.body.onmousedown = null;
+	document.body.ontouchstart = null;
+
+	if (ev.clientX>304 && ev.clientY<16) {
+		openConfig();
+		return;
+	}
+
+	window.scrollTo(0,1);
+	INTERVAL = Config.interval;
+	thisGame = Game.stage01(runDemo);
+	document.body.onmousemove = Input.onMouseMove;
+	document.body.ontouchmove = Input.onTouchMove;
+	document.body.ontouchstart = Input.onTouchMove;
+	document.body.ontouchend = Input.onTouchEnd;
+}
+
+var oldTime = new Date().getTime();
+function ticker() {
+	setTimeout(ticker, INTERVAL);
+
+	var t1 = new Date().getTime();
+	thisGame.ms = (new Date().getTime())-oldTime;
+	oldTime = t1;
+	
+	thisGame.action();
+}
+
+	function openConfig(ev) {
+		var canvas0 = Util.byId("canvas0");
+		var canvas1 = Util.byId("canvas1");
+		canvas0.height=20;
+		canvas1.height=20;
+	
+		var config = Util.byId("config");
+		config.style.display = "block";
+		
+		Util.setSelect(Util.byId("c_interval"), Config.interval);
+		Util.byId("c_use_orient").checked = Config.useOrient?"checked":null;
+		Util.byId("c_muteki").checked = Config.muteki?"checked":null;
+	}
+
+	function closeConfig() {
+		var canvas0 = Util.byId("canvas0");
+		var canvas1 = Util.byId("canvas1");
+		canvas0.height=416;
+		canvas1.height=416;
+	
+		var config = Util.byId("config");
+		config.style.display = "none";
+		
+		window.localStorage.setItem("tatesyu.config",JSON.stringify(Config));
+		runDemo();
+	}
+
+
+
+	</script>
+
+<style>
+body {
+	padding:0;
+	background: black;
+}
+canvas {
+	position: absolute;
+	left:0px;
+	top:0px;
+}
+#config {
+	display: none;
+	color: white;
+}
+
+</style>
+</head>
+
+<body onload="onLoad()" >
+	<canvas id="canvas0" width="320" height="416" ></canvas>
+	<canvas id="canvas1" width="320" height="416" ></canvas>
+
+	<div id="config">
+		<br/><br/>
+		<div>処理速度:
+			<select id="c_interval" onchange="Config.interval=this.value;">
+				<option>10</option>
+				<option>20</option>
+				<option>30</option>
+				<option>40</option>
+				<option>50</option>
+				<option>60</option>
+				<option>70</option>
+				<option>80</option>
+				<option>90</option>
+				<option>100</option>
+			</select>
+			ms/frame
+		</div>
+		<div>傾き操作: <input id="c_use_orient" type="checkbox" value=true
+				onchange="Config.useOrient=this.checked;" />
+		</div>
+		<div>無敵: <input id="c_muteki" type="checkbox"  value=true
+				onchange="Config.muteki=this.checked;" />
+		</div>
+		<br/>
+		<div align="center"><button onclick="closeConfig();">Close</button></div>
+	<div>
+</body>
+
+</html>
