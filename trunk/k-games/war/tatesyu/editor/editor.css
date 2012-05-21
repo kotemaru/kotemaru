@@ -1,0 +1,72 @@
+	
+html, body {
+	width:100%;
+	height:100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+	font-size: 14px;
+}
+#header {
+	box-sizing: border-box;
+	position: fixed;
+	width: 960px;
+	height: 30px;
+	
+	left:0;
+	top:0;
+	border: 1px outset black;
+}
+input {
+	border: 1px inset lightgray;
+}
+
+#outFrame {
+	margin: 0;
+	box-sizing: border-box;
+	width: 960px;
+	height: 100%;
+	border: 0px solid black;
+	padding: 32px 0 0 0;
+	
+}
+#leftPanel {
+	box-sizing: border-box;
+	float: left;
+	width: 350px;
+	height: 100%;
+	margin: 0px 0px;
+	padding: 0px;
+}
+
+#rightPanel {
+	box-sizing: border-box;
+	float: right;
+	width: 600px;
+	overflow: scroll;
+	height: 100%;
+	margin: 0px 0px;
+	padding: 0px 0px;
+	border: 0px solid gray;
+}
+
+
+#map {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	background: url("img/gray-check.png");
+	border: 1px solid gray;
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+}
+
+#balloon {
+	display: none;
+	position: absolute;
+	border: 1px solid black;
+	background: #ffeeaa;
+	padding: 2px 4px;
+}
