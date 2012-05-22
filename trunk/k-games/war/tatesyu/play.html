@@ -50,7 +50,7 @@ const IS_PC      = !(IS_IPHONE || IS_ANDROID);
 
 	<script>
 var Config = {
-	useOrient: true, muteki: false, interval: 50
+	control: "orient", muteki: false, interval: 60
 }
 Util.copy(Config, JSON.parse(window.localStorage.getItem("tatesyu.config")));
 
@@ -87,7 +87,7 @@ function runStage01(ev) {
 	document.body.onmousedown = null;
 	document.body.ontouchstart = null;
 
-	if (ev.clientX>304 && ev.clientY<16) {
+	if (ev.clientX<64 && ev.clientY>thisGame.clipH-64) {
 		openConfig();
 		return;
 	}
@@ -122,7 +122,7 @@ function ticker() {
 		config.style.display = "block";
 		
 		Util.setSelect(Util.byId("c_interval"), Config.interval);
-		Util.byId("c_use_orient").checked = Config.useOrient?"checked":null;
+		Util.setSelect(Util.byId("c_control"), Config.control);
 		Util.byId("c_muteki").checked = Config.muteki?"checked":null;
 	}
 
@@ -167,23 +167,27 @@ canvas {
 
 	<div id="config">
 		<br/><br/>
-		<div>処理速度:
+		<div>速度:
 			<select id="c_interval" onchange="Config.interval=this.value;">
-				<option>10</option>
-				<option>20</option>
-				<option>30</option>
-				<option>40</option>
-				<option>50</option>
-				<option>60</option>
-				<option>70</option>
-				<option>80</option>
-				<option>90</option>
-				<option>100</option>
+				<option value="1">No wait</option>
+				<option value="10">10</option>
+				<option value="20">20</option>
+				<option value="30">30</option>
+				<option value="40">40</option>
+				<option value="50">50</option>
+				<option value="60">60</option>
+				<option value="70">70</option>
+				<option value="80">80</option>
+				<option value="90">90</option>
+				<option value="100">Slow</option>
 			</select>
-			ms/frame
 		</div>
-		<div>傾き操作: <input id="c_use_orient" type="checkbox" value=true
-				onchange="Config.useOrient=this.checked;" />
+		<div>操作:
+			<select id="c_control" onchange="Config.control=this.value">
+				<option value="direct">直接タッチ</option>
+				<option value="pad">疑似パッド</option>
+				<option value="orient">傾き入力</option>
+			</select>
 		</div>
 		<div>無敵: <input id="c_muteki" type="checkbox"  value=true
 				onchange="Config.muteki=this.checked;" />

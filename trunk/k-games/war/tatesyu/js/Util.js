@@ -14,6 +14,7 @@ function Util() {}
 		for (var k in src) {
 			dst[k] = src[k];
 		}
+		return dst;
 	}
 	Class.css = function(elem, data) {
 		for (var k in data) {

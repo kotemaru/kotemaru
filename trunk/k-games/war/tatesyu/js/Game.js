@@ -2,7 +2,8 @@
 function Game(){this.initialize.apply(this, arguments)};
 (function(Class) {
 	const CONFIG_CHIP = Chip.add("config", "img/config.png");
-	
+	const PAD_CHIP = Chip.add("pad", "img/pad.png");
+
 	Class.prototype.initialize = function(finish) {
 		var canvases = [Util.byId("canvas0"), Util.byId("canvas1")];
 		var contexs = [canvases[0].getContext("2d"), canvases[1].getContext("2d")];
@@ -117,17 +118,18 @@ function Game(){this.initialize.apply(this, arguments)};
 			stroke();
 		}
 	}
-	Class.prototype.drawBigText = function(texts, color, isBlink){
+	Class.prototype.drawBigText = function(texts, opts){
+		opts = Util.copy({color:"white",size:64,isBlink:false}, opts);
 		with (this) {
-			if (isBlink && count%20>15) return;
+			if (opts.isBlink && count%20>15) return;
 			for (var i=0; i<texts.length; i++) {
 				var text = texts[i];
 				ctx.strokeStyle = "white";
 				ctx.lineWidth =1;
-				ctx.fillStyle = color;
-				ctx.font = '64px bold monospace';
+				ctx.fillStyle = opts.color;
+				ctx.font = opts.size+"px bold monospace";
 				var metrix = ctx.measureText(text);
-				var y = 200 + i * 64;
+				var y = 200 + i * opts.size;
 				ctx.fillText(text, 160-metrix.width/2 , y);
 				ctx.strokeText(text, 160-metrix.width/2 ,y);
 			}
@@ -144,8 +146,8 @@ function Game(){this.initialize.apply(this, arguments)};
 			ctx.fillText(""+ms, 300, y);
 	
 			var s1 = "00000000"+score;
-			var s2 = s1.substr(s1.length-8);
-			ctx.fillText(s2, 4, y);
+			var scoreStr = s1.substr(s1.length-8);
+			ctx.fillText(scoreStr, 4, y);
 
 			ctx.fillText("HP:", 120, y);
 			const hp = myShip.hp;
@@ -156,7 +158,12 @@ function Game(){this.initialize.apply(this, arguments)};
 				ctx.fillRect(142,3, hp*4 ,10);
 			}
 			ctx.strokeRect(142,3, 10*4 ,10);
-	
+
+			if (Config.control == "pad") {
+				ctx.drawImage(PAD_CHIP.img, 320-80, clipH-64);
+			}
+
+			
 			if (boss) {
 				ctx.fillStyle = "#880044";
 				ctx.fillRect(10, 20, Math.floor(300*boss.hp/boss.hpMax) ,4);
@@ -164,13 +171,15 @@ function Game(){this.initialize.apply(this, arguments)};
 			}
 			
 			if (isDemo) {
-				drawBigText(["START!"], "yellow", true);
-				ctx.drawImage(CONFIG_CHIP.img, 304,0);
+				drawBigText(["START!"], {color:"yellow", isBlink:true});
+				if (count%20<15) ctx.drawImage(CONFIG_CHIP.img, 16, clipH-64);
 			} else if (count < 30) {
-				drawBigText(["Stage 1"], "white");
+				drawBigText(["Stage 1"], {color:"white"});
 			}
-			if (isGameOver) drawBigText(["GAME","OVER"], "blue");
-			if (isStageClear) drawBigText(["STAGE","CLEAR!"], "green");
+			if (isGameOver) drawBigText(["GAME","OVER"], {color:"blue"});
+			if (isStageClear) {
+				drawBigText(["STAGE CLEAR!","", "Score:"+scoreStr], {color:"green", size:32});
+			}
 		}
 	}
 	Class.prototype.action = function(){
