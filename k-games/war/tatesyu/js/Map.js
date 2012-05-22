@@ -43,8 +43,8 @@ function Map(game){this.initialize.apply(this, arguments)};
 			for (var x = 0; x < 10; x++) {
 				var name = matrix[y+top][x];
 				var chip = chips[name];
-				ctx.putImageData(chip.data, x * 32, yy);
-				//ctx.drawImage(chip.img, x * 32, yy);
+				chip.put(ctx, x * 32, yy);
+				//chip.draw(ctx, x * 32, yy);
 			}
 		}
 	};

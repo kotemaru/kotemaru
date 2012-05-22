@@ -16,19 +16,27 @@ function Input(game){this.initialize.apply(this, arguments)};
 	}
 
 	document.onkeydown = function(ev){
-		var name = KEYCODE[ev.keyCode];
+		var name = KEYCODE[keyCode(ev)];
 		if (name === undefined) return false;
 		Class[name] = true;
 		return false;
 	};
 	document.onkeyup = function(ev){
-		var name = KEYCODE[ev.keyCode];
+		var name = KEYCODE[keyCode(ev)];
 		if (name === undefined) return false;
 		Class[name] = false;
 		return false;
 	};
-
+	function keyCode(ev){
+	    if(document.all)
+	        return ev.keyCode;
+	    else if(document.getElementById)
+	        return (ev.keyCode)? ev.keyCode: ev.charCode;
+	    else if(document.layers)
+	        return ev.which;
+	} 
 	Class.onMouseMove = function(ev){
+		//console.log(ev.clientX+":"+ev.offsetX);
 		if (Config.control == "pad") {
 			padTouch(ev);
 		} else {
@@ -37,38 +45,37 @@ function Input(game){this.initialize.apply(this, arguments)};
 	};
 
 	function directTouch(ev) {
-		if (ev.which == 0) return Class.onTouchEnd();
+		if (ev.which == 0) return Class.padClear();
 		const myShip = thisGame.myShip;
 		const ox = (myShip.x-thisGame.clipX);
 		const oy = (myShip.y-thisGame.clipY);
-		const x = ev.clientX - ox;
-		const y = ev.clientY - oy;
-		Class["left"]  = (x<-1);
-		Class["right"] = (x> 1);
-		Class["up"]    = (y<-1);
-		Class["down"]  = (y> 1);
+		const zoom = document.body.style.zoom;
+		const x = ev.clientX/zoom - ox;
+		const y = ev.clientY/zoom - oy;
+		Class.left  = (x<-4);
+		Class.right = (x> 4);
+		Class.up    = (y<-4);
+		Class.down  = (y> 4);
 	}
 	
 	function padTouch(ev) {
 		if (ev.which == 0) return Class.onTouchEnd();
-		const PAD_OX = 320-80+32;
-		const PAD_OY = thisGame.clipH-32;
-		const x = ev.clientX - PAD_OX;
-		const y = ev.clientY - PAD_OY;
-		Class["left"]  = (x<-8);
-		Class["right"] = (x> 8);
-		Class["up"]    = (y<-8);
-		Class["down"]  = (y> 8);
+		const ox = 320-80+32;
+		const oy = thisGame.clipH-32;
+		const zoom = document.body.style.zoom;
+		const x = ev.clientX/zoom - ox;
+		const y = ev.clientY/zoom - oy;
+		Class.left  = (x<-8);
+		Class.right = (x> 8);
+		Class.up    = (y<-8);
+		Class.down  = (y> 8);
 	}
 	
-	Class.onTouchMove = function(ev){
-		Class.onMouseMove(ev.touches[0]);
-	};
-	Class.onTouchEnd = function(ev){
-		Class["left"]  = false;
-		Class["right"] = false;
-		Class["up"]    = false;
-		Class["down"]  = false;
+	Class.padClear = function(){
+		Class.left  = false;
+		Class.right = false;
+		Class.up    = false;
+		Class.down  = false;
 	};
 	
 	Class.on = function(name) {
@@ -92,6 +99,39 @@ function Input(game){this.initialize.apply(this, arguments)};
 	if (!IS_PC) {
 		window.addEventListener("deviceorientation", onDeviceMotion, true);
 	}
+
+	Class.modeDemo = function(onPlay) {
+		function onClick(ev) {
+			const zoom = document.body.style.zoom;
+			const x = ev.clientX/zoom;
+			const y = ev.clientY/zoom;
+			if (x<64 && y>thisGame.clipH-64) {
+				Input.modeConfig();
+				Config.open();
+				return;
+			}
+			onPlay(ev);
+		}
+		document.body.onmousedown = onClick;
+		document.body.ontouchstart = function(ev){onClick(ev.touches[0]);};
+	}
+	Class.modeConfig = function() {
+		document.body.onmousedown = null;
+		document.body.ontouchstart = null;
+	}
+	
+	Class.modePlay = function() {
+		function onTouchMove(ev){
+			Class.onMouseMove(ev.touches[0]);
+		};
+		document.body.onmousedown = null;
+		document.body.ontouchstart = null;
+		document.body.onmousemove  = Class.onMouseMove;
+		document.body.ontouchmove  = onTouchMove;
+		document.body.ontouchstart = onTouchMove;
+		document.body.ontouchend   = Class.padClear;
+	}
+	
 	
 })(Input);
 

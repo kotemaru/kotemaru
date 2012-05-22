@@ -19,8 +19,8 @@ function Actor(game){this.initialize.apply(this, arguments)};
 			//const yy = y - (img.height/2) - game.clipY;
 			//game.ctx.putImageData(data, xx, yy);
 			game.drawImage(chip, 
-					x - (img.width/2),
-					y - (img.height/2)
+					x - (chip.w/2),
+					y - (chip.h/2)
 			);
 			
 		}
