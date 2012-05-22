@@ -1,7 +1,7 @@
 
 function Game(){this.initialize.apply(this, arguments)};
 (function(Class) {
-	const CONFIG_CHIP = Chip.add("config", "img/config.png");
+	const CONFIG_CHIP = Chip.add("config", "img/everaldo.com/config.png");
 	const PAD_CHIP = Chip.add("pad", "img/pad.png");
 
 	Class.prototype.initialize = function(finish) {
@@ -37,11 +37,11 @@ function Game(){this.initialize.apply(this, arguments)};
 			finish: finish,
 			ms: 0 
 		});
-		if (window.innerHeight < this.clipH) {
-			this.clipH = window.innerHeight;
-			canvases[0].height = this.clipH;
-			canvases[1].height = this.clipH;
-		}
+		//if (window.innerHeight < this.clipH) {
+		//	this.clipH = window.innerHeight;
+		//	canvases[0].height = this.clipH;
+		//	canvases[1].height = this.clipH;
+		//}
 	}
 
 	Class.prototype.setMap = function(map){
@@ -104,10 +104,9 @@ function Game(){this.initialize.apply(this, arguments)};
 	
 	
 	Class.prototype.drawImage = function(chip, x, y){
-		with (this) {
-			ctx.drawImage(chip.img, x-clipX, y-clipY);
-		}
+		chip.draw(this.ctx, x-this.clipX, y-this.clipY);
 	}
+	
 	Class.prototype.drawLine = function(x1, y1, x2, y2){
 		const ox = this.clipX;
 		const oy = this.clipY;
@@ -160,7 +159,7 @@ function Game(){this.initialize.apply(this, arguments)};
 			ctx.strokeRect(142,3, 10*4 ,10);
 
 			if (Config.control == "pad") {
-				ctx.drawImage(PAD_CHIP.img, 320-80, clipH-64);
+				PAD_CHIP.draw(ctx, 320-80, clipH-64);
 			}
 
 			
@@ -172,7 +171,7 @@ function Game(){this.initialize.apply(this, arguments)};
 			
 			if (isDemo) {
 				drawBigText(["START!"], {color:"yellow", isBlink:true});
-				if (count%20<15) ctx.drawImage(CONFIG_CHIP.img, 16, clipH-64);
+				if (count%20<15) CONFIG_CHIP.draw(ctx, 16, clipH-64);
 			} else if (count < 30) {
 				drawBigText(["Stage 1"], {color:"white"});
 			}
