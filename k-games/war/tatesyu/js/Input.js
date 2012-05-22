@@ -10,7 +10,7 @@ function Input(game){this.initialize.apply(this, arguments)};
 		40: "down",  //↓
 		88: "btn1", //x
 		90: "btn2",  //y
-	}
+	};
 	for (var k in KEYCODE) {
 		Class[KEYCODE[k]] = false;
 	}
@@ -35,8 +35,17 @@ function Input(game){this.initialize.apply(this, arguments)};
 	    else if(document.layers)
 	        return ev.which;
 	} 
+
+	var isDrag = false;
+	Class.onMouseDown = function(ev){
+		isDrag = true;
+	}
+	Class.onMouseUp = function(ev){
+		isDrag = false;
+		Class.padClear();
+	}
 	Class.onMouseMove = function(ev){
-		//console.log(ev.clientX+":"+ev.offsetX);
+		if (!isDrag) return;
 		if (Config.control == "pad") {
 			padTouch(ev);
 		} else {
@@ -45,7 +54,6 @@ function Input(game){this.initialize.apply(this, arguments)};
 	};
 
 	function directTouch(ev) {
-		if (ev.which == 0) return Class.padClear();
 		const myShip = thisGame.myShip;
 		const ox = (myShip.x-thisGame.clipX);
 		const oy = (myShip.y-thisGame.clipY);
@@ -59,7 +67,6 @@ function Input(game){this.initialize.apply(this, arguments)};
 	}
 	
 	function padTouch(ev) {
-		if (ev.which == 0) return Class.onTouchEnd();
 		const ox = 320-80+32;
 		const oy = thisGame.clipH-32;
 		const zoom = document.body.style.zoom;
@@ -122,10 +129,12 @@ function Input(game){this.initialize.apply(this, arguments)};
 	
 	Class.modePlay = function() {
 		function onTouchMove(ev){
+			isDrag = true;
 			Class.onMouseMove(ev.touches[0]);
 		};
-		document.body.onmousedown = null;
-		document.body.ontouchstart = null;
+		document.body.onmousedown = Class.onMouseDown;
+		document.body.onmouseup   = Class.onMouseUp;
+	
 		document.body.onmousemove  = Class.onMouseMove;
 		document.body.ontouchmove  = onTouchMove;
 		document.body.ontouchstart = onTouchMove;
