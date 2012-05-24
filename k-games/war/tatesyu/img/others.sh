@@ -9,4 +9,5 @@ convert +append\
  bridge.png\
  pad.png\
  smoke.png\
+ smoke_b.png\
 	others.png

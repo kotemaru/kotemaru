@@ -42,8 +42,12 @@
 			<fileset dir="js" includes="ItemSpanner.js" />
 			<fileset dir="js" includes="Item20mm.js" />
 			<fileset dir="js" includes="Bridge.js" />
+			
+			<fileset dir="js/sound" includes="WebkitSound.js" />
+			<fileset dir="js/sound" includes="DummySound.js" />
 
 			<fileset dir="js" includes="Stage01.js" />
+			<fileset dir="js" includes="Main.js" />
 		</concat>
 			
 		<yuicompress

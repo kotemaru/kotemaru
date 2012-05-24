@@ -31,6 +31,10 @@ function MyShip(game){this.initialize.apply(this, arguments)};
 	Class.prototype.action = function() {
 		with (this) {
 			if (hp<=0) {
+				if (!game.isGameOver) {
+					Sound.play("boon");
+					Sound.stop("engine");
+				}
 				game.isGameOver = true;
 				game.setLifeSpan(100);
 				y += 6;
@@ -151,6 +155,7 @@ function MyShip(game){this.initialize.apply(this, arguments)};
 	};
 	Class.prototype.hit = function(waigh){
 		if (!Config.muteki) this.hp -= waigh;
+		Sound.play("kan");
 	}
 	
 })(MyShip, Actor);

@@ -31,6 +31,7 @@ function Ground(game){this.initialize.apply(this, arguments)};
 				chip = DETONOTE;
 				isClash = true;
 				game.score += point;
+				Sound.play("boon");
 			}
 		}
 	}
@@ -49,6 +50,7 @@ function Ground(game){this.initialize.apply(this, arguments)};
 	};
 	Class.prototype.hit = function(waigh){
 		this.hp -= waigh;
+		Sound.play("kan");
 	}
 
 })(Ground, Actor);

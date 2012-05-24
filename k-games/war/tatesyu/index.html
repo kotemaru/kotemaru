@@ -17,10 +17,16 @@ const IS_PC      = !(IS_IPHONE || IS_ANDROID);
 	</script>
 	
 <!-- NOMAL START -->
-	<script src="min/all-min.js?20120522_2252"></script>
+	<script>
+const IS_DEBUG = false;
+	</script>
+	<script src="min/all-min.js?20120524_1340"></script>
 <!-- NOMAL END-->
 
 <!-- DEBUG START 
+	<script>
+const IS_DEBUG = true;
+	</script>
 	<script src="img/all32_mapping.js"></script>
 	<script src="img/others_mapping.js"></script>
 	<script src="js/Util.js"></script>
@@ -50,62 +56,13 @@ const IS_PC      = !(IS_IPHONE || IS_ANDROID);
 	<script src="js/Bridge.js"></script>
 
 	<script src="js/Stage01.js"></script>
+	
+	<script src="js/sound/WebkitSound.js"></script>
+	<script src="js/sound/DummySound.js"></script>
+	
+	<script src="js/Main.js"></script>
 <!-- DEBUG END-->
 
-
-	<script>
-window.ontouchmove = function(ev) {
-	ev.preventDefault();//スクロール禁止
-}
-
-function onLoad(){
-	if (Chip.loading > 0) {
-		Chip.onload = onLoad2;
-	} else {
-		setTimeout(function(){onLoad2();},100);
-	}
-}
-
-var INTERVAL = 50;
-var thisGame = null;
-function onLoad2() {
-	runDemo();
-	ticker();
-}
-
-function resizeWindow() {
-	window.scrollTo(0,1);
-	document.body.style.zoom = 
-			Math.min(window.innerHeight/416, window.innerWidth/320);
-}
-
-function runDemo() {
-	resizeWindow();
-	INTERVAL = 10;
-	thisGame = Game.demo(runDemo);
-	Input.modeDemo(runStage01);
-}
-
-function runStage01(ev) {
-	resizeWindow();
-	INTERVAL = Config.interval;
-	thisGame = Game.stage01(runDemo);
-	Input.modePlay();
-}
-
-var oldTime = new Date().getTime();
-function ticker() {
-	setTimeout(ticker, INTERVAL);
-
-	var t1 = new Date().getTime();
-	thisGame.ms = (new Date().getTime())-oldTime;
-	oldTime = t1;
-	
-	thisGame.action();
-}
-
-
-	</script>
 
 <style>
 body {
@@ -125,7 +82,7 @@ canvas {
 </style>
 </head>
 
-<body onload="onLoad()" >
+<body onload="Main.onLoad()" >
 	<div id="main">
 		<canvas id="canvas0" width="320" height="416" ></canvas>
 		<canvas id="canvas1" width="320" height="416" ></canvas>
@@ -155,9 +112,12 @@ canvas {
 				<option value="orient">傾き入力(iPhoneのみ)</option>
 			</select>
 		</div>
+
+<!-- NOMAL START 
 		<div>無敵: <input id="c_muteki" type="checkbox"  value=true
 				onchange="Config.muteki=this.checked;" />
 		</div>
+<!-- DEBUG END-->
 		<br/>
 		<div align="center"><button onclick="Config.close();runDemo();">Close</button></div>
 	<div>
