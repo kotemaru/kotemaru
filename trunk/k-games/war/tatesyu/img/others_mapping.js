@@ -8,4 +8,5 @@ var CHIPS_OTHERS_MAPPING = {
 "bridge":       {x:172, y:0, w:32,h:64},
 "pad":          {x:204, y:0, w:64,h:64},
 "smoke":        {x:268, y:0, w:12,h:12},
+"smoke_b":      {x:280, y:0, w:16,h:16},
 };

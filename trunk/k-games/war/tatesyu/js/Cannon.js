@@ -2,8 +2,8 @@
 function Cannon(game){this.initialize.apply(this, arguments)};
 (function(Class, Super) {
 	Util.extend(Class, Super);
-	Util.addClass(Class);
 
+	const SMOKE = Chip.add("smoke_b", "img/smoke_b.png");
 	const CHIPS = [];
 	(function() {
 		const names = [
@@ -28,6 +28,16 @@ function Cannon(game){this.initialize.apply(this, arguments)};
 			return (game.clipY <= y);
 		}
 	}
+	Class.prototype.paint = function(game) {
+		Super.prototype.paint.apply(this, arguments);
+		with (this) {
+			if (hp>1 && hp<3) {
+				var cc = game.count%10;
+				if (cc>5) game.drawImage(SMOKE, x+1, y-10);
+				else game.drawImage(SMOKE, x+8, y-20);
+			}
+		}
+	};
 
 	Class.prototype.basicAction = function() {
 		with (this) {

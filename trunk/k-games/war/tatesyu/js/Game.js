@@ -175,7 +175,9 @@ function Game(){this.initialize.apply(this, arguments)};
 			} else if (count < 30) {
 				drawBigText(["Stage 1"], {color:"white"});
 			}
-			if (isGameOver) drawBigText(["GAME","OVER"], {color:"blue"});
+			if (isGameOver) {
+				drawBigText(["GAME OVER","", "Score:"+scoreStr], {color:"blue", size:32});
+			}
 			if (isStageClear) {
 				drawBigText(["STAGE CLEAR!","", "Score:"+scoreStr], {color:"green", size:32});
 			}

@@ -35,12 +35,14 @@ function Plane(game){this.initialize.apply(this, arguments)};
 				game.drawImage(DETONOTE, x-16, y-16);
 				game.delEntity(this);
 				game.score += point;
+				Sound.play("boon");
 			}
 		}
 	};
 	
 	Class.prototype.hit = function(waigh){
 		this.hp -= waigh;
+		Sound.play("kan");
 	}
 	
 	//------------------------------------------------------

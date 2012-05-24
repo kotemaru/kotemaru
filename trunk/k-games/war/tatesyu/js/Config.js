@@ -15,7 +15,9 @@ function Config(game){this.initialize.apply(this, arguments)};
 		var config = JSON.parse(item);
 		Util.copy(Class, DEFAULT);
 		Util.copy(Class, config);
+		if (!IS_DEBUG) Config.muteki = false;
 	}
+
 	function save() {
 		var config = {};
 		for (var k in DEFAULT) config[k] = Class[k];

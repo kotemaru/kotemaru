@@ -12,7 +12,7 @@ function Bridge(game){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function(game) {
 		Super.prototype.initialize.apply(this, arguments);
 		Util.copy(this,{
-			layer:1, chip:CHIP, x:0, y:0, vx:0,vy:0, hp:500, hpMax:500, count:0
+			layer:1, chip:CHIP, x:0, y:0, vx:0,vy:0, hp:500, hpMax:500, count:0, point:10000
 		});
 	};
 	Class.prototype.isActive = function() {
@@ -47,6 +47,7 @@ function Bridge(game){this.initialize.apply(this, arguments)};
 	};
 	Class.prototype.hit = function(waigh){
 		this.hp -= waigh;
+		Sound.play("kan");
 	}
 	
 	//-------------------------------------------------------------------------
@@ -56,6 +57,7 @@ function Bridge(game){this.initialize.apply(this, arguments)};
 				game.scroll = 2;
 				game.delEntity(this);
 				game.boss = null;
+				game.score += this.point;
 				return;
 			}
 			const cc = count % 200;

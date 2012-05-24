@@ -54,9 +54,9 @@ function Input(game){this.initialize.apply(this, arguments)};
 	};
 
 	function directTouch(ev) {
-		const myShip = thisGame.myShip;
-		const ox = (myShip.x-thisGame.clipX);
-		const oy = (myShip.y-thisGame.clipY);
+		const myShip = Main.thisGame.myShip;
+		const ox = (myShip.x-Main.thisGame.clipX);
+		const oy = (myShip.y-Main.thisGame.clipY);
 		const zoom = document.body.style.zoom;
 		const x = ev.clientX/zoom - ox;
 		const y = ev.clientY/zoom - oy;
@@ -68,7 +68,7 @@ function Input(game){this.initialize.apply(this, arguments)};
 	
 	function padTouch(ev) {
 		const ox = 320-80+32;
-		const oy = thisGame.clipH-32;
+		const oy = Main.thisGame.clipH-32;
 		const zoom = document.body.style.zoom;
 		const x = ev.clientX/zoom - ox;
 		const y = ev.clientY/zoom - oy;
@@ -106,13 +106,17 @@ function Input(game){this.initialize.apply(this, arguments)};
 	if (!IS_PC) {
 		window.addEventListener("deviceorientation", onDeviceMotion, true);
 	}
+	window.ontouchmove = function(ev) {
+		ev.preventDefault();//スクロール禁止
+	}
+
 
 	Class.modeDemo = function(onPlay) {
 		function onClick(ev) {
 			const zoom = document.body.style.zoom;
 			const x = ev.clientX/zoom;
 			const y = ev.clientY/zoom;
-			if (x<64 && y>thisGame.clipH-64) {
+			if (x<64 && y>Main.thisGame.clipH-64) {
 				Input.modeConfig();
 				Config.open();
 				return;

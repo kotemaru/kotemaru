@@ -25,6 +25,12 @@ function Chip(src){this.initialize.apply(this, arguments)};
 		// nop.
 	}
 
+	Class.load = function(callback) {
+		Class.onload = callback;
+		if (Class.loading<=0) {
+			callback();
+		}
+	}
 
 	Class.prototype.initialize = function() {
 		this.base = null;
