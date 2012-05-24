@@ -59,6 +59,8 @@ function WebkitSound(){this.initialize.apply(this, arguments)};
 		source.noteGrainOn(0,s,(e-s));
 		return source;
 	}
+	Class.autoStop = function(){
+	}
 
 	
 })(WebkitSound);

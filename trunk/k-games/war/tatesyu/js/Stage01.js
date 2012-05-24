@@ -352,6 +352,7 @@ var Stage01 = {
 {x:119, y:689,  name:"cannon", opts:{type:"cannon2"}},
 {x:118, y:625,  name:"cannon", opts:{type:"cannon"}},
 {x:80, y:2096,  name:"cannon", opts:{type:"cannon"}},
+{x:192, y:6000,  name:"cannon", opts:{type:"cannon"}},
   ],
   "air": [
 {x:112, y:5584,  name:"f4f", opts:{type:"stalk"}},

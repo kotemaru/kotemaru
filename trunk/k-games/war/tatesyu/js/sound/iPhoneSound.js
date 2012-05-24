@@ -40,10 +40,10 @@ function iPhoneSound(){};
 		Class.audio = new Audio(url);
 		Class.parts = parts;
 		Class.audio.addEventListener("loadedmetadata", function(){
-			playPart(0, 0.5, 1.0);
 			callback();
 		});
 		Class.audio.load();
+		//Class.audio.play();
 	}
 	/**
 	 * 効果音の再生。
@@ -55,6 +55,9 @@ function iPhoneSound(){};
 		playPart(part.s, part.e, 1.0);
 	}
 	Class.BGM = function(name){
+		// no sapport
+	}
+	Class.stop = function(name){
 		// no sapport
 	}
 	
@@ -79,5 +82,5 @@ function iPhoneSound(){};
 })(iPhoneSound);
 
 if (IS_IPHONE) {
-	var Sound = iPhoneSound;
+	//var Sound = iPhoneSound;
 }

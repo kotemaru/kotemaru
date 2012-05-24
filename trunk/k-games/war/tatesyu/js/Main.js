@@ -6,25 +6,38 @@ function Main() {}
 	function onPreload() {
 		if (--preload<=0) onLoad2();
 	}
-
-	function onLoad(){
-		var preload = 2;
-		function onPreload() {
-			if (--preload<=0) onLoad2();
-		}
+	
+	var isInitSound = false;
+	function initSound(){
+		if (isInitSound) return;
 		Sound.load("sound/all.mp3",  {
-		  // 音の名前    開始秒    終了秒
-			kan    : {s:1.246, e:1.4   ,v:1.0},
-			bon    : {s:1.929, e:2.065 ,v:1.0},
-			boon   : {s:2.440, e:2.9   ,v:1.0},
-			engine : {s:4.63,  e:5.25  ,v:0.3},
+			  // 音の名前    開始秒    終了秒
+				kan    : {s:1.246, e:1.4   ,v:1.0},
+				bon    : {s:1.929, e:2.065 ,v:1.0},
+				boon   : {s:2.440, e:2.9   ,v:1.0},
+				engine : {s:4.63,  e:5.25  ,v:0.5},
 		}, onPreload );
 		
+		sInitSound = true;
+		document.body.ontouchstart = null;
+	}
+	
+	function onLoad(){
+		if (Sound == iPhoneSound) {
+			document.body.ontouchstart = initSound;
+			Util.byId("main").style.display = "none";
+			Util.byId("touchme").style.display = "block";
+		} else {
+			initSound();
+		}
 		Chip.load(onPreload);
 	}
 
 	var INTERVAL = 50;
 	function onLoad2() {
+		//Util.byId("main").style.display = "block";
+		//Util.byId("touchme").style.display = "none";
+
 		runDemo();
 		ticker();
 	}
@@ -74,6 +87,7 @@ function Main() {}
 		oldTime = t1;
 		
 		Class.thisGame.action();
+		Sound.autoStop();
 	}
 
 	
