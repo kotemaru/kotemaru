@@ -44,6 +44,7 @@
 			<fileset dir="js" includes="Bridge.js" />
 			
 			<fileset dir="js/sound" includes="WebkitSound.js" />
+			<fileset dir="js/sound" includes="iPhoneSound.js" />
 			<fileset dir="js/sound" includes="DummySound.js" />
 
 			<fileset dir="js" includes="Stage01.js" />

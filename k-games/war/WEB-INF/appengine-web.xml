@@ -21,6 +21,7 @@
        <include path="**/*.css" expiration="31d"/>
        <include path="**/*.ico" expiration="31d"/>
        <include path="**/*.mp3" expiration="31d"/>
+       <include path="**/*.manifest" />
        <include path="*.ico" expiration="31d"/>
    </static-files>
 </appengine-web-app>

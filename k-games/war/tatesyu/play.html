@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
@@ -11,6 +10,12 @@
 	<title>tatesyu</title>
 
 	<script>
+if (window.applicationCache) {
+	applicationCache.addEventListener('updateready', function() {
+		  applicationCache.swapCache();
+	}, false);
+}
+	
 const IS_IPHONE  = (navigator.userAgent.indexOf("iPhone")>0);
 const IS_ANDROID = (navigator.userAgent.indexOf("Android")>0);
 const IS_PC      = !(IS_IPHONE || IS_ANDROID);
@@ -20,7 +25,7 @@ const IS_PC      = !(IS_IPHONE || IS_ANDROID);
 	<script>
 const IS_DEBUG = false;
 	</script>
-	<script src="min/all-min.js?20120524_1340"></script>
+	<script src="min/all-min.js?20120524_1759"></script>
 <!-- NOMAL END-->
 
 <!-- DEBUG START 
@@ -58,6 +63,7 @@ const IS_DEBUG = true;
 	<script src="js/Stage01.js"></script>
 	
 	<script src="js/sound/WebkitSound.js"></script>
+	<script src="js/sound/iPhoneSound.js"></script>
 	<script src="js/sound/DummySound.js"></script>
 	
 	<script src="js/Main.js"></script>
@@ -68,6 +74,7 @@ const IS_DEBUG = true;
 body {
 	padding:0;
 	background: black;
+	color: white;
 }
 canvas {
 	position: absolute;
@@ -87,6 +94,12 @@ canvas {
 		<canvas id="canvas0" width="320" height="416" ></canvas>
 		<canvas id="canvas1" width="320" height="416" ></canvas>
 	</div>
+<!--
+	<div id="touchme">
+		<br/><br/><br/><br/>
+		Touch me
+	</div>
+-->
 
 	<div id="config">
 		<h1>Settings</h1>

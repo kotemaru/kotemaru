@@ -18,6 +18,10 @@ function DummySound(){this.initialize.apply(this, arguments)};
 	}
 	Class.BGM = function(name){
 	}
+	Class.stop = function(name){
+	}
+	Class.autoStop = function(){
+	}
 
 })(DummySound);
 
