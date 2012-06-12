@@ -15,6 +15,7 @@
 	<target name="comp.js">
 		<mkdir dir="min" />
 		<concat destfile="min/all.js" encoding="utf-8" >
+			<fileset dir="img" includes="font8x12_mapping.js" />
 			<fileset dir="img" includes="all32_mapping.js" />
 			<fileset dir="img" includes="others_mapping.js" />
 			<fileset dir="js" includes="Util.js" />
@@ -106,6 +107,7 @@
 	    	<fileset dir="." includes="min/all-min.js"/>
 	    	<fileset dir="." includes="img/all32.png"/>
 	    	<fileset dir="." includes="img/others.png"/>
+	    	<fileset dir="." includes="sound/all.mp3"/>
 		</zip>
 	</target>
 
