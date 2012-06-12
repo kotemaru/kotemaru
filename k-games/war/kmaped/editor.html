@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Map-editor</title>
+	<link rel="stylesheet" href="editor.css" />
+	
+	<script src="/jq/jquery-1.7.1.min.js"></script>
+	<script src="js/Util.js"></script>
+	<script src="js/ZIndex.js"></script>
+	<script src="js/TabPanel.js"></script>
+	<script src="js/ChipSet.js"></script>
+	<script src="js/Layer.js"></script>
+	<script src="js/CollisionLayer.js"></script>
+	<script src="js/ClipBuffer.js"></script>
+	<script src="js/MagicBuffer.js"></script>
+	<script src="js/Editor.js"></script>
+	<script src="js/EditAction.js"></script>
+	<script src="js/MapInfo.js"></script>
+	<script src="js/Selector.js"></script>
+	<script src="js/Server.js"></script>
+	<script src="js/LocalServer.js"></script>
+	<script src="js/WorkSpace.js"></script>
+	<script src="js/ChipSpace.js"></script>
+	<script src="js/TabPanel.js"></script>
+	<script src="js/UIManager.js"></script>
+
+	<script>
+$(function(){
+		UI.init();
+});
+	</script>
+
+
+</head>
+<body>
+
+	<div id="header">
+		<div id="headerLeft">
+			<button data-alt="マップの読込(ブラウザのLocalStrage)" onclick="UI.fileList()"><img src="img/led/folder-y.png"/></button>
+			<button data-alt="マップの保存(ブラウザのLocalStrage)" onclick="UI.save()"><img src="img/led/disk.png"/></button>
+			<input id="fileName" />
+			<br/>
+			<button data-alt="マップの削除(ブラウザのLocalStrage)" onclick="UI.fileRemove()"><img src="img/vega/trash.png"/></button>
+			<button data-alt="保存データのダウンロード" onclick="UI.download()"><img src="img/oxygen/download.png"/></button>
+			<a id="downloadLink">このリンクを「別名で保存」で保存してください。</a>
+		</div>
+		
+		<div id="headerRight">
+			<div id="clipBord"></div>
+		
+			<div id="penRadioDiv">
+				<button data-alt="描画" data-radio="mode" data-value="pen" class="radioLeft select"><img src="img/led/pencil.png"/>
+				</button><button data-alt="消去" data-radio="mode" data-value="erase" class="radioCenter"><img src="img/oxygen/eraser.png"/>
+				</button><button data-alt="範囲選択後に操作&lt;br/>ドラッグまたは終点を右クリックで範囲指定" 
+					data-radio="mode" data-value="selection" class="radioCenter"><img src="img/led/selection.png"/>
+				</button><button data-alt="マジックモード&lt;br/>選択範囲をドラッグで移動できる。" 
+					data-radio="mode" data-value="magic" class="radioRight"><img src="img/led/wand.png"/>
+				</button>
+	
+				<div id="penMode">
+					<button data-alt="自由描画" data-radio="penMode" data-value="free" class="radioLeft select"><img src="img/free-point.png"/>
+					</button><button data-alt="矩形描画"  data-radio="penMode" data-value="rect"  class="radioRight"><img src="img/led/selection_select.png"/>
+					</button>
+				</div>
+
+				<div id="selectionCmds">
+					<button data-alt="複写[Ctrl+C]" onclick="UI.copy()" ><img src="img/led/slide-copy.png"/>
+					</button><button data-alt="切取[Ctrl+X]" onclick="UI.cut()"><img src="img/led/slide-move.png"/>
+					</button><button data-alt="貼り付け[Ctrl+V]" onclick="UI.paste()"><img src="img/led/paintbrush.png"/>
+					</button>
+				</div>
+				
+				<div id="magicMode">
+					<button data-alt="複写モード" data-radio="magicMode" data-value="copy" class="radioLeft select"><img src="img/led/slide-copy.png"/>
+					</button><button data-alt="切取モード" data-radio="magicMode" data-value="cut"  class="radioRight"><img src="img/led/slide-move.png"/>
+					</button>
+				</div>
+			</div>
+
+			<div id="undoRedoDiv">
+				<button data-alt="UNDO[Ctrl+Z]" onclick="UI.undo()"><img src="img/led/arrow_undo.png"/>
+				</button><button data-alt="REDO" onclick="UI.redo()"><img src="img/led/arrow_redo.png"/>
+				</button>
+			</div>			
+		</div>
+		
+	</div>
+	<div id="outFrame">
+		<div id="leftPanel">
+			<ul></ul>
+			
+			<div data-tab="Chip" data-tab-icon="img/led/coins.png" >
+				<div id="chipSet"></div>
+			</div>
+			
+			<div data-tab="Layer" data-tab-icon="img/led/layers-b.png" >
+				<div>
+					<div style="float:right;">
+						<button data-alt="不透明表示" data-radio="opacity" data-value="no" class="radioLeft select"><img src="img/led/opacity-no.png"/>
+						</button><button data-alt="上層半透明表示" data-radio="opacity" data-value="front"  class="radioCenter"><img src="img/led/opacity-front.png"/>
+						</button><button data-alt="下層半透明表示" data-radio="opacity" data-value="back"  class="radioRight"><img src="img/led/opacity-back.png"/>
+						</button>
+
+						<button data-alt="グリッド表示" onclick="UI.grid()"><img src="img/led/grid.png"/></button>
+					</div>
+					<div style="float:left;">
+						<button data-alt="レイヤ追加" onclick="UI.addLayer();"><img src="img/led/add.png"/></button>
+					</div>
+				</div>
+				<br clear="all"/>
+				<hr/>
+				<div class="layerLabel" data-idx="99">
+					<label><input onchange="UI.layerOnOff(this)"  type="checkbox"/>collision</label>
+				</div>
+				<div id="layers"></div>
+			</div>
+			
+			<div data-tab="Config" data-tab-icon="img/led/config.png" >
+				Tile: <input size=2 value="16" disabled />x<input size=2 value="16" disabled/>
+				<br/>
+				Size: <input  id="mapWidth" size=2 value="20" />x<input id="mapHeight" size=2 value="20" />
+				<button data-alt="サイズ変更" onclick="UI.resize()"><img src="img/led/doc_resize.png"/></button>
+				<br/>
+				ChipSet: <input id="chipSetUrl" style="width:60%;" />
+				<button data-alt="チップセット変更" onclick="UI.loadChipSet()"><img src="img/led/arrow_refresh.png"/></button>
+				<hr/>
+				Source: 
+				<button data-alt="マップからソースを生成" onclick="UI.source()"><img src="img/led/arrow_down.png"/></button>
+				<button data-alt="ソースからマップに反映" onclick="UI.apply()"><img src="img/led/arrow_right.png"/></button>
+				<textarea id="source" style="width:98%;" rows=10></textarea>
+
+			</div>
+		</div>
+
+		<div id="rightPanel" onContextmenu="return false;">
+			<div>
+				<div id="map" ></div>
+			</div>
+		</div>
+	</div>
+		
+	<div id="balloon"></div>
+	<select id="fileList" size="10" onchange="UI.load(this)"></select>
+
+	<div class="Template">
+		<div id="layerLabelTemplate">
+			<div class='layerLabel' data-idx="配列の添字">
+				<div >
+					<img   onclick="UI.layerUp(this)"     data-alt='上のレイヤと入換' src='img/led/arrow_up.png'
+					/><img onclick="UI.layerDown(this)"   data-alt='下のレイヤと入換' src='img/led/arrow_down.png'/>
+					<img   onclick="UI.layerConfig(this)" data-alt='レイヤ設定' src='img/led/config.png'/>
+					<img   onclick="UI.layerRemove(this)" data-alt='レイヤ削除' src='img/led/delete.png'/>
+				</div>
+				<label>
+					<input data-id="check" onchange="UI.layerOnOff(this)"   type='checkbox' />
+					<span data-id="name"></span>
+				</label>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

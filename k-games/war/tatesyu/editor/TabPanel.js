@@ -1,4 +1,21 @@
+/**
+ *
+Example:
+<script>
+$(function(){
+  $("#panels").tabPanel().select("panel_1");
+})
+</script>
 
+<div id="panels">
+  <ul></ul>
+  <div data-tab="panel_1">panel_1</div>
+  <div data-tab="panel_2">panel_1</div>
+  <div data-tab="panel_3">panel_1</div>
+</div>
+ *
+ * @author kotemaru@kotemaru.org
+ */
 (function($, undefined) {
 
 	const NAVI_CSS = {

@@ -147,7 +147,8 @@ function Game(){this.initialize.apply(this, arguments)};
 			var s1 = "00000000"+score;
 			var scoreStr = s1.substr(s1.length-8);
 			ctx.fillText(scoreStr, 4, y);
-
+			//paintScore(ctx, score);
+			
 			ctx.fillText("HP:", 120, y);
 			const hp = myShip.hp;
 			if (hp>0) {
@@ -183,6 +184,16 @@ function Game(){this.initialize.apply(this, arguments)};
 			}
 		}
 	}
+	
+	function paintScore(ctx, score) {
+		for (var i=8; i>0; i--) {
+			var n = score%10;
+			score = Math.floor(score / 10);
+			Chip.cache[n].draw(ctx,i*8,2);
+		}
+	}
+	
+	
 	Class.prototype.action = function(){
 		with (this) {
 			if (clipY<50) {

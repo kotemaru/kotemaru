@@ -1,0 +1,192 @@
+	
+html, body {
+	width:100%;
+	height:100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+	font-size: 14px;
+
+	user-select: none;
+	-moz-user-select: none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+}
+#header {
+	box-sizing: border-box;
+	position: fixed;
+	width: 100%;
+	height: 56px;
+
+	left:0;
+	top:0;
+	border: 1px outset black;
+	overflow: hidden;
+}
+#headerLeft {
+	display: inline-block;
+	width: 350px;
+	height: 52px;
+	padding: 2px;
+	border-right: 1px solid gray;
+	vertical-align: top;
+}
+#headerLeft > input{
+	width: 260px;
+}
+#headerRight {
+	display: inline-block;
+	padding: 2px;
+	height: 52px;
+	vertical-align: top;
+}
+#headerRight > div {
+	display: inline-block;
+	vertical-align: top;
+	height: 48px;
+}
+#clipBord {
+	display: inline-block;
+	width: 48px;
+	//border:  1px solid gray;
+	background: url(img/gray-check.png);
+	margin-right: 4px;
+}
+#clipBord > canvas{
+	//box-sizing: border-box;
+	border:  1px solid yellow;
+	margin-top: -1px;
+	margin-left: -1px;
+}
+
+#penRadioDiv {
+	//width: 130px;
+}
+#penRadioDiv > div{
+	margin-top: 4px;
+}
+
+input {
+	border: 1px inset lightgray;
+}
+
+#outFrame {
+	margin: 0;
+	box-sizing: border-box;
+	//width: 960px;
+	width: 100%;
+	height: 100%;
+	border: 0px solid black;
+	padding: 60px 0 0 0;
+	
+}
+#leftPanel {
+	box-sizing: border-box;
+	float: left;
+	width: 350px;
+	height: 100%;
+	margin: 0px 0px;
+	padding: 0px;
+}
+#leftPanel > div{
+	overflow: auto;
+}
+
+#rightPanel {
+	box-sizing: border-box;
+	float: right;
+	width: 600px;
+	overflow: scroll;
+	width: 100%;
+	height: 100%;
+	margin: 0px 0px;
+	//border: 0px solid gray;
+}
+
+
+#map {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+}
+#chipSet {
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+}
+#balloon {
+	display: none;
+	position: absolute;
+	border: 1px solid black;
+	background: #ffeeaa;
+	padding: 2px 4px;
+	box-shadow: 1px 1px 1px #000;
+	z-index: 100000;
+}
+
+#fileList {
+	display: none;
+	position: absolute;
+	border: 1px solid black;
+	top: 24px;
+	left: 76px;
+	z-index: 100000;
+	background: white;
+}
+
+
+button {
+	line-height: 100%;
+	width: 32px;
+	height: 22px;
+	margin: 0;
+	vertical-align: middle;
+	padding: 1;
+	background: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background: -moz-linear-gradient(top, #eee, #ccc);
+	border-radius: 5px;
+	border: 1px outset lightgray;
+	margin: 0 1px;
+}
+button:active {
+	background: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
+	background: -moz-linear-gradient(top, #ccc, #eee);
+}
+button.select {
+	background: -webkit-gradient(linear, center top, center bottom, from(#8bc), to(#eee));
+	background: -moz-linear-gradient(top, #8bc, #eee);
+}
+button.radioLeft {
+	border-radius: 5px 0px 0px 5px;
+	margin: 0 ;
+}
+button.radioCenter {
+	border-radius: 0px;
+	border-left: 0px;
+	margin: 0 ;
+}
+button.radioRight {
+	border-radius: 0px 5px 5px 0px;
+	border-left: 0px;
+	margin: 0 ;
+}
+
+.layerLabel {
+	border-bottom: 1px solid #aaaaaa;
+}
+.layerLabel > div:first-child {
+	float:right;
+}
+.layerLabel img {
+	width: 12px;
+	vertical-align: text-bottom;
+	cursor: pointer;
+}
+
+.Tamplete {
+	display: none;
+}
+
+#downloadLink {
+	display: none;
+}

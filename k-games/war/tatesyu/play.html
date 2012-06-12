@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html manifest="cache.manifest">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<meta name="viewport" content="width=320,user-scalable=yes">
@@ -25,7 +25,7 @@ const IS_PC      = !(IS_IPHONE || IS_ANDROID);
 	<script>
 const IS_DEBUG = false;
 	</script>
-	<script src="min/all-min.js?20120524_1759"></script>
+	<script src="min/all-min.js"></script>
 <!-- NOMAL END-->
 
 <!-- DEBUG START 
@@ -34,6 +34,7 @@ const IS_DEBUG = true;
 	</script>
 	<script src="img/all32_mapping.js"></script>
 	<script src="img/others_mapping.js"></script>
+	<script src="img/font8x12_mapping.js"></script>
 	<script src="js/Util.js"></script>
 	<script src="js/Config.js"></script>
 	<script src="js/Chip.js"></script>
@@ -85,6 +86,12 @@ canvas {
 	display: none;
 	color: white;
 }
+footer {
+	margin-top: 20px;
+	padding: 4px;
+	border-top: 1px solid white;
+	font-size: 8px;
+}
 
 </style>
 </head>
@@ -133,6 +140,14 @@ canvas {
 <!-- DEBUG END-->
 		<br/>
 		<div align="center"><button onclick="Config.close();runDemo();">Close</button></div>
+		<footer>
+		Special thanks:
+		<ul>
+			<li>Icon 'config': http://www.everaldo.com</li>
+			<li>Sound 'engine': http://www.yen-soft.com/</li>
+			<li>Sound others: http://sound-search.com/</li>
+		</ul>
+		</footer>
 	<div>
 </body>
 

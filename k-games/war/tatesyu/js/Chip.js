@@ -81,8 +81,10 @@ function Chip(src){this.initialize.apply(this, arguments)};
 })(Chip);
 
 // preload
+//Chip.add("font8x12","img/font8x12.png");
 Chip.add("all32","img/all32.png");
 Chip.add("others","img/others.png");
 
+//Chip.mapping("font8x12", CHIPS_FONT8x12_MAPPING);
 Chip.mapping("all32", CHIPS_ALL32_MAPPING);
 Chip.mapping("others", CHIPS_OTHERS_MAPPING);
