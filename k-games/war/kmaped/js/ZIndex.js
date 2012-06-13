@@ -9,5 +9,6 @@ function ZIndex() {}
 	Class.GRID        = 101;
 	Class.SELECTOR    = 102;
 	
+	Class.DIALOG    = 10000;
 
 })(ZIndex);

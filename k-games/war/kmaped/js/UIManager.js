@@ -87,13 +87,11 @@ function UIManager() {}
 		}
 		
 		var $fileName = $("#fileName");
-		$fileList.width($fileName.width());	
-		$fileList.show();
+		Class.openDialog("#fileListDialog");
 	}
 	Class.load = function() {
 		var $fileList = $("#fileList");
 		var name = $fileList.val();
-		$fileList.hide();
 		
 		editor.load(name);
 		Class.flush();
@@ -105,18 +103,26 @@ function UIManager() {}
 			return;
 		}
 		editor.save(name);
+        Class.closeDialog();
 		Class.flush();
 	}
+	Class.upload = function() {
+		var $file = $("#uploadFile");
+		$file.show().bind("change", function(){
+			var reader = new FileReader();
+			reader.onload = function(e) {
+                editor.apply(reader.result);
+            };
+            reader.readAsText($file[0].files[0]);
+            Class.closeDialog();
+		});
+		Class.openDialog("#uploadDialog");
+	}
 	Class.download = function() {
-		var name = $("#fileName").val();
-		if (name == "") {
-			alert("ファイル名がありません。");
-			return;
-		}
-		var json = editor.server.load(name);
-		var $atag = $("#downloadLink").text(name+"(別名で保存してください)");
+		var json = editor.workSpace.saveJSON();
+		var $atag = $("#downloadLink");
 		$atag.attr("href", "data:text/json,"+encodeURIComponent(json));
-		$atag.show();
+		Class.openDialog("#downloadDialog");
 	}
 
 	Class.fileRemove = function() {
@@ -259,6 +265,21 @@ function UIManager() {}
 		editor.apply($("#source").val());
 	}
 	
+	//------------------------------------------------
+	// Dialog
+	Class.openDialog = function(id) {
+		var $win = $(window);
+		var $dialog = $(id);
+		$dialog.css({
+			zIndex: ZIndex.DIALOG,
+			left: ($win.width() / 2 - $dialog.width() / 2)+"px",
+			top: ($win.height() / 2 - $dialog.height() / 2)+"px",
+		});
+		$dialog.show();
+	}
+	Class.closeDialog = function(id) {
+		$(".Dialog").hide();
+	}
 
 })(UIManager);
 

@@ -124,20 +124,10 @@ input {
 	z-index: 100000;
 }
 
-#fileList {
-	display: none;
-	position: absolute;
-	border: 1px solid black;
-	top: 24px;
-	left: 76px;
-	z-index: 100000;
-	background: white;
-}
-
 
 button {
 	line-height: 100%;
-	width: 32px;
+	//width: 32px;
 	height: 22px;
 	margin: 0;
 	vertical-align: middle;
@@ -187,6 +177,39 @@ button.radioRight {
 	display: none;
 }
 
-#downloadLink {
+.Dialog {
 	display: none;
+	
+	background: #f0f0f0;
+	border-radius: 5px;
+	border: 1px outset lightgray;
+	position: absolute;
+	box-shadow: 3px 3px 3px #000;
+
+	width: 300px;
+	height: 200px;
+}
+.Dialog > h3 {
+	font: bold 16px monospace;
+	width: 100;
+	margin: 0;
+	padding:2px;
+	color:white;
+	background: -webkit-gradient(linear, center top, center bottom, from(#8cf), to(#48f));
+	background: -moz-linear-gradient(top, #8cf, #48f);
+}
+.Dialog > div {
+	width: 100;
+	padding: 8px;
+	color: black;
+}
+div.DialogButtons {
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	bottom: 4px;
+}
+
+#fileList {
+	width: 200px;
 }
