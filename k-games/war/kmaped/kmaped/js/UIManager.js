@@ -1,11 +1,17 @@
 function UIManager() {}
 (function(Class) {
-	const DEFAULT_CHIPSET = "map0.gif";
+	//const DEFAULT_CHIPSET = "map0.gif";
+	const DEFAULT_CHIPSET = "sample/FSM/town04_a.png";
 	var editor = null;
 	
 	//------------------------------------------------
 	// base
 	Class.init = function() {
+		if ($(window).width()<600) {
+			alert("大きな画面にしてください");
+		}
+		
+		
 		editor =  new Editor();
 		
 		initBalloon();
