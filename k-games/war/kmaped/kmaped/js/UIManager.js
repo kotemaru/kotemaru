@@ -93,6 +93,7 @@ function UIManager() {}
 		var name = $fileList.val();
 		
 		editor.load(name);
+        Class.closeDialog();
 		Class.flush();
 	}
 	Class.save = function() {
@@ -111,14 +112,15 @@ function UIManager() {}
 			var reader = new FileReader();
 			reader.onload = function(e) {
                 editor.apply(reader.result);
-            };
+        		Class.flush();
+			};
             reader.readAsText($file[0].files[0]);
             Class.closeDialog();
 		});
 		Class.openDialog("#uploadDialog");
 	}
 	Class.download = function() {
-		var json = editor.workSpace.saveJSON();
+		var json = editor.workSpace.saveJSON(" ");
 		var $atag = $("#downloadLink");
 		$atag.attr("href", "data:text/json,"+encodeURIComponent(json));
 		Class.openDialog("#downloadDialog");
