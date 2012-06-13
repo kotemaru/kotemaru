@@ -44,8 +44,9 @@ $(function(){
 			<br/>
 			<button data-alt="マップの削除(ブラウザのLocalStrage)" onclick="UI.fileRemove()"><img src="img/vega/trash.png"/></button>
 			<button data-alt="テスト表示" onclick="UI.testView()"><img src="img/led/test-view.png"/></button>
-			<button data-alt="保存データのダウンロード" onclick="UI.download()"><img src="img/oxygen/download.png"/></button>
-			<a id="downloadLink">このリンクを「別名で保存」で保存してください。</a>
+
+			<button data-alt="マップのアップロード" onclick="UI.upload()"><img src="img/led/upload.png"/></button>
+			<button data-alt="マップのダウンロード" onclick="UI.download()"><img src="img/led/download.png"/></button>
 		</div>
 		
 		<div id="headerRight">
@@ -143,7 +144,47 @@ $(function(){
 	</div>
 		
 	<div id="balloon"></div>
-	<select id="fileList" size="10" onchange="UI.load(this)"></select>
+
+	<div id="fileListDialog" class="Dialog">
+		<h3>ファイルロード</h3>
+		<div>
+			ファイル名を選択して下さい<br/>
+			<p align="center">
+				<select id="fileList" size="5" onchange="UI.load(this)"></select>
+			</p>
+		</div>
+		<div class="DialogButtons"><button onclick="UI.closeDialog()">戻る</button></div>
+	</div>
+	
+	<div id="uploadDialog" class="Dialog">
+		<h3>アップロード</h3>
+		<div>
+			ファイル名を選択して下さい<br/>
+			<p align="center">
+				<input id="uploadFile" type="file" />
+			</p>
+		</div>
+		<div class="DialogButtons"><button onclick="UI.closeDialog()">戻る</button></div>
+	</div>
+
+	<div id="downloadDialog" class="Dialog">
+		<h3>ダウンロード</h3>
+		<div>
+			<p align="center">
+				<a id="downloadLink">このリンクを「別名で保存」で保存してください。</a>
+			</p>
+		</div>
+		<div class="DialogButtons"><button onclick="UI.closeDialog()">戻る</button></div>
+	</div>
+
+
+
+
+
+
+
+
+
 
 	<div class="Template">
 		<div id="layerLabelTemplate">
