@@ -137,7 +137,7 @@ function UIManager() {}
 	Class.testView = function() {
 		var name = $("#fileName").val();
 		if (name == "") {
-			alert("ファイル名がありません。");
+			alert("ファイル名がありません。\nテスト表示は一旦保存する必要があります");
 			return;
 		}
 		window.open("test.html?"+name,"testView");

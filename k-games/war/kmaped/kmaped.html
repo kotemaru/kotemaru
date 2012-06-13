@@ -37,18 +37,20 @@ $(function(){
 <body>
 
 	<div id="header">
+		<!-- =========================================================================== -->
 		<div id="headerLeft">
 			<button data-alt="マップの読込(ブラウザのLocalStrage)" onclick="UI.fileList()"><img src="kmaped/img/led/folder-y.png"/></button>
 			<button data-alt="マップの保存(ブラウザのLocalStrage)" onclick="UI.save()"><img src="kmaped/img/led/disk.png"/></button>
 			<input id="fileName" />
 			<br/>
 			<button data-alt="マップの削除(ブラウザのLocalStrage)" onclick="UI.fileRemove()"><img src="kmaped/img/vega/trash.png"/></button>
-			<button data-alt="テスト表示" onclick="UI.testView()"><img src="kmaped/img/led/test-view.png"/></button>
+			<button data-alt="enchantでテスト表示" onclick="UI.testView()"><img src="kmaped/img/led/test-view.png"/></button>
 
 			<button data-alt="マップのアップロード" onclick="UI.upload()"><img src="kmaped/img/led/upload.png"/></button>
 			<button data-alt="マップのダウンロード" onclick="UI.download()"><img src="kmaped/img/led/download.png"/></button>
 		</div>
 		
+		<!-- =========================================================================== -->
 		<div id="headerRight">
 			<div id="clipBord"></div>
 		
@@ -89,15 +91,19 @@ $(function(){
 		</div>
 		
 	</div>
+	
+	
+	
 	<div id="outFrame">
+		<!-- =========================================================================== -->
 		<div id="leftPanel">
 			<ul></ul>
 			
-			<div data-tab="Chip" data-tab-icon="img/led/coins.png" >
+			<div data-tab="Chip" data-tab-icon="kmaped/img/led/coins.png" >
 				<div id="chipSet"></div>
 			</div>
 			
-			<div data-tab="Layer" data-tab-icon="img/led/layers-b.png" >
+			<div data-tab="Layer" data-tab-icon="kmaped/img/led/layers-b.png" >
 				<div>
 					<div style="float:right;">
 						<button data-alt="不透明表示" data-radio="opacity" data-value="no" class="radioLeft select"><img src="kmaped/img/led/opacity-no.png"/>
@@ -119,7 +125,7 @@ $(function(){
 				<div id="layers"></div>
 			</div>
 			
-			<div data-tab="Config" data-tab-icon="img/led/config.png" >
+			<div data-tab="Config" data-tab-icon="kmaped/img/led/config.png" >
 				Tile: <input size=2 value="16" disabled />x<input size=2 value="16" disabled/>
 				<br/>
 				Size: <input  id="mapWidth" size=2 value="20" />x<input id="mapHeight" size=2 value="20" />
@@ -136,13 +142,16 @@ $(function(){
 			</div>
 		</div>
 
+		<!-- =========================================================================== -->
 		<div id="rightPanel" onContextmenu="return false;">
 			<div>
 				<div id="map" ></div>
 			</div>
 		</div>
 	</div>
-		
+
+
+	<!-- =========================================================================== -->
 	<div id="balloon"></div>
 
 	<div id="fileListDialog" class="Dialog">
@@ -181,11 +190,7 @@ $(function(){
 
 
 
-
-
-
-
-
+	<!-- =========================================================================== -->
 	<div class="Template">
 		<div id="layerLabelTemplate">
 			<div class='layerLabel' data-idx="配列の添字">

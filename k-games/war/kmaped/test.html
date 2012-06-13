@@ -13,43 +13,43 @@
             padding: 0;
         }
     </style>
-	<script>
+    <script>
 enchant();
 
 window.onload = function(){
     var game = new Game(320, 320);
     game.fps = 5;
 
-	// マップ名はエディタで保存した名前(localStrageから)かマップデータの存在する祖対URL。
- 	// テスト用のマップ名をURLパラメータから取得。
+    // マップ名はエディタで保存した名前(localStrageから)かマップデータの存在する祖対URL。
+    // テスト用のマップ名をURLパラメータから取得。
     var MAP_NAME = location.search.substr(1);
-	// マップチップの画像を読み込み。
+    // マップチップの画像を読み込み。
     game.preload(enchant.kmaped.getChipSet(MAP_NAME));
 
     game.onload = function(){
-    	var options = undefined; // default
-		//options sample:
-    	//{
-		//	names: ["layer-name1","layer-name2"], // default=all
-		//	collision: false; // default=true
-    	//}
+        var options = undefined; // default
+        //options sample:
+        //{
+        //    names: ["layer-name1","layer-name2"], // default=all
+        //    collision: false; // default=true
+        //}
 
-		// マップデータを読み込んで Map を作成。
-		var map = enchant.kmaped.makeMap(game,MAP_NAME,options);
+        // マップデータを読み込んで Map を作成。
+        var map = enchant.kmaped.makeMap(game,MAP_NAME,options);
 
-		// 以下普通の enchant.js コード。
-		game.rootScene.addChild(map);
-    	map.addEventListener('enterframe', function() {
-			if(game.input.left)  map.x+=16;
-			if(game.input.right) map.x-=16;
-			if(game.input.up)    map.y+=16;
-			if(game.input.down)  map.y-=16;
-		});
-	}
+        // 以下普通の enchant.js コード。
+        game.rootScene.addChild(map);
+        map.addEventListener('enterframe', function() {
+            if(game.input.left)  map.x+=16;
+            if(game.input.right) map.x-=16;
+            if(game.input.up)    map.y+=16;
+            if(game.input.down)  map.y-=16;
+        });
+    }
 
     game.start();
 };
-	</script>
+    </script>
 
 </head>
 <body>
