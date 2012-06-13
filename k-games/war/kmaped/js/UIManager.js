@@ -129,6 +129,14 @@ function UIManager() {}
 			editor.server.remove(name);
 		}
 	}
+	Class.testView = function() {
+		var name = $("#fileName").val();
+		if (name == "") {
+			alert("ファイル名がありません。");
+			return;
+		}
+		window.open("test.html?"+name,"testView");
+	}
 	
 	//------------------------------------------------
 	// Edit (Header right)

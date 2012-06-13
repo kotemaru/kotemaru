@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <script type="text/javascript" src="enchant.js"></script>
+    <script type="text/javascript" src="kmaped.enchant.js"></script>
+ 
+    <style type="text/css">
+        body,html {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+	<script>
+enchant();
+
+window.onload = function(){
+    var game = new Game(320, 320);
+    game.fps = 5;
+
+	// テスト用のマップ名をURLパラメータから取得。
+    var MAP_NAME = location.search.substr(1);
+	// マップチップの画像を読み込み。
+    game.preload(enchant.kmaped.getChipSet(MAP_NAME));
+
+    game.onload = function(){
+    	var options = undefined; // default
+		//options sample:
+    	//{
+		//	names: ["layer-name1","layer-name2"], // default=all
+		//	collision: false; // default=true
+    	//}
+
+		// マップデータを読み込んで Map を作成。
+		var map = enchant.kmaped.makeMap(game,MAP_NAME,options);
+
+		// 以下普通の enchant.js コード。
+		game.rootScene.addChild(map);
+    	map.addEventListener('enterframe', function() {
+			if(game.input.left)  map.x+=16;
+			if(game.input.right) map.x-=16;
+			if(game.input.up)    map.y+=16;
+			if(game.input.down)  map.y-=16;
+		});
+	}
+
+    game.start();
+};
+	</script>
+
+</head>
+<body>
+</body>
+</html>
+
