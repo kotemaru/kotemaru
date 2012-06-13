@@ -2,7 +2,7 @@ function CollisionLayer(){this.initialize.apply(this, arguments)};
 (function(Class,Super) {
 	Util.extend(Class,Super);
 
-	const CHIPSET = new ChipSet(16,16,"kmapd/img/collision-map.png");
+	const CHIPSET = new ChipSet(16,16,"kmaped/img/collision-map.png");
 	
 	Class.prototype.elem = null;
 	
