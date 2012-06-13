@@ -1,7 +1,6 @@
 function UIManager() {}
 (function(Class) {
-	//const DEFAULT_CHIPSET = "map0.gif";
-	const DEFAULT_CHIPSET = "img/road03_a.png";
+	const DEFAULT_CHIPSET = "map0.gif";
 	var editor = null;
 	
 	//------------------------------------------------
@@ -147,10 +146,10 @@ function UIManager() {}
 	//------------------------------------------------
 	// Edit (Header right)
 	var CURSOR = {
-		"pen":       "url('img/led/pencil.png') 1 15, pointer",
-		"erase":     "url('img/oxygen/eraser.png') 5 13, pointer",
+		"pen":       "url('kmaped/img/led/pencil.png') 1 15, pointer",
+		"erase":     "url('kmaped/img/oxygen/eraser.png') 5 13, pointer",
 		"selection": "pointer",
-		"magic":    "url('img/led/wand.png') 13 2, pointer",
+		"magic":    "url('kmaped/img/led/wand.png') 13 2, pointer",
 	};
 	
 	onChangeRadio.mode = function(val) {

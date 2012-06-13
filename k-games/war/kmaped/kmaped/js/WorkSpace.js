@@ -4,12 +4,12 @@ function WorkSpace(){this.initialize.apply(this, arguments)};
 	
 	const CSS = {
 			position: "absolute", 
-			background: "url(img/gray-check.png)",
+			background: "url(kmaped/img/gray-check.png)",
 	};
 	const GRID_CSS = {
 			position: "absolute",
 			top:0, left:0, zIndex: ZIndex.GRID,
-			background: "url(img/grid16.png)", opacity: 0.7,
+			background: "url(kmaped/img/grid16.png)", opacity: 0.7,
 	};
 	const COLLISION = "collision";
 	
