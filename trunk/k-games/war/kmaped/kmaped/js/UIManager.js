@@ -129,6 +129,11 @@ function UIManager() {}
 		var json = editor.workSpace.saveJSON(" ");
 		var $atag = $("#downloadLink");
 		$atag.attr("href", "data:text/json,"+encodeURIComponent(json));
+
+		var name = $("#fileName").val();
+		name = name?(name+".json"):"kmaped.json";
+		$atag.attr("download", name);
+		
 		Class.openDialog("#downloadDialog");
 	}
 
