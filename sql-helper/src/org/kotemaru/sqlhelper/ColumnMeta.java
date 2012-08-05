@@ -6,13 +6,15 @@ public interface ColumnMeta {
 	public ColumnMeta value(Object val);
 	public String getAsName();
 	public void setAsName(String asName);
+	public String getParamName();
+
 	public Object getValue();
 	public void setValue(Object value);
 
-	public String getTableName();
-	public void setTableName(String tableName);
-	public String getColmunName();
-	public void setColmunName(String colmunName);
+	public TableMeta getTableMeta();
+	public void setTableMeta(TableMeta tableMeta);
+	public String getColumnName();
+	public void setColumnName(String colmunName);
 	public Integer getDataType();
 	public void setDataType(Integer dataType);
 	public Integer getDecimalDigits();
@@ -23,6 +25,8 @@ public interface ColumnMeta {
 	public void setColumnDef(String columnDef);
 	public Integer getCharOctetLength();
 	public void setCharOctetLength(Integer charOctetLength);
-	public Integer getIsAutoincrement();
-	public void setIsAutoincrement(Integer isAutoincrement);
+	public String getIsAutoincrement();
+	public void setIsAutoincrement(String isAutoincrement);
+	public Integer getColumnSize();
+	public void setColumnSize(Integer columnSize);
 }
