@@ -3,9 +3,10 @@ package org.kotemaru.sqlhelper;
 public class ColumnMetaDelegate implements ColumnMeta {
 
 	private ColumnMeta origin;
+
 	private String asName;
 	private Object value;
-	
+
 	public ColumnMetaDelegate(ColumnMeta org) {
 		this.origin = org;
 	}
@@ -27,13 +28,12 @@ public class ColumnMetaDelegate implements ColumnMeta {
 		this.value = value;
 	}
 
-	
+	public String toString() {
+		return this.getParamName()+"="+this.getValue();
+	}
+
 	//--------------------------------------------------
 	//  delegate
-	
-
-
-
 
 	public ColumnMeta as(String name) {
 		return origin.as(name);
@@ -42,22 +42,22 @@ public class ColumnMetaDelegate implements ColumnMeta {
 	public ColumnMeta value(Object val) {
 		return origin.value(val);
 	}
-	
-	
-	public String getTableName() {
-		return origin.getTableName();
+
+
+	public TableMeta getTableMeta() {
+		return origin.getTableMeta();
 	}
 
-	public void setTableName(String tableName) {
-		origin.setTableName(tableName);
+	public void setTableMeta(TableMeta tableMeta) {
+		origin.setTableMeta(tableMeta);
 	}
 
-	public String getColmunName() {
-		return origin.getColmunName();
+	public String getColumnName() {
+		return origin.getColumnName();
 	}
 
-	public void setColmunName(String colmunName) {
-		origin.setColmunName(colmunName);
+	public void setColumnName(String colmunName) {
+		origin.setColumnName(colmunName);
 	}
 
 	public Integer getDataType() {
@@ -66,6 +66,14 @@ public class ColumnMetaDelegate implements ColumnMeta {
 
 	public void setDataType(Integer dataType) {
 		origin.setDataType(dataType);
+	}
+
+	public Integer getColumnSize() {
+		return origin.getColumnSize();
+	}
+
+	public void setColumnSize(Integer columnSize) {
+		origin.setColumnSize(columnSize);
 	}
 
 	public Integer getDecimalDigits() {
@@ -100,12 +108,17 @@ public class ColumnMetaDelegate implements ColumnMeta {
 		origin.setCharOctetLength(charOctetLength);
 	}
 
-	public Integer getIsAutoincrement() {
+	public String getIsAutoincrement() {
 		return origin.getIsAutoincrement();
 	}
 
-	public void setIsAutoincrement(Integer isAutoincrement) {
+	public void setIsAutoincrement(String isAutoincrement) {
 		origin.setIsAutoincrement(isAutoincrement);
 	}
-	
+
+	@Override
+	public String getParamName() {
+		return origin.getParamName();
+	}
+
 }
