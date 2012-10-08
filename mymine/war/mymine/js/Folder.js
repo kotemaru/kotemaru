@@ -186,9 +186,11 @@ function Folder(){this.initialize.apply(this, arguments)};
 		for (var num in allTickets) {
 			count++;
 			redmine.getIssue(num, function(data){
+				data.issue.folder = allTickets[data.issue.id];
 				Ticket.register(data.issue);
 				if (--count <= 0) {
 					MyMine.waiting(false);
+					Class.refresh();
 				}
 				MyMine.progress(100*(total-count)/total);
 			});
@@ -203,7 +205,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		var all = {};
 		for (var name in folders) {
 			var tickets = folders[name].tickets;
-			for (var num in tickets) all[num] = 1;
+			for (var num in tickets) all[num] = name;
 		}
 		return all;
 	}
