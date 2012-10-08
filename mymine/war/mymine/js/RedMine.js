@@ -1,8 +1,6 @@
 
 function RedMine(){this.initialize.apply(this, arguments)};
 (function(Class){
-	//var KEY = "bb761727725c1fdea30fe2f9e016b3801d5da17e";
-	//var KEY = "4386bd80bb0f43a30fd4b847da54c3dcf9e22b92";
 	
 	Class.prototype.initialize = function() {
 	}
