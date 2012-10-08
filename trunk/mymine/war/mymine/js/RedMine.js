@@ -57,6 +57,10 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		});
 	}
 	
+	Class.openIsuue = function(num) {
+		var url = Config.redmineAbsPath+"/issues/"+num;
+		window.open(url,"detail");
+	}
 	
 })(RedMine);
 

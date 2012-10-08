@@ -30,6 +30,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.init = function() {
+		//Storage.cleanup("/folder/");
 		//Class.resetAll();
 
 		Class.refresh();
@@ -70,19 +71,19 @@ function Folder(){this.initialize.apply(this, arguments)};
 		//Class.refresh();
 	}
 	Class.dropTicket = function (name) {
-		var curFolder = folders[currentName];
 		var selects = Tickets.getSelection();
 		for (var i=0; i<selects.length; i++) {
-			var ticketNo = selects[i];
-			Class.register(name, Ticket.issue(ticketNo));
-			Class.remove(currentName, curFolder.tickets[ticketNo]);
+			var ticketNum = selects[i];
+			Class.remove(currentName, Ticket.issue(ticketNum));
+			Class.register(name, Ticket.issue(ticketNum));
 		}
+		Class.refresh();
 		Class.select(currentName);
 	}
 	
 	Class.register = function (name, issue) {
 		var folder = folders[name];
-		issue.folder = name;
+		if (name != "news") issue.folder = name;
 		Ticket.register(issue);
 		folder.tickets[issue.id] = 1;
 		Storage.saveFolder(folder);
@@ -108,6 +109,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		inbox();
 	}
 	Class.inboxAppend = function() {
+		if (currentName != "news") return;
 		inboxPage++ ;
 		inbox();
 	}
@@ -146,20 +148,27 @@ function Folder(){this.initialize.apply(this, arguments)};
 				$section.append($article);
 			}
 		}
+		Class.select(currentName);
 	}
 	
 	function getTitleWithCount(folder) {
 		if (folder.nosave) return folder.title;
 		var unchecked = 0;
+		var total = 0;
 		for (var num in folder.tickets) {
 			if (!Ticket.isChecked(num)) unchecked++;
+			total++;
 		}
-		if (unchecked==0) return folder.title;
-		return "<b class='Count'>("+unchecked+") </b>"+folder.title;
+		if (total==0) return folder.title;
+		return "<b class='Count'>("
+			+unchecked+"/"+total
+			+") </b>"+folder.title;
 	}
 	
 
 	Class.select = function(name) {
+		if (folders[name] == null) return;
+			
 		$(".Folder").css({backgroundColor:"transparent", border:"0"});
 		$("#"+name).css({backgroundColor:"white", border:"1px solid #aaa"});
 		currentName = name;

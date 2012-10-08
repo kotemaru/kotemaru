@@ -16,7 +16,7 @@ function Storage(){this.initialize.apply(this, arguments)};
 	Class.saveFolder = function(folder) {
 		var backup = folder.tickets;
 		if (folder.nosave) folder.tickets = {};
-		localStorage[FOLDER+folder.id] = JSON.stringify(folder);
+		localStorage[FOLDER+folder.name] = JSON.stringify(folder);
 		folder.tickets = backup;
 	}
 
@@ -80,10 +80,13 @@ function Storage(){this.initialize.apply(this, arguments)};
 		});
 		Dialog.open("#uploadDialog");
 	}
-	function onLoad(reader) {
+	Class.cleanup = function(subname) {
 		for (var k in localStorage) {
-			if (k.indexOf(BASE) == 0) delete localStorage[k];
+			if (k.indexOf(BASE+subname) == 0) delete localStorage[k];
 		}
+	}
+	function onLoad(reader) {
+		Class.cleanup();
 		//console.log(reader.result);
         var data = JSON.parse(reader.result);
 		for (var k in data) {
