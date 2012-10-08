@@ -1,0 +1,75 @@
+
+.Button {
+	cursor: pointer;
+	border: 1px solid transparent;
+	padding: 2px;
+	vertical-align: middle;
+	//opacity:0.25;
+}
+
+.Button:hover {
+	background: white;
+	border-left:   1px solid white;
+	border-top:    1px solid white;
+	border-right:  1px solid lightgray;
+	border-bottom: 1px solid lightgray;
+}
+
+.Button:active {
+	background: #f0f0f0;
+	border-left:   1px solid lightgray;
+	border-top:    1px solid lightgray;
+	border-right:  1px solid white;
+	border-bottom: 1px solid white;
+}
+
+
+#search {
+	border:2px solid #e8e8e8;
+	padding: 2px 10px;
+	border-radius: 20px;
+	outline: none;
+	font-size: 12px;
+	background: #f8f8ff;
+}
+#search:focus {
+	background: white;
+	border:2px solid #f8c888;
+}
+
+#buttons {
+	box-sizing: border-box;
+	padding: 4px;
+	padding-left: 70px;
+	height: 60px;
+}
+
+
+#buttons1 {
+	box-sizing: border-box;
+	text-align: right;
+}
+
+#buttons2 {
+	display: inline-block;
+	float: left;
+}
+#buttons3 {
+	display: inline-block;
+	float: right;
+}
+
+#projectSelector {
+	width: 300px;
+}
+
+#balloon {
+	position: absolute;
+	display: none;
+	border: 1px solid #888800;
+	background: #ffffe0;
+	z-index: 100;
+	font-size: 12px;
+	padding: 0 4px;
+	white-space: nowrap;
+}

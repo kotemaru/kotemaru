@@ -1,0 +1,101 @@
+
+.DialogPanel {
+	display: none;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 100;
+}
+.DialogMask {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: black;
+	opacity: 0.5;
+}
+
+
+.Dialog {
+	position: absolute;
+	//width: 900px;
+}
+
+.Dialog > h3 {
+	display: inline-block;
+	//border: 1px solid gray;
+	//border-bottom: 0;
+	
+	width: 170px;
+	height: 24px;
+	margin: 0;
+	border-radius: 10px 10px 0px 0px;
+	background: #f8f8ff;
+	text-align: center;
+	font: 16px bold fixed;
+}
+.Dialog > h3 > nobr {
+	vertical-align: middle;
+}
+
+.CloseImg {
+	float: right;
+	width: 8px;
+	height: 8px;
+	margin-top: 8px;
+	margin-right: 8px;
+	cursor: pointer;
+}
+
+.Dialog > div {
+	//border: 1px solid gray;
+	background: #f8f8ff;
+	height: 400px;
+	width: 900px;
+	overflow-y: scroll;
+}
+
+
+.ConfigTable {
+	margin: 0 auto;
+	font-size: 14px;
+	border-spacing: 0px;
+	border-bottom: 1px solid lightgray;
+}
+.ConfigTable th {
+	width: 180px;
+	margin-right: 20px;
+	border-top: 1px solid lightgray;
+	font-weight: normal;
+	text-align: right;
+	vertical-align: top;
+	padding: 4px;
+}
+.ConfigTable td {
+	width: 600px;
+	border-top: 1px solid lightgray;
+	padding: 4px;
+	padding-bottom: 20px;
+}
+.ConfigTable  tr  td:nth-child(2) {
+	width: 20px;
+	border-top: 0;
+
+}
+.ConfigTable tr:first-child th {
+	border: 0;
+	font-weight: bold;
+	text-align: left;
+}
+
+#downloadDialog > div {
+	height: 200px;
+	width: 400px;
+	overflow-y: hidden;
+}
+
+#uploadDialog > div {
+	height: 200px;
+	width: 400px;
+	overflow-y: hidden;
+}
+

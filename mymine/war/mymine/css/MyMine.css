@@ -1,0 +1,92 @@
+html,body {
+	height:100%;
+	overflow: hidden;
+	padding:0;
+	margin:0;
+	font-family: mplus-2m-regular;
+	background: #f8f8ff;
+}
+
+#headerPanel{
+	box-sizing: border-box;
+	height: 68px;
+	width: 100%;
+	block: inline-block;
+	position: absolute;
+	z-index: 20;
+	padding: 0;
+	background: url(../img/kmines.png) no-repeat 4px 4px;
+}
+
+
+#leftPanel{
+	box-sizing: border-box;
+	height: 100%;
+	width: 150px;
+	padding-top: 80px;
+	
+	block: inline-block;
+	position: absolute;
+	z-index: 10;
+}
+
+#leftPanel > section {
+	box-sizing: border-box;
+	height: 100%;
+	overflow: auto;
+	padding: 8px;
+	border-top: 1px solid #c0c0c0;
+	border-right: 1px solid #c0c0c0;
+}
+
+#mainPanel {
+	box-sizing: border-box;
+	height: 100%;
+	width: 100%;
+	padding-top: 82px;
+	padding-left: 150px;
+	
+	block: inline-block;
+	position: absolute;
+	font-size: 12px;
+}
+
+#mainPanel > div {
+	box-sizing: border-box;
+	height: 100%;
+	overflow-y: scroll;
+	//border-top: 1px solid #c0c0c0;
+	font-size: 12px;
+}
+
+#mainPanel > div > div {
+	padding: 0px;
+}
+
+
+#waiting {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	display: none;
+	//display: block;
+	text-align: center;
+}
+
+#progressBar {
+	width: 100px;
+	height: 10px;
+	background: lightgray;
+	border-radius: 4px;
+	overflow: hidden;
+}
+#progressBar > div {
+	display: block;
+	width: 50%;
+	height: 10px;
+	background: url(../img/progress.png);
+	border-radius: 4px;
+}
+.Template {display: none;}
+
+

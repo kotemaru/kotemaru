@@ -1,0 +1,82 @@
+
+.Ticket {
+	box-sizing: border-box;
+	//height: 16px;
+	padding: 0px;
+	white-space: nowrap;
+	overflow: hidden;
+	
+	border-left:   1px solid #e0e0e0;
+	border-top:    1px solid #e0e0e0;
+
+	border-right:  1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+	
+	margin: 2px;
+	margin-bottom: 4px;
+	border-bottom-right-radius: 5px;
+	box-shadow: 1px 1px 1px #e0e0e0;
+	background: url(../img/corner.png) no-repeat ;
+	background-position: right bottom;
+	background-color: white;
+}
+.Ticket > nobr {
+	display: inline-block;
+	border-left: 1px dotted #e0e0e0;
+	margin: 0;
+	padding: 0;
+	padding-left: 2px;
+	overflow: hidden;
+	background-color: transparent;
+}
+.Ticket > nobr:first-child {
+	border-left:0;
+}
+.DetailHeader {
+	box-sizing: border-box;
+	line-height: 20px;
+	padding: 0px;
+	//padding-left: 150px;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 12px;
+	//font-weight: bold;
+}
+.DetailHeader > nobr {
+	display: inline-block;
+	border-left: 1px solid #d8d8d8;
+	padding-left: 2px;
+	background: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background: -moz-linear-gradient(top, #eee, #ccc);
+	border-top: 1px solid #c0c0c0;
+}
+
+.DetailHeader > nobr.TFolder  {
+	width: 146px;
+	background: #e0e0e0;
+}
+.DetailHeader > nobr.TNo      {
+	padding-left:5px;
+}
+.TNum     {width: 36px;}
+.TCharge  {width: 70px;}
+.TState   {width: 26px;}
+.TDate    {width: 32px;}
+.TSubject {width: 1000px;}
+
+.StateBar {
+	vertical-align: middle;
+	display: inline-block;
+	width: 22px;
+	height: 12px;
+	border: 1px solid lightgray;
+	overflow; hidden;
+}
+.StateBar > div{
+	vertical-align: top;
+	background: lightgreen;
+	display: inline-block;
+	width: 0px;
+	height: 12px;
+}
+
