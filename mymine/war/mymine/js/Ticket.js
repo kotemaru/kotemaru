@@ -16,24 +16,23 @@ function Ticket(){this.initialize.apply(this, arguments)};
 			if (draggable == this) {
 				MyMine.setDragCursor();
 				if (MyMine.isDrag()) {
-					Tickets.addSelection(this.dataset.ticketNo);
+					Tickets.addSelection(this.dataset.ticketNum);
 				}
 			}
 		}).live("mouseup",function(ev){
 			if (draggable == this) {
-				Tickets.toggleSelection(this.dataset.ticketNo);
+				Tickets.toggleSelection(this.dataset.ticketNum);
 			}
 		}).live("dblclick",function(ev){
-			var url = Config.redmineAbsPath+"/issues/"
-							+this.dataset.ticketNo;
-			window.open(url,"detail");
+			RedMine.openIsuue(this.dataset.ticketNum);
 			
-			var issue = Class.issue(this.dataset.ticketNo);
+			var issue = Class.issue(this.dataset.ticketNum);
 			if (issue != null) {
 				issue.checked_on = new Date().toString();
 				Storage.saveTicket(issue);
 			}
 			Tickets.refresh();
+			Folder.refresh();
 		});
 		
 	}
@@ -48,7 +47,9 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		var issue = issues[data.id];
 		if (issue == null) issue = {};
 
-		for (var k in ISSUE_TEMPL) issue[k] = data[k];
+		for (var k in ISSUE_TEMPL) {
+			if (data[k] != undefined) issue[k] = data[k];
+		}
 		issues[issue.id] = issue;
 		if (issue.folder) {
 			Storage.saveTicket(issue);
@@ -73,7 +74,8 @@ function Ticket(){this.initialize.apply(this, arguments)};
 
 	Class.makeArticle = function(issue, $template) {
 		var $article = $template.clone();
-		$article.data("ticketNo",issue.id);
+		$article.attr("id","T"+issue.id);
+		$article.data("ticketNum",issue.id);
 		$article.attr("data-ticket-num",issue.id);
 		$article.find("nobr[data-field='num']").text(issue.id);
 		$article.find("nobr[data-field='charge']").html(

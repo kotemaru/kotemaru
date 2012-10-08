@@ -2,8 +2,6 @@
 
 function MyMine(){this.initialize.apply(this, arguments)};
 (function(Class){
-	var C_TICKET = ".Ticket";
-
 	var isDrag = false;
 
 	Class.prototype.initialize = function() {

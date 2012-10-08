@@ -14,24 +14,24 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		selection = [];
 		Class.refresh();
 	}
-	Class.addSelection = function(no) {
-		var idx = selection.indexOf(no);
+	Class.addSelection = function(num) {
+		var idx = selection.indexOf(num);
 		if (idx >= 0) {
 			// nop
 		} else {
-			selection.push(no);
-			marking("article[data-ticket-no="+no+"]", true);
+			selection.push(num);
+			marking("article[data-ticket-num="+num+"]", true);
 		}
 	}
 
-	Class.toggleSelection = function(no) {
-		var idx = selection.indexOf(no);
+	Class.toggleSelection = function(num) {
+		var idx = selection.indexOf(num);
 		if (idx >= 0) {
 			selection.splice(idx, 1);
-			marking("article[data-ticket-no="+no+"]", false);
+			marking("article[data-ticket-num="+num+"]", false);
 		} else {
-			selection.push(id);
-			marking("article[data-ticket-no="+no+"]", true);
+			selection.push(num);
+			marking("article[data-ticket-num="+num+"]", true);
 		}
 	}
 	
@@ -48,8 +48,8 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		var $tickets = $(C_TICKET);
 		$tickets.css("backgroundColor", "white");
 		$tickets.each(function(){
-			var no = this.dataset.ticketNo;
-			if (selection.indexOf(no)>=0) marking(this, this);
+			var num = this.dataset.ticketNum;
+			if (selection.indexOf(num)>=0) marking(this, this);
 		});
 	}
 	
@@ -58,10 +58,10 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		var $template = $("#templ_ticket");
 
 		var list = [];
-		for (var no in tickets) {
-			var issue = Ticket.issue(no);
+		for (var num in tickets) {
+			var issue = Ticket.issue(num);
 			if (issue == null) {
-				issue = {id:no, subject:"<<Not found>>"};
+				issue = {id:num, subject:"<<Not found>>"};
 			}
 			list.push(issue);
 		}
