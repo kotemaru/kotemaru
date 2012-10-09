@@ -1,3 +1,8 @@
+
+* {
+	box-sizing: border-box;
+}
+
 html,body {
 	height:100%;
 	overflow: hidden;
@@ -22,9 +27,9 @@ html,body {
 #leftPanel{
 	box-sizing: border-box;
 	height: 100%;
-	width: 150px;
+	width: 200px;
 	padding-top: 80px;
-	
+
 	block: inline-block;
 	position: absolute;
 	z-index: 10;
@@ -44,8 +49,8 @@ html,body {
 	height: 100%;
 	width: 100%;
 	padding-top: 82px;
-	padding-left: 150px;
-	
+	padding-left: 200px;
+
 	block: inline-block;
 	position: absolute;
 	font-size: 12px;

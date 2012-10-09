@@ -5,13 +5,13 @@
 	padding: 0px;
 	white-space: nowrap;
 	overflow: hidden;
-	
+
 	border-left:   1px solid #e0e0e0;
 	border-top:    1px solid #e0e0e0;
 
 	border-right:  1px solid #a0a0a0;
 	border-bottom: 1px solid #a0a0a0;
-	
+
 	margin: 2px;
 	margin-bottom: 4px;
 	border-bottom-right-radius: 5px;
@@ -52,16 +52,23 @@
 }
 
 .DetailHeader > nobr.TFolder  {
-	width: 146px;
+	width: 200px;
+	border-right: 1px solid gray;
 	background: #e0e0e0;
 }
-.DetailHeader > nobr.TNo      {
+.DetailHeader .AddButton  {
+	float: right;
+	height: 18px;
+}
+
+.DetailHeader > nobr.TNum      {
 	padding-left:5px;
 }
+
 .TNum     {width: 36px;}
-.TCharge  {width: 70px;}
-.TState   {width: 26px;}
-.TDate    {width: 32px;}
+.TCharge  {width: 78px;}
+.TState   {width: 28px;}
+.TDate    {width: 38px;}
 .TSubject {width: 1000px;}
 
 .StateBar {
