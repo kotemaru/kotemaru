@@ -56,7 +56,7 @@
 	border-right: 1px solid gray;
 	background: #e0e0e0;
 }
-.DetailHeader .AddButton  {
+.DetailHeader > nobr.TFolder > .Button  {
 	float: right;
 	height: 18px;
 }

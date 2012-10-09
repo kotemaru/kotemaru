@@ -5,7 +5,7 @@ function Control(){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function() {
 	}
 	Class.init = function() {
-	
+
 		$(".Button").live("mouseover",function(ev){
 			var $this = $(this);
 			var alt = $this.attr("alt");
@@ -18,18 +18,19 @@ function Control(){this.initialize.apply(this, arguments)};
 			if (offset.left+$balloon.width()>$(document.body).width()) {
 				offset.left = $(document.body).width()-$balloon.width()-12;
 			}
-			$balloon.offset(offset);			
-			
+			$balloon.offset(offset);
+
 		}).live("mouseout",function(){
 			$("#balloon").hide();
 		});
 
 		$("#projectSelector").bind("change", function() {
 			$this = $(this);
+			Folder.inbox();
 			Storage.saveData("projectSelector", $this.val());
 		})
-	
-		
+
+
 		Class.setup();
 	}
 
@@ -46,7 +47,7 @@ function Control(){this.initialize.apply(this, arguments)};
 		}
 		$sel.val(Storage.loadData("projectSelector"));
 	}
-	
-	
-	
+
+
+
 })(Control);

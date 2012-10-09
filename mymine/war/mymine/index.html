@@ -24,6 +24,7 @@
 	<script src="js/Ticket.js" ></script>
 	<script src="js/Tickets.js" ></script>
 	<script src="js/Storage.js" ></script>
+	<script src="js/UI.js" ></script>
 
 	<script>
 $(function(){
@@ -37,11 +38,11 @@ $(function(){
 	<header id="headerPanel" >
 		<div id="buttons">
 			<div id="buttons1" >
-					<img class="Button" src="img/download.png" onclick="Storage.download()"
+					<img class="Button" src="img/download.png" onclick="UI.download()"
 							alt="フォルダの保存" />
-					<img class="Button" src="img/upload.png" onclick="Storage.upload()"
+					<img class="Button" src="img/upload.png" onclick="UI.upload()"
 						alt="フォルダの復元"/>
-					<img class="Button" src="img/cog.png" onclick="Dialog.open('#configDailog')"
+					<img class="Button" src="img/cog.png" onclick="UI.config()"
 						alt="環境設定" />
 			</div>
 
@@ -53,15 +54,12 @@ $(function(){
 				</div>
 
 				<div id="buttons2">
-					<select id="projectSelector">
-						<option id="*">全て</option>
-						<option id="oc-g-web-1st-application">アプリチーム</option>
-					</select>
-					<img class="Button" src="img/inbox-down.png" onclick="Folder.inbox()"
-						alt="新着チケットを読み込む" />
-					<img class="Button" src="img/refresh.png" onclick="Folder.updateTickets()"
+					<select id="projectSelector"></select>
+					<!--  img class="Button" src="img/inbox-down.png" onclick="UI.inbox()"
+						alt="新着チケットを読み込む" / -->
+					<img class="Button" src="img/refresh.png" onclick="UI.refresh()"
 						alt="フォルダ内のチケットを最新化する"/>
-					<img class="Button" src="img/bin_closed.png" onclick="Ticket.cleaning()"
+					<img class="Button" src="img/bin_closed.png" onclick="UI.cleaning()"
 						alt="フォルダ内の終了チケットを削除する"/>
 				</div>
 			</div>
@@ -69,8 +67,10 @@ $(function(){
 
 		<div class="DetailHeader">
 					<nobr class="TFolder">フォルダ
-						<img class="Button AddButton" src="img/add.png"
-							onclick="Dialog.open('#addFolderDialog')" alt="フォルダ追加"/>
+						<img class="Button" src="img/add.png"
+							onclick="UI.addFolder()" alt="フォルダ追加"/>
+						<img class="Button" src="img/cross.png"
+							onclick="UI.removeFolder()" alt="フォルダ削除"/>
 					</nobr
 					><nobr class="TNum">番号</nobr
 					><nobr class="TCharge">担当者</nobr
@@ -99,7 +99,7 @@ $(function(){
 	<!-- ======================= Config Dialog =============================== -->
 	<div class="DialogPanel">
 		<div class="DialogMask" > </div>
-		<div id="configDailog" class="Config Dialog">
+		<div id="configDialog" class="Config Dialog">
 			<h3>
 				<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
 				<nobr>環境設定</nobr>
@@ -178,7 +178,7 @@ $(function(){
 
 				<br/>
 				<div align="center">
-					<button onclick="Config.save();Dialog.close()">保存</button>
+					<button onclick="UI.saveConfig()">保存</button>
 					<button onclick="Dialog.close()">キャンセル</button>
 				</div>
 				<br/>
@@ -261,7 +261,7 @@ $(function(){
 
 				<br/>
 				<div align="center">
-					<button onclick="Folder.addFromDialog();Dialog.close()">追加</button>
+					<button onclick="UI.saveAddFolder()">追加</button>
 					<button onclick="Dialog.close()">キャンセル</button>
 				</div>
 				<br/>
