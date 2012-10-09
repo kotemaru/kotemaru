@@ -1,20 +1,23 @@
 
 function Folder(){this.initialize.apply(this, arguments)};
 (function(Class){
+	var INBOX = "inbox";
 	var FOLDERS = [
-	    {name:"news",    title:"新着",       icon:"img/inbox.png", nosave:true},
+	    {name:INBOX,     title:"新着",       icon:"img/inbox.png", nosave:true},
 	    {name:"trash",   title:"ゴミ箱",     icon:"img/bin_closed.png", nosave:true},
-	    {name:"sepa1",   title:"---",       icon:"---"},
+	    {name:"sepa1",   title:"---",        icon:"---"},
 	    {name:"now",     title:"今すぐ",     icon:"img/alarm.png"},
 	    {name:"play",    title:"現行作業",   icon:"img/hand.png"},
 	    {name:"reserve", title:"次予定作業", icon:"img/bookmark_folder.png"},
 	    {name:"todo",    title:"後回し",     icon:"img/folder.png"},
-	    {name:"other",   title:"その他",     icon:"img/folder.png"},
-	    {name:"ovserve", title:"相談のみ",   icon:"img/comment.png"}
+	    {name:"ovserve", title:"相談のみ",   icon:"img/comment.png"},
+	    {name:"wait",    title:"進捗待ち",   icon:"img/comment.png"},
+	    {name:"other",   title:"その他",     icon:"img/folder.png"}
 	];
 
 	var folders = {};
 	var currentName = null;
+	var isFirstInbox = true;
 
 	Class.prototype.initialize = function() {
 	}
@@ -68,17 +71,26 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 	}
 
+	Class.isInbox = function() {
+		return currentName == INBOX;
+	}
 
-	Class.addFromDialog = function() {
-		var $di = $("#addFolderDialog");
-		var folder = {
-			name:  $di.find("input[name='folderName']").val(),
-			title: $di.find("input[name='folderTitle']").val(),
-			icon:  $di.find("input[name='folderIcon']").val()
-		};
+	Class.add = function(folder) {
+		var seq = 0;
+		for (var name in folders) seq = Math.max(seq, folders[name].seq);
+		folder.seq = seq;
+		Storage.saveFolder(folder);
 		Class.put(folder);
+	}
+	Class.removeFolder = function() {
+		var folder = folders[currentName];
+		if (folder == null) return;
+		if (folder.nosave) return;
+		Storage.removeFolder(folder);
+		delete folders[currentName];
 		Class.refresh();
 	}
+
 
 	Class.put = function(folder) {
 		folders[folder.name] = folder;
@@ -97,7 +109,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	Class.register = function (name, issue) {
 		var folder = folders[name];
-		if (name != "news") issue.folder = name;
+		if (name != INBOX) issue.folder = name;
 		Ticket.register(issue);
 		folder.tickets[issue.id] = 1;
 		Storage.saveFolder(folder);
@@ -117,13 +129,14 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	var inboxPage = 1;
 	Class.inbox = function() {
+		isFirstInbox = false;
 		inboxPage = 1;
-		folders.news.tickets = {};
-		Tickets.reload(folders.news.tickets);
+		folders[INBOX].tickets = {};
+		Tickets.reload(folders[INBOX].tickets);
 		inbox();
 	}
 	Class.inboxAppend = function() {
-		if (currentName != "news") return;
+		if (currentName != INBOX) return;
 		inboxPage++ ;
 		inbox();
 	}
@@ -132,10 +145,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
 				var issue = Ticket.register(data.issues[i]);
-				Folder.register("news", issue);
+				Folder.register(INBOX, issue);
 			}
 			Folder.refresh();
-			Folder.select("news");
+			Folder.select(INBOX);
 		},{page: inboxPage});
 	}
 
@@ -173,7 +186,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 			if (!Ticket.isChecked(num)) unchecked++;
 			total++;
 		}
-		if (total==0) return folder.title;
+		if (total == 0) return folder.title;
+		if (unchecked == 0) {
+			return "<b class='Count'>("+total+") </b>"+folder.title;
+		}
 		return "<b class='Count'>("
 			+unchecked+"/"+total
 			+") </b>"+folder.title;
@@ -182,6 +198,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	Class.select = function(name) {
 		if (folders[name] == null) return;
+		if (name == INBOX && isFirstInbox) {
+			Class.inbox();
+		}
 
 		$(".Folder").css({backgroundColor:"transparent", border:"0"});
 		$("#"+name).css({backgroundColor:"white", border:"1px solid #aaa"});

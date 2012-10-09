@@ -6,7 +6,7 @@ function Storage(){this.initialize.apply(this, arguments)};
 	var FOLDER = BASE+"/folder/";
 	var ISSUE = BASE+"/issue/";
 	var CONFIG = BASE+"/config";
-	
+
 	Class.prototype.initialize = function() {
 	}
 	Class.init = function() {
@@ -18,6 +18,9 @@ function Storage(){this.initialize.apply(this, arguments)};
 		if (folder.nosave) folder.tickets = {};
 		localStorage[FOLDER+folder.name] = JSON.stringify(folder);
 		folder.tickets = backup;
+	}
+	Class.removeFolder = function(folder) {
+		delete localStorage[FOLDER+folder.name];
 	}
 
 	Class.saveTicket = function(issue) {
@@ -50,13 +53,13 @@ function Storage(){this.initialize.apply(this, arguments)};
 				Ticket.register(JSON.parse(localStorage[k]));
 			}
 		}
-		
+
 		if (!hasFolder) {
 			Folder.resetAll();
 		}
 	}
-	
-	Class.download = function(_this){
+
+	Class.getDownloadString = function(){
 		var str = "{";
 		for (var k in localStorage) {
 			if (k.indexOf(BASE) == 0) {
@@ -64,31 +67,18 @@ function Storage(){this.initialize.apply(this, arguments)};
 			}
 		}
 		str += '"":0}';
-
-		var $a = $("#downloadLink");
-		$a.attr("href","data:application/octet-stream,"+encodeURIComponent(str));
-		Dialog.open("#downloadDialog");
+		return str;
 	}
 
-	Class.upload = function() {
-		var $file = $("#uploadFile");
-		$file.show().bind("change", function(){
-			var reader = new FileReader();
-			reader.onload = function(e) {onLoad(reader);};
-            reader.readAsText($file[0].files[0]);
-            Dialog.close();
-		});
-		Dialog.open("#uploadDialog");
-	}
+
 	Class.cleanup = function(subname) {
 		for (var k in localStorage) {
 			if (k.indexOf(BASE+subname) == 0) delete localStorage[k];
 		}
 	}
-	function onLoad(reader) {
+	Class.setUploadString = function(str) {
 		Class.cleanup();
-		//console.log(reader.result);
-        var data = JSON.parse(reader.result);
+        var data = JSON.parse(str);
 		for (var k in data) {
 			if (k == CONFIG) {
 				Class.saveConfig(data[k]);

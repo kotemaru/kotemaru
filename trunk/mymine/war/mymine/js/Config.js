@@ -10,18 +10,11 @@ function Config(){this.initialize.apply(this, arguments)};
 		"redmineProjectName",
 		"redmineProjectId"
 	];
+	Class.NAMES = NAMES;
+
 	Class.init = function(){
 	}
-	
-	Class.save = function(){
-		var config = {};
-		for (var i=0; i<NAMES.length; i++) {
-			var name = NAMES[i];
-			config[name] = getValues($(".Config input[name='"+name+"']"));
-		}
-		Storage.saveConfig(config);
-		setup(config);
-	}
+
 	Class.getProjects = function() {
 		Class.save();
 		MyMine.waiting(true);
@@ -40,7 +33,12 @@ function Config(){this.initialize.apply(this, arguments)};
 			MyMine.waiting(false);
 		});
 	}
-	
+
+	Class.save = function(config) {
+		Storage.saveConfig(config);
+		setup(config);
+	}
+
 	function setup(config) {
 		for (var name in config) {
 			Class[name] = config[name];
@@ -54,11 +52,11 @@ function Config(){this.initialize.apply(this, arguments)};
 	function setupProjects(config) {
 		var $list = $("#configProjectList").html("");
 		var $templ = $("#templ_project");
-		
+
 		var querys = config.redmineProjectId;
 		var names = config.redmineProjectName;
 		if (querys == null) return;
-		
+
 		for (var i=0; i<querys.length; i++) {
 			var $row = $templ.clone();
 			$row.find("input[name='redmineProjectName']").val(names[i]);
@@ -66,7 +64,7 @@ function Config(){this.initialize.apply(this, arguments)};
 			$list.append($row);
 		}
 	}
-	
+
 	Class.setup = setup;
 
 	function getValues($inputs) {
@@ -84,7 +82,7 @@ function Config(){this.initialize.apply(this, arguments)};
 			$($inputs[i]).val(vals[i]);
 		}
 	}
-	
+
 
 })(Config);
 
