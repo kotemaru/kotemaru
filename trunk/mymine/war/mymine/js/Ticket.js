@@ -18,14 +18,16 @@ function Ticket(){this.initialize.apply(this, arguments)};
 				if (MyMine.isDrag()) {
 					Tickets.addSelection(this.dataset.ticketNum);
 				}
+				draggable = null;
 			}
 		}).live("mouseup",function(ev){
 			if (draggable == this) {
 				Tickets.toggleSelection(this.dataset.ticketNum);
+				draggable = null;
 			}
 		}).live("dblclick",function(ev){
 			RedMine.openIsuue(this.dataset.ticketNum);
-			
+
 			var issue = Class.issue(this.dataset.ticketNum);
 			if (issue != null) {
 				issue.checked_on = new Date().toString();
@@ -34,15 +36,15 @@ function Ticket(){this.initialize.apply(this, arguments)};
 			Tickets.refresh();
 			Folder.refresh();
 		});
-		
+
 	}
 
-	var ISSUE_TEMPL = {id:9999, subject:"", assigned_to:{}, 
+	var ISSUE_TEMPL = {id:9999, subject:"", assigned_to:{},
 			due_date:"", updated_on:"",done_ratio:100, checked_on:"",
 			folder:""
 	};
 	var issues = {};
-	
+
 	Class.register = function(data){
 		var issue = issues[data.id];
 		if (issue == null) issue = {};
@@ -62,7 +64,7 @@ function Ticket(){this.initialize.apply(this, arguments)};
 	Class.issue = function(num) {
 		return issues[num];
 	}
-	
+
 	Class.isChecked = function(num) {
 		var issue = issues[num];
 		if (issue == null) return false;
@@ -88,10 +90,10 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		$article.find("nobr[data-field='subject']").text(issue.subject);
 
 		$article.css("font-weight", isChecked(issue)?"normal":"bold");
-		
+
 		return $article;
 	}
-	
+
 
 	Class.cleaning = function() {
 		for (var num in issues) {
@@ -101,22 +103,22 @@ function Ticket(){this.initialize.apply(this, arguments)};
 				Folder.register("trash", issue);
 			}
 		}
-		
+
 		Folder.refresh();
 		Folder.select("trash");
 	}
-	
+
 	function to2ChStr(n) {
 		if (n > 9) return ""+n;
 		return "&nbsp;"+n;
 	}
-	
+
 	function toMMDD(dateStr) {
 		var time = Date.parse(dateStr);
 		if (isNaN(time)) return "&nbsp;";
 		var date = new Date(time);
 		return to2ChStr(date.getMonth()+1)+"/"+to2ChStr(date.getDate());
  	}
-	
+
 
 })(Ticket);

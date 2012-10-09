@@ -15,9 +15,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	var folders = {};
 	var currentName = null;
-	
+
 	Class.prototype.initialize = function() {
 	}
+
 	Class.resetAll = function() {
 		folders = {};
 		for (var i=0; i<FOLDERS.length; i++) {
@@ -61,11 +62,24 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 		var $this = $(_this);
 		$this.css("cursor", cursor);
-		
+
 		if (_this.id != currentName) {
 			$this.css("border", isIn?"1px solid #ddd":"0");
 		}
 	}
+
+
+	Class.addFromDialog = function() {
+		var $di = $("#addFolderDialog");
+		var folder = {
+			name:  $di.find("input[name='folderName']").val(),
+			title: $di.find("input[name='folderTitle']").val(),
+			icon:  $di.find("input[name='folderIcon']").val()
+		};
+		Class.put(folder);
+		Class.refresh();
+	}
+
 	Class.put = function(folder) {
 		folders[folder.name] = folder;
 		//Class.refresh();
@@ -80,7 +94,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		Class.refresh();
 		Class.select(currentName);
 	}
-	
+
 	Class.register = function (name, issue) {
 		var folder = folders[name];
 		if (name != "news") issue.folder = name;
@@ -100,7 +114,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		if (folder == null) return true;
 		return folder.nosave;
 	}
-	
+
 	var inboxPage = 1;
 	Class.inbox = function() {
 		inboxPage = 1;
@@ -113,7 +127,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		inboxPage++ ;
 		inbox();
 	}
-	
+
 	function inbox() {
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
@@ -124,7 +138,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 			Folder.select("news");
 		},{page: inboxPage});
 	}
-	
+
 	Class.refresh = function () {
 		var $section = $("#folders");
 		var $template = $("#templ_folder");
@@ -135,7 +149,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 			list.push(folders[name]);
 		}
 		list.sort(function(a,b){return a.seq-b.seq;});
-		
+
 		for (var i=0; i<list.length; i++) {
 			var folder = list[i];
 			if (folder.title=="---") {
@@ -150,7 +164,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 		Class.select(currentName);
 	}
-	
+
 	function getTitleWithCount(folder) {
 		if (folder.nosave) return folder.title;
 		var unchecked = 0;
@@ -164,11 +178,11 @@ function Folder(){this.initialize.apply(this, arguments)};
 			+unchecked+"/"+total
 			+") </b>"+folder.title;
 	}
-	
+
 
 	Class.select = function(name) {
 		if (folders[name] == null) return;
-			
+
 		$(".Folder").css({backgroundColor:"transparent", border:"0"});
 		$("#"+name).css({backgroundColor:"white", border:"1px solid #aaa"});
 		currentName = name;
@@ -176,7 +190,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		Tickets.reload(folders[name].tickets);
 		Tickets.clearSelection();
 	}
-	
+
 	Class.updateTickets = function() {
 		MyMine.waiting(true);
 		var allTickets = getAllTickets();
@@ -200,7 +214,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 			MyMine.waiting(false);
 		}
 	}
-	
+
 	function getAllTickets() {
 		var all = {};
 		for (var name in folders) {
@@ -209,6 +223,6 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 		return all;
 	}
-	
+
 
 })(Folder);

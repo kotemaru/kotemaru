@@ -5,7 +5,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>MyMine</title>
 
-	<link rel="stylesheet" type="text/css" 
+	<link rel="stylesheet" type="text/css"
  		href="http://mplus-fonts.sourceforge.jp/webfonts/mplus_webfonts.css" />
 	<link rel="stylesheet" href="css/MyMine.css" />
 	<link rel="stylesheet" href="css/Dialog.css" />
@@ -13,8 +13,8 @@
 	<link rel="stylesheet" href="css/Folder.css" />
 	<link rel="stylesheet" href="css/Ticket.css" />
 
-	<script src="jq/jquery-1.7.1.min.js" ></script>
-	
+	<script src="jq/jquery-1.8.2.js" ></script>
+
 	<script src="js/MyMine.js" ></script>
 	<script src="js/Config.js" ></script>
 	<script src="js/Control.js" ></script>
@@ -26,7 +26,7 @@
 	<script src="js/Storage.js" ></script>
 
 	<script>
-$(function(){	
+$(function(){
 	MyMine.init();
 })
 	</script>
@@ -44,14 +44,14 @@ $(function(){
 					<img class="Button" src="img/cog.png" onclick="Dialog.open('#configDailog')"
 						alt="環境設定" />
 			</div>
-			
+
 			<div>
 				<div id="buttons3">
-					<nobr><input id="search" type="text" 
-					/><img class="Button" src="img/find.png" 
+					<nobr><input id="search" type="text"
+					/><img class="Button" src="img/find.png"
 						alt="検索"/></nobr>
 				</div>
-			
+
 				<div id="buttons2">
 					<select id="projectSelector">
 						<option id="*">全て</option>
@@ -59,16 +59,19 @@ $(function(){
 					</select>
 					<img class="Button" src="img/inbox-down.png" onclick="Folder.inbox()"
 						alt="新着チケットを読み込む" />
-					<img class="Button" src="img/refresh.png" onclick="Folder.updateTickets()" 
+					<img class="Button" src="img/refresh.png" onclick="Folder.updateTickets()"
 						alt="フォルダ内のチケットを最新化する"/>
-					<img class="Button" src="img/bin_closed.png" onclick="Ticket.cleaning()" 
+					<img class="Button" src="img/bin_closed.png" onclick="Ticket.cleaning()"
 						alt="フォルダ内の終了チケットを削除する"/>
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="DetailHeader">
-					<nobr class="TFolder">フォルダ</nobr
+					<nobr class="TFolder">フォルダ
+						<img class="Button AddButton" src="img/add.png"
+							onclick="Dialog.open('#addFolderDialog')" alt="フォルダ追加"/>
+					</nobr
 					><nobr class="TNum">番号</nobr
 					><nobr class="TCharge">担当者</nobr
 					><nobr class="TDate">更新</nobr
@@ -82,7 +85,7 @@ $(function(){
 		<section id="folders">
 		</section>
 	</section>
-	
+
 	<section id="mainPanel">
 		<div onscroll="Tickets.onScroll(this,event)">
 			<div>
@@ -91,8 +94,8 @@ $(function(){
 			</div>
 		</div>
 	</section>
-	
-	
+
+
 	<!-- ======================= Config Dialog =============================== -->
 	<div class="DialogPanel">
 		<div class="DialogMask" > </div>
@@ -117,7 +120,7 @@ $(function(){
 						<td  >
 							Redmineの絶対URL。プロトコル、ホスト名を含むURLを設定します。
 							<br/>
-							<input name="redmineAbsPath" size=64 /> 
+							<input name="redmineAbsPath" size=64 />
 							<br/>例: http://www.redmine.org/
 						</td>
 					</tr>
@@ -142,7 +145,7 @@ $(function(){
 							<input name="redmineApiKey" size=64/> <br/>例: d557be383b862e3f852be39ae1716a1f
 						</td>
 					</tr>
-					
+
 					<tr >
 						<th >カスタムクエリ</th>
 						<td/>
@@ -170,9 +173,9 @@ $(function(){
 							</div>
 						</td>
 					</tr>
-					
+
 				</table>
-				
+
 				<br/>
 				<div align="center">
 					<button onclick="Config.save();Dialog.close()">保存</button>
@@ -197,7 +200,7 @@ $(function(){
 				</p>
 			</div>
 		</div>
-		
+
 		<div id="uploadDialog" class="Dialog">
 			<h3>
 				<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
@@ -210,10 +213,66 @@ $(function(){
 				</p>
 			</div>
 		</div>
-		
-		
+
+		<div id="addFolderDialog" class="Dialog">
+			<h3>
+				<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+				<nobr>フォルダ追加</nobr>
+			</h3>
+			<div>
+
+				<table class="ConfigTable">
+
+					<tr>
+						<th>設定項目</th>
+						<td/>
+						<th>解説／設定値</th>
+					</tr>
+					<tr >
+						<th >フォルダID</th>
+						<td/>
+						<td  >
+							一意のフォルダID。英数字のみ。
+							<br/><input name="folderName" size=16/>
+							<br/>例: myfolder
+						</td>
+					</tr>
+
+					<tr >
+						<th >アイコン</th>
+						<td/>
+						<td  >現在は固定。
+							<br/><img src="img/folder.png" />
+							<input name="folderIcon" size="32" value="img/folder.png" />
+						</td>
+					</tr>
+
+
+					<tr >
+						<th >フォルダ表示名</th>
+						<td/>
+						<td  >
+							画面上に表示するフォルダの名前。
+							<br/><input name="folderTitle" size=32/>
+							<br/>例: マイフォルダ
+						</td>
+					</tr>
+				</table>
+
+				<br/>
+				<div align="center">
+					<button onclick="Folder.addFromDialog();Dialog.close()">追加</button>
+					<button onclick="Dialog.close()">キャンセル</button>
+				</div>
+				<br/>
+
+			</div>
+		</div>
+
+
+
 	</div>
-	
+
 	<!-- ======================= Waiting =============================== -->
 	<div id="waiting">
 		<img src="img/waiting.gif" />
@@ -221,7 +280,7 @@ $(function(){
 	</div>
 	<!-- ======================= Balloon =============================== -->
 	<div id="balloon" ></div>
-	
+
 	<!-- ================ Template =================================== -->
 	<div class="Template">
 		<article id="templ_ticket" class="Ticket">
@@ -232,14 +291,14 @@ $(function(){
 			><nobr data-field="state"      class="TState"><div class="StateBar"><div></div></div></nobr
 			><nobr data-field="subject"    class="TSubject"></nobr>
 		</article>
-	
+
 		<article id="templ_folder" class="Folder"></article>
-		
+
 		<div id="templ_project">
 			<input name="redmineProjectName" size=50/>
 			<input name="redmineProjectId" size=4/>
 		</div>
-		
+
 	</div>
 
 </body>
