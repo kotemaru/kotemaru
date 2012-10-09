@@ -147,8 +147,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 				var issue = Ticket.register(data.issues[i]);
 				Folder.register(INBOX, issue);
 			}
-			Folder.refresh();
+
 			Folder.select(INBOX);
+			Folder.refresh();
 		},{page: inboxPage});
 	}
 

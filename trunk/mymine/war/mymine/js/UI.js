@@ -83,5 +83,20 @@ function UI(){this.initialize.apply(this, arguments)};
 		Folder.refresh();
 	}
 
+	Class.onScroll = function(_this,event) {
 
+		var $this = $(_this);
+		var $child = $this.find(">div");
+		var scrollTop =  $this.scrollTop();
+		var bottom = scrollTop+$this.height();
+		if (bottom >= $child.height()) {
+			var $section = $("#tickets");
+			$section.bind("ticketsReload", function(){
+				$this.scrollTop(scrollTop);
+				console.log(scrollTop);
+			});
+			Folder.inboxAppend();
+		}
+
+	}
 })(UI);
