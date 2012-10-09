@@ -4,9 +4,9 @@ function Tickets(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var C_TICKET = ".Ticket";
 
-	
+
 	var selection = [];
-	
+
 	Class.getSelection = function() {
 		return selection;
 	}
@@ -34,7 +34,7 @@ function Tickets(){this.initialize.apply(this, arguments)};
 			marking("article[data-ticket-num="+num+"]", true);
 		}
 	}
-	
+
 	function marking(sel, mode) {
 		if (mode) {
 			$(sel).css("backgroundColor", "#d0e0ff");
@@ -49,10 +49,10 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		$tickets.css("backgroundColor", "white");
 		$tickets.each(function(){
 			var num = this.dataset.ticketNum;
-			if (selection.indexOf(num)>=0) marking(this, this);
+			if (selection.indexOf(num)>=0) marking(this, true);
 		});
 	}
-	
+
 	Class.reload = function(tickets) {
 		var $section = $("#tickets");
 		var $template = $("#templ_ticket");
@@ -74,15 +74,9 @@ function Tickets(){this.initialize.apply(this, arguments)};
 			var $art = Ticket.makeArticle(list[i], $template);
 			$section.append($art);
 		}
+		$section.trigger("ticketsReload");
 	}
 
-	Class.onScroll = function(_this,event) {
-		var $this = $(_this);
-		var $child = $this.find(">div");
-		var bottom = $this.scrollTop()+$this.height();
-		if (bottom >= $child.height()) {
-			Folder.inboxAppend();
-		}
-	}	
-	
+
+
 })(Tickets);
