@@ -63,6 +63,7 @@
 
 .DetailHeader > nobr.TNum      {
 	padding-left:5px;
+	width: 38px;
 }
 
 .TNum     {width: 36px;}
