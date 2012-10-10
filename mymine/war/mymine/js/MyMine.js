@@ -13,16 +13,9 @@ function MyMine(){this.initialize.apply(this, arguments)};
 		Control.init();
 		Storage.init();
 		Folder.refresh();
-		
-		$(document.body).bind("mouseup",function(){
-			setTimeout(function() {
-				Class.isDrag(false);
-				Class.setDragCursor();
-			}, 50);
-		});
-		
+		UI.init();
 	}
-	
+
 	Class.isDrag = function(b) {
 		if (b !== undefined) {
 			isDrag = b;
@@ -39,14 +32,14 @@ function MyMine(){this.initialize.apply(this, arguments)};
 			$(document.body).css("cursor","default");
 		}
 	}
-	
-	
+
+
 	Class.waiting = function(b) {
 		Class.progress(b?0:100);
 		setTimeout(function(){$("#waiting").toggle(b);},b?1:300);
 	}
 	Class.progress = function(per) {
 		$("#progressBar>div").css("width",per+"%");
-	} 
-	
+	}
+
 })(MyMine);
