@@ -51,20 +51,25 @@ function UI(){this.initialize.apply(this, arguments)};
 			}
 		}).live("mouseup",function(ev){
 			if (draggable == this) {
+				if (!ev.ctrlKey) Tickets.clearSelection();
 				Tickets.toggleSelection(this.dataset.ticketNum);
 				draggable = null;
 			}
 		}).live("dblclick",function(ev){
-			RedMine.openIsuue(this.dataset.ticketNum);
-
-			var issue = Ticket.issue(this.dataset.ticketNum);
-			if (issue != null) {
-				issue.checked_on = new Date().toString();
-				Storage.saveTicket(issue);
-			}
+			var num = this.dataset.ticketNum;
+			RedMine.openIsuue(num);
+			Ticket.checked(num);
 			Tickets.refresh();
 			Folder.refresh();
 		});
+
+		// Header
+		$(".THead").live("click", function(){
+			Tickets.setSorted(this.id);
+			Folder.refresh();
+		}).live("mousedown", function(){
+			return false;
+		})
 
 	}
 

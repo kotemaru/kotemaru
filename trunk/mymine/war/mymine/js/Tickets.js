@@ -57,18 +57,7 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		var $section = $("#tickets");
 		var $template = $("#templ_ticket");
 
-		var list = [];
-		for (var num in tickets) {
-			var issue = Ticket.issue(num);
-			if (issue == null) {
-				issue = {id:num, subject:"<<Not found>>"};
-			}
-			list.push(issue);
-		}
-		list.sort(function(a,b){
-			return(Date.parse(b.updated_on)-Date.parse(a.updated_on));
-		});
-
+		var list = getSortedTickets(tickets);
 		$section.html("");
 		for (var i=0; i<list.length; i++) {
 			var $art = Ticket.makeArticle(list[i], $template);
@@ -77,6 +66,44 @@ function Tickets(){this.initialize.apply(this, arguments)};
 		$section.trigger("ticketsReload");
 	}
 
+
+
+	var COMPARATOR_DESC = {
+		hNum      : function(a,b){return(b.id-a.id);},
+		hCharge   : function(a,b){var A=a.charge,B=b.charge;return(A==B?0:(A>B?-1:1));},
+		hUpdate   : function(a,b){return(Date.parse(b.updated_on)-Date.parse(a.updated_on));},
+		hDueDate  : function(a,b){return(Date.parse(b.due_date)-Date.parse(a.due_date));},
+		hDoneRate : function(a,b){return(b.done_rate-a.done_rate);},
+		hSubject  : function(a,b){var A=a.subject,B=b.subject;return(A==B?0:(A>B?-1:1));}
+	}
+	var comparatorName = "hUpdate";
+	var comparatorAsc = true;
+
+	Class.setSorted = function(name) {
+		if (comparatorName == name) {
+			comparatorAsc = !comparatorAsc;
+		} else {
+			comparatorName = name;
+			comparatorAsc = true;
+		}
+	}
+
+	function getSortedTickets(tickets) {
+		var list = [];
+		for (var num in tickets) {
+			var issue = Ticket.issue(num);
+			if (issue == null) {
+				issue = {id:num, subject:"<<Not found>>"};
+			}
+			list.push(issue);
+		}
+		var comparator = COMPARATOR_DESC[comparatorName];
+		if (comparatorAsc == true) {
+			comparator = function(a,b){return COMPARATOR_DESC[comparatorName](b,a);}
+		}
+		list.sort(comparator);
+		return list;
+	}
 
 
 })(Tickets);
