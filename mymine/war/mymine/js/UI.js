@@ -73,6 +73,9 @@ function UI(){this.initialize.apply(this, arguments)};
 
 	}
 
+	//-------------------------------------------------------------
+	
+	
 	Class.changeProject = function(_this) {
 		$this = $(_this);
 		Folder.inbox();
@@ -139,12 +142,21 @@ function UI(){this.initialize.apply(this, arguments)};
 		var config = {};
 		for (var i=0; i<Config.NAMES.length; i++) {
 			var name = Config.NAMES[i];
-			config[name] = getValues($(".Config input[name='"+name+"']"));
+			config[name] = Config.getValues($(".Config input[name='"+name+"']"));
 		}
 		Config.save(config);
-		DIalog.close();
+		Dialog.close();
 	}
 
+	Class.getProjects = function() {
+		var config = {};
+		for (var i=0; i<Config.NAMES.length; i++) {
+			var name = Config.NAMES[i];
+			config[name] = Config.getValues($(".Config input[name='"+name+"']"));
+		}
+		Config.save(config);
+		Config.getProjects();
+	}
 
 	Class.saveAddFolder = function() {
 		var $di = $("#addFolderDialog");

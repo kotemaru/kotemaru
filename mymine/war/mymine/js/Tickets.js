@@ -67,10 +67,14 @@ function Tickets(){this.initialize.apply(this, arguments)};
 	}
 
 
+	function getCharge(issue) {
+		if (issue.assigned_to == null) return null;
+		return issue.assigned_to.id;
+	}
 
 	var COMPARATOR_DESC = {
 		hNum      : function(a,b){return(b.id-a.id);},
-		hCharge   : function(a,b){var A=a.charge,B=b.charge;return(A==B?0:(A>B?-1:1));},
+		hCharge   : function(a,b){var A=getCharge(a),B=getCharge(b);return(A==B?0:(A>B?-1:1));},
 		hUpdate   : function(a,b){return(Date.parse(b.updated_on)-Date.parse(a.updated_on));},
 		hDueDate  : function(a,b){return(Date.parse(b.due_date)-Date.parse(a.due_date));},
 		hDoneRate : function(a,b){return(b.done_rate-a.done_rate);},
@@ -79,13 +83,19 @@ function Tickets(){this.initialize.apply(this, arguments)};
 	var comparatorName = "hUpdate";
 	var comparatorAsc = true;
 
-	Class.setSorted = function(name) {
+	Class.setSorted = function(name, asc) {
 		if (comparatorName == name) {
 			comparatorAsc = !comparatorAsc;
 		} else {
 			comparatorName = name;
 			comparatorAsc = true;
 		}
+		if (asc != null) comparatorAsc = asc;
+		
+		$(".THead").removeClass("Selected");
+		$("#"+name).addClass("Selected")
+			.find(">img").attr("src",
+					"img/sort-"+(comparatorAsc?"up":"down")+".png");
 	}
 
 	function getSortedTickets(tickets) {

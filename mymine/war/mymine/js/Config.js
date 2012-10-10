@@ -16,7 +16,6 @@ function Config(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.getProjects = function() {
-		Class.save();
 		MyMine.waiting(true);
 		new RedMine().getProjects(function(data){
 			var querys = [];
@@ -39,6 +38,7 @@ function Config(){this.initialize.apply(this, arguments)};
 		setup(config);
 	}
 
+	// TODO: UIか？
 	function setup(config) {
 		for (var name in config) {
 			Class[name] = config[name];
@@ -76,6 +76,7 @@ function Config(){this.initialize.apply(this, arguments)};
 		}
 		return list;
 	}
+	Class.getValues = getValues;
 	function setValues($inputs, vals) {
 		if ($inputs.length <= 1) return $inputs.val(vals);
 		for (var i=0; i<$inputs.length; i++) {
