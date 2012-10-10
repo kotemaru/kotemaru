@@ -44,16 +44,30 @@
 }
 .DetailHeader > nobr {
 	display: inline-block;
-	border-left: 1px solid #d8d8d8;
+
 	padding-left: 2px;
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
 	background-image: -moz-linear-gradient(top, #eee, #ccc);
 	border-top: 1px solid #c0c0c0;
+	border-left: 1px solid #d8d8d8;
+
 }
+.DetailHeader > nobr.Selected {
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
+	background-image: -moz-linear-gradient(top, #ccc, #eee);
+}
+.DetailHeader > nobr.THead >img {
+	display: none;
+}
+.DetailHeader > nobr.Selected >img {
+	margin-left: 2px;
+	display: inline-block;
+}
+
 
 .DetailHeader > nobr.TFolder  {
 	width: 200px;
-	border-right: 1px solid gray;
+	border-right: 1px solid lightgray;
 	background: #e0e0e0;
 }
 .DetailHeader > nobr.TFolder > .Button  {

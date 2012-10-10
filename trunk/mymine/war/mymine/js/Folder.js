@@ -130,6 +130,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 
 	function inbox() {
+		Tickets.setSorted("hUpdate", false);
+		
 		var prjId = $("#projectSelector").val();
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {

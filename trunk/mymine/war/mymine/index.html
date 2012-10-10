@@ -72,12 +72,12 @@ $(function(){
 				<img class="Button" src="img/cross.png"
 					onclick="UI.removeFolder()" alt="フォルダ削除"/>
 			</nobr
-			><nobr id="hNum"      class="THead TNum"    >番号</nobr
-			><nobr id="hCharge"   class="THead TCharge" >担当者</nobr
-			><nobr id="hUpdate"   class="THead TDate"   >更新</nobr
-			><nobr id="hDueDate"  class="THead TDate"   >期日</nobr
-			><nobr id="hDoneRate" class="THead TState"  >進捗</nobr
-			><nobr id="hSubject"  class="THead TSubject">題名</nobr>
+			><nobr id="hNum"      class="THead TNum"    >番号<img/></nobr
+			><nobr id="hCharge"   class="THead TCharge" >担当者<img/></nobr
+			><nobr id="hUpdate"   class="THead TDate" >更新<img/></nobr
+			><nobr id="hDueDate"  class="THead TDate"   >期日<img/></nobr
+			><nobr id="hDoneRate" class="THead TState"  >進捗<img/></nobr
+			><nobr id="hSubject"  class="THead TSubject">題名<img/></nobr>
 		</div>
 	</header>
 
@@ -150,9 +150,10 @@ $(function(){
 						<th >カスタムクエリ</th>
 						<td/>
 						<td>
-							通常は使用しません(空欄のままで良い)。
-							チケット取得で更新日でのソート条件が使用できない古いバージョンの Redmine
-							の場合のみ使用します。<br/>
+							古い Redmine の為の機能です。<br/>
+							APIでソート条件が使用できないバージョンの Redmine でのみ使用します。
+							このモードを使用すると新着フォルダで更新日以外のソートは使えませんので
+							通常は空欄としておいて下さい。<br/>
 							<a href="#">こちらの例にしたがってカスタムクエリを作成し</a>そのIDを設定します。
 							<br/>
 							<input name="redmineQueryId" size=2/> 例: 5
@@ -166,7 +167,7 @@ $(function(){
 							以下のボタンからプロジェクトを自動取得して設定します。
 							プロジェクトの変更が有った場合には再取得して設定しなおします。
 							<br/>
-							<button onclick="Config.getProjects()">プロジェクトの自動取得</button>
+							<button onclick="UI.getProjects()">プロジェクトの自動取得</button>
 							(先にAPIの項目の設定が必要です)
 							<br/>
 							<div id="configProjectList">
