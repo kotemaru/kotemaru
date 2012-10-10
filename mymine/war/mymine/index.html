@@ -66,18 +66,18 @@ $(function(){
 		</div>
 
 		<div class="DetailHeader">
-					<nobr class="TFolder">フォルダ
-						<img class="Button" src="img/add.png"
-							onclick="UI.addFolder()" alt="フォルダ追加"/>
-						<img class="Button" src="img/cross.png"
-							onclick="UI.removeFolder()" alt="フォルダ削除"/>
-					</nobr
-					><nobr class="TNum">番号</nobr
-					><nobr class="TCharge">担当者</nobr
-					><nobr class="TDate">更新</nobr
-					><nobr class="TDate">期日</nobr
-					><nobr class="TState">進捗</nobr
-					><nobr class="TSubject">題名</nobr>
+			<nobr class="TFolder">フォルダ
+				<img class="Button" src="img/add.png"
+					onclick="UI.addFolder()" alt="フォルダ追加"/>
+				<img class="Button" src="img/cross.png"
+					onclick="UI.removeFolder()" alt="フォルダ削除"/>
+			</nobr
+			><nobr id="hNum"      class="THead TNum"    >番号</nobr
+			><nobr id="hCharge"   class="THead TCharge" >担当者</nobr
+			><nobr id="hUpdate"   class="THead TDate"   >更新</nobr
+			><nobr id="hDueDate"  class="THead TDate"   >期日</nobr
+			><nobr id="hDoneRate" class="THead TState"  >進捗</nobr
+			><nobr id="hSubject"  class="THead TSubject">題名</nobr>
 		</div>
 	</header>
 

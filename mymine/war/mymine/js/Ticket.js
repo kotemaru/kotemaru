@@ -34,6 +34,16 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		return issues[num];
 	}
 
+	Class.checked = function(num) {
+		var issue = Ticket.issue(num);
+		if (issue != null) {
+			issue.checked_on = new Date().toString();
+			Storage.saveTicket(issue);
+		}
+	}
+
+
+
 	Class.isChecked = function(num) {
 		var issue = issues[num];
 		if (issue == null) return false;
