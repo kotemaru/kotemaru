@@ -48,13 +48,13 @@ $(function(){
 
 			<div>
 				<div id="buttons3">
-					<nobr><input id="search" type="text"
-					/><img class="Button" src="img/find.png"
-						alt="検索"/></nobr>
+					<nobr><input id="searchKeyword" type="text"
+					/><img class="Button" src="img/find.png" onclick="UI.search()"
+						alt="検索<br/>(チケット番号のみ)"/></nobr>
 				</div>
 
 				<div id="buttons2">
-					<select id="projectSelector"></select>
+					<select id="projectSelector" onchange="UI.changeProject(this)"></select>
 					<!--  img class="Button" src="img/inbox-down.png" onclick="UI.inbox()"
 						alt="新着チケットを読み込む" / -->
 					<img class="Button" src="img/refresh.png" onclick="UI.refresh()"

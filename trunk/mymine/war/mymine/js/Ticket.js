@@ -6,37 +6,6 @@ function Ticket(){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function() {
 	}
 	Class.init = function() {
-		var draggable = null;
-		$(C_TICKET).live("mousedown",function(ev){
-			MyMine.isDrag(true);
-			draggable = this;
-			//ev.preventDefault();
-			return false;
-		}).live("mousemove",function(ev){
-			if (draggable == this) {
-				MyMine.setDragCursor();
-				if (MyMine.isDrag()) {
-					Tickets.addSelection(this.dataset.ticketNum);
-				}
-				draggable = null;
-			}
-		}).live("mouseup",function(ev){
-			if (draggable == this) {
-				Tickets.toggleSelection(this.dataset.ticketNum);
-				draggable = null;
-			}
-		}).live("dblclick",function(ev){
-			RedMine.openIsuue(this.dataset.ticketNum);
-
-			var issue = Class.issue(this.dataset.ticketNum);
-			if (issue != null) {
-				issue.checked_on = new Date().toString();
-				Storage.saveTicket(issue);
-			}
-			Tickets.refresh();
-			Folder.refresh();
-		});
-
 	}
 
 	var ISSUE_TEMPL = {id:9999, subject:"", assigned_to:{},

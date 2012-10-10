@@ -6,9 +6,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 	    {name:INBOX,     title:"新着",       icon:"img/inbox.png", nosave:true},
 	    {name:"trash",   title:"ゴミ箱",     icon:"img/bin_closed.png", nosave:true},
 	    {name:"sepa1",   title:"---",        icon:"---"},
-	    {name:"now",     title:"今すぐ",     icon:"img/alarm.png"},
+	    {name:"now",     title:"至急",       icon:"img/alarm.png"},
 	    {name:"play",    title:"現行作業",   icon:"img/hand.png"},
-	    {name:"reserve", title:"次予定作業", icon:"img/bookmark_folder.png"},
+	    {name:"reserve", title:"予定作業",   icon:"img/bookmark_folder.png"},
 	    {name:"todo",    title:"後回し",     icon:"img/folder.png"},
 	    {name:"ovserve", title:"相談のみ",   icon:"img/comment.png"},
 	    {name:"wait",    title:"進捗待ち",   icon:"img/comment.png"},
@@ -18,6 +18,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 	var folders = {};
 	var currentName = null;
 	var isFirstInbox = true;
+
+	Class.searchKeyword = null;
 
 	Class.prototype.initialize = function() {
 	}
@@ -38,24 +40,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 		//Class.resetAll();
 
 		Class.refresh();
-
-		$(".Folder").live("mouseup",function(){
-			if (MyMine.isDrag()) {
-				Class.dropTicket(this.id);
-			} else {
-				Class.select(this.id);
-			}
-		}).live("mousedown", function(){
-			//event.
-		}).live("mouseup", function(){
-			$(this).css("cursor", "pointer");
-		}).live("mouseover", function(){
-			hover(true, this);
-		}).live("mouseout", function(){
-			hover(false, this);
-		});
 	}
-	function hover(isIn, _this) {
+	Class.hover = function(isIn, _this) {
 		var cursor = "pointer";
 		if (MyMine.isDrag()) {
 			var sels = Tickets.getSelection();
@@ -117,6 +103,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 	Class.remove = function (name, issue) {
 		var folder = folders[name];
+		if (folder == null) return;
 		issue.folder = null;
 		Ticket.register(issue);
 		delete folder.tickets[issue.id];
@@ -143,6 +130,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 
 	function inbox() {
+		var prjId = $("#projectSelector").val();
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
 				var issue = Ticket.register(data.issues[i]);
@@ -151,8 +139,22 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 			Folder.select(INBOX);
 			Folder.refresh();
-		},{page: inboxPage});
+		},{page:inboxPage, project_id:prjId});
 	}
+
+	Class.inboxOne = function(num) {
+		MyMine.waiting(true);
+		isFirstInbox= false;
+		folders[INBOX].tickets = {};
+		folders[INBOX].tickets[num] = 1;
+		new RedMine().getIssue(num, function(data){
+			Ticket.register(data.issue);
+			Folder.select(INBOX);
+			Folder.refresh();
+			MyMine.waiting(false);
+		});
+	}
+
 
 	Class.refresh = function () {
 		var $section = $("#folders");
@@ -190,11 +192,11 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 		if (total == 0) return folder.title;
 		if (unchecked == 0) {
-			return "<b class='Count'>("+total+") </b>"+folder.title;
+			return "<span class='Count'>("+total+") </span>"+folder.title;
 		}
-		return "<b class='Count'>("
-			+unchecked+"/"+total
-			+") </b>"+folder.title;
+		return "<span class='Count'>("
+			+"<b>"+unchecked+"</b>/"+total
+			+") </span>"+folder.title;
 	}
 
 

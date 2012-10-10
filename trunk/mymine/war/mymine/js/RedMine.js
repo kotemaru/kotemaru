@@ -1,18 +1,18 @@
 
 function RedMine(){this.initialize.apply(this, arguments)};
 (function(Class){
-	
+
 	Class.prototype.initialize = function() {
 	}
 
 	Class.prototype.getIssues = function(callback, opts) {
 		MyMine.waiting(true);
 		MyMine.progress(50);
-		
+
 		var prjId = $("#projectSelector").val();
 		var url = Config.redmineApiPath + "/issues.json"
 			+ "?key=" + Config.redmineApiKey
-			+ "&project_id="+prjId;
+		;
 		if (Config.redmineQueryId) {
 			url += "&query_id="+Config.redmineQueryId;
 		} else {
@@ -24,7 +24,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 				url += "&"+k+"="+opts[k];
 			}
 		}
-		
+
 		getJsonAsync(url, function(data){
 			callback(data);
 			MyMine.waiting(false);
@@ -54,11 +54,11 @@ function RedMine(){this.initialize.apply(this, arguments)};
 			}
 		});
 	}
-	
+
 	Class.openIsuue = function(num) {
 		var url = Config.redmineAbsPath+"/issues/"+num;
 		window.open(url,"detail");
 	}
-	
+
 })(RedMine);
 
