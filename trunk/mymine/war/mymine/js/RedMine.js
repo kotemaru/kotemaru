@@ -50,6 +50,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 			dataType: "json",
 			success: callback,
 			error: function(xhr) {
+				MyMine.waiting(false);
 				alert(xhr.status+" "+xhr.statusText);
 			}
 		});
@@ -57,7 +58,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 
 	Class.openIsuue = function(num) {
 		var url = Config.redmineAbsPath+"/issues/"+num;
-		window.open(url,"detail");
+		window.open(url,"_blank");
 	}
 
 })(RedMine);

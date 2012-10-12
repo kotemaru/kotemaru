@@ -60,6 +60,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 	Class.isInbox = function() {
 		return currentName == INBOX;
 	}
+	Class.getCurrentName = function() {
+		return currentName;
+	}
 
 	Class.add = function(folder) {
 		var seq = 0;
@@ -131,7 +134,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	function inbox() {
 		Tickets.setSorted("hUpdate", false);
-		
+
 		var prjId = $("#projectSelector").val();
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
@@ -216,9 +219,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 		Tickets.clearSelection();
 	}
 
-	Class.updateTickets = function() {
+
+	Class.updateTickets = function(name) {
 		MyMine.waiting(true);
-		var allTickets = getAllTickets();
+		var allTickets = getAllTickets(name);
 		var redmine = new RedMine();
 		var count = 0;
 		var total = 0;
@@ -240,7 +244,14 @@ function Folder(){this.initialize.apply(this, arguments)};
 		}
 	}
 
-	function getAllTickets() {
+	function getAllTickets(name) {
+		if (name != null) {
+			var all = {};
+			var tickets = folders[name].tickets;
+			for (var num in tickets) all[num] = name;
+			return all;
+		}
+
 		var all = {};
 		for (var name in folders) {
 			var tickets = folders[name].tickets;

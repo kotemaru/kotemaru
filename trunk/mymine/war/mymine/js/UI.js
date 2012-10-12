@@ -74,8 +74,8 @@ function UI(){this.initialize.apply(this, arguments)};
 	}
 
 	//-------------------------------------------------------------
-	
-	
+
+
 	Class.changeProject = function(_this) {
 		$this = $(_this);
 		Folder.inbox();
@@ -114,10 +114,15 @@ function UI(){this.initialize.apply(this, arguments)};
 		Folder.inbox();
 	}
 	Class.refresh = function() {
+		var folderName = Folder.getCurrentName();
 		if (Folder.isInbox()) {
 			Folder.inbox();
 		} else {
-			Folder.updateTickets();
+			if (event.shiftKey) {
+				Folder.updateTickets(); // All
+			} else {
+				Folder.updateTickets(folderName);
+			}
 		}
 	}
 	Class.cleaning = function() {
@@ -135,6 +140,12 @@ function UI(){this.initialize.apply(this, arguments)};
 	Class.search = function() {
 		var kw = $("#searchKeyword").val();
 		Folder.inboxOne(parseInt(kw));
+	}
+	Class.searchKeyPress = function(ev,_this) {
+		if (ev.keyCode == 13) { // ReturnKey
+			Class.search();
+			return false;
+		}
 	}
 
 
