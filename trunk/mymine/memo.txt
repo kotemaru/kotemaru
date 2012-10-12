@@ -1,0 +1,4 @@
+
+- 検索でリターンキー
+- 検索失敗でwiatingが残る
+- Shift+refresh対応
