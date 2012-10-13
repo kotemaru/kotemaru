@@ -84,7 +84,7 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		}
 
 		Folder.refresh();
-		Folder.select("trash");
+		//Folder.select("trash");
 	}
 
 	function to2ChStr(n) {
