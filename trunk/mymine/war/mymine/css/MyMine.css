@@ -20,7 +20,13 @@ html,body {
 	position: absolute;
 	z-index: 20;
 	padding: 0;
-	background: url(../img/kmines.png) no-repeat 4px 4px;
+	//background: url(../img/kmines.png) no-repeat 4px 4px;
+}
+
+#logoImage {
+	position: absolute;
+	left: 2px;
+	top: 2px;
 }
 
 
@@ -82,7 +88,9 @@ html,body {
 	width: 100px;
 	height: 10px;
 	background: lightgray;
+	border: 1px solid black;
 	border-radius: 4px;
+	box-shadow: 1px 1px 8px;
 	overflow: hidden;
 }
 #progressBar > div {

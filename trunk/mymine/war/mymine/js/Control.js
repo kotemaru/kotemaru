@@ -29,8 +29,8 @@ function Control(){this.initialize.apply(this, arguments)};
 		$balloon.offset({top:0,left:0}).css("display","inline-block").html(alt);
 
 		var offset = $button.offset();
-		offset.top += 20;
-		offset.left += 20;
+		offset.top += $button.width() + 8 ;
+		offset.left += $button.height() + 8;
 		if (offset.left+$balloon.width()>$(document.body).width()) {
 			offset.left = $(document.body).width()-$balloon.width()-12;
 		}
