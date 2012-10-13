@@ -4,6 +4,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>MyMine</title>
+	<link rel="shortcut icon" href="img/kmines.ico" type="image/vnd.microsoft.icon" />
 
 	<link rel="stylesheet" type="text/css"
  		href="http://mplus-fonts.sourceforge.jp/webfonts/mplus_webfonts.css" />
@@ -36,6 +37,8 @@ $(function(){
 <body>
 
 	<header id="headerPanel" >
+		<img id="logoImage" class="Button" src="img/kmines.png"  onclick="UI.abort()"
+			alt="MyMineについて"/>
 		<div id="buttons">
 			<div id="buttons1" >
 					<img class="Button" src="img/download.png" onclick="UI.download()"
@@ -196,6 +199,7 @@ $(function(){
 			<div>
 				<br/>
 				<p align="center">
+					フォルダと環境設定の状態を保存します。<br/><br/>
 					<a id="downloadLink" download="mymine.json" >
 					このリンクを「別名で保存」して下さい。
 					</a>
@@ -209,9 +213,13 @@ $(function(){
 				<nobr>アップロード</nobr>
 			</h3>
 			<div>
-				ファイル名を選択して下さい<br/>
+				<br/>
 				<p align="center">
-					<input id="uploadFile" type="file" />
+					フォルダと環境設定の状態を復元します。<br/>
+					ファイル名を選択して下さい<br/><br/>
+					<p align="center">
+						<input id="uploadFile" type="file" />
+					</p>
 				</p>
 			</div>
 		</div>
@@ -271,9 +279,21 @@ $(function(){
 			</div>
 		</div>
 
+		<div id="abortDialog" class="Dialog">
+			<h3>
+				<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+				<nobr>MyMineについて</nobr>
+			</h3>
+			<div>
+				<p align="center">
+					MyMine Ver-0.1<br/>
+					Copyright (C) 2012 koremaru.org.<br/>
+				</p>
 
-
+			</div>
+		</div>
 	</div>
+
 
 	<!-- ======================= Waiting =============================== -->
 	<div id="waiting">

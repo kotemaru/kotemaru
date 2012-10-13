@@ -47,12 +47,16 @@ function UI(){this.initialize.apply(this, arguments)};
 				if (MyMine.isDrag()) {
 					Tickets.addSelection(this.dataset.ticketNum);
 				}
+			}
+		}).live("mouseout",function(ev){
+			if (draggable == this) {
 				draggable = null;
 			}
 		}).live("mouseup",function(ev){
 			if (draggable == this) {
 				if (!ev.ctrlKey) Tickets.clearSelection();
 				Tickets.toggleSelection(this.dataset.ticketNum);
+				TIckets.refresh();
 				draggable = null;
 			}
 		}).live("dblclick",function(ev){
@@ -74,6 +78,9 @@ function UI(){this.initialize.apply(this, arguments)};
 	}
 
 	//-------------------------------------------------------------
+	Class.abort = function() {
+		Dialog.open("#abortDialog");
+	}
 
 
 	Class.changeProject = function(_this) {
