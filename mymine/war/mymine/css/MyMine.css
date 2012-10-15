@@ -96,7 +96,7 @@ html,body {
 #progressBar > div {
 	display: block;
 	width: 50%;
-	height: 10px;
+	height: 8px;
 	background: url(../img/progress.png);
 	border-radius: 4px;
 }
