@@ -87,7 +87,7 @@ html,body {
 #progressBar {
 	width: 100px;
 	height: 10px;
-	background: lightgray;
+	background: gray;
 	border: 1px solid black;
 	border-radius: 4px;
 	box-shadow: 1px 1px 8px;
