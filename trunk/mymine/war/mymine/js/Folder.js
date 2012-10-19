@@ -260,5 +260,13 @@ function Folder(){this.initialize.apply(this, arguments)};
 		return all;
 	}
 
+	Class.insert = function(name1, name2) {
+		if (folders[name1].nosave || folders[name2].nosave) return;
+		var tmp = folders[name1].seq;
+		folders[name1].seq = folders[name2].seq;
+		folders[name2].seq = tmp;
+		return;
+	}
+
 
 })(Folder);
