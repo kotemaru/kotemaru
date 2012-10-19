@@ -18,6 +18,10 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		} else {
 			url += "&desc=updated_on";
 		}
+		if (Control.checkButtons.filter_user) {
+			//url += "&assigned_to_id="+Control.userId;
+			url += "&query_id=72";
+		}
 
 		if (opts != null) {
 			for (var k in opts) {
@@ -38,6 +42,12 @@ function RedMine(){this.initialize.apply(this, arguments)};
 
 	Class.prototype.getProjects = function(callback) {
 		var url = Config.redmineApiPath + "/projects.json"
+			+ "?key=" + Config.redmineApiKey;
+		getJsonAsync(url, callback);
+	}
+
+	Class.prototype.getCurrentUser = function(callback) {
+		var url = Config.redmineApiPath + "/users/current.json"
 			+ "?key=" + Config.redmineApiKey;
 		getJsonAsync(url, callback);
 	}

@@ -7,11 +7,11 @@ function MyMine(){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function() {
 	}
 	Class.init = function() {
+		Storage.init();
 		Config.init();
 		Ticket.init();
 		Folder.init();
 		Control.init();
-		Storage.init();
 		Folder.refresh();
 		UI.init();
 	}

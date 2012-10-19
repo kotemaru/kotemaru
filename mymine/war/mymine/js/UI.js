@@ -13,11 +13,16 @@ function UI(){this.initialize.apply(this, arguments)};
 		});
 
 		// Control
-		$(".Button").live("mouseover",function(ev){
+		$(".Button, .CheckButton").live("mouseover",function(ev){
 			Control.popupBalloon($(this));
 		}).live("mouseout",function(){
 			Control.hideBalloon();
 		});
+
+		$(".CheckButton").live("click",function(ev){
+			Control.toggleCheckButton(this);
+		});
+
 
 		// Folder
 		$(".Folder").live("mouseup",function(){

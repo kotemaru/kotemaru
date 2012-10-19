@@ -4,7 +4,18 @@ function Control(){this.initialize.apply(this, arguments)};
 (function(Class){
 	Class.prototype.initialize = function() {
 	}
+
+	var checkButtons = {
+		filter_user: false
+	};
+
+	Class.userId = null;
+	Class.checkButtons = checkButtons;
+
 	Class.init = function() {
+		new RedMine().getCurrentUser(function(data){
+			Class.userId = data.user.id;
+		});
 
 		Class.setup();
 	}
@@ -39,6 +50,15 @@ function Control(){this.initialize.apply(this, arguments)};
 	Class.hideBalloon = function() {
 		$("#balloon").hide();
 	}
+
+	Class.toggleCheckButton = function(elem) {
+		var $elem = $(elem);
+		checkButtons[elem.id] = !checkButtons[elem.id];
+		$elem.removeClass("CheckButtonOn");
+		if (checkButtons[elem.id]) {
+			$elem.addClass("CheckButtonOn")
+		}
+	};
 
 
 })(Control);
