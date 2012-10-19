@@ -3,7 +3,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var INBOX = "inbox";
 	var FOLDERS = [
-	    {name:INBOX,     title:"新着",       icon:"img/inbox.png", nosave:true},
+	    {name:INBOX,     title:"受信箱",     icon:"img/inbox.png", nosave:true},
 	    {name:"trash",   title:"ゴミ箱",     icon:"img/bin_closed.png", nosave:true},
 	    {name:"sepa1",   title:"---",        icon:"---"},
 	    {name:"now",     title:"至急",       icon:"img/alarm.png"},
