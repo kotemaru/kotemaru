@@ -10,6 +10,7 @@ function UI(){this.initialize.apply(this, arguments)};
 				MyMine.isDrag(false);
 				MyMine.setDragCursor();
 			}, 50);
+			hasFolder = null;
 		});
 
 		// Control
@@ -24,6 +25,8 @@ function UI(){this.initialize.apply(this, arguments)};
 		});
 
 
+		var hasFolder = null;
+
 		// Folder
 		$(".Folder").live("mouseup",function(){
 			if (MyMine.isDrag()) {
@@ -33,10 +36,16 @@ function UI(){this.initialize.apply(this, arguments)};
 			}
 			MyMine.isDrag(false);
 		}).live("mousedown", function(){
-			//event.
+			hasFolder = this;
+			return false;
 		}).live("mouseover", function(){
 			Folder.hover(true, this);
-		}).live("mouseout", function(){
+			console.log("->"+this,hasFolder)
+			if (hasFolder != null && hasFolder != this) {
+				Folder.insert(this.id, hasFolder.id);
+				Folder.refresh();
+			}
+		}).live("mouseout", function(ev){
 			Folder.hover(false, this);
 		});
 
