@@ -103,3 +103,10 @@
 }
 
 
+#addFolderDialog > div {
+	//border: 1px solid gray;
+	height: 350px;
+	width: 600px;
+	//overflow-y: scroll;
+}
+

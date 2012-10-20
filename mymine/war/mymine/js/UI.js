@@ -11,7 +11,19 @@ function UI(){this.initialize.apply(this, arguments)};
 				MyMine.setDragCursor();
 			}, 50);
 			hasFolder = null;
+			sliderX = null;
+		}).bind("mousemove", function(ev){
+			if (sliderX) {
+				Class.setLeftWidth(ev.clientX+2);
+			}
 		});
+
+		// LeftWidth
+		var sliderX = null;
+		$(".SlideHandle").bind("mousedown", function(ev){
+			sliderX = ev.clientX;
+			return false;
+		})
 
 		// Control
 		$(".Button, .CheckButton").live("mouseover",function(ev){
@@ -38,9 +50,12 @@ function UI(){this.initialize.apply(this, arguments)};
 		}).live("mousedown", function(){
 			hasFolder = this;
 			return false;
+		}).live("mousemove", function(){
+			if (hasFolder != null) {
+				$(".Folder").css({cursor:"n-resize"});
+			}
 		}).live("mouseover", function(){
 			Folder.hover(true, this);
-			console.log("->"+this,hasFolder)
 			if (hasFolder != null && hasFolder != this) {
 				Folder.insert(this.id, hasFolder.id);
 				Folder.refresh();
@@ -89,6 +104,7 @@ function UI(){this.initialize.apply(this, arguments)};
 			return false;
 		})
 
+
 	}
 
 	//-------------------------------------------------------------
@@ -96,6 +112,12 @@ function UI(){this.initialize.apply(this, arguments)};
 		Dialog.open("#abortDialog");
 	}
 
+	Class.setLeftWidth = function(w) {
+		var px = w +"px";
+		$("#leftPanel").css({width: px});
+		$("#mainPanel").css({paddingLeft: px});
+		$(".TFolder").css({width: px});
+	}
 
 	Class.changeProject = function(_this) {
 		$this = $(_this);
@@ -155,7 +177,9 @@ function UI(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.removeFolder = function() {
-		Folder.removeFolder();
+		if (window.confirm("本当にフォルダを削除しますか？")) {
+			Folder.removeFolder();
+		}
 	}
 
 	Class.search = function() {

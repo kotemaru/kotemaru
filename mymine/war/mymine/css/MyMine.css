@@ -50,6 +50,16 @@ html,body {
 	border-right: 1px solid #c0c0c0;
 }
 
+.SlideHandle {
+	width: 4px;
+	height: 100%;
+	//border: 1px solid black;
+	position: absolute;
+	top: 0px;
+	right: 0;
+	cursor: col-resize;
+}
+
 #mainPanel {
 	box-sizing: border-box;
 	height: 100%;
@@ -93,6 +103,7 @@ html,body {
 	box-shadow: 1px 1px 8px;
 	overflow: hidden;
 }
+
 #progressBar > div {
 	display: block;
 	width: 50%;
@@ -100,6 +111,7 @@ html,body {
 	background: url(../img/progress.png);
 	border-radius: 4px;
 }
+
 .Template {display: none;}
 
 
