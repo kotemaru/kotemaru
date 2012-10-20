@@ -67,7 +67,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 	Class.add = function(folder) {
 		var seq = 0;
 		for (var name in folders) seq = Math.max(seq, folders[name].seq);
-		folder.seq = seq;
+		folder.seq = seq+1;
 		folder.tickets = {};
 		Storage.saveFolder(folder);
 		Class.put(folder);
