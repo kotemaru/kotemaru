@@ -6,8 +6,7 @@
 	<title>MyMine</title>
 	<link rel="shortcut icon" href="img/kmines.ico" type="image/vnd.microsoft.icon" />
 
-	<link rel="stylesheet" type="text/css"
- 		href="http://mplus-fonts.sourceforge.jp/webfonts/mplus_webfonts.css" />
+	<link rel="stylesheet" href="css/Font.css" />
 	<link rel="stylesheet" href="css/MyMine.css" />
 	<link rel="stylesheet" href="css/Dialog.css" />
 	<link rel="stylesheet" href="css/Control.css" />
@@ -83,10 +82,15 @@ $(function(){
 					onclick="UI.removeFolder()" alt="フォルダ削除"/>
 			</nobr
 			><nobr id="hNum"      class="THead TNum"    >番号<img/></nobr
+			><span data-ref="hNum" data-class="TNum" class="SlideHandle"></span
 			><nobr id="hCharge"   class="THead TCharge" >担当者<img/></nobr
+			><span data-ref="hCharge" data-class="TCharge" class="SlideHandle"></span
 			><nobr id="hUpdate"   class="THead TDate" >更新<img/></nobr
+			><span data-ref="hUpdate" data-class="TDate" class="SlideHandle"></span
 			><nobr id="hDueDate"  class="THead TDate"   >期日<img/></nobr
+			><span data-ref="hDueDate" data-class="TDate" class="SlideHandle"></span
 			><nobr id="hDoneRate" class="THead TState"  >進捗<img/></nobr
+			><span data-ref="hDoneRate" data-class="TState" class="SlideHandle"></span
 			><nobr id="hSubject"  class="THead TSubject">題名<img/></nobr>
 		</div>
 	</header>
@@ -94,7 +98,7 @@ $(function(){
 	<section id="leftPanel">
 		<section id="folders">
 		</section>
-		<div class="SlideHandle"></div>
+		<span id="leftSlideHandle"></span>
 	</section>
 
 	<section id="mainPanel">
