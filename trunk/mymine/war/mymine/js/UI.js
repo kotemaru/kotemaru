@@ -12,16 +12,31 @@ function UI(){this.initialize.apply(this, arguments)};
 			}, 50);
 			hasFolder = null;
 			sliderX = null;
+			sliderTarget = null;
 		}).bind("mousemove", function(ev){
 			if (sliderX) {
-				Class.setLeftWidth(ev.clientX+2);
+				//Class.setLeftWidth(ev.clientX+1);
+			}
+			if (sliderTarget) {
+				var $header = $("#"+sliderTarget.dataset.ref);
+				var selector = "."+sliderTarget.dataset["class"];
+				var offset = $header.offset();
+				var w = (ev.clientX - offset.left);
+				classCss(selector, {width: w+"px"});
 			}
 		});
 
 		// LeftWidth
+		var sliderTarget = null;
 		var sliderX = null;
-		$(".SlideHandle").bind("mousedown", function(ev){
+		$("#leftSlideHandle").bind("mousedown", function(ev){
 			sliderX = ev.clientX;
+			return false;
+		})
+		$(".SlideHandle").bind("mousedown", function(ev){
+			sliderTarget = this;
+			sliderX = ev.clientX;
+			//sliderX = ev.clientX;
 			return false;
 		})
 
@@ -43,16 +58,15 @@ function UI(){this.initialize.apply(this, arguments)};
 		$(".Folder").live("mouseup",function(){
 			if (MyMine.isDrag()) {
 				Folder.dropTicket(this.id);
-			} else {
-				Folder.select(this.id);
 			}
 			MyMine.isDrag(false);
 		}).live("mousedown", function(){
 			hasFolder = this;
+			Folder.select(this.id);
 			return false;
 		}).live("mousemove", function(){
 			if (hasFolder != null) {
-				$(".Folder").css({cursor:"n-resize"});
+				$(".Folder").css({cursor:"row-resize"});
 			}
 		}).live("mouseover", function(){
 			Folder.hover(true, this);
@@ -101,12 +115,34 @@ function UI(){this.initialize.apply(this, arguments)};
 			Tickets.setSorted(this.id);
 			Folder.refresh();
 		}).live("mousedown", function(){
-			return false;
+			//return false;
 		})
 
 
 	}
 
+	
+	var classCssRuleCache = {};
+	function getCssRule(selector) {
+		if (classCssRuleCache[selector]) return classCssRuleCache[selector];
+		var sheets = document.styleSheets;
+		for (var i=0; i<sheets.length; i++) {
+			var rules = sheets[i].cssRules;
+			for (var j=0; j<rules.length; j++) {
+				if (selector == rules[j].selectorText) {
+					classCssRuleCache[selector] = rules[j];
+					return rules[j];
+				}
+			}
+		}
+		return null;
+	}
+	function classCss(selector, style) {
+		var rule = getCssRule(selector);
+		if (rule == null) return;
+		for (var k in style) rule.style[k] = style[k];
+	}
+	
 	//-------------------------------------------------------------
 	Class.abort = function() {
 		Dialog.open("#abortDialog");

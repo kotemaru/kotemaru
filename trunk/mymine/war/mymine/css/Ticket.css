@@ -23,6 +23,7 @@
 }
 .Ticket > nobr {
 	display: inline-block;
+	//line-height: 18px;
 	border-left: 1px dotted #e0e0e0;
 	margin: 0;
 	padding: 0;
@@ -95,7 +96,7 @@
 	height: 12px;
 	border: 1px solid lightgray;
 	margin-bottom: -2px;
-overflow: hidden;
+	overflow: hidden;
 }
 .StateBar > div{
 	vertical-align: top;

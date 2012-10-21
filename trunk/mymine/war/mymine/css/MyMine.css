@@ -51,7 +51,20 @@ html,body {
 }
 
 .SlideHandle {
-	width: 4px;
+	display: inline-block;
+	position: relative;
+	margin-left: -1px;
+	margin-right: -2px;
+	width: 3px;
+	height: 20px;
+	//border: 1px solid black;
+	cursor: col-resize;
+	vertical-align: middle;
+}
+#leftSlideHandle {
+	display: inline-block;
+	margin-right: -2px;
+	width: 5px;
 	height: 100%;
 	//border: 1px solid black;
 	position: absolute;
