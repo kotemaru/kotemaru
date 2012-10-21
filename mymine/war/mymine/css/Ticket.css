@@ -43,6 +43,9 @@
 	overflow: hidden;
 	font-size: 12px;
 	//font-weight: bold;
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background-image: -moz-linear-gradient(top, #eee, #ccc);
+	border-top: 1px solid #c0c0c0;
 }
 .DetailHeader > nobr {
 	display: inline-block;
@@ -50,7 +53,7 @@
 	padding-left: 2px;
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
 	background-image: -moz-linear-gradient(top, #eee, #ccc);
-	border-top: 1px solid #c0c0c0;
+	//border-top: 1px solid #c0c0c0;
 	border-left: 1px solid #d8d8d8;
 
 }
@@ -79,8 +82,9 @@
 }
 
 .DetailHeader > nobr.TNum      {
-	padding-left: 2px;
-	width: 38px;
+	margin-left: 3px;
+	border-left: 0px solid #d8d8d8;
+//width: 38px;
 }
 
 .TNum     {width: 36px;}
