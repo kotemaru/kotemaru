@@ -1,0 +1,25 @@
+
+#leftSlideHandle {
+	display: inline-block;
+	cursor: col-resize;
+	
+	position: absolute;
+	top: 0px;
+	right: 0;
+	margin-right: -2px;
+	width: 5px;
+	height: 100%;
+	//border: 1px solid black;
+}
+.HeaderSlideHandle {
+	display: inline-block;
+	cursor: col-resize;
+	
+	position: relative;
+	margin-left: -1px;
+	margin-right: -2px;
+	width: 3px;
+	height: 20px;
+	//border: 1px solid black;
+	vertical-align: middle;
+}
