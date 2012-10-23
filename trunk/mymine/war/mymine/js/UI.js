@@ -10,33 +10,24 @@ function UI(){this.initialize.apply(this, arguments)};
 				MyMine.isDrag(false);
 				MyMine.setDragCursor();
 			}, 50);
-			hasFolder = null;
-			sliderX = null;
-			sliderTarget = null;
+			Folder.endDrag();
+			SlideHandle.endDrag();
 		}).bind("mousemove", function(ev){
-			if (sliderX) {
-				//Class.setLeftWidth(ev.clientX+1);
-			}
-			if (sliderTarget) {
-				var $header = $("#"+sliderTarget.dataset.ref);
-				var selector = "."+sliderTarget.dataset["class"];
-				var offset = $header.offset();
-				var w = (ev.clientX - offset.left);
-				classCss(selector, {width: w+"px"});
-			}
+			SlideHandle.move(ev);
 		});
 
-		// LeftWidth
-		var sliderTarget = null;
-		var sliderX = null;
+		// SlideHandle
 		$("#leftSlideHandle").bind("mousedown", function(ev){
-			sliderX = ev.clientX;
+			SlideHandle.startDrag(this, function(ev) {
+				var px = (ev.clientX+1) +"px";
+				$("#leftPanel").css({width: px});
+				$("#mainPanel").css({paddingLeft: px});
+				$(".TFolder").css({width: px});
+			});
 			return false;
 		})
-		$(".SlideHandle").bind("mousedown", function(ev){
-			sliderTarget = this;
-			sliderX = ev.clientX;
-			//sliderX = ev.clientX;
+		$(".HeaderSlideHandle").bind("mousedown", function(ev){
+			SlideHandle.startDrag(this);
 			return false;
 		})
 
@@ -52,8 +43,6 @@ function UI(){this.initialize.apply(this, arguments)};
 		});
 
 
-		var hasFolder = null;
-
 		// Folder
 		$(".Folder").live("mouseup",function(){
 			if (MyMine.isDrag()) {
@@ -61,19 +50,15 @@ function UI(){this.initialize.apply(this, arguments)};
 			}
 			MyMine.isDrag(false);
 		}).live("mousedown", function(){
-			hasFolder = this;
-			Folder.select(this.id);
+			Folder.startDrag(this);
 			return false;
 		}).live("mousemove", function(){
-			if (hasFolder != null) {
+			if (Folder.isDrag()) {
 				$(".Folder").css({cursor:"row-resize"});
 			}
-		}).live("mouseover", function(){
+		}).live("mouseover", function(ev){
 			Folder.hover(true, this);
-			if (hasFolder != null && hasFolder != this) {
-				Folder.insert(this.id, hasFolder.id);
-				Folder.refresh();
-			}
+			Folder.moveDrag(this, ev)
 		}).live("mouseout", function(ev){
 			Folder.hover(false, this);
 		});
@@ -122,37 +107,10 @@ function UI(){this.initialize.apply(this, arguments)};
 	}
 
 	
-	var classCssRuleCache = {};
-	function getCssRule(selector) {
-		if (classCssRuleCache[selector]) return classCssRuleCache[selector];
-		var sheets = document.styleSheets;
-		for (var i=0; i<sheets.length; i++) {
-			var rules = sheets[i].cssRules;
-			for (var j=0; j<rules.length; j++) {
-				if (selector == rules[j].selectorText) {
-					classCssRuleCache[selector] = rules[j];
-					return rules[j];
-				}
-			}
-		}
-		return null;
-	}
-	function classCss(selector, style) {
-		var rule = getCssRule(selector);
-		if (rule == null) return;
-		for (var k in style) rule.style[k] = style[k];
-	}
 	
 	//-------------------------------------------------------------
 	Class.abort = function() {
 		Dialog.open("#abortDialog");
-	}
-
-	Class.setLeftWidth = function(w) {
-		var px = w +"px";
-		$("#leftPanel").css({width: px});
-		$("#mainPanel").css({paddingLeft: px});
-		$(".TFolder").css({width: px});
 	}
 
 	Class.changeProject = function(_this) {
@@ -248,6 +206,13 @@ function UI(){this.initialize.apply(this, arguments)};
 		}
 		Config.save(config);
 		Config.getProjects();
+	}
+	
+	Class.setLeftWidth = function(w) {
+		var px = w +"px";
+		$("#leftPanel").css({width: px});
+		$("#mainPanel").css({paddingLeft: px});
+		$(".TFolder").css({width: px});
 	}
 
 	Class.saveAddFolder = function() {

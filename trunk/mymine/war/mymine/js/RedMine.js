@@ -9,7 +9,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		MyMine.waiting(true);
 		MyMine.progress(50);
 
-		var prjId = $("#projectSelector").val();
+		//var prjId = $("#projectSelector").val();
 		var url = Config.redmineApiPath + "/issues.json"
 			+ "?key=" + Config.redmineApiKey
 		;

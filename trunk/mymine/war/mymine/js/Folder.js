@@ -267,6 +267,31 @@ function Folder(){this.initialize.apply(this, arguments)};
 		folders[name2].seq = tmp;
 		return;
 	}
+	
+	
+	var handle = null;
+	var callback = null;
+	Class.isDrag = function() {
+		return handle != null;
+	}
+	Class.moveDrag = function(elem) {
+		if (handle != null && handle != elem) {
+			Folder.insert(elem.id, handle.id);
+			Folder.refresh();
+		}
+	}
+	Class.startDrag = function(elem, func) {
+		handle = elem;
+		callback = func;
+		Folder.select(elem.id);
+	}
+	Class.endDrag = function() {
+		handle = null;
+	}
+	Class.move = function(ev) {
+		if (handle == null) return;
+		$(".Folder").css({cursor:"row-resize"});
+	}
 
 
 })(Folder);
