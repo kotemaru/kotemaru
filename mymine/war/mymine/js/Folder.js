@@ -135,6 +135,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 	function inbox() {
 		Tickets.setSorted("hUpdate", false);
 
+		var custom = Control.checkButtonGroup("custom");
+		var query = null;
+		if (custom>=0) query = Config.redmineCustomQuery[custom];
+		
 		var prjId = $("#projectSelector").val();
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
@@ -144,7 +148,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 			Folder.select(INBOX);
 			Folder.refresh();
-		},{page:inboxPage, project_id:prjId});
+		}, query, {page:inboxPage, project_id:prjId});
 	}
 
 	Class.inboxOne = function(num) {

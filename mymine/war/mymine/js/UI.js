@@ -103,7 +103,9 @@ function UI(){this.initialize.apply(this, arguments)};
 			//return false;
 		})
 
-
+		$("#buttons2").contents().each(function(){
+			if (this.nodeType==3) this.parentNode.removeChild(this);
+		});
 	}
 
 	

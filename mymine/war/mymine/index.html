@@ -66,12 +66,24 @@ $(function(){
 					<img class="Button" src="img/refresh.png" onclick="UI.refresh()"
 						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
 					<span class="VSeparator"></span>
+
+					<img id="filter_user" class="CheckButton" src="img/clock.png"
+							alt="更新時間"/>
 					<img id="filter_user" class="CheckButton" src="img/user_silhouette.png"
-							alt="担当チケットのみ"/>
-					<img id="filter_closed" class="CheckButton" src="img/bin_closed.png"
-							alt="終了チケットを含める"/>
-					<!--  img class="Button" src="img/bin_closed.png" onclick="UI.cleaning()"
-						alt="フォルダ内の終了チケットを削除する"/ -->
+							alt="自分担当のみ"/>
+
+					<img id="filter_user" class="CheckButton" src="img/live-ticket.png"
+							alt="有効なチケットのみ"/>
+
+					<span class="VSeparator"></span>
+
+					<span id="customQueryButtons">
+					<img  class="CheckButton" src="img/clock.png"/>
+					<img  class="CheckButton" src="img/user_silhouette.png"/>
+					<img  class="CheckButton" src="img/star_2.png"/>
+					<img  class="CheckButton" src="img/user_business_boss.png"/>
+					<img  class="CheckButton" src="img/user_female.png"/>
+					</span>
 				</div>
 			</div>
 		</div>
@@ -164,16 +176,25 @@ $(function(){
 					</tr>
 
 					<tr >
-						<th >カスタムクエリ</th>
+						<th >カスタムクエリ<br/>(オプション)</th>
 						<td/>
 						<td>
-							古い Redmine の為の機能です。<br/>
-							APIでソート条件が使用できないバージョンの Redmine でのみ使用します。
-							このモードを使用すると新着フォルダで更新日以外のソートは使えませんので
-							通常は空欄としておいて下さい。<br/>
-							<a href="#">こちらの例にしたがってカスタムクエリを作成し</a>そのIDを設定します。
-							<br/>
-							<input name="redmineQueryId" size=2/> 例: 5
+							Redmine REST API にしたがった任意のクエリを設定します。<br/>
+							通常はRedmineでカスタムクエリを作成しそのIDを query_id パラメータで指定します。
+							<br/><br/>
+							<div>
+								<span id="redmineCustomName">タイトル</span>
+								<span>クエリ</span>
+							</div>
+							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<div>
+								<span id="redmineCustomName">例：山田さん担当チケット</span>
+								<span>例：query_id=20</span>
+							</div>
 						</td>
 					</tr>
 
@@ -186,7 +207,11 @@ $(function(){
 							<br/>
 							<button onclick="UI.getProjects()">プロジェクトの自動取得</button>
 							(先にAPIの項目の設定が必要です)
-							<br/>
+							<br/><br/>
+							<div>
+								<span id="redmineProjectName">プロジェクト名</span>
+								<span>プロジェクトID</span>
+							</div>
 							<div id="configProjectList">
 							</div>
 						</td>

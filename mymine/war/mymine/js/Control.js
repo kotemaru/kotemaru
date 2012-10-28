@@ -21,12 +21,29 @@ function Control(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.setup = function() {
-		var querys = Config.redmineProjectId;
+		setupCustomQuery();
+		setupProjects();
+	}
+	function setupCustomQuery() {
+		var querys = Config.redmineCustomQuery;
 		if (querys == null) return;
 
-		var $sel = $("#projectSelector").html("");
+		var $btns = $("#customQueryButtons>img");
 		for (var i=0; i<querys.length; i++) {
-			var opt = "<option value='"+querys[i]+"'>"
+			$btn = $($btns[i]);
+			$btn.attr("id", "custom_"+i);
+			$btn.attr("data-group", "custom");
+			$btn.attr("alt", Config.redmineCustomName[i]);
+		}
+	}
+	
+	function setupProjects() {
+		var projects = Config.redmineProjectId;
+		if (projects == null) return;
+
+		var $sel = $("#projectSelector").html("<option value=''>*</option>");
+		for (var i=0; i<projects.length; i++) {
+			var opt = "<option value='"+projects[i]+"'>"
 				+Config.redmineProjectName[i]
 				+"</option>"
 			$sel.append($(opt));
@@ -51,14 +68,40 @@ function Control(){this.initialize.apply(this, arguments)};
 		$("#balloon").hide();
 	}
 
+	//-----------------------------------------------------
+	// Check Button functions
+	//-----------------------------------------------------
 	Class.toggleCheckButton = function(elem) {
 		var $elem = $(elem);
-		checkButtons[elem.id] = !checkButtons[elem.id];
-		$elem.removeClass("CheckButtonOn");
-		if (checkButtons[elem.id]) {
-			$elem.addClass("CheckButtonOn")
+		var group = $elem.attr("data-group");
+		if (group) {
+			var $group = $(".CheckButton[data-group='"+group+"']");
+			$group.each(function(){
+				Class.offCheckButton(this);
+			})
+			Class.onCheckButton(elem);
+		} else {
+			if (checkButtons[elem.id]) {
+				Class.offCheckButton(elem);
+			} else {
+				Class.onCheckButton(elem);
+			}
 		}
 	};
-
+	Class.offCheckButton = function(elem) {
+		checkButtons[elem.id] = false;
+		$(elem).removeClass("CheckButtonOn");
+	}
+	Class.onCheckButton = function(elem) {
+		checkButtons[elem.id] = true;
+		$(elem).addClass("CheckButtonOn");
+	}
+	Class.checkButtonGroup = function(group) {
+		// TODO:手抜き
+		for (var i=0; i<10; i++) {
+			if (checkButtons[group+"_"+i]) return i;
+		}
+		return -1;
+	}
 
 })(Control);
