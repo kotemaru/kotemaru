@@ -5,7 +5,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function() {
 	}
 
-	Class.prototype.getIssues = function(callback, opts) {
+	Class.prototype.getIssues = function(callback, query, opts) {
 		MyMine.waiting(true);
 		MyMine.progress(50);
 
@@ -13,16 +13,17 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		var url = Config.redmineApiPath + "/issues.json"
 			+ "?key=" + Config.redmineApiKey
 		;
-		if (Config.redmineQueryId) {
-			url += "&query_id="+Config.redmineQueryId;
-		} else {
-			url += "&desc=updated_on";
-		}
-		if (Control.checkButtons.filter_user) {
+		//if (Config.redmineQueryId) {
+		//	url += "&query_id="+Config.redmineQueryId;
+		//} else {
+		//	url += "&desc=updated_on";
+		//}
+		//if (Control.checkButtons.filter_user) {
 			//url += "&assigned_to_id="+Control.userId;
-			url += "&query_id=72";
-		}
+			//url += "&query_id=72";
+		//}
 
+		if (query) url += "&"+query;
 		if (opts != null) {
 			for (var k in opts) {
 				url += "&"+k+"="+opts[k];

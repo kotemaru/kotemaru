@@ -7,6 +7,8 @@ function Config(){this.initialize.apply(this, arguments)};
 		"redmineApiPath",
 		"redmineApiKey",
 		"redmineQueryId",
+		"redmineCustomName",
+		"redmineCustomQuery",
 		"redmineProjectName",
 		"redmineProjectId"
 	];
@@ -18,15 +20,15 @@ function Config(){this.initialize.apply(this, arguments)};
 	Class.getProjects = function() {
 		MyMine.waiting(true);
 		new RedMine().getProjects(function(data){
-			var querys = [];
+			var projects = [];
 			var names = [];
 			for (var i=0; i<data.projects.length; i++) {
 				var project = data.projects[i];
-				querys.push(project.id);
+				projects.push(project.id);
 				names.push(project.name);
 			}
 			setupProjects({
-				redmineProjectId: querys,
+				redmineProjectId: projects,
 				redmineProjectName: names
 			});
 			MyMine.waiting(false);
@@ -46,21 +48,35 @@ function Config(){this.initialize.apply(this, arguments)};
 				setValues($("input[name='"+name+"']"),config[name]);
 			}
 		}
+		setupCustomQuery(config);
 		setupProjects(config);
 		Control.setup();
+	}
+	function setupCustomQuery(config) {
+		var querys = config.redmineCustomQuery;
+		var names = config.redmineCustomName;
+		if (querys == null) return;
+
+		var $names = $("input[name='redmineCustomName']");
+		var $querys = $("input[name='redmineCustomQuery']");
+		
+		for (var i=0; i<querys.length; i++) {
+			if (names) $($names[i]).val(names[i]);
+			$($querys[i]).val(querys[i]);
+		}
 	}
 	function setupProjects(config) {
 		var $list = $("#configProjectList").html("");
 		var $templ = $("#templ_project");
 
-		var querys = config.redmineProjectId;
+		var projects = config.redmineProjectId;
 		var names = config.redmineProjectName;
-		if (querys == null) return;
+		if (projects == null) return;
 
-		for (var i=0; i<querys.length; i++) {
+		for (var i=0; i<projects.length; i++) {
 			var $row = $templ.clone();
 			$row.find("input[name='redmineProjectName']").val(names[i]);
-			$row.find("input[name='redmineProjectId']").val(querys[i]);
+			$row.find("input[name='redmineProjectId']").val(projects[i]);
 			$list.append($row);
 		}
 	}

@@ -102,6 +102,22 @@
 	text-align: left;
 }
 
+input[name='redmineProjectName'], #redmineProjectName{
+	display: inline-block;
+	width: 300px;
+}
+input[name='redmineProjectId'], #redmineProjectId{
+	width: 40px;
+}
+
+input[name='redmineCustomName'], #redmineCustomName{
+	display: inline-block;
+	width: 200px;
+}
+input[name='redmineCustomQuery'], #redmineCustomQuery{
+	width: 300px;
+}
+
 
 #addFolderDialog > div {
 	//border: 1px solid gray;
