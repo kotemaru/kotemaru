@@ -13,6 +13,8 @@
 	<link rel="stylesheet" href="css/Folder.css" />
 	<link rel="stylesheet" href="css/Ticket.css" />
 	<link rel="stylesheet" href="css/SlideHandle.css" />
+	<link rel="stylesheet" href="css/PopupMenu.css" />
+	<link rel="stylesheet" href="css/ZIndex.css" />
 
 	<script src="jq/jquery-1.8.2.js" ></script>
 
@@ -27,6 +29,7 @@
 	<script src="js/Storage.js" ></script>
 	<script src="js/SlideHandle.js" ></script>
 	<script src="js/UI.js" ></script>
+	<script src="js/PopupMenu.js" ></script>
 
 	<script>
 $(function(){
@@ -71,18 +74,18 @@ $(function(){
 							alt="更新時間"/>
 					<img id="filter_user" class="CheckButton" src="img/user_silhouette.png"
 							alt="自分担当のみ"/>
-
+<!--
 					<img id="filter_user" class="CheckButton" src="img/live-ticket.png"
 							alt="有効なチケットのみ"/>
-
+-->
 					<span class="VSeparator"></span>
 
 					<span id="customQueryButtons">
-					<img  class="CheckButton" src="img/clock.png"/>
-					<img  class="CheckButton" src="img/user_silhouette.png"/>
-					<img  class="CheckButton" src="img/star_2.png"/>
-					<img  class="CheckButton" src="img/user_business_boss.png"/>
-					<img  class="CheckButton" src="img/user_female.png"/>
+						<img  class="CheckButton" src="img/clock.png"/>
+						<img  class="CheckButton" src="img/user_silhouette.png"/>
+						<img  class="CheckButton" src="img/star_2.png"/>
+						<img  class="CheckButton" src="img/user_business_boss.png"/>
+						<img  class="CheckButton" src="img/user_female.png"/>
 					</span>
 				</div>
 			</div>
@@ -290,7 +293,7 @@ $(function(){
 						<th >アイコン</th>
 						<td/>
 						<td  >現在は固定。
-							<br/><img src="img/folder.png" />
+							<br/><img src="img/folder.png" class="SelectableIcon"/>
 							<input name="folderIcon" size="32" value="img/folder.png" />
 						</td>
 					</tr>
@@ -330,6 +333,14 @@ $(function(){
 
 			</div>
 		</div>
+	</div>
+
+	<!-- ======================= Popup menu =============================== -->
+
+	<div id="iconSelectMenu" class="PopupMenu">
+
+
+
 	</div>
 
 
