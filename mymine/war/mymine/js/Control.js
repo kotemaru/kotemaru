@@ -28,15 +28,18 @@ function Control(){this.initialize.apply(this, arguments)};
 		var querys = Config.redmineCustomQuery;
 		if (querys == null) return;
 
-		var $btns = $("#customQueryButtons>img");
+		var $btns = $("#customQueryButtons");
+		$btns.html("");
 		for (var i=0; i<querys.length; i++) {
-			$btn = $($btns[i]);
+			$btn = $("<img class='CheckButton' />");
 			$btn.attr("id", "custom_"+i);
 			$btn.attr("data-group", "custom");
+			$btn.attr("src", Config.redmineCustomImg[i])
 			$btn.attr("alt", Config.redmineCustomName[i]);
+			$btns.append($btn);
 		}
 	}
-	
+
 	function setupProjects() {
 		var projects = Config.redmineProjectId;
 		if (projects == null) return;

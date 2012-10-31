@@ -110,6 +110,22 @@ input[name='redmineProjectId'], #redmineProjectId{
 	width: 40px;
 }
 
+#redmineCustomImg {
+	display: inline-block;
+	font-size:10px;
+	width: 24px;
+	line-height: 100%;
+}
+img.redmineCustomImg {
+	width: 20px;
+	height: 20px;
+	padding: 2px;
+	margin: 1px;
+	//border: 1px solid lightgray;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
 input[name='redmineCustomName'], #redmineCustomName{
 	display: inline-block;
 	width: 200px;

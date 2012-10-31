@@ -30,6 +30,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 			}
 		}
 
+		console.log("Query:",url);
 		getJsonAsync(url, function(data){
 			callback(data);
 			MyMine.waiting(false);
