@@ -103,13 +103,26 @@ function UI(){this.initialize.apply(this, arguments)};
 			//return false;
 		})
 
+		// PopupMenu
+		$(".SelectableIcon").live("click", function(){
+			PopupMenu.open("#iconSelectMenu", {element: this});
+		});
+		$("#iconSelectMenu>.PopupMenuItem").live("click", function(){
+			$img = $(PopupMenu.options.element);
+			$img.attr("src", this.src);
+			PopupMenu.close("#iconSelectMenu");
+		});
+		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
+
+
+
 		$("#buttons2").contents().each(function(){
 			if (this.nodeType==3) this.parentNode.removeChild(this);
 		});
 	}
 
-	
-	
+
+
 	//-------------------------------------------------------------
 	Class.abort = function() {
 		Dialog.open("#abortDialog");
@@ -209,7 +222,7 @@ function UI(){this.initialize.apply(this, arguments)};
 		Config.save(config);
 		Config.getProjects();
 	}
-	
+
 	Class.setLeftWidth = function(w) {
 		var px = w +"px";
 		$("#leftPanel").css({width: px});
