@@ -33,14 +33,14 @@
 
 	<script>
 $(function(){
-	MyMine.init();
-
 	var $dialogPanel = $("#dialogPanel");
 	include($dialogPanel, "parts/AbortDialog.html");
 	include($dialogPanel, "parts/AddFolderDialog.html");
 	include($dialogPanel, "parts/ConfigDialog.html");
 	include($dialogPanel, "parts/DownloadDialog.html");
 	include($dialogPanel, "parts/UploadDialog.html");
+	
+	MyMine.init();
 });
 
 function include($parent, url) {
