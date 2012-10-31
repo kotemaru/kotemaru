@@ -12,6 +12,7 @@ function UI(){this.initialize.apply(this, arguments)};
 			}, 50);
 			Folder.endDrag();
 			SlideHandle.endDrag();
+			PopupMenu.close();
 		}).bind("mousemove", function(ev){
 			SlideHandle.move(ev);
 		});
@@ -209,6 +210,8 @@ function UI(){this.initialize.apply(this, arguments)};
 			var name = Config.NAMES[i];
 			config[name] = Config.getValues($(".Config input[name='"+name+"']"));
 		}
+		config["redmineCustomImg"] = Config.getValues($(".Config img.redmineCustomImg"));
+
 		Config.save(config);
 		Dialog.close();
 	}

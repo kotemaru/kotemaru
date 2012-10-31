@@ -7,6 +7,7 @@ function Config(){this.initialize.apply(this, arguments)};
 		"redmineApiPath",
 		"redmineApiKey",
 		"redmineQueryId",
+		"redmineCustomImg",
 		"redmineCustomName",
 		"redmineCustomQuery",
 		"redmineProjectName",
@@ -55,12 +56,15 @@ function Config(){this.initialize.apply(this, arguments)};
 	function setupCustomQuery(config) {
 		var querys = config.redmineCustomQuery;
 		var names = config.redmineCustomName;
+		var icons = config.redmineCustomImg;
 		if (querys == null) return;
 
+		var $icons = $("img.redmineCustomImg");
 		var $names = $("input[name='redmineCustomName']");
 		var $querys = $("input[name='redmineCustomQuery']");
-		
+
 		for (var i=0; i<querys.length; i++) {
+			if (icons) $($icons[i]).attr("src",icons[i]);
 			if (names) $($names[i]).val(names[i]);
 			$($querys[i]).val(querys[i]);
 		}
@@ -88,7 +92,12 @@ function Config(){this.initialize.apply(this, arguments)};
 		var list = [];
 		for (var i=0; i<$inputs.length; i++) {
 			var $input = $($inputs[i]);
-			list.push($input.val());
+			if ($input[0].tagName == "IMG") {
+				list.push($input.attr("src"));
+			} else {
+				list.push($input.val());
+			}
+
 		}
 		return list;
 	}
