@@ -27,6 +27,7 @@ function Control(){this.initialize.apply(this, arguments)};
 	function setupCustomQuery() {
 		var querys = Config.redmineCustomQuery;
 		if (querys == null) return;
+		if (Config.redmineCustomImg == null) return;
 
 		var $btns = $("#customQueryButtons");
 		$btns.html("");
