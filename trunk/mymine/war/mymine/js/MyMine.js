@@ -16,6 +16,7 @@ function MyMine(){this.initialize.apply(this, arguments)};
 		UI.init();
 	}
 
+
 	Class.isDrag = function(b) {
 		if (b !== undefined) {
 			isDrag = b;
@@ -41,5 +42,6 @@ function MyMine(){this.initialize.apply(this, arguments)};
 	Class.progress = function(per) {
 		$("#progressBar>div").css("width",per+"%");
 	}
+
 
 })(MyMine);
