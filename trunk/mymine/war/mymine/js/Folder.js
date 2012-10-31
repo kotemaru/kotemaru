@@ -119,15 +119,18 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 
 	var inboxPage = 1;
+	var isInboxFin = false;
 	Class.inbox = function() {
 		isFirstInbox = false;
 		inboxPage = 1;
+		isInboxFin = false;
 		folders[INBOX].tickets = {};
 		Tickets.reload(folders[INBOX].tickets);
 		inbox();
 	}
 	Class.inboxAppend = function() {
 		if (currentName != INBOX) return;
+		if (isInboxFin) return;
 		inboxPage++ ;
 		inbox();
 	}
@@ -148,6 +151,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 			Folder.select(INBOX);
 			Folder.refresh();
+
+			isInboxFin = (data.issues.length==0);
 		}, query, {page:inboxPage, project_id:prjId});
 	}
 
@@ -271,8 +276,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 		folders[name2].seq = tmp;
 		return;
 	}
-	
-	
+
+
 	var handle = null;
 	var callback = null;
 	Class.isDrag = function() {
