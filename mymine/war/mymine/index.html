@@ -70,12 +70,10 @@ $(function(){
 						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
 					<span class="VSeparator"></span>
 
-					<img id="filter_user" class="CheckButton" src="img/clock.png"
-							alt="更新時間"/>
 					<img id="filter_user" class="CheckButton" src="img/user_silhouette.png"
 							alt="自分担当のみ"/>
 <!--
-					<img id="filter_user" class="CheckButton" src="img/live-ticket.png"
+					<img id="filter_opend" class="CheckButton" src="img/live-ticket.png"
 							alt="有効なチケットのみ"/>
 -->
 					<span class="VSeparator"></span>
@@ -186,15 +184,17 @@ $(function(){
 							通常はRedmineでカスタムクエリを作成しそのIDを query_id パラメータで指定します。
 							<br/><br/>
 							<div>
+								<span id="redmineCustomImg">アイコン</span>
 								<span id="redmineCustomName">タイトル</span>
 								<span>クエリ</span>
 							</div>
-							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
-							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
-							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
-							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
-							<input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+							<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
 							<div>
+								<span id="redmineCustomImg"></span>
 								<span id="redmineCustomName">例：山田さん担当チケット</span>
 								<span>例：query_id=20</span>
 							</div>
