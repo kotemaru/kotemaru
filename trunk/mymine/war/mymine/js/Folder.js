@@ -63,6 +63,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 	Class.getCurrentName = function() {
 		return currentName;
 	}
+	Class.getCurrentFolder = function() {
+		if (currentName == null) return null;
+		return folders[currentName];
+	}
 
 	Class.add = function(folder) {
 		var seq = 0;
@@ -141,7 +145,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		var custom = Control.checkButtonGroup("custom");
 		var query = null;
 		if (custom>=0) query = Config.redmineCustomQuery[custom];
-		
+
 		var prjId = $("#projectSelector").val();
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
@@ -223,6 +227,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 		$(".Folder").css({backgroundColor:"transparent", border:"0"});
 		$("#"+name).css({backgroundColor:"white", border:"1px solid #aaa"});
 		currentName = name;
+
+		$("#editFolderButton").toggle(!folders[name].nosave);
 
 		Tickets.reload(folders[name].tickets);
 		Tickets.clearSelection();
