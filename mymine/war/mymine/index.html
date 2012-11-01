@@ -39,13 +39,17 @@ $(function(){
 	include($dialogPanel, "parts/ConfigDialog.html");
 	include($dialogPanel, "parts/DownloadDialog.html");
 	include($dialogPanel, "parts/UploadDialog.html");
-	
+
 	MyMine.init();
 });
 
 function include($parent, url) {
-	$.get(url,null,function(html){
-		$parent.append($(html));
+	$.ajax({
+		url: url,
+		async: false,
+		success: function(html){
+			$parent.append($(html));
+		}
 	});
 }
 
@@ -70,12 +74,6 @@ function include($parent, url) {
 			</div>
 
 			<div>
-				<div id="buttons3">
-					<nobr><input id="searchKeyword" type="text"
-						onkeypress="UI.searchKeyPress(event,this)"
-					/><img class="Button" src="img/find.png" onclick="UI.search()"
-						alt="検索<br/>(チケット番号のみ)"/></nobr>
-				</div>
 
 				<div id="buttons2">
 					<select id="projectSelector" onchange="UI.changeProject(this)"></select>
@@ -99,6 +97,14 @@ function include($parent, url) {
 						<img  class="CheckButton" src="img/user_female.png"/>
 					</span>
 				</div>
+
+				<div id="buttons3">
+					<nobr><input id="searchKeyword" type="text"
+						onkeypress="UI.searchKeyPress(event,this)"
+					/><img class="Button" src="img/find.png" onclick="UI.search()"
+						alt="検索<br/>(チケット番号のみ)"/></nobr>
+				</div>
+
 			</div>
 		</div>
 
