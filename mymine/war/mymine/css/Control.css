@@ -27,6 +27,7 @@
 	cursor: pointer;
 	border: 1px solid transparent;
 	padding: 2px;
+	margin-right: 1px;
 	vertical-align: middle;
 }
 .CheckButton:hover  {
@@ -96,6 +97,10 @@
 
 #projectSelector {
 	width: 300px;
+}
+
+#editFolderButton {
+	display: none;
 }
 
 #balloon {

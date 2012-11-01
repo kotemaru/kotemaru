@@ -238,12 +238,22 @@ function UI(){this.initialize.apply(this, arguments)};
 		var folder = {
 			name:  $di.find("input[name='folderName']").val(),
 			title: $di.find("input[name='folderTitle']").val(),
-			icon:  $di.find("input[name='folderIcon']").val()
+			icon:  $di.find("img#folderIcon").attr("src")
 		};
 		Folder.add(folder);
 		Dialog.close();
 		Folder.refresh();
 	}
+
+	Class.editFolder = function() {
+		var folder = Folder.getCurrentFolder();
+		var $di = $("#addFolderDialog");
+		$di.find("input[name='folderName']").val(folder.name);
+		$di.find("input[name='folderTitle']").val(folder.title);
+		$di.find("img#folderIcon").attr("src", folder.icon);
+		Dialog.open("#addFolderDialog");
+	}
+
 
 	Class.onScroll = function(_this,event) {
 
