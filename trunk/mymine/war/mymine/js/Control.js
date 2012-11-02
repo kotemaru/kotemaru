@@ -77,20 +77,25 @@ function Control(){this.initialize.apply(this, arguments)};
 	//-----------------------------------------------------
 	Class.toggleCheckButton = function(elem) {
 		var $elem = $(elem);
+
+		if ($elem.attr("disabled")) return;
+
+		var curFlag = checkButtons[elem.id];
 		var group = $elem.attr("data-group");
 		if (group) {
 			var $group = $(".CheckButton[data-group='"+group+"']");
 			$group.each(function(){
 				Class.offCheckButton(this);
 			})
-			Class.onCheckButton(elem);
-		} else {
-			if (checkButtons[elem.id]) {
+			//Class.onCheckButton(elem);
+		} //else {
+			if (curFlag) {
 				Class.offCheckButton(elem);
 			} else {
 				Class.onCheckButton(elem);
 			}
-		}
+		//}
+		$elem.trigger("change", [checkButtons[elem.id], elem.id, group]);
 	};
 	Class.offCheckButton = function(elem) {
 		checkButtons[elem.id] = false;

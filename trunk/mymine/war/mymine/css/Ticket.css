@@ -36,7 +36,7 @@
 }
 .DetailHeader {
 	box-sizing: border-box;
-	line-height: 20px;
+	height: 20px;
 	padding: 0px;
 	//padding-left: 150px;
 	white-space: nowrap;
@@ -49,6 +49,7 @@
 }
 .DetailHeader > nobr {
 	display: inline-block;
+	height: 20px;
 
 	padding-left: 2px;
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));

@@ -42,6 +42,12 @@ function UI(){this.initialize.apply(this, arguments)};
 		$(".CheckButton").live("click",function(ev){
 			Control.toggleCheckButton(this);
 		});
+		$("#customQueryButtons > .CheckButton").live("change",function(ev, value, id, group){
+			if (group == "custom") {
+				$("#filterButtons > .CheckButton").attr("disabled", value);
+			}
+			Folder.inbox();
+		});
 
 
 		// Folder
@@ -85,7 +91,7 @@ function UI(){this.initialize.apply(this, arguments)};
 			if (draggable == this) {
 				if (!ev.ctrlKey) Tickets.clearSelection();
 				Tickets.toggleSelection(this.dataset.ticketNum);
-				TIckets.refresh();
+				Tickets.refresh();
 				draggable = null;
 			}
 		}).live("dblclick",function(ev){
@@ -116,10 +122,14 @@ function UI(){this.initialize.apply(this, arguments)};
 		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
 
 
-
+		// 空白削除
 		$("#buttons2").contents().each(function(){
 			if (this.nodeType==3) this.parentNode.removeChild(this);
 		});
+		$("#buttons2>span").contents().each(function(){
+			if (this.nodeType==3) this.parentNode.removeChild(this);
+		});
+
 	}
 
 
