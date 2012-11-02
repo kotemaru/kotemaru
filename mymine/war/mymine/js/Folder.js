@@ -142,11 +142,17 @@ function Folder(){this.initialize.apply(this, arguments)};
 	function inbox() {
 		Tickets.setSorted("hUpdate", false);
 
+		var prjId = $("#projectSelector").val();
+		var opts = {page:inboxPage, project_id:prjId};
+
 		var custom = Control.checkButtonGroup("custom");
 		var query = null;
 		if (custom>=0) query = Config.redmineCustomQuery[custom];
 
-		var prjId = $("#projectSelector").val();
+		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
+		if (Control.checkButtons.filter_opend) opts.status_id="*";
+
+
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {
 				var issue = Ticket.register(data.issues[i]);
@@ -157,7 +163,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 			Folder.refresh();
 
 			isInboxFin = (data.issues.length==0);
-		}, query, {page:inboxPage, project_id:prjId});
+		}, query, opts);
 	}
 
 	Class.inboxOne = function(num) {

@@ -4,7 +4,6 @@
 	border: 1px solid transparent;
 	padding: 2px;
 	vertical-align: middle;
-	//opacity:0.25;
 }
 
 .Button:hover  {
@@ -22,6 +21,11 @@
 	border-right:  1px solid white;
 	border-bottom: 1px solid white;
 }
+
+.CheckButton[disabled] {
+	opacity:0.3;
+}
+
 
 .CheckButton {
 	cursor: pointer;
@@ -97,6 +101,7 @@
 
 #projectSelector {
 	width: 300px;
+	margin-right: 4px;
 }
 
 #editFolderButton {
@@ -108,7 +113,7 @@
 	display: none;
 	border: 1px solid #888800;
 	background: #ffffe0;
-	z-index: 100;
+	color: #666600;
 	font-size: 12px;
 	padding: 0 4px;
 	white-space: nowrap;
