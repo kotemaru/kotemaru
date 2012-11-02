@@ -139,8 +139,18 @@ function Folder(){this.initialize.apply(this, arguments)};
 		inbox();
 	}
 
+
+	var SORT_NAME = {
+		hNum      : "id",
+		hCharge   : "assigned_to",
+		hUpdate   : "updated_on",
+		hDueDate  : "due_date",
+		hDoneRate : "done_rate",
+		hSubject  : "subject"
+	}
+
 	function inbox() {
-		Tickets.setSorted("hUpdate", false);
+		//Tickets.setSorted("hUpdate", false);
 
 		var prjId = $("#projectSelector").val();
 		var opts = {page:inboxPage, project_id:prjId};
@@ -152,6 +162,14 @@ function Folder(){this.initialize.apply(this, arguments)};
 		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
 		if (Control.checkButtons.filter_opend) opts.status_id="*";
 
+		var sorted = Tickets.getSorted();
+		if (sorted.name) {
+			if (sorted.asc) {
+				opts.sort = SORT_NAME[sorted.name];
+			} else {
+				opts.desc = SORT_NAME[sorted.name];
+			}
+		}
 
 		new RedMine().getIssues(function(data){
 			for (var i=0; i<data.issues.length; i++) {

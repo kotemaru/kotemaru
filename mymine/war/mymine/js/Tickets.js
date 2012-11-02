@@ -91,12 +91,17 @@ function Tickets(){this.initialize.apply(this, arguments)};
 			comparatorAsc = true;
 		}
 		if (asc != null) comparatorAsc = asc;
-		
+
 		$(".THead").removeClass("Selected");
 		$("#"+name).addClass("Selected")
 			.find(">img").attr("src",
 					"img/sort-"+(comparatorAsc?"up":"down")+".png");
 	}
+
+	Class.getSorted = function() {
+		return {name:comparatorName, asc:comparatorAsc};
+	}
+
 
 	function getSortedTickets(tickets) {
 		var list = [];
