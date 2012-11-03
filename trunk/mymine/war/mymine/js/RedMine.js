@@ -11,8 +11,10 @@ function RedMine(){this.initialize.apply(this, arguments)};
 
 		//var prjId = $("#projectSelector").val();
 		var url = Config.redmineApiPath + "/issues.json"
-			+ "?key=" + Config.redmineApiKey
+			+ "?set_filter=1&key=" + Config.redmineApiKey
 		;
+	
+		
 		//if (Config.redmineQueryId) {
 		//	url += "&query_id="+Config.redmineQueryId;
 		//} else {
