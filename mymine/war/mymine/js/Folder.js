@@ -160,14 +160,13 @@ function Folder(){this.initialize.apply(this, arguments)};
 		if (custom>=0) query = Config.redmineCustomQuery[custom];
 
 		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
-		if (Control.checkButtons.filter_opend) opts.status_id="*";
+		if (Control.checkButtons.filter_closed) opts.status_id="*";
 
 		var sorted = Tickets.getSorted();
 		if (sorted.name) {
-			if (sorted.asc) {
-				opts.sort = SORT_NAME[sorted.name];
-			} else {
-				opts.desc = SORT_NAME[sorted.name];
+			opts.sort = SORT_NAME[sorted.name];
+			if (!sorted.asc) {
+				opts.sort += ":desc";
 			}
 		}
 
