@@ -1,7 +1,7 @@
 
 .Ticket {
 	box-sizing: border-box;
-	//height: 16px;
+	//height: 20px;
 	padding: 0px;
 	white-space: nowrap;
 	overflow: hidden;
@@ -23,13 +23,14 @@
 }
 .Ticket > nobr {
 	display: inline-block;
-	//line-height: 18px;
+	//height: 19px;
 	border-left: 1px dotted #e0e0e0;
 	margin: 0;
 	padding: 0;
 	padding-left: 2px;
 	overflow: hidden;
 	background-color: transparent;
+	vertical-align: middle;
 }
 .Ticket > nobr:first-child {
 	border-left:0;
@@ -46,6 +47,7 @@
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
 	background-image: -moz-linear-gradient(top, #eee, #ccc);
 	border-top: 1px solid #c0c0c0;
+	border-bottom: 1px solid #c0c0c0;
 }
 .DetailHeader > nobr {
 	display: inline-block;
@@ -89,10 +91,12 @@
 }
 
 .TNum     {width: 36px;}
-.TCharge  {width: 96px;}
+.TTracker {width: 36px;}
+.TCharge  {width: 97px;}
 .TState   {width: 28px;}
-.TDate    {width: 38px;}
+.TDate    {width: 54px;}
 .TSubject {width: 1000px;}
+
 
 .StateBar {
 	vertical-align: middole;

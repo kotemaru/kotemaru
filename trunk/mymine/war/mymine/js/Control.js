@@ -20,9 +20,17 @@ function Control(){this.initialize.apply(this, arguments)};
 		Class.setup();
 	}
 
+	Class.setValue = function(name, val) {
+		checkButtons[name] = val
+	}
+	Class.getValue = function(name) {
+		return checkButtons[name];
+	}
+	
 	Class.setup = function() {
 		setupCustomQuery();
 		setupProjects();
+		setupMasterTable();
 	}
 	function setupCustomQuery() {
 		var querys = Config.redmineCustomQuery;
@@ -55,6 +63,18 @@ function Control(){this.initialize.apply(this, arguments)};
 		$sel.val(Storage.loadData("projectSelector"));
 	}
 
+	function setupMasterTable() {
+		var masterTable = MasterTable.getMasterTable();
+		if (masterTable == null) return;
+
+		var $filters = $("#filterButtons").html("");
+		for (var k in masterTable) {
+			var $btn = Class.makePulldownButton("filter_"+k, masterTable[k]);
+			$filters.append($btn);
+		}
+	}
+
+	
 	Class.popupBalloon = function($button) {
 		var alt = $button.attr("alt");
 		var $balloon = $("#balloon");
@@ -112,5 +132,40 @@ function Control(){this.initialize.apply(this, arguments)};
 		}
 		return -1;
 	}
+	
+	//-----------------------------------------------------
+	// Pulldown Button functions
+	//-----------------------------------------------------
 
+	Class.makePulldownButton = function(id,opts) {
+		var $elem = $("#templ_pulldownButton>span").clone();
+		var $img = $elem.find("img:first-child");
+
+		var icon = opts.icon;
+		if (icon==null||icon=="") icon="img/funnel.png";
+		$elem.attr("id", id);
+		$img.attr("src", icon);		
+		$img.attr("alt", opts.name);
+
+		var $menu = $elem.find(".PopupMenu").html("");
+		var list = [];
+		for (var k in opts.values) list.push({id:k, name:opts.values[k]});
+		if (opts.keySort == "name") {
+			list.sort(function(a,b){return a.name>b.name?1:-1;});
+		} else if (opts.keySort == "id") {
+			list.sort(function(a,b){return a.id-b.id;});
+		}
+			
+		
+		for (var i=0; i<list.length; i++) {
+			var $item = $("<div class='PopupMenuItem' ></div>");
+			$item.attr("data-value", list[i].id);
+			$item.text(list[i].name);
+			$menu.append($item);
+		}
+		return $elem;
+	}
+	
+	
+	
 })(Control);

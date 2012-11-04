@@ -40,6 +40,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		//Class.resetAll();
 
 		Class.refresh();
+		Tickets.setSorted("hUpdate", false);
 	}
 	Class.hover = function(isIn, _this) {
 		var cursor = "pointer";
@@ -150,8 +151,6 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 
 	function inbox() {
-		//Tickets.setSorted("hUpdate", false);
-
 		var prjId = $("#projectSelector").val();
 		var opts = {page:inboxPage, project_id:prjId};
 
@@ -161,7 +160,13 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
 		if (Control.checkButtons.filter_closed) opts.status_id="*";
-
+		var masterTable = MasterTable.getMasterTable();
+		for (var k in masterTable) {
+			var val = Control.getValue("filter_"+k);
+			if (val) opts[k+masterTable[k].idSuf] = val;
+		}
+		
+		
 		var sorted = Tickets.getSorted();
 		if (sorted.name) {
 			opts.sort = SORT_NAME[sorted.name];
@@ -174,6 +179,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 			for (var i=0; i<data.issues.length; i++) {
 				var issue = Ticket.register(data.issues[i]);
 				Folder.register(INBOX, issue);
+				MasterTable.register(issue);
 			}
 
 			Folder.select(INBOX);

@@ -10,7 +10,7 @@ function Ticket(){this.initialize.apply(this, arguments)};
 
 	var ISSUE_TEMPL = {id:9999, subject:"", assigned_to:{},
 			due_date:"", updated_on:"",done_ratio:100, checked_on:"",
-			folder:""
+			folder:"", tracker:"", priority:""
 	};
 	var issues = {};
 
@@ -18,9 +18,11 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		var issue = issues[data.id];
 		if (issue == null) issue = {};
 
-		for (var k in ISSUE_TEMPL) {
-			if (data[k] != undefined) issue[k] = data[k];
-		}
+		//for (var k in ISSUE_TEMPL) {
+		//	if (data[k] != undefined) issue[k] = data[k];
+		//}
+		issue = data;
+		
 		issues[issue.id] = issue;
 		if (issue.folder) {
 			Storage.saveTicket(issue);
@@ -59,13 +61,18 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		$article.data("ticketNum",issue.id);
 		$article.attr("data-ticket-num",issue.id);
 		$article.find("nobr[data-field='num']").text(issue.id);
+
+		$article.find("nobr[data-field='tracker']").html(
+				issue.tracker?issue.tracker.name:"&nbsp;"
+		);
+
 		$article.find("nobr[data-field='charge']").html(
 			issue.assigned_to?issue.assigned_to.name:"&nbsp;"
 		);
 		$article.find("nobr[data-field='state']>div>div")
 			.width((22*issue.done_ratio/100));
-		$article.find("nobr[data-field='limitDate']").html(toMMDD(issue.due_date));
-		$article.find("nobr[data-field='updateDate']").html(toMMDD(issue.updated_on));
+		$article.find("nobr[data-field='limitDate']").html(toYYMMDD(issue.due_date));
+		$article.find("nobr[data-field='updateDate']").html(toYYMMDD(issue.updated_on));
 		$article.find("nobr[data-field='subject']").text(issue.subject);
 
 		$article.css("font-weight", isChecked(issue)?"normal":"bold");
@@ -89,7 +96,21 @@ function Ticket(){this.initialize.apply(this, arguments)};
 
 	function to2ChStr(n) {
 		if (n > 9) return ""+n;
-		return "&nbsp;"+n;
+		//return "&nbsp;"+n;
+		return "0"+n;
+	}
+	function toYYMMDD(dateStr) {
+		var time = Date.parse(dateStr);
+		if (isNaN(time)) return "&nbsp;";
+		var date = new Date(time);
+		var text = (date.getFullYear()%100)
+			+"/"+to2ChStr(date.getMonth()+1)
+			+"/"+to2ChStr(date.getDate())
+			+" "+to2ChStr(date.getHours())
+			+":"+to2ChStr(date.getMinutes())
+			+":"+to2ChStr(date.getSeconds())
+		;
+		return text
 	}
 
 	function toMMDD(dateStr) {
