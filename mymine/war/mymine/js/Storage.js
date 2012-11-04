@@ -6,6 +6,7 @@ function Storage(){this.initialize.apply(this, arguments)};
 	var FOLDER = BASE+"/folder/";
 	var ISSUE = BASE+"/issue/";
 	var CONFIG = BASE+"/config";
+	var MASTER = BASE+"/master";
 
 	Class.prototype.initialize = function() {
 	}
@@ -32,6 +33,9 @@ function Storage(){this.initialize.apply(this, arguments)};
 	Class.saveConfig = function(config) {
 		localStorage[CONFIG] = JSON.stringify(config);
 	}
+	Class.saveMaster = function(data) {
+		localStorage[MASTER] = JSON.stringify(data);
+	}
 	Class.saveData = function(name, data) {
 		localStorage[BASE+"/"+name] = JSON.stringify(data);
 	}
@@ -51,6 +55,8 @@ function Storage(){this.initialize.apply(this, arguments)};
 				Folder.put(JSON.parse(localStorage[k]));
 			} else if (k.indexOf(ISSUE) == 0) {
 				Ticket.register(JSON.parse(localStorage[k]));
+			} else if (k == MASTER) {
+				MasterTable.load(JSON.parse(localStorage[k]));
 			}
 		}
 

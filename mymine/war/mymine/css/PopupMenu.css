@@ -9,6 +9,10 @@
 	width: 150px;
 	height: 150px;
 	padding: 2px;
+	
+	font-size: 12px;
+	font-weight: normal;
+	line-height: 110%;
 }
 
 #iconSelectMenu  {
@@ -21,8 +25,12 @@
 	padding: 2px;
 	margin: 1px;
 }
-
+div.PopupMenuItem {
+	white-space: nowrap;
+	overflow: hidden;
+	margin-bottom: 2px;
+}
 .PopupMenuItem:hover {
-	background: lightgray;
+	background: #eee;
 }
 

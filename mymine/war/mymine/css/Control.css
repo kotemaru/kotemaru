@@ -44,6 +44,30 @@
 	border-right:  1px solid white;
 	border-bottom: 1px solid white;
 }
+
+.PulldownButton {
+	display: inline-block;
+	cursor: pointer;
+	border: 1px solid transparent;
+	padding: 2px;
+	margin-right: 1px;
+	vertical-align: middle;
+	line-height: 0;
+}
+.PulldownButton > img {
+	vertical-align: middle;
+}
+.PulldownButton:hover  {
+	background: lightgray;
+}
+.PulldownButtonOn {
+	background: #e0e0e0;
+	border-left:   1px solid gray;
+	border-top:    1px solid gray;
+	border-right:  1px solid white;
+	border-bottom: 1px solid white;
+}
+
 .VSeparator {
 	display: inline-block;
 	vertical-align: middle;

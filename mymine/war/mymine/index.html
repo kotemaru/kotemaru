@@ -30,6 +30,7 @@
 	<script src="js/SlideHandle.js" ></script>
 	<script src="js/UI.js" ></script>
 	<script src="js/PopupMenu.js" ></script>
+	<script src="js/MasterTable.js" ></script>
 
 	<script>
 $(function(){
@@ -82,11 +83,14 @@ function include($parent, url) {
 						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
 					<span class="VSeparator"></span>
 
-					<span id="filterButtons">
+					<span id="filter_Buttons">
 						<img id="filter_user" class="CheckButton" src="img/kmines-16x16.png"
 							alt="担当チケットのみ"/>
 						<img id="filter_closed" class="CheckButton" src="img/closed-ticket.png"
 							alt="終了チケットを含む"/>
+					</span>
+					<span class="VSeparator"></span>
+					<span id="filterButtons">
 					</span>
 
 					<span class="VSeparator"></span>
@@ -116,6 +120,8 @@ function include($parent, url) {
 			</nobr
 			><nobr id="hNum"      class="THead TNum"    >番号<img/></nobr
 			><span data-ref="hNum" data-class="TNum" class="HeaderSlideHandle"></span
+			><nobr id="hTracker"   class="THead TTracker" >トラッカー<img/></nobr
+			><span data-ref="hTracker" data-class="TTracker" class="HeaderSlideHandle"></span
 			><nobr id="hCharge"   class="THead TCharge" >担当者<img/></nobr
 			><span data-ref="hCharge" data-class="TCharge" class="HeaderSlideHandle"></span
 			><nobr id="hUpdate"   class="THead TDate" >更新<img/></nobr
@@ -147,6 +153,7 @@ function include($parent, url) {
 	<!-- ======================= Dialog =============================== -->
 	<div id="dialogPanel" class="DialogPanel" >
 		<div class="DialogMask" > </div>
+		<!-- Include -->
 	</div>
 
 	<!-- ======================= Popup menu =============================== -->
@@ -167,6 +174,7 @@ function include($parent, url) {
 	<div class="Template">
 		<article id="templ_ticket" class="Ticket">
 			<nobr  data-field="num"        class="TNum"></nobr
+			><nobr data-field="tracker"    class="TTracker"></nobr
 			><nobr data-field="charge"     class="TCharge"></nobr
 			><nobr data-field="updateDate" class="TDate"></nobr
 			><nobr data-field="limitDate"  class="TDate"></nobr
@@ -179,6 +187,15 @@ function include($parent, url) {
 		<div id="templ_project">
 			<input name="redmineProjectName" size=50/>
 			<input name="redmineProjectId" size=4/>
+		</div>
+
+		<div id="templ_pulldownButton">
+			<span class="PulldownButton" alt="test">
+				<img src="?"/><img src="img/pulldown-mark.png" />
+				<div class="PopupMenu">
+					<div class="PopupMenuItem" data-value="val">表示名</div>
+				</div>
+			</span>
 		</div>
 
 	</div>
