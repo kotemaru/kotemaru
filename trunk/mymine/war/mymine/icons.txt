@@ -38,3 +38,4 @@ img/user_business.png
 img/user_business_boss.png
 img/user_female.png
 img/user_silhouette.png
+img/priority.png

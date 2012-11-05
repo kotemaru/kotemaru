@@ -121,7 +121,7 @@ html,body {
 	display: block;
 	width: 50%;
 	height: 8px;
-	background: url(../img/progress.png);
+	background: url(../img/progress-bar.png);
 	border-radius: 4px;
 }
 
