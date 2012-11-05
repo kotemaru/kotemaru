@@ -22,7 +22,7 @@
 	border-bottom: 1px solid white;
 }
 
-.CheckButton[disabled] {
+.Disabled {
 	opacity:0.3;
 }
 
@@ -94,24 +94,25 @@
 }
 
 #buttons {
-	box-sizing: border-box;
 	padding: 4px;
 	padding-left: 70px;
 	height: 60px;
 }
 
-
-#buttons1 {
-	box-sizing: border-box;
-	text-align: right;
-}
-
-#buttons2 {
+#projectPack {
 	display: inline-block;
 	float: left;
 }
+#configPack {
+	display: inline-block;
+	float: right;
+}
 
-#buttons3 {
+#filterPack {
+	display: inline-block;
+	float: left;
+}
+#searchPack {
 	display: inline-block;
 	float: right;
 }
@@ -125,7 +126,7 @@
 
 #projectSelector {
 	width: 300px;
-	margin-right: 4px;
+	//margin-right: 4px;
 }
 
 #editFolderButton {

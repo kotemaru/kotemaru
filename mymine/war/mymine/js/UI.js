@@ -43,10 +43,34 @@ function UI(){this.initialize.apply(this, arguments)};
 			Control.toggleCheckButton(this);
 		});
 		$("#customQueryButtons > .CheckButton").live("change",function(ev, value, id, group){
-			if (group == "custom") {
-				$("#filterButtons > .CheckButton").attr("disabled", value);
+			if (group == "custom" && Control.checkButtonGroup(group) >= 0) {
+				$(".FilterButtons").addClass("Disabled");
+			} else {
+				$(".FilterButtons").removeClass("Disabled");
 			}
 			Folder.inbox();
+		});
+		// PulldownButton
+		$(".PulldownButton").live("click", function(){
+			var val = Control.getValue(this.id);
+			if (val) {
+				$(this).removeClass("PulldownButtonOn");
+				Control.setValue(this.id, null);
+			} else {
+				var opts = {element: this, corrent:{x:0,y:6}};
+				PopupMenu.open($(this).find(".PopupMenu")[0], opts);
+			}
+		});
+		$(".PulldownButton .PopupMenuItem").live("click", function(){
+			var val = $(this).attr("data-value");
+			Control.setValue(PopupMenu.options.element.id, val);
+			if (val) {
+				$(PopupMenu.options.element).addClass("PulldownButtonOn");
+			} else {
+				$(PopupMenu.options.element).removeClass("PulldownButtonOn");
+			}
+			PopupMenu.close();
+			return false;
 		});
 
 
@@ -121,34 +145,12 @@ function UI(){this.initialize.apply(this, arguments)};
 		});
 		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
 
-		// PulldownButton
-		$(".PulldownButton").live("click", function(){
-			var val = Control.getValue(this.id);
-			if (val) {
-				$(this).removeClass("PulldownButtonOn");
-				Control.setValue(this.id, null);
-			} else {
-				var opts = {element: this, corrent:{x:0,y:6}};
-				PopupMenu.open($(this).find(".PopupMenu")[0], opts);
-			}
-		});
-		$(".PulldownButton .PopupMenuItem").live("click", function(){
-			var val = $(this).attr("data-value");
-			Control.setValue(PopupMenu.options.element.id, val);
-			if (val) {
-				$(PopupMenu.options.element).addClass("PulldownButtonOn");
-			} else {
-				$(PopupMenu.options.element).removeClass("PulldownButtonOn");
-			}
-			PopupMenu.close();
-			return false;
-		});
 
 		// 空白削除
-		$("#buttons2").contents().each(function(){
+		$("#filterPack").contents().each(function(){
 			if (this.nodeType==3) this.parentNode.removeChild(this);
 		});
-		$("#buttons2>span").contents().each(function(){
+		$("#filterPack>span").contents().each(function(){
 			if (this.nodeType==3) this.parentNode.removeChild(this);
 		});
 
