@@ -63,7 +63,13 @@ function include($parent, url) {
 		<img id="logoImage" class="Button" src="img/kmines.png"  onclick="UI.abort()"
 			alt="MyMineについて"/>
 		<div id="buttons">
-			<div id="buttons1" >
+			<div id="projectPack">
+				<select id="projectSelector" onchange="UI.changeProject(this)"></select>
+				<img class="Button" src="img/refresh.png" onclick="UI.refresh()"
+						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
+			</div>
+
+			<div id="configPack" >
 				<img class="Button" src="img/book_open.png" onclick="UI.help()"
 						alt="ヘルプ" />
 				<img class="Button" src="img/download.png" onclick="UI.download()"
@@ -74,39 +80,33 @@ function include($parent, url) {
 						alt="環境設定" />
 			</div>
 
-			<div>
+			<br clear="all"/>
 
-				<div id="buttons2">
-					<select id="projectSelector" onchange="UI.changeProject(this)"></select>
-					<!-- === -->
-					<img class="Button" src="img/refresh.png" onclick="UI.refresh()"
-						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
-					<span class="VSeparator"></span>
+			<div id="filterPack">
+				<span class="FilterButtons">
+					<img id="filter_user" class="CheckButton" src="img/kmines-16x16.png"
+						alt="担当チケットのみ"/>
+					<img id="filter_closed" class="CheckButton" src="img/closed-ticket.png"
+						alt="終了チケットを含む"/>
+				</span>
 
-					<span id="filter_Buttons">
-						<img id="filter_user" class="CheckButton" src="img/kmines-16x16.png"
-							alt="担当チケットのみ"/>
-						<img id="filter_closed" class="CheckButton" src="img/closed-ticket.png"
-							alt="終了チケットを含む"/>
-					</span>
-					<span class="VSeparator"></span>
-					<span id="filterButtons">
-					</span>
+				<span id="filterButtons" class="FilterButtons">
+				</span>
 
-					<span class="VSeparator"></span>
+				<span class="VSeparator"></span>
 
-					<span id="customQueryButtons">
-					</span>
-				</div>
-
-				<div id="buttons3">
-					<nobr><input id="searchKeyword" type="text"
-						onkeypress="UI.searchKeyPress(event,this)"
-					/><img class="Button" src="img/find.png" onclick="UI.search()"
-						alt="検索<br/>(チケット番号のみ)"/></nobr>
-				</div>
-
+				<span id="customQueryButtons">
+				</span>
 			</div>
+
+			<div id="searchPack">
+				<nobr><input id="searchKeyword" type="text"
+					onkeypress="UI.searchKeyPress(event,this)"
+				/><img class="Button" src="img/find.png" onclick="UI.search()"
+					alt="検索<br/>(チケット番号のみ)"/></nobr>
+			</div>
+
+
 		</div>
 
 		<div class="DetailHeader">

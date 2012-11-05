@@ -26,7 +26,7 @@ function Control(){this.initialize.apply(this, arguments)};
 	Class.getValue = function(name) {
 		return checkButtons[name];
 	}
-	
+
 	Class.setup = function() {
 		setupCustomQuery();
 		setupProjects();
@@ -40,6 +40,8 @@ function Control(){this.initialize.apply(this, arguments)};
 		var $btns = $("#customQueryButtons");
 		$btns.html("");
 		for (var i=0; i<querys.length; i++) {
+			if (Config.redmineCustomQuery[i] == "") continue;
+
 			$btn = $("<img class='CheckButton' />");
 			$btn.attr("id", "custom_"+i);
 			$btn.attr("data-group", "custom");
@@ -69,12 +71,13 @@ function Control(){this.initialize.apply(this, arguments)};
 
 		var $filters = $("#filterButtons").html("");
 		for (var k in masterTable) {
+			if (k.indexOf("cf_")==0) continue; // TODO:カスタムフィールドの扱い
 			var $btn = Class.makePulldownButton("filter_"+k, masterTable[k]);
 			$filters.append($btn);
 		}
 	}
 
-	
+
 	Class.popupBalloon = function($button) {
 		var alt = $button.attr("alt");
 		var $balloon = $("#balloon");
@@ -132,7 +135,7 @@ function Control(){this.initialize.apply(this, arguments)};
 		}
 		return -1;
 	}
-	
+
 	//-----------------------------------------------------
 	// Pulldown Button functions
 	//-----------------------------------------------------
@@ -144,7 +147,7 @@ function Control(){this.initialize.apply(this, arguments)};
 		var icon = opts.icon;
 		if (icon==null||icon=="") icon="img/funnel.png";
 		$elem.attr("id", id);
-		$img.attr("src", icon);		
+		$img.attr("src", icon);
 		$img.attr("alt", opts.name);
 
 		var $menu = $elem.find(".PopupMenu").html("");
@@ -155,8 +158,8 @@ function Control(){this.initialize.apply(this, arguments)};
 		} else if (opts.keySort == "id") {
 			list.sort(function(a,b){return a.id-b.id;});
 		}
-			
-		
+
+
 		for (var i=0; i<list.length; i++) {
 			var $item = $("<div class='PopupMenuItem' ></div>");
 			$item.attr("data-value", list[i].id);
@@ -165,7 +168,7 @@ function Control(){this.initialize.apply(this, arguments)};
 		}
 		return $elem;
 	}
-	
-	
-	
+
+
+
 })(Control);

@@ -18,11 +18,11 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		var issue = issues[data.id];
 		if (issue == null) issue = {};
 
-		//for (var k in ISSUE_TEMPL) {
-		//	if (data[k] != undefined) issue[k] = data[k];
-		//}
-		issue = data;
-		
+		for (var k in data) {
+			if (data[k] != undefined) issue[k] = data[k];
+		}
+		//issue = data;
+
 		issues[issue.id] = issue;
 		if (issue.folder) {
 			Storage.saveTicket(issue);
@@ -75,7 +75,9 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		$article.find("nobr[data-field='updateDate']").html(toYYMMDD(issue.updated_on));
 		$article.find("nobr[data-field='subject']").text(issue.subject);
 
-		$article.css("font-weight", isChecked(issue)?"normal":"bold");
+		if (!isChecked(issue)) {
+			$article.css({"font-weight":"bold", "letter-spacing":"-1px"});
+		}
 
 		return $article;
 	}
