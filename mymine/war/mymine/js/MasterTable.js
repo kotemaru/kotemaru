@@ -29,8 +29,8 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 		assigned_to:{name:"担当者",  idSuf:"_id",  keySort:"name", icon:"img/user_silhouette.png", values:{} },
 		author:     {name:"作成者",  idSuf:"_id",  keySort:"name", icon:"img/user.png", values:{} },
 		tracker:    {name:"トラッカー", idSuf:"_id", keySort:"id", icon:"img/dog.png", values:{} },
-		status:     {name:"状態",      idSuf:"_id", keySort:"id", icon:"img/exclamation.png", values:{} },
-		priority:   {name:"優先度",    idSuf:"_id", keySort:"id", icon:"img/exclamation_octagon_fram.png", values:{} }
+		status:     {name:"状態",      idSuf:"_id", keySort:"id", icon:"img/progress.png", values:{} },
+		priority:   {name:"優先度",    idSuf:"_id", keySort:"id", icon:"img/priority.png", values:{} }
 	};
 	Class.getMasterTable = function() {
 		return masterTable;
