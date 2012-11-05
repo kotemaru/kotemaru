@@ -28,14 +28,14 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 	var masterTable = {
 		assigned_to:{name:"担当者",  idSuf:"_id",  keySort:"name", icon:"img/user_silhouette.png", values:{} },
 		author:     {name:"作成者",  idSuf:"_id",  keySort:"name", icon:"img/user.png", values:{} },
-		status:   {name:"状態",      idSuf:"_id", keySort:"id", icon:"img/exclamation.png", values:{} },
-		tracker:  {name:"トラッカー", idSuf:"_id", keySort:"id", icon:"img/dog.png", values:{} },
-		priority: {name:"優先度",    idSuf:"_id", keySort:"id", icon:"img/exclamation_octagon_fram.png", values:{} }
+		tracker:    {name:"トラッカー", idSuf:"_id", keySort:"id", icon:"img/dog.png", values:{} },
+		status:     {name:"状態",      idSuf:"_id", keySort:"id", icon:"img/exclamation.png", values:{} },
+		priority:   {name:"優先度",    idSuf:"_id", keySort:"id", icon:"img/exclamation_octagon_fram.png", values:{} }
 	};
 	Class.getMasterTable = function() {
 		return masterTable;
 	}
-	
+
 	function put(type, data) {
 		if (data == null) return;
 		if (masterTable[type] == null) {
@@ -46,10 +46,10 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 		if (data.disp) {
 			masterTable[type].name = data.disp;
 		}
-		
+
 		save();
 	}
-	
+
 	function save() {
 		Storage.saveMaster(masterTable);
 	}
@@ -57,7 +57,7 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 		masterTable = data;
 	}
 	Class.load = load;
-	
+
 
 })(MasterTable);
 

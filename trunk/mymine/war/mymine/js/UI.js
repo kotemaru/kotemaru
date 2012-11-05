@@ -147,12 +147,12 @@ function UI(){this.initialize.apply(this, arguments)};
 
 
 		// 空白削除
-		$("#filterPack").contents().each(function(){
+		function removeSpace(){
 			if (this.nodeType==3) this.parentNode.removeChild(this);
-		});
-		$("#filterPack>span").contents().each(function(){
-			if (this.nodeType==3) this.parentNode.removeChild(this);
-		});
+		}
+		$("#filterPack").contents().each(removeSpace);
+		$("#filterPack>span").contents().each(removeSpace);
+		$("#configPack").contents().each(removeSpace);
 
 	}
 
