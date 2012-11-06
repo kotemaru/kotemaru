@@ -90,12 +90,16 @@
 //width: 38px;
 }
 
-.TNum     {width: 36px;}
-.TTracker {width: 36px;}
-.TCharge  {width: 97px;}
-.TState   {width: 28px;}
-.TDate    {width: 54px;}
-.TSubject {width: 1000px;}
+.TNum       {width: 36px;}
+.TProject   {width: 80px;}
+.TTracker   {width: 70px;}
+.TPriority  {width: 48px;}
+.TAssigned  {width: 97px;}
+.TState     {width: 28px;}
+.TUpDate    {width: 54px;}
+.TStartDate {width: 54px;}
+.TDueDate   {width: 54px;}
+.TSubject   {width: 1000px;}
 
 
 .StateBar {

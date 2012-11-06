@@ -120,14 +120,20 @@ function include($parent, url) {
 			</nobr
 			><nobr id="hNum"      class="THead TNum"    >番号<img/></nobr
 			><span data-ref="hNum" data-class="TNum" class="HeaderSlideHandle"></span
+			><nobr id="hProject"   class="THead TProject" >プロジェクト<img/></nobr
+			><span data-ref="hProject" data-class="TProject" class="HeaderSlideHandle"></span
 			><nobr id="hTracker"   class="THead TTracker" >トラッカー<img/></nobr
 			><span data-ref="hTracker" data-class="TTracker" class="HeaderSlideHandle"></span
-			><nobr id="hCharge"   class="THead TCharge" >担当者<img/></nobr
-			><span data-ref="hCharge" data-class="TCharge" class="HeaderSlideHandle"></span
-			><nobr id="hUpdate"   class="THead TDate" >更新<img/></nobr
-			><span data-ref="hUpdate" data-class="TDate" class="HeaderSlideHandle"></span
-			><nobr id="hDueDate"  class="THead TDate"   >期日<img/></nobr
-			><span data-ref="hDueDate" data-class="TDate" class="HeaderSlideHandle"></span
+			><nobr id="hPriority"   class="THead TPriority" >優先度<img/></nobr
+			><span data-ref="hPriority" data-class="TPriority" class="HeaderSlideHandle"></span
+			><nobr id="hAssigned"   class="THead TAssigned" >担当者<img/></nobr
+			><span data-ref="hAssigned" data-class="TAssigned" class="HeaderSlideHandle"></span
+			><nobr id="hUpDate"   class="THead TUpDate" >更新<img/></nobr
+			><span data-ref="hUpDate" data-class="TUpDate" class="HeaderSlideHandle"></span
+			><nobr id="hStartDate"  class="THead TStartDate"   >開始日<img/></nobr
+			><span data-ref="hStartDate" data-class="TStartDate" class="HeaderSlideHandle"></span
+			><nobr id="hDueDate"  class="THead TDueDate"   >期日<img/></nobr
+			><span data-ref="hDueDate" data-class="TDueDate" class="HeaderSlideHandle"></span
 			><nobr id="hDoneRate" class="THead TState"  >進捗<img/></nobr
 			><span data-ref="hDoneRate" data-class="TState" class="HeaderSlideHandle"></span
 			><nobr id="hSubject"  class="THead TSubject">題名<img/></nobr>
@@ -174,10 +180,13 @@ function include($parent, url) {
 	<div class="Template">
 		<article id="templ_ticket" class="Ticket">
 			<nobr  data-field="num"        class="TNum"></nobr
+			><nobr data-field="project"    class="TProject"></nobr
 			><nobr data-field="tracker"    class="TTracker"></nobr
-			><nobr data-field="charge"     class="TCharge"></nobr
-			><nobr data-field="updateDate" class="TDate"></nobr
-			><nobr data-field="limitDate"  class="TDate"></nobr
+			><nobr data-field="priority"   class="TPriority"></nobr
+			><nobr data-field="assigned"   class="TAssigned"></nobr
+			><nobr data-field="upDate"     class="TUpDate"></nobr
+			><nobr data-field="startDate"  class="TStartDate"></nobr
+			><nobr data-field="dueDate"    class="TDueDate"></nobr
 			><nobr data-field="state"      class="TState"><div class="StateBar"><div></div></div></nobr
 			><nobr data-field="subject"    class="TSubject"></nobr>
 		</article>
