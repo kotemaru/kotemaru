@@ -3,6 +3,30 @@
 function SlideHandle(){this.initialize.apply(this, arguments)};
 (function(Class){
 	
+	var colmunWidth = {
+			TFolder    : 200,
+			TNum       : 36,
+			TProject   : 80,
+			TTracker   : 70,
+			TPriority  : 48,
+			TAssigned  : 97,
+			TState     : 28,
+			TUpDate    : 54,
+			TStartDate : 54,
+			TDueDate   : 54,
+			TSubject   : 1000
+	};
+
+	Class.init = function() {
+		var data = Storage.loadData("colmunWidth");
+		if (data) colmunWidth = data;
+		for (var k in colmunWidth) {
+console.log(k,colmunWidth[k]);
+			classCss("."+k, {width: colmunWidth[k]+"px"});
+		}
+	}
+	
+	
 	var handle = null;
 	var callback = null;
 	Class.startDrag = function(elem, func) {
@@ -10,6 +34,7 @@ function SlideHandle(){this.initialize.apply(this, arguments)};
 		callback = func;
 	}
 	Class.endDrag = function() {
+		Storage.saveData("colmunWidth", colmunWidth);
 		handle = null;
 	}
 	Class.move = function(ev) {
@@ -17,10 +42,12 @@ function SlideHandle(){this.initialize.apply(this, arguments)};
 		if (callback) return callback(ev);
 		
 		var $header = $("#"+handle.dataset.ref);
-		var selector = "."+handle.dataset["class"];
+		var className = handle.dataset["class"];
 		var offset = $header.offset();
 		var w = (ev.clientX - offset.left);
-		classCss(selector, {width: w+"px"});
+		if (w<0) w=0;
+		colmunWidth[className] = w;
+		classCss("."+className, {width: w+"px"});
 	}
 
 	var classCssRuleCache = {};
