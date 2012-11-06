@@ -12,6 +12,7 @@ function MyMine(){this.initialize.apply(this, arguments)};
 		Ticket.init();
 		Folder.init();
 		Control.init();
+		SlideHandle.init();
 		Folder.refresh();
 		UI.init();
 	}
