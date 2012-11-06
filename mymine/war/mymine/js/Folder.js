@@ -40,7 +40,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		//Class.resetAll();
 
 		Class.refresh();
-		Tickets.setSorted("hUpdate", false);
+		Tickets.setSorted("hUpDate", false);
 	}
 	Class.hover = function(isIn, _this) {
 		var cursor = "pointer";
@@ -143,8 +143,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	var SORT_NAME = {
 		hNum      : "id",
-		hCharge   : "assigned_to",
-		hUpdate   : "updated_on",
+		hAssigned   : "assigned_to",
+		hUpDate   : "updated_on",
 		hDueDate  : "due_date",
 		hDoneRate : "done_rate",
 		hSubject  : "subject"

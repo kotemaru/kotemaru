@@ -92,6 +92,8 @@ function Storage(){this.initialize.apply(this, arguments)};
 				Class.saveFolder(data[k]);
 			} else  if (k.indexOf(ISSUE) == 0) {
 				Class.saveTicket(data[k]);
+			} else if (k == MASTER) {
+				Class.saveMaster(data[k]);
 			}
 		}
 		Class.loadAll();

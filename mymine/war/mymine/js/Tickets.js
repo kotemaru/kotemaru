@@ -67,20 +67,33 @@ function Tickets(){this.initialize.apply(this, arguments)};
 	}
 
 
-	function getCharge(issue) {
+	function getAssigned(issue) {
 		if (issue.assigned_to == null) return null;
 		return issue.assigned_to.id;
+	}
+	function compId(a,b,key) {
+		var A = a[key]?a[key].id:-1;
+		var B = b[key]?b[key].id:-1;
+		return B-A;
+	}
+	function compName(a,b,key) {
+		var A = a[key]?a[key].name:"";
+		var B = b[key]?b[key].name:"";
+		return (A==B?0:(A>B?-1:1));
 	}
 
 	var COMPARATOR_DESC = {
 		hNum      : function(a,b){return(b.id-a.id);},
-		hCharge   : function(a,b){var A=getCharge(a),B=getCharge(b);return(A==B?0:(A>B?-1:1));},
-		hUpdate   : function(a,b){return(Date.parse(b.updated_on)-Date.parse(a.updated_on));},
+		hProject  : function(a,b){return compId(a,b,"project");},
+		hTracker  : function(a,b){return compId(a,b,"tracker");},
+		hAssigned : function(a,b){return compName(a,b,"assigned_to");},
+		hUpDate   : function(a,b){return(Date.parse(b.updated_on)-Date.parse(a.updated_on));},
+		hStartDate: function(a,b){return(Date.parse(b.start_date)-Date.parse(a.start_date));},
 		hDueDate  : function(a,b){return(Date.parse(b.due_date)-Date.parse(a.due_date));},
-		hDoneRate : function(a,b){return(b.done_rate-a.done_rate);},
+		hDoneRate : function(a,b){return(b.done_ratio-a.done_ratio);},
 		hSubject  : function(a,b){var A=a.subject,B=b.subject;return(A==B?0:(A>B?-1:1));}
 	}
-	var comparatorName = "hUpdate";
+	var comparatorName = "hUpDate";
 	var comparatorAsc = true;
 
 	Class.setSorted = function(name, asc) {

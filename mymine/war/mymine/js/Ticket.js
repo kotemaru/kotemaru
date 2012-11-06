@@ -60,20 +60,19 @@ function Ticket(){this.initialize.apply(this, arguments)};
 		$article.attr("id","T"+issue.id);
 		$article.data("ticketNum",issue.id);
 		$article.attr("data-ticket-num",issue.id);
-		$article.find("nobr[data-field='num']").text(issue.id);
+		$article.find("nobr.TNum").text(issue.id);
 
-		$article.find("nobr[data-field='tracker']").html(
-				issue.tracker?issue.tracker.name:"&nbsp;"
-		);
+		function name(data){return data?data.name:"&nbsp;"}
+		$article.find("nobr.TProject").html(name(issue.project));
+		$article.find("nobr.TTracker").html(name(issue.tracker));
+		$article.find("nobr.TPriority").html(name(issue.priority));
+		$article.find("nobr.TAssigned").html(name(issue.assigned_to));
 
-		$article.find("nobr[data-field='charge']").html(
-			issue.assigned_to?issue.assigned_to.name:"&nbsp;"
-		);
-		$article.find("nobr[data-field='state']>div>div")
-			.width((22*issue.done_ratio/100));
-		$article.find("nobr[data-field='limitDate']").html(toYYMMDD(issue.due_date));
-		$article.find("nobr[data-field='updateDate']").html(toYYMMDD(issue.updated_on));
-		$article.find("nobr[data-field='subject']").text(issue.subject);
+		$article.find("nobr.TState>div>div").width((22*issue.done_ratio/100));
+		$article.find("nobr.TStartDate").html(toYYMMDD(issue.start_date));
+		$article.find("nobr.TDueDate").html(toYYMMDD(issue.due_date));
+		$article.find("nobr.TUpDate").html(toYYMMDD(issue.updated_on));
+		$article.find("nobr.TSubject").text(issue.subject);
 
 		if (!isChecked(issue)) {
 			$article.css({"font-weight":"bold", "letter-spacing":"-1px"});
