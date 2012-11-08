@@ -12,6 +12,7 @@ body > header,footer,section {
 	display: inline-box;
 	position: absolute;
 	overflow: hidden;
+	background: white;
 }
 
 .BorderLayoutHeader {
@@ -64,28 +65,28 @@ body > header,footer,section {
 	draggable: false;
 }
 
-.BorderLayoutHandleHeader {
+.BorderLayoutHeader>.BorderLayoutHandle {
 	width: 100%;
 	height: 5px;
 	bottom: 0;
 	margin-bottom: -2px;
 	cursor: row-resize;
 }
-.BorderLayoutHandleFooter {
+.BorderLayoutFooter>.BorderLayoutHandle{
 	width: 100%;
 	height: 5px;
 	top: 0;
 	margin-top: -2px;
 	cursor: row-resize;
 }
-.BorderLayoutHandleLeft {
+.BorderLayoutLeft>.BorderLayoutHandle {
 	width: 5px;
 	height: 100%;
 	right: 0;
 	margin-right: -2px;
 	cursor: col-resize;
 }
-.BorderLayoutHandleRight {
+.BorderLayoutRight>.BorderLayoutHandle {
 	width: 5px;
 	height: 100%;
 	left: 0;
