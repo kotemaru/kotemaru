@@ -8,10 +8,6 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 	var BorderLayoutMain   = ".BorderLayoutMain";
 
 	var BorderLayoutHandle       = ".BorderLayoutHandle";
-	var BorderLayoutHandleHeader = ".BorderLayoutHandleHeader";
-	var BorderLayoutHandleLeft   = ".BorderLayoutHandleLeft";
-	var BorderLayoutHandleRight  = ".BorderLayoutHandleRight";
-	var BorderLayoutHandleFooter = ".BorderLayoutHandleFooter";
 
 	Class.init = function(opts) {
 		Class.setHeaderHeight(opts.header);
@@ -35,16 +31,16 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 		});
 		$(document.body).live("mousemove",function(ev){
 			if (handle == null) return;
-			var selector = handle.dataset.selector;
-			var $frame = $(selector);
+			var frame = handle.parentNode;
+			var $frame = $(frame);
 			var offset = $frame.offset();
-			if (selector == BorderLayoutHeader) {
+			if (frame == $(BorderLayoutHeader)[0]) {
 				Class.setHeaderHeight(ev.clientY - offset.top+2);
-			} else if (selector == BorderLayoutFooter) {
+			} else if (frame == $(BorderLayoutFooter)[0]) {
 				Class.setFooterHeight(offset.top + $frame.height() - ev.clientY+1);
-			} else if (selector == BorderLayoutLeft) {
+			} else if (frame == $(BorderLayoutLeft)[0]) {
 				Class.setLeftWidth(ev.clientX - offset.left+2);
-			} else if (selector == BorderLayoutRight) {
+			} else if (frame == $(BorderLayoutRight)[0]) {
 				Class.setRightWidth(offset.left + $frame.width() - ev.clientX+1);
 			}
 		}).live("mouseup", function(){
@@ -58,6 +54,7 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 		classCss(BorderLayoutLeft,   {paddingTop: hpx});
 		classCss(BorderLayoutRight,  {paddingTop: hpx});
 		classCss(BorderLayoutMain,   {paddingTop: hpx});
+		
 	}
 	Class.setFooterHeight = function(h) {
 		var hpx = (h?h:0)+"px";
