@@ -3,7 +3,7 @@
 <html>
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
-	<title>Boder layout frame</title>
+	<title>Border layout frame</title>
 
 	<link rel="stylesheet" href="css/BorderLayout.css" />
 
@@ -12,28 +12,46 @@
 
 	<script>
 $(function(){
-	BorderLayout.init({header:100, left:100, right:100, footer:100});
+	BorderLayout.init({header:{size:100}, left:{size:100}, right:{size:100}, footer:{size:100}});
 })
 	</script>
+	<style>
+#mainPanel {
+	height: 100%;
+	width: 100%;
+	overflow:scroll;
+	position: relative;
+}
+		
+	</style>
 </head>
 <body>
-	<section class="BorderLayoutMain">
-	</section>
+	<div class="BorderLayoutMain">
+		<div id="mainPanel">
+			Main
+			ka;klsa;jfsklfjskaljfskla;fjsklf;jsakflj;skdlfa;jfskl;fjsakl;fjsklj;fskla;fjasklj;fsaklfjas
+			AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>AAA<br/>
+		</div>
+	</div>
 
-	<section class="BorderLayoutLeft">
+	<div class="BorderLayoutLeft">
+		Left
 		<span class="BorderLayoutHandle" ></span>
-	</section>
+	</div>
 
-	<section class="BorderLayoutRight">
+	<div class="BorderLayoutRight">
+		Right
 		<span class="BorderLayoutHandle"  ></span>
-	</section>
+	</div>
 
-	<header class="BorderLayoutHeader" >
+	<div class="BorderLayoutHeader" >
+		Header
 		<span class="BorderLayoutHandle"  ></span>
-	</header>
+	</div>
 
-	<footer class="BorderLayoutFooter" >
+	<div class="BorderLayoutFooter" >
+		Footer
 		<span class="BorderLayoutHandle"  ></span>
-	</footer>
+	</div>
 </body>
 </html>
