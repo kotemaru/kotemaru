@@ -7,9 +7,9 @@ html,body {
 	overflow: hidden;
 }
 
-body > header,footer,section {
+body > header,footer,section,div {
 	box-sizing: border-box;
-	display: inline-box;
+	display: inline-block;
 	position: absolute;
 	overflow: hidden;
 	background: white;
@@ -22,7 +22,7 @@ body > header,footer,section {
 }
 .BorderLayoutFooter {
 	width: 100%;
-	height: 16px;			/* Footer height */
+	height: 30px;			/* Footer height */
 	bottom: 0;
 }
 .BorderLayoutLeft {
@@ -31,7 +31,7 @@ body > header,footer,section {
 	top: 0;
 	left: 0;
 	padding-top: 40px;		/* Header height */
-	padding-bottom: 16px;	/* Footer height */
+	padding-bottom: 30px;	/* Footer height */
 }
 .BorderLayoutRight {
 	width: 200px;			/* Right width */
@@ -39,7 +39,7 @@ body > header,footer,section {
 	top: 0;
 	right: 0;
 	padding-top: 40px;		/* Header height */
-	padding-bottom: 16px;	/* Footer height */
+	padding-bottom: 30px;	/* Footer height */
 }
 
 .BorderLayoutMain {
@@ -50,7 +50,7 @@ body > header,footer,section {
 	padding-top:    40px;	/* Header height */
 	padding-left:   200px;	/* Left width */
 	padding-right:  200px;	/* Right width */
-	padding-bottom: 16px;	/* Footer height */
+	padding-bottom: 30px;	/* Footer height */
 }
 
 
@@ -63,35 +63,37 @@ body > header,footer,section {
 	position: absolute;
 	background: gray;
 	draggable: false;
+	height: 5px;
+	width: 5px;
 }
 
-.BorderLayoutHeader>.BorderLayoutHandle {
+.BorderLayoutHeader > .BorderLayoutHandle {
 	width: 100%;
-	height: 5px;
+	left: 0;
 	bottom: 0;
 	margin-bottom: -2px;
-	cursor: row-resize;
+	//cursor: row-resize;
 }
-.BorderLayoutFooter>.BorderLayoutHandle{
+.BorderLayoutFooter > .BorderLayoutHandle{
 	width: 100%;
-	height: 5px;
 	top: 0;
+	left: 0;
 	margin-top: -2px;
-	cursor: row-resize;
+	//cursor: row-resize;
 }
-.BorderLayoutLeft>.BorderLayoutHandle {
-	width: 5px;
+.BorderLayoutLeft > .BorderLayoutHandle {
 	height: 100%;
+	top: 0;
 	right: 0;
 	margin-right: -2px;
-	cursor: col-resize;
+	//cursor: col-resize;
 }
-.BorderLayoutRight>.BorderLayoutHandle {
-	width: 5px;
+.BorderLayoutRight > .BorderLayoutHandle {
 	height: 100%;
+	top: 0;
 	left: 0;
 	margin-left: -2px;
-	cursor: col-resize;
+	//cursor: col-resize;
 }
 
 /* EOF */

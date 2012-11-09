@@ -6,24 +6,78 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 	var BorderLayoutRight  = ".BorderLayoutRight";
 	var BorderLayoutFooter = ".BorderLayoutFooter";
 	var BorderLayoutMain   = ".BorderLayoutMain";
+	var BorderLayoutHandle = ".BorderLayoutHandle";
 
-	var BorderLayoutHandle       = ".BorderLayoutHandle";
+	var SELECTOR = {
+		header: BorderLayoutHeader,
+		footer: BorderLayoutFooter,
+		left  : BorderLayoutLeft,
+		right : BorderLayoutRight
+	};
+	
+	Class.setHeaderHeight = function(h) {
+		sizes.header = h;
+		var hpx = (h?h:0)+"px";
+		setStyle(BorderLayoutHeader, {height: hpx});
+		setStyle(BorderLayoutLeft,   {paddingTop: hpx});
+		setStyle(BorderLayoutRight,  {paddingTop: hpx});
+		setStyle(BorderLayoutMain,   {paddingTop: hpx});
+	}
+	Class.setFooterHeight = function(h) {
+		sizes.footer = h;
+		var hpx = (h?h:0)+"px";
+		setStyle(BorderLayoutFooter, {height: hpx});
+		setStyle(BorderLayoutLeft,   {paddingBottom: hpx});
+		setStyle(BorderLayoutRight,  {paddingBottom: hpx});
+		setStyle(BorderLayoutMain,   {paddingBottom: hpx});
+	}
+	Class.setLeftWidth = function(w) {
+		sizes.left = w;
+		var wpx = (w?w:0)+"px";
+		setStyle(BorderLayoutLeft,   {width: wpx});
+		setStyle(BorderLayoutMain,   {paddingLeft: wpx});
+	}
+	Class.setRightWidth = function(w) {
+		sizes.right = w;
+		var wpx = (w?w:0)+"px";
+		setStyle(BorderLayoutRight,  {width: wpx});
+		setStyle(BorderLayoutMain,   {paddingRight: wpx});
+	}
+	
+	var RESIZE_FUNC = {
+		header: Class.setHeaderHeight,
+		footer: Class.setFooterHeight,
+		left  : Class.setLeftWidth,
+		right : Class.setRightWidth
+	};
 
+	var OPTIONS = {
+		header:{size:0, resizable:false},
+		footer:{size:0, resizable:false},
+		left  :{size:0, resizable:false},
+		right :{size:0, resizable:false},
+		strageName: location.path+"/BorderLayout"
+	};
+	
+	var sizes = {};
 	Class.init = function(opts) {
-		Class.setHeaderHeight(opts.header);
-		Class.setLeftWidth(opts.left);
-		Class.setRightWidth(opts.right);
-		Class.setFooterHeight(opts.footer);
-
-		if (opts.header == null) $(BorderLayoutHeader).hide();
-		if (opts.left == null)   $(BorderLayoutLeft).hide();
-		if (opts.right == null)  $(BorderLayoutRight).hide();
-		if (opts.footer == null) $(BorderLayoutFooter).hide();
-
-		initHandle();
+		opts = $.extend(true, OPTIONS, opts);
+		for (var name in SELECTOR) {
+			initOne(name, opts);
+		}
+		initHandling();
+	}
+	function initOne(name, opts) {
+		RESIZE_FUNC[name](opts[name].size);
+		var $elem = $(SELECTOR[name]);
+		$elem.toggle(opts[name].size>0);
+		if (opts[name].resizable) {
+			var cursor = (name=="left"||name=="right")?"col-resize":"row-resize";
+			$elem.find(BorderLayoutHandle).css("cursor", cursor);
+		}
 	}
 
-	function initHandle() {
+	function initHandling() {
 		var handle = null;
 		$(BorderLayoutHandle).live("mousedown",function(){
 			handle = this;
@@ -48,53 +102,13 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 		});
 	}
 
-	Class.setHeaderHeight = function(h) {
-		var hpx = (h?h:0)+"px";
-		classCss(BorderLayoutHeader, {height: hpx});
-		classCss(BorderLayoutLeft,   {paddingTop: hpx});
-		classCss(BorderLayoutRight,  {paddingTop: hpx});
-		classCss(BorderLayoutMain,   {paddingTop: hpx});
-		
-	}
-	Class.setFooterHeight = function(h) {
-		var hpx = (h?h:0)+"px";
-		classCss(BorderLayoutFooter, {height: hpx});
-		classCss(BorderLayoutLeft,   {paddingBottom: hpx});
-		classCss(BorderLayoutRight,  {paddingBottom: hpx});
-		classCss(BorderLayoutMain,   {paddingBottom: hpx});
-	}
-	Class.setLeftWidth = function(w) {
-		var wpx = (w?w:0)+"px";
-		classCss(BorderLayoutLeft,   {width: wpx});
-		classCss(BorderLayoutMain,   {paddingLeft: wpx});
-	}
-	Class.setRightWidth = function(w) {
-		var wpx = (w?w:0)+"px";
-		classCss(BorderLayoutRight,  {width: wpx});
-		classCss(BorderLayoutMain,   {paddingRight: wpx});
+	                 	
+	
+	function setStyle(selector, style) {
+		$(selector).css(style);
 	}
 
-	var classCssRuleCache = {};
-	function getCssRule(selector) {
-		if (classCssRuleCache[selector]) return classCssRuleCache[selector];
-		var sheets = document.styleSheets;
-		for (var i=0; i<sheets.length; i++) {
-			var rules = sheets[i].cssRules;
-			for (var j=0; j<rules.length; j++) {
-				if (selector == rules[j].selectorText) {
-					classCssRuleCache[selector] = rules[j];
-					return rules[j];
-				}
-			}
-		}
-		return null;
-	}
-	function classCss(selector, style) {
-		var rule = getCssRule(selector);
-		if (rule == null) return;
-		for (var k in style) rule.style[k] = style[k];
-	}
-
+	
 })(BorderLayout);
 
 
