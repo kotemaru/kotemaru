@@ -86,7 +86,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var $col = $(handle.parentNode);
 			var offset = $col.offset();
 			var w = (ev.clientX - offset.left);
-			if (w<5) w=5;
+			if (w<4) w=4;
 			
 			var idx = $col.data("columnIdx");
 			var self = $col.parents(_ExTable).data(ExTable);
@@ -306,8 +306,15 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			}
 			
 			var selector = self.rootSelector+" "+_ExTableColumn_+idx;
-			var style = $.extend({},cinfo.style,
-				{width: cinfo.width+"px", left: lefts[idx].left+"px"});
+			var style = $.extend({},cinfo.style, {
+				width: cinfo.width+"px", 
+				left: lefts[idx].left+"px",
+				visibility: (cinfo.width>4)?"visible":"hidden"
+			});
+			setCssRule(selector, style);
+			
+			var selector = self.rootSelector+" "+_ExTableHeader+" "+_ExTableColumn_+idx;
+			var style = {visibility: "visible"};
 			setCssRule(selector, style);
 		});
 
