@@ -7,7 +7,10 @@ html,body {
 	overflow: hidden;
 }
 
-body > header,footer,section,div {
+body > header,
+body > footer,
+body > section,
+body > div {
 	box-sizing: border-box;
 	display: inline-block;
 	position: absolute;
@@ -61,10 +64,9 @@ body > header,footer,section,div {
 .BorderLayoutHandle {
 	display: inline-block;
 	position: absolute;
-	background: gray;
-	draggable: false;
 	height: 5px;
 	width: 5px;
+	//background: gray;
 }
 
 .BorderLayoutHeader > .BorderLayoutHandle {
@@ -72,28 +74,24 @@ body > header,footer,section,div {
 	left: 0;
 	bottom: 0;
 	margin-bottom: -2px;
-	//cursor: row-resize;
 }
 .BorderLayoutFooter > .BorderLayoutHandle{
 	width: 100%;
 	top: 0;
 	left: 0;
 	margin-top: -2px;
-	//cursor: row-resize;
 }
 .BorderLayoutLeft > .BorderLayoutHandle {
 	height: 100%;
 	top: 0;
 	right: 0;
 	margin-right: -2px;
-	//cursor: col-resize;
 }
 .BorderLayoutRight > .BorderLayoutHandle {
 	height: 100%;
 	top: 0;
 	left: 0;
 	margin-left: -2px;
-	//cursor: col-resize;
 }
 
 /* EOF */

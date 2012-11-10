@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>MyMine</title>
+
+	<link rel="stylesheet" href="css/BorderLayout.css" />
+	<link rel="stylesheet" href="css/ExTable.css" />
+
+	<script src="jq/jquery-1.8.2.js" ></script>
+	<script src="js/BorderLayout.js" ></script>
+	<script src="js/ExTable.js" ></script>
+
+	<script>
+$(function(){
+	BorderLayout.init({
+		header:{size:60, resizable:false}, 
+		left:  {size:200, resizable:true}
+	}).load().refresh();
+
+	var exTable = new ExTable("#ticketTray");
+	exTable.setColumnInfo([
+		{title:"番号",        width:36, seq:1, style:{"text-align":"right"}},
+		{title:"プロジェクト", width:80, seq:3},
+		{title:"トラッカー",   width:70, seq:2},
+		{title:"優先度",      width:48, seq:5},
+	]);
+	exTable.setData([
+		[100,"aaaa",true,"xxxxxxx"],
+		[200,"bbb",true,"xxxxxxx"],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",true,"xxxxxxx"],
+		[100,"aaaa",true,"xxxxxxx"],
+		[200,"bbb",true,"xxxxxxx"],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",true,"xxxxxxx"],
+		[100,"aaaa",true,"xxxxxxx"],
+		[200,"bbb",true,"xxxxxxx"],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",true,"xxxxxxx"],
+		[100,"aaaa",true,"xxxxxxx"],
+		[200,"bbb",true,"xxxxxxx"],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",true,"xxxxxxx"],
+		[100,"aaaa",true,"xxxxxxx"],
+		[200,"bbb",true,"xxxxxxx"],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",true,"xxxxxxx"],
+	]);
+	exTable.setSortInfo(2);
+	exTable.refresh(true);
+	exTable.setHeaderHeight(40);
+	exTable.setRowHeight(50);
+	
+});
+	</script>
+	<style>
+* {
+	box-sizing: border-box;
+}
+
+.BorderLayoutLeft {
+	border-right: 1px solid lightgray;
+}
+.BorderLayoutHeader {
+	border-bottom: 1px solid lightgray;
+}
+.SubHeader {
+	position: relative;
+	height: 20px;
+	width: 100%;
+	border-bottom: 1px solid lightgray;
+}
+.Tray {
+	display: inline-block;
+	position: relative;
+	height: 100%;
+	width: 100%;
+	overflow:scroll;
+}
+.Column {
+	background: red;
+}
+.ColumnHandle {
+	display: inline-block;
+	position: relative;
+	top:0;
+	right: -3px;
+	height: 100%;
+	width: 5px;
+	background: gray;
+}
+
+	</style>
+</head>
+<body>
+	<section class="BorderLayoutMain">
+		<div id="ticketTray" class="ExTable"></div>
+	</section>
+
+	<section class="BorderLayoutLeft">
+		<div class="SubHeader">xxxx</div>
+		<section class="Folders">
+				aaaa
+		</section>
+		<span class="BorderLayoutHandle" ></span>
+	</section>
+
+	<section class="BorderLayoutRight">
+		<span class="BorderLayoutHandle"  ></span>
+	</section>
+
+	<header class="BorderLayoutHeader" >
+		<span class="BorderLayoutHandle"  ></span>
+	</header>
+
+	<footer class="BorderLayoutFooter" >
+		<span class="BorderLayoutHandle"  ></span>
+	</footer>
+	
+	<section class="Template">
+		<span class="HeaderColumn"><span>番号<span><img/><span class="ColumnHandle" ></span></span>
+	</section>
+	
+	
+</body>
+</html>

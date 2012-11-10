@@ -1,0 +1,171 @@
+/**
+ExTable styles
+
+HTML format:
+<div id="user-def" class="ExTable">
+  <div class="ExTableHeader">
+    <span class="ExTableColumn ExTableColumn_0">
+      <span>番号</span> <!-- Header Label -->
+      <span class="ExTableHandle">&nbsp;</span>
+    </span>
+    <span class="ExTableColumn ExTableColumn_1 ExTableHeaderSortAsc">
+      <span>名前</span> <!-- Header Label -->
+      <span class="ExTableHandle">&nbsp;</span>
+    </span>
+  </div>
+  <div class="ExTableBody">
+    <div class="ExTableRow">
+      <span class="ExTableColumn ExTableColumn_0">123</span>
+      <span class="ExTableColumn ExTableColumn_1">aaaa</span>
+    </div>
+    <div class="ExTableRow">
+      <span class="ExTableColumn ExTableColumn_0">456</span>
+      <span class="ExTableColumn ExTableColumn_1">bbbb</span>
+    </div>
+  </div>
+</div>
+
+Classes:
+ExTable				: テーブルトップ
+ExTableHeader		: ヘッダ行
+ExTableColumn		: カラム(ヘッダ、データ共用)
+ExTableColumn_{n}	: 個別カラム(ヘッダ、データ共用)
+ExTableHandle		: カラムサイズ調整用ハンドル
+ExTableBody			: データブロック
+ExTableRow			: データ行
+
+*/
+
+/* ---------------------------------------
+
+-----------------------------------------*/
+.ExTable {
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	padding-top: 20px;		/* header height*/
+}
+
+.ExTableHeader {
+	box-sizing: border-box;
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 20px;			/* header height*/
+	margin-top: -20px;		/* header height*/
+}
+
+.ExTableBody {
+	box-sizing: border-box;
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: scroll;
+}
+
+.ExTableRow {
+	box-sizing: border-box;
+	display: block;
+	position: relative;
+	width: 100%;
+	height: 20px; /* for debug */
+}
+
+.ExTableColumn {
+	box-sizing: border-box;
+	display: inline-block;
+	position: absolute;
+	height: 100%;
+	padding: 2px 2px;
+	overflow: hidden;
+	white-space: nowrap;
+}
+.ExTableColumn>span {
+	display: inline-block;
+}
+
+
+/* --------------------------------------------------------
+   Header
+-----------------------------------------------------------*/
+.ExTableHeader > .ExTableColumn {
+	overflow: visible;
+	cursor: pointer;
+}
+.ExTableHeader > .ExTableColumn > span{
+	overflow: hidden;
+	vertical-align: top;
+	padding: 0;
+	height: 100%;
+	line-height: 100%;
+}
+.ExTableHeader > .ExTableColumn > span:first-child{ /* Header Column Label */
+	width: 100%;
+}
+
+.ExTableHeader .ExTableHandle {
+	display: inline-block;
+	position: relative;
+	right: 0px;
+	height: 100%;
+	width: 5px;
+	cursor: col-resize;
+	//background:gray;
+}
+
+/*------------------------------------------------------
+ decoration
+------------------------------------------------------*/
+.ExTable {
+	font-size: 12px;
+}
+.ExTableColumn {
+	height: 100%;
+	padding: 2px;
+}
+
+.ExTableHeader {
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background-image: -moz-linear-gradient(top, #eee, #ccc);
+	//border-top: 1px solid #c0c0c0;
+	border-bottom: 1px solid #c0c0c0;
+}
+
+.ExTableHeader .ExTableColumn {
+	border-right: 1px solid lightgray;
+}
+
+.ExTableHeader .ExTableHeaderSortAsc {
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
+	background-image: -moz-linear-gradient(top, #ccc, #eee);
+}
+.ExTableHeader .ExTableHeaderSortAsc > span:first-child{
+	padding-right: 6px;
+	background: url(../img/sort-up.png) no-repeat right 50%;
+}
+.ExTableHeader .ExTableHeaderSortDesc {
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
+	background-image: -moz-linear-gradient(top, #ccc, #eee);
+}
+.ExTableHeader .ExTableHeaderSortDesc > span:first-child{
+	padding-right: 6px;
+	background: url(../img/sort-down.png) no-repeat right 50%;
+}
+
+
+
+.ExTableRow {
+	height: 20px;
+	border-bottom: 1px solid lightgray;
+}
+.ExTableRow .ExTableColumn {
+	height: 100%;
+	padding: 2px 2px;
+	vertical-align: middle;
+	border-right: 1px solid lightgray;
+}
+
+/* EOF */
