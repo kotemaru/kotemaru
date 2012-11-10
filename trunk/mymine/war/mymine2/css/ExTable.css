@@ -113,7 +113,8 @@ ExTableRow			: データ行
 	height: 100%;
 	width: 5px;
 	cursor: col-resize;
-	//background:gray;
+	z-index: 100;
+	//border: 1px solid gray; /* for debug */
 }
 
 /*------------------------------------------------------
@@ -143,7 +144,6 @@ ExTableRow			: データ行
 	background-image: -moz-linear-gradient(top, #ccc, #eee);
 }
 .ExTableHeader .ExTableHeaderSortAsc > span:first-child{
-	padding-right: 6px;
 	background: url(../img/sort-up.png) no-repeat right 50%;
 }
 .ExTableHeader .ExTableHeaderSortDesc {
@@ -151,7 +151,6 @@ ExTableRow			: データ行
 	background-image: -moz-linear-gradient(top, #ccc, #eee);
 }
 .ExTableHeader .ExTableHeaderSortDesc > span:first-child{
-	padding-right: 6px;
 	background: url(../img/sort-down.png) no-repeat right 50%;
 }
 
@@ -163,7 +162,7 @@ ExTableRow			: データ行
 }
 .ExTableRow .ExTableColumn {
 	height: 100%;
-	padding: 2px 2px;
+	padding: 2px 4px;
 	vertical-align: middle;
 	border-right: 1px solid lightgray;
 }
