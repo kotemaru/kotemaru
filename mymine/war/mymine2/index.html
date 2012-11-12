@@ -15,7 +15,7 @@
 	<script>
 $(function(){
 	BorderLayout.init({
-		header:{size:60, resizable:false}, 
+		header:{size:60, resizable:false},
 		left:  {size:200, resizable:true}
 	}).load().refresh();
 
@@ -36,23 +36,23 @@ $(function(){
 		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
 		[ 40,"ddd",true,"xxxxxxx"],
 		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",true,"xxxxxxx"],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",true,"xxxxxxx"],
-		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",true,"xxxxxxx"],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",true,"xxxxxxx"],
-		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",true,"xxxxxxx"],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[200,"bbb",false,"xxxxxxx"],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",false,"xxxxxxx"],
+		[100,"aaaa",false,"xxxxxxx"],
+		[200,"bbb",false,"xxxxxxx"],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
+		[ 40,"ddd",false,"xxxxxxx"],
+		[100,"aaaa",false,"xxxxxxx"],
+		[200,"bbb",false,"xxxxxxx"],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
 		[ 40,"ddd",true,"xxxxxxx"],
 	]);
 	exTable.setSortInfo(2);
 	exTable.refresh(true);
 	//exTable.setHeaderHeight(40);
 	//exTable.setRowHeight(50);
-	
+
 });
 	</script>
 	<style>
@@ -118,11 +118,11 @@ $(function(){
 	<footer class="BorderLayoutFooter" >
 		<span class="BorderLayoutHandle"  ></span>
 	</footer>
-	
+
 	<section class="Template">
 		<span class="HeaderColumn"><span>番号<span><img/><span class="ColumnHandle" ></span></span>
 	</section>
-	
-	
+
+
 </body>
 </html>

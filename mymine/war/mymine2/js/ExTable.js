@@ -1,17 +1,17 @@
 /**
  * ExTable v1.0
  * 拡張テーブル。
- * 
+ *
  * - ２次元配列のデータをテーブル表示する。
  * - 固定ヘッダをサポートする。
  * - カラムのサイズ変更をサポートする。
  * - カラムの順番入れ換えをサポートする。
  * - カラム毎のソートをサポートする。
- * 
+ *
  * 使用例：
 	var exTable = new ExTable("#testTable");
 	exTable.setColumnInfo([
-		//カラム名,  カラム幅(初期値),カラム順, カラムstyle  
+		//カラム名,  カラム幅(初期値),カラム順, カラムstyle
 		{title:"番号",  width:36,  seq:1, style:{"text-align":"right"}},
 		{title:"名前",  width:100, seq:2},
 		{title:"住所",  width:500, seq:3},
@@ -54,7 +54,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	$(function(){
 		initResize();
 		initMove();
-		
+
 		/**
 		 * カラムクリックでソート設定。
 		 */
@@ -66,7 +66,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			self.refresh();
 		});
 	});
-	
+
 	/**
 	 * カラムのリサイズハンドラ設定。
 	 */
@@ -79,15 +79,15 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		}).live("click",function(){
 			return false;
 		})
-		
+
 		$(document.body).live("mousemove",function(ev){
 			if (handle == null) return;
-			
+
 			var $col = $(handle.parentNode);
 			var offset = $col.offset();
 			var w = (ev.clientX - offset.left);
 			if (w<4) w=4;
-			
+
 			var idx = $col.data("columnIdx");
 			var self = $col.parents(_ExTable).data(ExTable);
 			var infos = self.getColumnInfo();
@@ -115,7 +115,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var $target = $(this);
 			var hIdx = $handle.data("columnIdx");
 			var tIdx = $target.data("columnIdx");
-			
+
 			var self = $handle.parents(_ExTable).data(ExTable);
 			var infos = self.getColumnInfo();
 
@@ -128,10 +128,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			$(handle).css({cursor: "pointer"});
 			handle = null;
 		});
-		
+
 	}
-	
-	
+
+
 	/**
 	 * コンストラクタ。
 	 * $param selector トップノードのセレクタ。
@@ -141,7 +141,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		this.sortInfo = null;
 		$(selector).data(ExTable, this);
 	}
-	
+
 	/**
 	 * データ設定。
 	 * $param data ２次元配列データ。
@@ -183,8 +183,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	Class.prototype.setSortInfo = function(idx, desc) {
 		this.sortInfo = {index:idx, desc:desc};
 	}
-	
-	
+
+
 	/**
 	 * ソート条件設定。
 	 * - 既に選択されている場合は逆順／正順入れ換え。
@@ -219,8 +219,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		setCssRule(base+_ExTableRow, {height: h+"px"});
 	}
 
-	
-	
+
+
 	//---------------------------------------------------------
 	/**
 	 * 再描画。
@@ -230,7 +230,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.refresh = function(deep) {
 		if (deep) this.build();
-		
+
 		var $root = $(this.rootSelector);
 		this.refreshHeader($root.find(_ExTableHeader), this.columnInfo);
 
@@ -244,30 +244,32 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		});
 		return this;
 	}
-	
+
 	function sort(data, info) {
 		if (info == null) return;
-		var comp = null;
+
 		var idx = info.index;
 		var type = typeof data[0][idx];
-		if (type == "string" && info.desc) {
-			comp = function(a,b){
-				var A=a[idx], B=b[idx]
-				return A==B?0:(A<B?1:-1);
-			};
-		} else if (type == "string" && !info.desc) {
-			comp = function(b,a){
-				var A=a[idx], B=b[idx]
-				return A==B?0:(A<B?1:-1);
-			};
-		} else if (type == "number" && info.desc) {
-			comp = function(a,b){return b[idx]-a[idx];}
-		} else if (type == "number" && !info.desc) {
-			comp = function(b,a){return b[idx]-a[idx];}
+
+		function defoltComp(a,b) {
+			var A=a[idx], B=b[idx]
+			return A==B?0:(A>B?1:-1);
+		};
+		var comp = defoltComp;
+		if (type == "number") {
+			comp = function(a,b){return a[idx]-b[idx];}
 		}
+		if (info.desc) {
+			var orgComp = comp;
+			comp = function(a,b){return orgComp(b,a);}
+		}
+
 		return data.sort(comp);
 	}
-	
+
+
+
+
 	function refreshRow($row, rowData) {
 		$row.find(_ExTableColumn).each(function(){
 			var $col = $(this);
@@ -290,7 +292,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			left += lefts[i].width;
 		}
 		lefts.sort(function(a,b){return a.idx-b.idx;});
-		
+
 		var self = this;
 		$header.find(_ExTableColumn).each(function(){
 			var $col = $(this);
@@ -304,15 +306,15 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			if (self.sortInfo && self.sortInfo.index==idx) {
 				$col.addClass(self.sortInfo.desc?"ExTableHeaderSortDesc":"ExTableHeaderSortAsc");
 			}
-			
+
 			var selector = self.rootSelector+" "+_ExTableColumn_+idx;
 			var style = $.extend({},cinfo.style, {
-				width: cinfo.width+"px", 
+				width: cinfo.width+"px",
 				left: lefts[idx].left+"px",
 				visibility: (cinfo.width>4)?"visible":"hidden"
 			});
 			setCssRule(selector, style);
-			
+
 			var selector = self.rootSelector+" "+_ExTableHeader+" "+_ExTableColumn_+idx;
 			var style = {visibility: "visible"};
 			setCssRule(selector, style);
@@ -320,25 +322,25 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 		return $header;
 	}
-	
+
 	//-----------------
 	Class.prototype.build = function() {
 		var $root = $(this.rootSelector);
 		$root.html(TEMPL_ROOT);
 
 		this.buildHeader($root.find(_ExTableHeader), this.columnInfo);
-		
+
 		var $body = $root.find(_ExTableBody);
 		for (var i=0; i<this.data.length; i++) {
 			var $row = buildRow(this.data[i]);
 			$row.data("rowIdx", i);
 			$body.append($row);
 		}
-		
+
 		return this;
 	}
-	
-	
+
+
 	function buildRow(rowData) {
 		var $row = $TEMPL_ROW.clone();
 		for (var i=0; i<rowData.length; i++) {
@@ -356,14 +358,14 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			$col.addClass(ExTableColumn_+i);
 			$col.data("columnIdx", i);
 			$header.append($col);
-		
+
 		}
 		return $header;
 	}
-	
-	
+
+
 	//---------------------------------------------------
-	
+
 	var classCssRuleCache = {};
 	function getCssRule(selector) {
 		if (classCssRuleCache[selector]) return classCssRuleCache[selector];
@@ -382,7 +384,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	function getCssRuleWithDefine(selector) {
 		var rule = getCssRule(selector);
 		if (rule) return rule;
-		
+
 		var sheet = document.styleSheets[0];
 		if (sheet.insertRule) {
 			sheet.insertRule(selector+"{}", sheet.cssRules.length);
@@ -395,7 +397,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		var rule = getCssRuleWithDefine(selector);
 		if (rule == null) return;
 		for (var k in style) rule.style[k] = style[k];
-	}	
+	}
 })(ExTable);
 
 
