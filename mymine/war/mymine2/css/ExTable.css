@@ -86,7 +86,10 @@ ExTableRow			: データ行
 .ExTableColumn>span {
 	display: inline-block;
 }
-
+.ExTableColumnMin {
+	padding-left: 0px;
+	paddinf-right: 0px;
+}
 
 /* --------------------------------------------------------
    Header
@@ -97,10 +100,10 @@ ExTableRow			: データ行
 }
 .ExTableHeader > .ExTableColumn > span{
 	overflow: hidden;
-	vertical-align: top;
+	vertical-align: middle;
 	padding: 0;
 	height: 100%;
-	line-height: 100%;
+	line-height: 115%;
 }
 .ExTableHeader > .ExTableColumn > span:first-child{ /* Header Column Label */
 	width: 100%;

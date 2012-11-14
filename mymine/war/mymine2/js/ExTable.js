@@ -92,7 +92,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var self = $col.parents(_ExTable).data(ExTable);
 			var infos = self.getColumnInfo();
 			infos[idx].width = w;
-			self.refresh();
+			self.refreshHeaderOnly();
 		}).live("mouseup", function(){
 			handle = null;
 		});
@@ -240,9 +240,13 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		$body.find(_ExTableRow).each(function(){
 			var $row = $(this);
 			var idx = $row.data("rowIdx");
-			refreshRow($row, self.data[idx]);
+			refreshRow($row, self.data[idx], self.columnInfo);
 		});
 		return this;
+	}
+	Class.prototype.refreshHeaderOnly = function() {
+		var $root = $(this.rootSelector);
+		this.refreshHeader($root.find(_ExTableHeader), this.columnInfo);
 	}
 
 	function sort(data, info) {
@@ -270,12 +274,17 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 
 
-	function refreshRow($row, rowData) {
+	function refreshRow($row, rowData, columnInfo) {
 		$row.find(_ExTableColumn).each(function(){
 			var $col = $(this);
 			var idx = $col.data("columnIdx");
-			var col = rowData[idx];
-			$col.text(col);
+			var colData = rowData[idx];
+			var setter = columnInfo[idx].setter;
+			if (setter) {
+				setter($col,colData);
+			} else {
+				$col.text(colData);
+			}
 		});
 		return $row;
 	}
@@ -311,13 +320,17 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var style = $.extend({},cinfo.style, {
 				width: cinfo.width+"px",
 				left: lefts[idx].left+"px",
-				visibility: (cinfo.width>4)?"visible":"hidden"
+				paddingLeft: null,
+				paddingRight: null
 			});
+			// 文字半分残るのでその対策。
+			if (cinfo.width<=4) {
+				style.width = "0px";
+				style.paddingLeft = "4px";
+				style.paddingRight = "0px";
+			}
 			setCssRule(selector, style);
 
-			var selector = self.rootSelector+" "+_ExTableHeader+" "+_ExTableColumn_+idx;
-			var style = {visibility: "visible"};
-			setCssRule(selector, style);
 		});
 
 		return $header;
