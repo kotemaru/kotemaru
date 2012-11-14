@@ -19,34 +19,46 @@ $(function(){
 		left:  {size:200, resizable:true}
 	}).load().refresh();
 
+
+	function rateSetter($e,val) {
+		var $div = $e.find("div>div");
+		if ($div.length == 0) {
+			$e.html("<div class='RateBar'><div></div></div>");
+			$div = $e.find("div>div");
+		}
+		$div.width(val*24/100);
+	}
+
+
 	var exTable = new ExTable("#ticketTray");
 	exTable.setColumnInfo([
-		{title:"番号",        width:36, seq:1, style:{"text-align":"right"}},
+		{title:"番号",         width:36, seq:1, style:{"text-align":"right"}},
 		{title:"プロジェクト", width:80, seq:3},
 		{title:"トラッカー",   width:70, seq:2},
-		{title:"優先度",      width:48, seq:5},
+		{title:"優先度",       width:48, seq:5},
+		{title:"進捗",         width:28, seq:6, setter:rateSetter },
 	]);
 	exTable.setData([
-		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",true,"xxxxxxx"],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",true,"xxxxxxx"],
-		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",true,"xxxxxxx"],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",true,"xxxxxxx"],
-		[100,"aaaa",true,"xxxxxxx"],
-		[200,"bbb",false,"xxxxxxx"],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",false,"xxxxxxx"],
-		[100,"aaaa",false,"xxxxxxx"],
-		[200,"bbb",false,"xxxxxxx"],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",false,"xxxxxxx"],
-		[100,"aaaa",false,"xxxxxxx"],
-		[200,"bbb",false,"xxxxxxx"],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg"],
-		[ 40,"ddd",true,"xxxxxxx"],
+		[100,"aaaa",true,"xxxxxxx",100],
+		[200,"bbb",true,"xxxxxxx",70],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",50],
+		[ 40,"ddd",true,"xxxxxxx",30],
+		[100,"aaaa",true,"xxxxxxx",10],
+		[200,"bbb",true,"xxxxxxx",30],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",true,"xxxxxxx",30],
+		[100,"aaaa",true,"xxxxxxx",30],
+		[200,"bbb",false,"xxxxxxx",30],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",false,"xxxxxxx",30],
+		[100,"aaaa",false,"xxxxxxx",30],
+		[200,"bbb",false,"xxxxxxx",30],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",false,"xxxxxxx",30],
+		[100,"aaaa",false,"xxxxxxx",30],
+		[200,"bbb",false,"xxxxxxx",30],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",true,"xxxxxxx",30],
 	]);
 	exTable.setSortInfo(2);
 	exTable.refresh(true);
@@ -66,31 +78,19 @@ $(function(){
 .BorderLayoutHeader {
 	border-bottom: 1px solid lightgray;
 }
-.SubHeader {
-	position: relative;
-	height: 20px;
-	width: 100%;
-	border-bottom: 1px solid lightgray;
+
+.RateBar {
+	width: 24px;
+	height: 12px;
+	border: 1px solid gray;
+	overflow: hidden;
 }
-.Tray {
-	display: inline-block;
-	position: relative;
-	height: 100%;
-	width: 100%;
-	overflow:scroll;
+.RateBar >div{
+	width: 24px;
+	height: 12px;
+	background: green;
 }
-.Column {
-	background: red;
-}
-.ColumnHandle {
-	display: inline-block;
-	position: relative;
-	top:0;
-	right: -3px;
-	height: 100%;
-	width: 5px;
-	background: gray;
-}
+
 
 	</style>
 </head>
