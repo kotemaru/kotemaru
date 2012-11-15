@@ -33,6 +33,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var ExTableHeader  = "ExTableHeader";
 	var ExTableHeaderLabel  = "ExTableHeaderLabel";
 	var ExTableHandle  = "ExTableHandle";
+	var ExTableHeaderSortDesc = "ExTableHeaderSortDesc";
+	var ExTableHeaderSortAsc = "ExTableHeaderSortAsc";
 
 	var _ExTable        = "."+ExTable;
 	var _ExTableColumn  = "."+ExTableColumn;
@@ -41,7 +43,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var _ExTableRow     = "."+ExTableRow;
 	var _ExTableHeader  = "."+ExTableHeader;
 	var _ExTableHandle  = "."+ExTableHandle;
-	var _ExTableHeaderLabel  = ".ExTableHeaderLabel";
+	var _ExTableHeaderLabel  = "."+ExTableHeaderLabel;
+	var _ExTableHeaderSortDesc = "."+ExTableHeaderSortDesc;
+	var _ExTableHeaderSortAsc  = "."+ExTableHeaderSortAsc;
 
 	var TEMPL_ROOT = "<div class='"+ExTableHeader+"'></div><div class='"+ExTableBody+"'></div>";
 	var $TEMPL_ROW = $("<div class='"+ExTableRow+"'></div>");
@@ -109,13 +113,19 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	function initMove() {
 		// Move
 		var handle = null;
+		var lastChanged = null;
 		$(_ExTableHeader+">"+_ExTableColumn).live("mousedown", function(){
 			handle = this;
 			$(handle).css({cursor: "col-resize"});
 			return false;
 		}).live("mousemove",function(ev){
 			if (handle == null) return;
-			if (handle == this) return;
+			if (handle == this) {
+				lastChanged = null;
+				return;
+			}
+			if (lastChanged == this) return;
+			lastChanged = this;
 
 			var $handle = $(handle);
 			var $target = $(this);
@@ -133,6 +143,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		$(document.body).live("mouseup",function(ev){
 			$(handle).css({cursor: "pointer"});
 			handle = null;
+			lastChanged = null;
 		});
 
 	}
@@ -314,10 +325,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var $label = $col.find(_ExTableHeaderLabel+">span");
 
 			$label.text(cinfo.title);
-			$col.removeClass("ExTableHeaderSortDesc");
-			$col.removeClass("ExTableHeaderSortAsc");
+			$col.removeClass(ExTableHeaderSortDesc);
+			$col.removeClass(ExTableHeaderSortAsc);
 			if (self.sortInfo && self.sortInfo.index==idx) {
-				$col.addClass(self.sortInfo.desc?"ExTableHeaderSortDesc":"ExTableHeaderSortAsc");
+				$col.addClass(self.sortInfo.desc?ExTableHeaderSortDesc:ExTableHeaderSortAsc);
 			}
 
 			var selector = self.rootSelector+" "+_ExTableColumn_+idx;
