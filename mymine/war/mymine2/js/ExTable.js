@@ -31,6 +31,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var ExTableBody    = "ExTableBody";
 	var ExTableRow     = "ExTableRow";
 	var ExTableHeader  = "ExTableHeader";
+	var ExTableHeaderLabel  = "ExTableHeaderLabel";
 	var ExTableHandle  = "ExTableHandle";
 
 	var _ExTable        = "."+ExTable;
@@ -40,12 +41,17 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var _ExTableRow     = "."+ExTableRow;
 	var _ExTableHeader  = "."+ExTableHeader;
 	var _ExTableHandle  = "."+ExTableHandle;
+	var _ExTableHeaderLabel  = ".ExTableHeaderLabel";
 
 	var TEMPL_ROOT = "<div class='"+ExTableHeader+"'></div><div class='"+ExTableBody+"'></div>";
 	var $TEMPL_ROW = $("<div class='"+ExTableRow+"'></div>");
 	var $TEMPL_COL = $("<span class='"+ExTableColumn+"'></span>");
-	var $TEMPL_HEADER_COL = $("<span class='"+ExTableColumn+"'><span></span>"
-			+"<span class='"+ExTableHandle+"'>&nbsp;</span></span>");
+	var $TEMPL_HEADER_COL = $(
+		"<span class='"+ExTableColumn+"'>"
+			+"<span class='"+ExTableHeaderLabel+"'><span></span></span>"
+			+"<span class='"+ExTableHandle+"'>&nbsp;</span>"
+		+"</span>"
+	);
 
 	/**
 	 * クラス初期化処理。
@@ -122,7 +128,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var tmp = infos[hIdx].seq;
 			infos[hIdx].seq = infos[tIdx].seq;
 			infos[tIdx].seq = tmp;
-			self.refresh();
+			self.refreshHeaderOnly();
 		});
 		$(document.body).live("mouseup",function(ev){
 			$(handle).css({cursor: "pointer"});
@@ -276,14 +282,12 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 	function refreshRow($row, rowData, columnInfo) {
 		$row.find(_ExTableColumn).each(function(){
-			var $col = $(this);
-			var idx = $col.data("columnIdx");
-			var colData = rowData[idx];
+			var idx = $(this).data("columnIdx");
 			var setter = columnInfo[idx].setter;
 			if (setter) {
-				setter($col,colData);
+				setter(this,rowData,idx);
 			} else {
-				$col.text(colData);
+				$(this).text(rowData[idx]);
 			}
 		});
 		return $row;
@@ -307,7 +311,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var $col = $(this);
 			var idx = $col.data("columnIdx");
 			var cinfo = columnInfo[idx];
-			var $label = $col.find("span:first-child");
+			var $label = $col.find(_ExTableHeaderLabel+">span");
 
 			$label.text(cinfo.title);
 			$col.removeClass("ExTableHeaderSortDesc");
