@@ -98,21 +98,29 @@ ExTableRow			: データ行
 	overflow: visible;
 	cursor: pointer;
 }
-.ExTableHeader > .ExTableColumn > span{
+.ExTableHeader .ExTableHeaderLabel {
+	display: inline-block;
 	overflow: hidden;
-	vertical-align: middle;
 	padding: 0;
-	height: 100%;
-	line-height: 115%;
-}
-.ExTableHeader > .ExTableColumn > span:first-child{ /* Header Column Label */
 	width: 100%;
+	height: 120%;
+	vertical-align: top;
+}
+.ExTableHeader .ExTableHeaderLabel > span { /* Header Column Label */
+	display: inline-block;
+	width: auto;
+	height: 100%;
+	padding-right: 6px;
+	line-height: 120%;
+	vertical-align: bottom;
+	white-space: nowrap;
 }
 
 .ExTableHeader .ExTableHandle {
 	display: inline-block;
-	position: relative;
-	right: 0px;
+	position: absolute;
+	top: 0px;
+	right: -3px;
 	height: 100%;
 	width: 5px;
 	cursor: col-resize;
@@ -146,15 +154,15 @@ ExTableRow			: データ行
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
 	background-image: -moz-linear-gradient(top, #ccc, #eee);
 }
-.ExTableHeader .ExTableHeaderSortAsc > span:first-child{
-	background: url(../img/sort-up.png) no-repeat right 50%;
+.ExTableHeader .ExTableHeaderSortAsc .ExTableHeaderLabel > span {
+	background: url(../img/sort-up.png) no-repeat right 40%;
 }
 .ExTableHeader .ExTableHeaderSortDesc {
 	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
 	background-image: -moz-linear-gradient(top, #ccc, #eee);
 }
-.ExTableHeader .ExTableHeaderSortDesc > span:first-child{
-	background: url(../img/sort-down.png) no-repeat right 50%;
+.ExTableHeader .ExTableHeaderSortDesc .ExTableHeaderLabel > span {
+	background: url(../img/sort-down.png) no-repeat right 40%;
 }
 
 

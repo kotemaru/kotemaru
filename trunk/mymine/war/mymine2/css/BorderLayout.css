@@ -9,8 +9,8 @@ html,body {
 
 body > header,
 body > footer,
-body > section,
-body > div {
+body > section
+{
 	box-sizing: border-box;
 	display: inline-block;
 	position: absolute;
