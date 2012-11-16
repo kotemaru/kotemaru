@@ -1,3 +1,5 @@
+/* Copyright 2012 kotemaru.org. (http://www.apache.org/licenses/LICENSE-2.0) */
+
 /**
  * ExTable v1.0
  * 拡張テーブル。
@@ -10,7 +12,7 @@
  *
  * 使用例：
 	var exTable = new ExTable("#testTable");
-	exTable.setColumnInfo([
+	exTable.setColumnMeta([
 		//カラム名,  カラム幅(初期値),カラム順, カラムstyle
 		{title:"番号",  width:36,  seq:1, style:{"text-align":"right"}},
 		{title:"名前",  width:100, seq:2},
@@ -69,11 +71,18 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		 * カラムクリックでソート設定。
 		 */
 		$(_ExTableHeader+">"+_ExTableColumn).live("click", function(){
+			var col = this;
 			var $col = $(this);
 			var self = $col.parents(_ExTable).data(ExTable);
 			var idx = $col.data("columnIdx");
-			self.toggleSort(idx);
-			self.refresh();
+
+			var backup = col.style.cursor;
+			col.style.cursor = "wait";
+			setTimeout(function(){
+				self.toggleSort(idx);
+				self.refresh();
+				col.style.cursor = backup;
+			},1);
 		});
 	});
 
@@ -100,8 +109,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 			var idx = $col.data("columnIdx");
 			var self = $col.parents(_ExTable).data(ExTable);
-			var infos = self.getColumnInfo();
-			infos[idx].width = w;
+			var metas = self.getColumnMeta();
+			if (metas[idx].fixed) return; // 固定
+
+			metas[idx].width = w;
 			self.refreshHeaderOnly();
 		}).live("mouseup", function(){
 			handle = null;
@@ -133,11 +144,12 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var tIdx = $target.data("columnIdx");
 
 			var self = $handle.parents(_ExTable).data(ExTable);
-			var infos = self.getColumnInfo();
+			var metas = self.getColumnMeta();
+			if (metas[tIdx].fixed) return; // 固定
 
-			var tmp = infos[hIdx].seq;
-			infos[hIdx].seq = infos[tIdx].seq;
-			infos[tIdx].seq = tmp;
+			var tmp = metas[hIdx].seq;
+			metas[hIdx].seq = metas[tIdx].seq;
+			metas[tIdx].seq = tmp;
 			self.refreshHeaderOnly();
 		});
 		$(document.body).live("mouseup",function(ev){
@@ -174,13 +186,13 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 * - {title:"カラム名", width:カラム幅, seq:カラム表示順, style:{カラムのstyle}}
 	 * - seqとstyleはオプション。
 	 * - カラム表示順が変わってもデータの順版は変わらない。
-	 * $param info カラム情報データ。
+	 * $param meta カラム情報データ。
 	 */
-	Class.prototype.setColumnInfo = function(info) {
-		this.columnInfo = info;
-		for (var i=0; i<info.length; i++) {
-			if (info[i].seq == null) info[i].seq = i;
-			if (info[i].style == null) info[i].style = {};
+	Class.prototype.setColumnMeta = function(meta) {
+		this.columnMeta = meta;
+		for (var i=0; i<meta.length; i++) {
+			if (meta[i].seq == null) meta[i].seq = i;
+			if (meta[i].style == null) meta[i].style = {};
 		}
 		return this;
 	}
@@ -188,8 +200,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	/**
 	 * カラム情報取得。
 	 */
-	Class.prototype.getColumnInfo = function(info) {
-		return this.columnInfo;
+	Class.prototype.getColumnMeta = function() {
+		return this.columnMeta;
 	}
 	/**
 	 * ソート条件設定。
@@ -233,7 +245,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.setRowHeight = function(h) {
 		var base = this.rootSelector+" ";
-		setCssRule(base+_ExTableRow, {height: h+"px"});
+		setCssRule(base+_ExTableRow, {"min-height": h+"px"});
 	}
 
 
@@ -249,7 +261,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		if (deep) this.build();
 
 		var $root = $(this.rootSelector);
-		this.refreshHeader($root.find(_ExTableHeader), this.columnInfo);
+		this.refreshHeader($root.find(_ExTableHeader), this.columnMeta);
 
 		sort(this.data, this.sortInfo);
 		var self = this;
@@ -257,30 +269,39 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		$body.find(_ExTableRow).each(function(){
 			var $row = $(this);
 			var idx = $row.data("rowIdx");
-			refreshRow($row, self.data[idx], self.columnInfo);
+			refreshRowNoJq($row, self.data[idx], self.columnMeta);
 		});
 		return this;
 	}
+	/**
+	 * ヘッダのみ再描画。
+	 * - ヘッダのサイズ変更、移動用。
+	 */
 	Class.prototype.refreshHeaderOnly = function() {
 		var $root = $(this.rootSelector);
-		this.refreshHeader($root.find(_ExTableHeader), this.columnInfo);
+		this.refreshHeader($root.find(_ExTableHeader), this.columnMeta);
 	}
 
-	function sort(data, info) {
-		if (info == null) return;
+	/**
+	 * データのソート。
+	 * @param data データ
+	 * @param cond ソート条件 {index:カラム, desc:bool}
+	 */
+	function sort(data, cond) {
+		if (cond == null) return;
 
-		var idx = info.index;
+		var idx = cond.index;
 		var type = typeof data[0][idx];
 
-		function defoltComp(a,b) {
+		function defaultComp(a,b) {
 			var A=a[idx], B=b[idx]
 			return A==B?0:(A>B?1:-1);
 		};
-		var comp = defoltComp;
+		var comp = defaultComp;
 		if (type == "number") {
 			comp = function(a,b){return a[idx]-b[idx];}
 		}
-		if (info.desc) {
+		if (cond.desc) {
 			var orgComp = comp;
 			comp = function(a,b){return orgComp(b,a);}
 		}
@@ -288,30 +309,70 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		return data.sort(comp);
 	}
 
-
-
-
-	function refreshRow($row, rowData, columnInfo) {
+	/**
+	 * 行の再描画。
+	 * @param $row 行要素
+	 * @param rowData 行データ
+	 * @param columnMeta カラム情報
+	 */
+	function refreshRow($row, rowData, columnMeta) {
+		var rowh = 1;
+		$row.height(rowh);
 		$row.find(_ExTableColumn).each(function(){
-			var idx = $(this).data("columnIdx");
-			var setter = columnInfo[idx].setter;
+			var $col = $(this);
+			var idx = $col.data("columnIdx");
+			var setter = columnMeta[idx].setter;
 			if (setter) {
 				setter(this,rowData,idx);
 			} else {
-				$(this).text(rowData[idx]);
+				$col.text(rowData[idx]);
 			}
+			var h = $col.height();
+			rowh = h>rowh?h:rowh;
 		});
+		$row.height(rowh);
 		return $row;
 	}
-	Class.prototype.refreshHeader = function($header, columnInfo) {
+	/**
+	 * 行の再描画。高速版（jQuery無し）
+	 * @param $row 行要素
+	 * @param rowData 行データ
+	 * @param columnMeta カラム情報
+	 */
+	function refreshRowNoJq($row, rowData, columnMeta) {
+		var rowh = 1;
+		$row.height(rowh);
+		var children = $row[0].childNodes;
+		for (var i=0; i<children.length; i++) {
+			var col = children[i];
+			var idx = col.dataset.columnIdx;
+			var setter = columnMeta[idx].setter;
+			if (setter) {
+				setter(col,rowData,idx);
+			} else {
+				col.innerText = rowData[idx];
+			}
+			var h = col.clientHeight;
+			rowh = h>rowh?h:rowh;
+		};
+		$row.height(rowh);
+		return $row;
+	}
+
+	/**
+	 * ヘッダの再描画。
+	 * @param $header ヘッダ行要素
+	 * @param columnMeta カラム情報
+	 */
+	Class.prototype.refreshHeader = function($header, columnMeta) {
 		var lefts = [];
-		for (var i=0; i<columnInfo.length; i++) {
-			var cinfo = columnInfo[i];
-			lefts.push({idx:i, seq:cinfo.seq, width:cinfo.width, left:0});
+		for (var i=0; i<columnMeta.length; i++) {
+			var cmeta = columnMeta[i];
+			lefts.push({idx:i, seq:cmeta.seq, width:cmeta.width, left:0});
 		}
 		lefts.sort(function(a,b){return a.seq-b.seq;});
 		var left = 0;
-		for (var i=0; i<columnInfo.length; i++) {
+		for (var i=0; i<columnMeta.length; i++) {
 			lefts[i].left = left;
 			left += lefts[i].width;
 		}
@@ -321,42 +382,47 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		$header.find(_ExTableColumn).each(function(){
 			var $col = $(this);
 			var idx = $col.data("columnIdx");
-			var cinfo = columnInfo[idx];
+			var cmeta = columnMeta[idx];
 			var $label = $col.find(_ExTableHeaderLabel+">span");
 
-			$label.text(cinfo.title);
+			$label.text(cmeta.title);
 			$col.removeClass(ExTableHeaderSortDesc);
 			$col.removeClass(ExTableHeaderSortAsc);
 			if (self.sortInfo && self.sortInfo.index==idx) {
 				$col.addClass(self.sortInfo.desc?ExTableHeaderSortDesc:ExTableHeaderSortAsc);
 			}
 
+			//setCssRule(_ExTableHeader+" "+_ExTableColumn_+idx, cmeta.style);
+			setCssRule(_ExTableRow+" "+_ExTableColumn_+idx, cmeta.style);
+
 			var selector = self.rootSelector+" "+_ExTableColumn_+idx;
-			var style = $.extend({},cinfo.style, {
-				width: cinfo.width+"px",
+			var style = $.extend({}, {
+				width: cmeta.width+"px",
 				left: lefts[idx].left+"px",
 				paddingLeft: null,
 				paddingRight: null
 			});
 			// 文字半分残るのでその対策。
-			if (cinfo.width<=4) {
+			if (cmeta.width<=4) {
 				style.width = "0px";
 				style.paddingLeft = "4px";
 				style.paddingRight = "0px";
 			}
 			setCssRule(selector, style);
-
 		});
 
 		return $header;
 	}
 
 	//-----------------
+	/**
+	 * テーブル要素の生成。
+	 */
 	Class.prototype.build = function() {
 		var $root = $(this.rootSelector);
 		$root.html(TEMPL_ROOT);
 
-		this.buildHeader($root.find(_ExTableHeader), this.columnInfo);
+		this.buildHeader($root.find(_ExTableHeader), this.columnMeta);
 
 		var $body = $root.find(_ExTableBody);
 		for (var i=0; i<this.data.length; i++) {
@@ -369,22 +435,31 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	}
 
 
+	/**
+	 * 行要素の生成。
+	 */
 	function buildRow(rowData) {
 		var $row = $TEMPL_ROW.clone();
 		for (var i=0; i<rowData.length; i++) {
 			var $col = $TEMPL_COL.clone();
 			$col.addClass(ExTableColumn_+i);
 			$col.data("columnIdx", i);
+			$col[0].dataset.columnIdx = i;
 			$row.append($col);
 		}
 		return $row;
 	}
-	Class.prototype.buildHeader = function($header, columnInfo) {
-		for (var i=0; i<columnInfo.length; i++) {
+
+	/**
+	 * ヘッダ行要素の生成。
+	 */
+	Class.prototype.buildHeader = function($header, columnMeta) {
+		for (var i=0; i<columnMeta.length; i++) {
 			var $col = $TEMPL_HEADER_COL.clone();
 			$col.find("span:first-child");
 			$col.addClass(ExTableColumn_+i);
 			$col.data("columnIdx", i);
+			$col[0].dataset.columnIdx = i;
 			$header.append($col);
 
 		}

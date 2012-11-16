@@ -34,17 +34,18 @@ $(function(){
 
 
 	var exTable = new ExTable("#ticketTray");
-	exTable.setColumnInfo([
+	exTable.setColumnMeta([
 		{title:"番号",         width:36, style:{"text-align":"right"}},
 		{title:"プロジェクト", width:80 },
 		{title:"トラッカー",   width:70 },
-		{title:"優先度",       width:48 },
+		{title:"優先度",       width:102, seq:9, fixed:true, style:{"white-space":"pre","height":"auto"}},
 		{title:"進捗",         width:30, setter:rateSetter },
 	]);
+
 	exTable.setData([
 		[100,"aaaa",true,"xxxxxxx",100],
-		[200,"bbb",true,"xxxxxxx",70],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",50],
+		[200,"bbb",true,"",70],
+		[300,"ccc",true,"ggggggggggg\ngggggggggggggg\nggggggggggggggggggggggggggggggggg",50],
 		[ 40,"ddd",true,"xxxxxxx",30],
 		[100,"aaaa",true,"xxxxxxx",10],
 		[200,"bbb",true,"xxxxxxx",30],
@@ -63,10 +64,18 @@ $(function(){
 		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
 		[ 40,"ddd",true,"xxxxxxx",30],
 	]);
+
+	var data = [];
+	for (var i=0; i<300; i++) {
+		data.push([ 40,"ddd",true,"xxxxxxx",30]);
+	}
+	exTable.setData(data);
+
+
 	exTable.setSortInfo(2);
 	exTable.refresh(true);
 	//exTable.setHeaderHeight(40);
-	//exTable.setRowHeight(50);
+	exTable.setRowHeight(25);
 
 
 	$("#balloon").hide();
