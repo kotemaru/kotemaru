@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>MyMine</title>
+
+	<link rel="stylesheet" href="css/ExTable.css" />
+
+	<script src="../jq/jquery-1.8.2.js" ></script>
+	<script src="js/ExTable.js" ></script>
+
+	<script>
+$(function(){
+
+	function rateSetter($elem,data,index) {
+		var val = data[index];
+		$elem.html("<div class='RateBar'><span></span></div>");
+		$elem.find(">div>span").css("width",val+"%");
+	}
+
+
+	var exTable = new ExTable("#exTable");
+	exTable.header([
+		{title:"番号",         width:36, style:{textAlign:"right"}},
+		{title:"プロジェクト", width:80 },
+		{title:"トラッカー",   width:"30%" },
+		{title:"優先度",       width:"70%", seq:9, fixed: false, style:{whiteSpace:"normal","height":"auto"}},
+		{title:"進捗",         width:30, setter:rateSetter }
+	]);
+
+	var data = [
+		[100,"aaaa",true,"xxxxxxx",100],
+		[200,"bbb",true,"",70],
+		[300,"ccc",true,"ggggggggggg\ngggggggggggggg\nggggggggggggggggggggggggggggggggg",50],
+		[ 40,"ddd",true,"xxxxxxx",30],
+		[100,"aaaa",true,"xxxxxxx",10],
+		[200,"bbb",true,"xxxxxxx",30],
+		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",true,"xxxxxxx",90],
+		[100,"aaaa",true,"xxxxxxx",95],
+		[200,"bbb",false,"xxxxxxx",97],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",false,"xxxxxxx",3],
+		[100,"aaaa",false,"xxxxxxx",30],
+		[200,"bbb",false,"xxxxxxx",30],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",false,"xxxxxxx",30],
+		[100,"aaaa",false,"xxxxxxx",30],
+		[200,"bbb",false,"xxxxxxx",30],
+		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
+		[ 40,"ddd",true,"xxxxxxx",30]
+	];
+	exTable.data(data);
+	setTimeout(function(){
+		data[10][1] = "UUUUUU";
+		exTable.update(10);
+	}, 3000);
+	setTimeout(function(){
+		exTable.update(11,[99,"ZZZZZZ",true,"yyyyy",99]);
+	}, 5000);
+	setTimeout(function(){
+		exTable.insert(0,[99,"AAAAAA",true,"yyyyy",99]);
+	}, 6000);
+	setTimeout(function(){
+		exTable.remove(5);
+	}, 7000);
+	setTimeout(function(){
+		exTable.append([99,"BBBBBB",true,"yyyyy",99]);
+	}, 8000);
+
+
+	var data = [];
+	for (var i=0; i<300; i++) {
+		if (i%10 == 0) {
+			data.push([ i,"ddd",true,"xxxx\nxxx",30]);
+		} else {
+			data.push([ i,"ddd",true,"xxxxxxx",30]);
+		}
+	}
+
+	exTable.data(data);
+
+
+	//exTable.setSortInfo(2);
+	//exTable.refresh(true);
+	//exTable.setHeaderHeight(40);
+	//exTable.setRowHeight(25);
+
+
+	$("#balloon").hide();
+	$("*[data-alt]").live("mouseover",function(){
+		var $this = $(this);
+		var offset = $this.offset();
+		var alt = $this.attr("data-alt");
+		offset.top += 20;
+		offset.left += 20;
+		$("#balloon").show().text(alt).offset(offset);
+	}).live("mouseout",function(){
+		$("#balloon").hide();
+	})
+
+});
+	</script>
+	<style>
+html,body{
+	padding: 0;
+	margin: 0;
+	height: 100%;
+}
+	
+* {
+	box-sizing: border-box;
+}
+
+.BorderLayoutLeft {
+	border-right: 1px solid lightgray;
+}
+.BorderLayoutHeader {
+	border-bottom: 1px solid lightgray;
+}
+
+.RateBar {
+	box-sizing: border-box;
+	position: relative;
+	width: 22px;
+	height: 12px;
+	border: 1px solid gray;
+	//overflow: hidden;
+	margin-top: 2px;
+	font-size: 10px;
+	line-height:100%;
+	text-align: right;
+}
+.RateBar >span{
+	display: inline-block;
+	position: absolute;
+	top:0;
+	left:0;
+	width: 100%;
+	height: 100%;
+}
+.RateBar >span:first-child{
+	background: green;
+}
+
+	</style>
+</head>
+<body>
+	<div id="exTable" class="ExTable"></div>
+</body>
+</html>
