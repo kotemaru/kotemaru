@@ -54,12 +54,14 @@ function Common(){this.initialize.apply(this, arguments)};
 	var $waiting = $("<div id='commonWaiting' ></div>");
 	$(function(){
 		$(document.body).append($waiting);
-	})
+	});
 	Class.waiting = function(callback) {
 		$waiting.show();
 		setTimeout(function(){
 			callback();
-			$waiting.hide();
+			setTimeout(function(){
+				$waiting.hide();
+			}, 100);
 		}, 1);
 	}
 

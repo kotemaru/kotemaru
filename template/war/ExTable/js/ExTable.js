@@ -462,45 +462,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	}
 
 
-	//---------------------------------------------------
-
-	var classCssRuleCache = {};
-	function getCssRule(selector) {
-		if (classCssRuleCache[selector]) return classCssRuleCache[selector];
-		var sheets = document.styleSheets;
-		for (var i=0; i<sheets.length; i++) {
-			var rules = sheets[i].cssRules;
-			if (rules == null) rules = sheets[i].rules; // ForIE
-			for (var j=0; j<rules.length; j++) {
-				if (selector == rules[j].selectorText) {
-					classCssRuleCache[selector] = rules[j];
-					return rules[j];
-				}
-			}
-		}
-		return null;
-	}
-	function getCssRuleWithDefine(selector) {
-		var rule = getCssRule(selector);
-		if (rule) return rule;
-
-		var sheet = document.styleSheets[0];
-		if (sheet.insertRule) {
-			sheet.insertRule(selector+"{}", sheet.cssRules.length);
-		} else {
-			sheet.addRule(selector,"dummy:dummy");//forIE
-		}
-		return getCssRule(selector);
-	}
 	function setCssRule(selector, style) {
-		var rule = getCssRuleWithDefine(selector);
-		if (rule == null) return;
-		for (var k in style) rule.style[k] = style[k];
-	}
-	function setCssRuleImportant(selector, style) {
-		var rule = getCssRuleWithDefine(selector);
-		if (rule == null) return;
-		for (var k in style) rule.style.setProperty(k, style[k], 'important');
+		Common.setCssRule(selector, style);
 	}
 
 	//----------------------------------------------------------------------------
@@ -538,21 +501,13 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		}).live("mouseup", function(){
 			if (handle) {
 				var exTable = $(handle).parents(_ExTable).data(ExTable);
-				waiting(function(){
+				Common.waiting(function(){
 					exTable.refreshRowHight();
 				});
 			}
 			handle = null;
 		});
 	}
-
-	function waiting(callback) {
-		setTimeout(function(){
-			callback();
-		}, 1);
-	}
-
-
 
 	/**
 	 * カラムの移動ハンドラ設定。
