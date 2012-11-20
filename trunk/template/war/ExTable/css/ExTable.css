@@ -46,7 +46,7 @@ ExTableRow			: データ行
 	position: relative;
 	width: 100%;
 	height: 100%;
-	padding-top: 20px;		/* header height*/
+	padding-top: 24px;		/* header height*/
 }
 
 .ExTableHeader {
@@ -55,8 +55,8 @@ ExTableRow			: データ行
 	display: block;
 	position: relative;
 	width: 100%;
-	height: 20px;			/* header height*/
-	margin-top: -20px;		/* header height*/
+	height: 24px;			/* header height*/
+	margin-top: -24px;		/* header height*/
 }
 
 .ExTableBody {
@@ -85,6 +85,7 @@ ExTableRow			: データ行
 	display: inline-block;
 	position: absolute;
 	min-height: 100%;
+	line-height: 100%;
 	height: 100%;
 	padding: 2px 2px;
 	overflow: hidden;
@@ -101,26 +102,32 @@ ExTableRow			: データ行
 /* --------------------------------------------------------
    Header
 -----------------------------------------------------------*/
+
 .ExTableHeader > .ExTableColumn {
 	overflow: visible;
 	cursor: pointer;
+	min-height: 100%;
 }
+
 .ExTableHeader .ExTableHeaderLabel {
 	display: inline-block;
+	position: relative;
 	overflow: hidden;
 	padding: 0;
+	min-height: 100%;
 	width: 100%;
-	height: 120%;
-	vertical-align: top;
 }
+
 .ExTableHeader .ExTableHeaderLabel > span { /* Header Column Label */
 	display: inline-block;
+	position: relative;
+	padding: 0;
 	width: auto;
-	height: 100%;
+	height: inherit;
 	padding-right: 6px;
-	line-height: 120%;
-	vertical-align: bottom;
 	white-space: nowrap;
+	vertical-align: middle;
+	line-height: 20px;
 }
 
 .ExTableHeader .ExTableHandle {
@@ -131,7 +138,6 @@ ExTableRow			: データ行
 	height: 100%;
 	width: 5px;
 	cursor: url('../img/cursor-move-line-LR.png') 8 8, col-resize;
-	//cursor:col-resize;
 	z-index: 100;
 	//border: 1px solid gray; /* for debug */
 }
