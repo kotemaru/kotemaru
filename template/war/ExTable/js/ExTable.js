@@ -545,7 +545,6 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			metas[tIdx].seq = tmp;
 			exTable.refreshHeader();
 
-			onClick = false;
 		}).live("mouseup", function(){
 			if (!onClick) return;
 			/**
@@ -568,7 +567,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			$(handle).css({cursor: "pointer"});
 			handle = null;
 			lastChanged = null;
-		});
+		}).live("mousemove", function(){
+			onClick = false;
+		})
 	}
 
 	/**
