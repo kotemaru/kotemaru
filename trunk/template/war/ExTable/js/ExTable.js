@@ -41,6 +41,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var ExTableRow     = "ExTableRow";
 	var ExTableHeader  = "ExTableHeader";
 	var ExTableHeaderLabel  = "ExTableHeaderLabel";
+	var ExTableHeaderLabelInner  = "ExTableHeaderLabelInner";
 	var ExTableHandle  = "ExTableHandle";
 	var ExTableHeaderSortDesc = "ExTableHeaderSortDesc";
 	var ExTableHeaderSortAsc = "ExTableHeaderSortAsc";
@@ -61,10 +62,11 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	var TEMPL_ROOT = "<div class='"+ExTableHeader+"'></div><div class='"+ExTableBody+"'></div>";
 	var $TEMPL_ROW = $("<div class='"+ExTableRow+"'></div>");
 	var $TEMPL_COL = $("<span class='"+ExTableColumn+"'></span>");
-	//var $TEMPL_COL = $("<pre class='"+ExTableColumn+"'></pre>");
 	var $TEMPL_HEADER_COL = $(
 		"<span class='"+ExTableColumn+"'>"
-			+"<span class='"+ExTableHeaderLabel+"'><span></span></span>"
+			+"<span class='"+ExTableHeaderLabel+"'>"
+				+"<span class='"+ExTableHeaderLabelInner+"'></span>"
+			+"</span>"
 			+"<span class='"+ExTableHandle+"'>&nbsp;</span>"
 		+"</span>"
 	);
@@ -94,12 +96,12 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 * - カラム表示順が変わってもデータの順版は変わらない。
 	 * $param meta カラム情報データ。
 	 */
-	Class.prototype.header = function(meta) {
-		this.columnMeta = meta;
-		for (var i=0; i<meta.length; i++) {
-			if (meta[i].seq == null) meta[i].seq = i;
-			if (meta[i].style == null) meta[i].style = {};
-			if (meta[i].style.height == "auto") this.useVariableHeight = true;
+	Class.prototype.header = function(metas) {
+		this.columnMetas = metas;
+		for (var i=0; i<metas.length; i++) {
+			if (metas[i].seq == null) metas[i].seq = i;
+			if (metas[i].style == null) metas[i].style = {};
+			if (metas[i].style.height == "auto") this.useVariableHeight = true;
 		}
 		return this;
 	}
@@ -107,8 +109,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	/**
 	 * カラム情報取得。
 	 */
-	Class.prototype.getColumnMeta = function() {
-		return this.columnMeta;
+	Class.prototype.getColumnMetas = function() {
+		return this.columnMetas;
 	}
 
 	/**
@@ -142,7 +144,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 	/**
 	 * ソート条件設定。
-	 * - 既に選択されている場合は逆順／正順入れ換え。
+	 * - 既に選択されている場合は昇順／降順入れ換え。
 	 * @param idx ソートするカラムの位置(0はじまり)
 	 */
 	Class.prototype.toggleSort = function(idx) {
@@ -163,14 +165,14 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			this.masterData[rowNo] = data;
 			pair.data = data;
 		}
-		refreshRow($(pair.elem), pair.data, this.columnMeta);
+		refreshRow($(pair.elem), pair.data, this.columnMetas);
 	}
 
 	/**
 	 * 行の挿入
 	 */
 	Class.prototype.insert = function(rowNo, data) {
-		var $row = buildRow(data, this.columnMeta);
+		var $row = buildRow(data, this.columnMetas);
 		var pair = {elem:$row[0], data:data}
 		this.masterData.splice(rowNo, 0, data);
 		this.masterRows.splice(rowNo, 0, pair);
@@ -181,7 +183,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 * 行の追加
 	 */
 	Class.prototype.append = function(data) {
-		var $row = buildRow(data, this.columnMeta);
+		var $row = buildRow(data, this.columnMetas);
 		var pair = {elem:$row[0], data:data}
 		this.masterData.push(data);
 		this.masterRows.push(pair);
@@ -241,69 +243,45 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	/**
 	 * ヘッダの再描画。
 	 * @param $header ヘッダ行要素
-	 * @param columnMeta カラム情報
+	 * @param columnMetas カラム情報
 	 */
 	Class.prototype.refreshHeader = function() {
 		var $root = $(this.rootSelector);
 		var $header = $root.find(_ExTableHeader);
-		var columnMeta = this.columnMeta;
+		var columnMetas = this.columnMetas;
 
-		var hasMax = 0;
-		var lefts = [];
-		for (var i=0; i<columnMeta.length; i++) {
-			var cmeta = columnMeta[i];
-			lefts.push({idx:i, seq:cmeta.seq, width:cmeta.width, left:0});
-			if (typeof cmeta.width == "string") hasMax++;
-		}
-
-		if (hasMax > 0) {
-			var w = $root.find(_ExTableBody)[0].clientWidth;
-			for (var i=0; i<lefts.length; i++) {
-				if (typeof lefts[i].width == "number") w = w -lefts[i].width;
-			}
-			for (var i=0; i<lefts.length; i++) {
-				if (typeof lefts[i].width == "string") {
-					lefts[i].width = (w*parseInt(lefts[i].width)/100);
-				}
-			}
-		}
-
-
-		lefts.sort(function(a,b){return a.seq-b.seq;});
-		var left = 0;
-		for (var i=0; i<columnMeta.length; i++) {
-			lefts[i].left = left;
-			left += lefts[i].width;
-		}
-		lefts.sort(function(a,b){return a.idx-b.idx;});
+		var columns = calcColumnSize(columnMetas, $root.find(_ExTableBody)[0].clientWidth);
+		columns = calcColumnPosition(columns);
 
 		var sortInfo = this.sortInfo;
 		var rootSelector = this.rootSelector;
 		$header.find(_ExTableColumn).each(function(){
 			var $col = $(this);
 			var idx = $col.data(COLUMN_IDX);
-			var cmeta = columnMeta[idx];
+			var cmeta = columnMetas[idx];
 			var $label = $col.find(_ExTableHeaderLabel+">span");
 
+			// ヘッダタイトル設定
 			$label.text(cmeta.title);
+			// ソートのマーク設定
 			$col.removeClass(ExTableHeaderSortDesc);
 			$col.removeClass(ExTableHeaderSortAsc);
 			if (sortInfo && sortInfo.index==idx) {
 				$col.addClass(sortInfo.desc?ExTableHeaderSortDesc:ExTableHeaderSortAsc);
 			}
 
-			// Bodyのみに適用
+			// オプションのスタイルはBodyのみに適用
 			setCssRule(_ExTableRow+" "+_ExTableColumn_+idx, cmeta.style);
 
-			// HeaderとBodyに適用
+			// サイズ変更はHeaderとBodyに適用
 			var selector = rootSelector+" "+_ExTableColumn_+idx;
 			var style = {
-				width: lefts[idx].width+"px",
-				left: lefts[idx].left+"px",
+				width: columns[idx].width+"px",
+				left: columns[idx].left+"px",
 				paddingLeft: null,
 				paddingRight: null
 			};
-			// 文字半分残るのでその対策。
+			// 最小化したとき文字半分残るのでその対策。
 			if (cmeta.width<=4) {
 				style.width = "0px";
 				style.paddingLeft = "4px";
@@ -315,8 +293,61 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		return $header;
 	}
 
+	/**
+	 * カラムサイズの計算。
+	 * - widthが"nn%"の場合はレコード幅から固定幅カラム分を差し引いて残り幅の nn% の幅になる。
+	 * @param columnMetas カラム情報
+	 * @param recodeWidth レコードの幅
+	 * @return カラム幅（＋他の情報）の配列
+	 */
+	function calcColumnSize(columnMetas, recodeWidth) {
+		var columns = [];
+		for (var i=0; i<columnMetas.length; i++) {
+			var m = columnMetas[i];
+			var column = {idx:i, seq:m.seq, width:m.width, left:0};
+			if (typeof m.width == "string") column.varticalWidth = m.width;
+			columns.push(column);
+		}
 
+		var remainWidth = getRemineWidth(columnMetas, recodeWidth);
+		for (var i=0; i<columns.length; i++) {
+			if (typeof columns[i].width == "string") {
+				columns[i].width = remainWidth*parseInt(columns[i].width) / 100;
+			}
+		}
+		return columns;
+	}
+	function getRemineWidth(columnMetas, recodeWidth) {
+		var remainWidth = recodeWidth;
+		for (var i=0; i<columnMetas.length; i++) {
+			var m = columnMetas[i];
+			if (typeof m.width == "number") remainWidth -= m.width;
+		}
+		return remainWidth;
+	}
 
+	Class.prototype.getRemineWidth = function() {
+		return getRemineWidth(this.columnMetas,
+				$(this.rootSelector+" "+_ExTableBody)[0].clientWidth);
+	}
+
+	/**
+	 * カラム位置の計算。
+	 * - カラム順にソートしてカラム幅を足していくだけ。
+	 * - ソートは元の順番(columnMetasと同じ)に戻す。
+	 * @param columns カラム幅（＋他の情報）の配列
+	 * @return カラム幅（＋他の情報）の配列
+	 */
+	function calcColumnPosition(columns) {
+		columns.sort(function(a,b){return a.seq-b.seq;});
+		var left = 0;
+		for (var i=0; i<columns.length; i++) {
+			columns[i].left = left;
+			left += columns[i].width;
+		}
+		columns.sort(function(a,b){return a.idx-b.idx;});
+		return columns;
+	}
 
 	/**
 	 *
@@ -366,13 +397,13 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 * 行の再描画。
 	 * @param $row 行要素
 	 * @param rowData 行データ
-	 * @param columnMeta カラム情報
+	 * @param columnMetas カラム情報
 	 */
-	function refreshRow($row, rowData, columnMeta) {
+	function refreshRow($row, rowData, columnMetas) {
 		$row.find(_ExTableColumn).each(function(){
 			var $col = $(this);
 			var idx = $col.data(COLUMN_IDX);
-			var setter = columnMeta[idx].setter;
+			var setter = columnMetas[idx].setter;
 			if (setter) {
 				setter($col,rowData,idx);
 			} else {
@@ -414,14 +445,14 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		var $root = $(this.rootSelector);
 		$root.html(TEMPL_ROOT);
 
-		buildHeader($root.find(_ExTableHeader), this.columnMeta);
+		buildHeader($root.find(_ExTableHeader), this.columnMetas);
 		this.refreshHeader();
 
 		this.viewRows = [];
 		this.masterRows = [];
 		var $body = $root.find(_ExTableBody);
 		for (var i=0; i<this.masterData.length; i++) {
-			var $row = buildRow(this.masterData[i], this.columnMeta);
+			var $row = buildRow(this.masterData[i], this.columnMetas);
 			$body.append($row);
 			var rowPair = {elem:$row[0], data:this.masterData[i]}
 			this.viewRows.push(rowPair);
@@ -435,7 +466,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	/**
 	 * 行要素の生成。
 	 */
-	function buildRow(rowData, columnMeta) {
+	function buildRow(rowData, columnMetas) {
 		var $row = $TEMPL_ROW.clone();
 		for (var i=0; i<rowData.length; i++) {
 			var $col = $TEMPL_COL.clone();
@@ -443,15 +474,15 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			$col.data(COLUMN_IDX, i);
 			$row.append($col);
 		}
-		refreshRow($row, rowData, columnMeta);
+		refreshRow($row, rowData, columnMetas);
 		return $row;
 	}
 
 	/**
 	 * ヘッダ行要素の生成。
 	 */
-	function buildHeader($header, columnMeta) {
-		for (var i=0; i<columnMeta.length; i++) {
+	function buildHeader($header, columnMetas) {
+		for (var i=0; i<columnMetas.length; i++) {
 			var $col = $TEMPL_HEADER_COL.clone();
 			//$col.find("span:first-child");
 			$col.addClass(ExTableColumn_+i);
@@ -492,10 +523,16 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 			var idx = $col.data(COLUMN_IDX);
 			var exTable = $col.parents(_ExTable).data(ExTable);
-			var metas = exTable.getColumnMeta();
+			var metas = exTable.getColumnMetas();
 			if (metas[idx].fixed) return; // 固定
 
-			metas[idx].width = w;
+			if (typeof metas[idx].width == "string") { // =="n%"
+				var remaineWidth = exTable.getRemineWidth();
+				metas[idx].width = Math.floor(w*100/remaineWidth)+"%";
+			} else {
+				metas[idx].width = w;
+			}
+
 			exTable.updateHeader();
 			//exTable.refreshRowHight();
 		}).live("mouseup", function(){
@@ -537,7 +574,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var tIdx = $target.data(COLUMN_IDX);
 
 			var exTable = $handle.parents(_ExTable).data(ExTable);
-			var metas = exTable.getColumnMeta();
+			var metas = exTable.getColumnMetas();
 			if (metas[tIdx].fixed) return; // 固定
 
 			var tmp = metas[hIdx].seq;
