@@ -1,6 +1,7 @@
 
 .RateBar {
 	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	position: relative;
 	width: 22px;
 	height: 12px;
