@@ -9,14 +9,16 @@
  * - カラムのサイズ変更をサポートする。
  * - カラムの順番入れ換えをサポートする。
  * - カラム毎のソートをサポートする。
+ * - データの改行をサポートする。(行毎に高さが可変)
+ * - カスタムのカラム表示をサポートする。(コールバック関数)
  *
  * 使用例：
 	var exTable = new ExTable("#testTable");
 	exTable.header([
-		//カラム名,  カラム幅(初期値),カラム順, カラムstyle
-		{title:"番号",  width:36,  seq:1, style:{"text-align":"right"}},
-		{title:"名前",  width:100, seq:2},
-		{title:"住所",  width:500, seq:3},
+		//カラム名,  カラム幅(初期値), カラムstyle
+		{title:"番号",  width:36,  style:{textAlign:"right"}},
+		{title:"名前",  width:100 },
+		{title:"住所",  width:"100%", style:{whiteSpace:"normal", height:"auto"}},
 	]);
 	exTable.data([
 		[ 123,"山田 太郎","徳島県徳島市万代町1丁目1番地"],
@@ -24,13 +26,27 @@
 		[5567,"田中 一朗","愛媛県松山市一番町４丁目４－２"],
 	]);
 
+ * - 機能概要
+ * -- exTable.header([{カラムメタ情報},…])   // カラムメタ情報設定
+ * -- exTable.data(データ２次元配列);     // データ設定
+ * -- exTable.updateHeader();          // ヘッダ情報更新通知(設定配列データの内容を変更した場合)
+ * -- exTable.update(行番号);           // 行データ更新通知(設定配列データの内容を変更した場合)
+ * -- exTable.update(行番号,行データ);   // 行データ変更
+ * -- exTable.insert(行番号,行データ);   // 行挿入
+ * -- exTable.append(行データ);         // 行追加
+ * -- exTable.remove(行番号);           // 行削除
+ * -- exTable.sort(カラムIdx, 順序フラグ);   // ソート
+ * -- exTable.setHeaderHeight(高さ);   // ヘッダの高さ設定
+ * -- exTable.setRowHeight(高さ);      // 行の高さ設定
  *
- * - $(e).exTable().header([...]).data([...]);
- * - $(e).exTable().update(no);
- * - $(e).exTable().sort(no,desc);
- * - $(e).exTable().updateHeader();
- *
- *
+ * - カラムメタ情報
+ * -- title(必須): カラムの名前
+ * -- width(必須): カラムの幅。int=px, "nn%"=余白(レコード幅-固定カラム幅合計)に対する割合
+ * -- seq(略可): カラム表示順。デフォルトは配列Index。
+ * -- style(略可): カラム表示CSS。(ヘッダは影響しない)
+ * -- fixed(略可): true=カラムのリサイズ、移動禁止。false=デフォルト。
+ * -- setter(略可): カラム表示カスタム関数。
+ * --- function($(カラム要素),行データ,カラムindex)
  */
 function ExTable(){this.initialize.apply(this, arguments)};
 (function(Class){
@@ -250,7 +266,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		var $header = $root.find(_ExTableHeader);
 		var columnMetas = this.columnMetas;
 
+		// カラムの幅決定。
 		var columns = calcColumnSize(columnMetas, $root.find(_ExTableBody)[0].clientWidth);
+		// カラムの位置決定。
 		columns = calcColumnPosition(columns);
 
 		var sortInfo = this.sortInfo;
@@ -317,6 +335,12 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		}
 		return columns;
 	}
+	/**
+	 * レコード幅から固定幅カラム分を差し引いて残り幅を返す。
+	 * @param columnMetas カラム情報
+	 * @param recodeWidth レコードの幅
+	 * @return 残り幅
+	 */
 	function getRemineWidth(columnMetas, recodeWidth) {
 		var remainWidth = recodeWidth;
 		for (var i=0; i<columnMetas.length; i++) {
@@ -326,6 +350,11 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		return remainWidth;
 	}
 
+	/**
+	 * レコード幅から固定幅カラム分を差し引いて残り幅を返す。
+	 * - Eventハンドラ用
+	 * @return 残り幅
+	 */
 	Class.prototype.getRemineWidth = function() {
 		return getRemineWidth(this.columnMetas,
 				$(this.rootSelector+" "+_ExTableBody)[0].clientWidth);
@@ -350,8 +379,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	}
 
 	/**
-	 *
-	 * -
+	 * 行の再配置。ソート後等に呼び出す。
 	 */
 	Class.prototype.refreshBody = function() {
 
@@ -498,7 +526,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	}
 
 	//----------------------------------------------------------------------------
-
+	// イベントハンドラ。
 
 	/**
 	 * カラムのリサイズハンドラ設定。
@@ -553,11 +581,11 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		// Move
 		var handle = null;
 		var lastChanged = null;
-		var onClick = false;
+		var mouseDownTime = 0;
 		$(_ExTableHeader+">"+_ExTableColumn).live("mousedown", function(){
 			handle = this;
 			$(handle).css({cursor: "url(img/cursor-move-box-LR.png) 8 8, col-resize"});
-			onClick = true;
+			mouseDownTime = new Date().getTime();
 			return false;
 		}).live("mousemove",function(ev){
 			if (handle == null) return;
@@ -583,7 +611,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			exTable.refreshHeader();
 
 		}).live("mouseup", function(){
-			if (!onClick) return;
+			var time = (new Date().getTime())- mouseDownTime;
+			mouseDownTime = 0;
+			if (time>200) return;
+
 			/**
 			 * カラムクリックでソート設定。
 			 */
@@ -604,9 +635,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			$(handle).css({cursor: "pointer"});
 			handle = null;
 			lastChanged = null;
-		}).live("mousemove", function(){
-			onClick = false;
-		})
+		});
 	}
 
 	/**
