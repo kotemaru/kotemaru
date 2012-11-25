@@ -7,11 +7,15 @@ HTML format:
 <div id="user-def" class="ExTable">
   <div class="ExTableHeader">
     <span class="ExTableColumn ExTableColumn_0">
-      <span>番号</span> <!-- Header Label -->
+ 	  <span class='ExTableHeaderLabel'>
+		<span class='ExTableHeaderLabelInner'>番号</span>
+	  </span>
       <span class="ExTableHandle">&nbsp;</span>
     </span>
     <span class="ExTableColumn ExTableColumn_1 ExTableHeaderSortAsc">
-      <span>名前</span> <!-- Header Label -->
+ 	  <span class='ExTableHeaderLabel'>
+		<span class='ExTableHeaderLabelInner'>名前</span>
+	  </span>
       <span class="ExTableHandle">&nbsp;</span>
     </span>
   </div>
@@ -94,11 +98,14 @@ ExTableRow			: データ行
 /* --------------------------------------------------------
    Header
 -----------------------------------------------------------*/
+.ExTableHeader {
+	overflow: hidden;
+}
 
 .ExTableHeader > .ExTableColumn {
 	overflow: visible;
-	cursor: pointer;
 	min-height: 100%;
+	cursor: pointer;
 }
 
 .ExTableHeaderLabel {
