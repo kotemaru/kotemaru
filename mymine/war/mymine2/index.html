@@ -8,11 +8,57 @@
 	<link rel="stylesheet" href="css/BorderLayout.css" />
 	<link rel="stylesheet" href="css/ExTable.css" />
 
+	<link rel="stylesheet" href="css/Font.css" />
+	<link rel="stylesheet" href="css/MyMine.css" />
+	<link rel="stylesheet" href="css/Dialog.css" />
+	<link rel="stylesheet" href="css/Control.css" />
+	<link rel="stylesheet" href="css/Folder.css" />
+	<link rel="stylesheet" href="css/Ticket.css" />
+	<link rel="stylesheet" href="css/PopupMenu.css" />
+	<link rel="stylesheet" href="css/ZIndex.css" />
+
 	<script src="jq/jquery-1.8.2.js" ></script>
+
+	<script src="js/MyMine.js" ></script>
+	<script src="js/Config.js" ></script>
+	<script src="js/Control.js" ></script>
+	<script src="js/Dialog.js" ></script>
+	<script src="js/Folder.js" ></script>
+	<script src="js/RedMine.js" ></script>
+	<script src="js/Tickets.js" ></script>
+	<script src="js/Storage.js" ></script>
+	<script src="js/UI.js" ></script>
+	<script src="js/PopupMenu.js" ></script>
+	<script src="js/MasterTable.js" ></script>
+
 	<script src="js/BorderLayout.js" ></script>
 	<script src="js/ExTable.js" ></script>
+	<script src="js/Common.js" ></script>
+	<script src="js/Folders.js" ></script>
+	<script src="js/TicketTray.js" ></script>
 
 	<script>
+$(function(){
+	var $dialogPanel = $("#dialogPanel");
+	include($dialogPanel, "parts/AbortDialog.html");
+	include($dialogPanel, "parts/AddFolderDialog.html");
+	include($dialogPanel, "parts/ConfigDialog.html");
+	include($dialogPanel, "parts/DownloadDialog.html");
+	include($dialogPanel, "parts/UploadDialog.html");
+});
+
+function include($parent, url) {
+	$.ajax({
+		url: url,
+		async: false,
+		success: function(html){
+			$parent.append($(html));
+		}
+	});
+}
+
+	
+	
 $(function(){
 	BorderLayout.init({
 		header:{size:60, resizable:false},
@@ -20,62 +66,6 @@ $(function(){
 	}).load().refresh();
 
 
-	function rateSetter(elem,data,index) {
-		var val = data[index];
-		var div = elem.childNodes[0];
-		if (div == null) {
-			$(elem).html("<div class='RateBar'><span></span><span></span></div>");
-			div = elem.childNodes[0];
-		}
-		//div.dataset.alt = val+"%";
-		div.childNodes[0].style.width = val+"%";
-		//div.childNodes[1].innerText = val;
-	}
-
-
-	var exTable = new ExTable("#ticketTray");
-	exTable.setColumnMeta([
-		{title:"番号",         width:36, style:{"text-align":"right"}},
-		{title:"プロジェクト", width:80 },
-		{title:"トラッカー",   width:70 },
-		{title:"優先度",       width:102, seq:9, fixed:true, style:{"white-space":"pre","height":"auto"}},
-		{title:"進捗",         width:30, setter:rateSetter },
-	]);
-
-	exTable.setData([
-		[100,"aaaa",true,"xxxxxxx",100],
-		[200,"bbb",true,"",70],
-		[300,"ccc",true,"ggggggggggg\ngggggggggggggg\nggggggggggggggggggggggggggggggggg",50],
-		[ 40,"ddd",true,"xxxxxxx",30],
-		[100,"aaaa",true,"xxxxxxx",10],
-		[200,"bbb",true,"xxxxxxx",30],
-		[300,"ccc",true,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
-		[ 40,"ddd",true,"xxxxxxx",90],
-		[100,"aaaa",true,"xxxxxxx",95],
-		[200,"bbb",false,"xxxxxxx",97],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
-		[ 40,"ddd",false,"xxxxxxx",3],
-		[100,"aaaa",false,"xxxxxxx",30],
-		[200,"bbb",false,"xxxxxxx",30],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
-		[ 40,"ddd",false,"xxxxxxx",30],
-		[100,"aaaa",false,"xxxxxxx",30],
-		[200,"bbb",false,"xxxxxxx",30],
-		[300,"ccc",false,"gggggggggggggggggggggggggggggggggggggggggggggggggggggggggg",30],
-		[ 40,"ddd",true,"xxxxxxx",30],
-	]);
-
-	var data = [];
-	for (var i=0; i<300; i++) {
-		data.push([ 40,"ddd",true,"xxxxxxx",30]);
-	}
-	exTable.setData(data);
-
-
-	exTable.setSortInfo(2);
-	exTable.refresh(true);
-	//exTable.setHeaderHeight(40);
-	exTable.setRowHeight(25);
 
 
 	$("#balloon").hide();
@@ -90,86 +80,137 @@ $(function(){
 		$("#balloon").hide();
 	})
 
+//
+	Folders.init().refresh();
+
+
 });
 	</script>
-	<style>
-* {
-	box-sizing: border-box;
-}
-
-.BorderLayoutLeft {
-	border-right: 1px solid lightgray;
-}
-.BorderLayoutHeader {
-	border-bottom: 1px solid lightgray;
-}
-
-.RateBar {
-	box-sizing: border-box;
-	position: relative;
-	width: 22px;
-	height: 12px;
-	border: 1px solid gray;
-	//overflow: hidden;
-	margin-top: 2px;
-	font-size: 10px;
-	line-height:100%;
-	text-align: right;
-}
-.RateBar >span{
-	display: inline-block;
-	position: absolute;
-	top:0;
-	left:0;
-	width: 100%;
-	height: 100%;
-}
-.RateBar >span:first-child{
-	background: green;
-}
-
-#balloon {
-	position: absolute;
-	display: inline-block;
-	border: 1px solid #886600;
-	color: #886600;
-	background: #ffdd88;
-	font-size: 12px;
-	padding: 2px;
-}
-
-	</style>
 </head>
 <body>
+	<!-- ========= Main Panel =========================================== -->
 	<section class="BorderLayoutMain">
 		<div id="ticketTray" class="ExTable"></div>
 	</section>
 
+	<!-- ========= Left Side Panel =========================================== -->
 	<section class="BorderLayoutLeft">
-		<div class="SubHeader">xxxx</div>
-		<section class="Folders">
-				aaaa
+		<header>フォルダ
+			<img class="Button" src="img/pencil.png" id="editFolderButton"
+				onclick="UI.editFolder()" alt="フォルダ編集"/>
+			<img class="Button" src="img/add.png"
+				onclick="UI.addFolder()" alt="フォルダ追加"/>
+			<img class="Button" src="img/cross.png"
+				onclick="UI.removeFolder()" alt="フォルダ削除"/>
+		</header>
+		<section id="folders">
 		</section>
+	
 		<span class="BorderLayoutHandle" ></span>
 	</section>
 
+	<!-- ========= Right Side Panel
 	<section class="BorderLayoutRight">
 		<span class="BorderLayoutHandle"  ></span>
 	</section>
-
+	-->
+	
+	<!-- ========= Header Panel =========================================== -->
 	<header class="BorderLayoutHeader" >
-		<span class="BorderLayoutHandle"  ></span>
+		<img id="logoImage" class="Button" src="img/kmines.png"  onclick="UI.abort()"
+			alt="MyMineについて"/>
+		<div id="buttons">
+			<div id="projectPack">
+				<select id="projectSelector" onchange="UI.changeProject(this)"></select>
+				<img class="Button" src="img/refresh.png" onclick="TicketTray.update()"
+						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
+			</div>
+
+			<div id="configPack" >
+				<img class="Button" src="img/book_open.png" onclick="UI.help()"
+						alt="ヘルプ" />
+				<img class="Button" src="img/download.png" onclick="UI.download()"
+						alt="フォルダの保存" />
+				<img class="Button" src="img/upload.png" onclick="UI.upload()"
+						alt="フォルダの復元"/>
+				<img class="Button" src="img/cog.png" onclick="UI.config()"
+						alt="環境設定" />
+			</div>
+
+			<br clear="all"/>
+
+			<div id="filterPack">
+				<span class="FilterButtons">
+					<img id="filter_user" class="CheckButton" src="img/kmines-16x16.png"
+						alt="担当チケットのみ"/>
+					<img id="filter_closed" class="CheckButton" src="img/closed-ticket.png"
+						alt="終了チケットを含む"/>
+				</span>
+
+				<span id="filterButtons" class="FilterButtons">
+				</span>
+
+				<span class="VSeparator"></span>
+
+				<span id="customQueryButtons">
+				</span>
+			</div>
+
+			<div id="searchPack">
+				<nobr><input id="searchKeyword" type="text"
+					onkeypress="UI.searchKeyPress(event,this)"
+				/><img class="Button" src="img/find.png" onclick="UI.search()"
+					alt="検索<br/>(チケット番号のみ)"/></nobr>
+			</div>
+		</div>
 	</header>
 
+	<!-- ========= Footer Panel 
 	<footer class="BorderLayoutFooter" >
 		<span class="BorderLayoutHandle"  ></span>
 	</footer>
+	-->
+	
+	<!-- ======================= Dialog =============================== -->
+	<div id="dialogPanel" class="DialogPanel" >
+		<div class="DialogMask" > </div>
+		<!-- Include -->
+	</div>
 
-	<section class="Template">
-		<span class="HeaderColumn"><span>番号<span><img/><span class="ColumnHandle" ></span></span>
-	</section>
+	<!-- ======================= Popup menu =============================== -->
 
-	<div id="balloon"></div>
+	<div id="iconSelectMenu" class="PopupMenu">
+	</div>
+
+
+	<!-- ======================= Waiting =============================== -->
+	<div id="waiting">
+		<img src="img/waiting.gif" />
+		<div id="progressBar"><div></div></div>
+	</div>
+	<!-- ======================= Balloon =============================== -->
+	<div id="balloon" ></div>
+
+	<!-- ================ Template =================================== -->
+	<div class="Template">
+
+		<article id="templ_folder" class="Folder"></article>
+
+		<div id="templ_project">
+			<input name="redmineProjectName" size=50/>
+			<input name="redmineProjectId" size=4/>
+		</div>
+
+		<div id="templ_pulldownButton">
+			<span class="PulldownButton" alt="test">
+				<img src="?"/><img src="img/pulldown-mark.png" />
+				<div class="PopupMenu">
+					<div class="PopupMenuItem" data-value="val">表示名</div>
+				</div>
+			</span>
+		</div>
+
+	</div>
 
 </body>
 </html>
