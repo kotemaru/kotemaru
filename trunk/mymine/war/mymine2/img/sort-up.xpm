@@ -1,0 +1,14 @@
+/* XPM */
+static char * sort_up_xpm[] = {
+"6 6 5 1",
+" 	s None	c None",
+".	c black",
+"X	c gray94",
+"o	c lightgray",
+"O	c white",
+"  .X  ",
+"  .X  ",
+" .ooX ",
+" .ooX ",
+".ooooX",
+".OOOOO"};

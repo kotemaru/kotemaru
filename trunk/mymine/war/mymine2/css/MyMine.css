@@ -1,0 +1,62 @@
+
+* {
+	box-sizing: border-box;
+}
+
+html,body {
+	height:100%;
+	overflow: hidden;
+	padding:0;
+	margin:0;
+	font-family: mplus-2m-regular;
+	font-size: 12px;
+	background: #f8f8ff;
+}
+.BorderLayoutHeader {
+	border-bottom: 1px solid lightgray;
+}
+.BorderLayoutLeft {
+	border-right: 1px solid lightgray;
+}
+
+#logoImage {
+	position: absolute;
+	left: 2px;
+	top: 2px;
+}
+
+
+
+#waiting {
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	display: none;
+	//display: block;
+	text-align: center;
+}
+
+#progressBar {
+	width: 100px;
+	height: 10px;
+	background: gray;
+	border: 1px solid black;
+	border-radius: 4px;
+	box-shadow: 1px 1px 8px;
+	overflow: hidden;
+}
+
+#progressBar > div {
+	display: block;
+	width: 50%;
+	height: 8px;
+	background: url(../img/progress-bar.png);
+	border-radius: 4px;
+}
+
+.Template {display: none;}
+
+
+
+
+

@@ -1,0 +1,23 @@
+/* XPM */
+static char * progress_xpm[] = {
+"16 16 4 1",
+" 	s None	c None",
+".	c gray",
+"X	c #8080F0F08080",
+"o	c white",
+"                ",
+"                ",
+"                ",
+"................",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+".XXXXXXXXXooooo.",
+"................",
+"                ",
+"                "};

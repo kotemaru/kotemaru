@@ -12,6 +12,7 @@ body > footer,
 body > section
 {
 	box-sizing: border-box;
+	-moz-box-sizing: border-box;
 	display: inline-block;
 	position: absolute;
 	overflow: hidden;

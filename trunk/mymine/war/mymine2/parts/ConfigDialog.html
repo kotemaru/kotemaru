@@ -1,0 +1,104 @@
+<!--<meta http-equiv="content-type" content="text/html; charset=utf-8">-->
+
+<!-- ======================= Config Dialog =============================== -->
+<div id="configDialog" class="Config Dialog">
+	<h3>
+		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+		<nobr>環境設定</nobr>
+	</h3>
+	<div>
+
+		<table class="ConfigTable">
+
+			<tr>
+				<th>設定項目</th>
+				<td/>
+				<th>解説／設定値</th>
+			</tr>
+
+			<tr >
+				<th >Redmine絶対パス</th>
+				<td/>
+				<td  >
+					Redmineの絶対URL。プロトコル、ホスト名を含むURLを設定します。
+					<br/>
+					<input name="redmineAbsPath" size=64 />
+					<br/>例: http://www.redmine.org/
+				</td>
+			</tr>
+
+			<tr >
+				<th >Redmine APIパス</th>
+				<td/>
+				<td  >
+					Redmine APIの相対URL。ホスト名を含まない「/」から後のパスを設定します。
+					リバースプロキシを設定している場合はプロキシのパスを設定します。
+					<br/>
+					<input name="redmineApiPath" size=32/> 例: /redmine/
+				</td>
+			</tr>
+
+			<tr >
+				<th >APIアクセスキー</th>
+				<td/>
+				<td  >
+					Redmineの個人設定で取得できるAPIアクセスキーを設定します。
+					<br/>
+					<input name="redmineApiKey" size=64/> <br/>例: d557be383b862e3f852be39ae1716a1f
+				</td>
+			</tr>
+
+			<tr >
+				<th >カスタムクエリ<br/>(オプション)</th>
+				<td/>
+				<td>
+					Redmine REST API にしたがった任意のクエリを設定します。<br/>
+					通常はRedmineでカスタムクエリを作成しそのIDを query_id パラメータで指定します。
+					<br/><br/>
+					<div>
+						<span id="redmineCustomImg">アイコン</span>
+						<span id="redmineCustomName">タイトル</span>
+						<span>クエリ</span>
+					</div>
+					<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+					<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+					<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+					<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+					<img class="redmineCustomImg SelectableIcon"/> <input name="redmineCustomName"> <input name="redmineCustomQuery" /> <br/>
+					<div>
+						<span id="redmineCustomImg"></span>
+						<span id="redmineCustomName">例：山田さん担当チケット</span>
+						<span>例：query_id=20</span>
+					</div>
+				</td>
+			</tr>
+
+			<tr >
+				<th >プロジェクト一覧</th>
+				<td/>
+				<td>
+					以下のボタンからプロジェクトを自動取得して設定します。
+					プロジェクトの変更が有った場合には再取得して設定しなおします。
+					<br/>
+					<button onclick="UI.getProjects()">プロジェクトの自動取得</button>
+					(先にAPIの項目の設定が必要です)
+					<br/><br/>
+					<div>
+						<span id="redmineProjectName">プロジェクト名</span>
+						<span>プロジェクトID</span>
+					</div>
+					<div id="configProjectList">
+					</div>
+				</td>
+			</tr>
+
+		</table>
+
+		<br/>
+		<div align="center">
+			<button onclick="UI.saveConfig()">保存</button>
+			<button onclick="Dialog.close()">キャンセル</button>
+		</div>
+		<br/>
+	</div>
+</div>

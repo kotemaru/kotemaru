@@ -1,0 +1,8 @@
+
+
+.Dialog 		{ z-index: 10000;}
+.PopupMenu		{ z-index: 11000;}
+#balloon		{ z-index: 11000;}
+.WaitIcon		{ z-index: 20000;}
+
+

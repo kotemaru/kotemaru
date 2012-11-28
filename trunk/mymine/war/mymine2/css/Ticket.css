@@ -1,0 +1,159 @@
+
+.Ticket {
+	box-sizing: border-box;
+	//height: 20px;
+	padding: 0px;
+	white-space: nowrap;
+	overflow: hidden;
+
+	border-left:   1px solid #e0e0e0;
+	border-top:    1px solid #e0e0e0;
+
+	border-right:  1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+
+	margin: 2px;
+	margin-right: 6px;
+	margin-bottom: 4px;
+	border-bottom-right-radius: 5px;
+	box-shadow: 1px 1px 1px #e0e0e0;
+	background: url(../img/corner.png) no-repeat ;
+	background-position: right bottom;
+	background-color: white;
+}
+.Ticket > nobr {
+	display: inline-block;
+	//height: 19px;
+	border-left: 1px dotted #e0e0e0;
+	margin: 0;
+	padding: 0;
+	padding-left: 2px;
+	overflow: hidden;
+	background-color: transparent;
+	vertical-align: middle;
+}
+.Ticket > nobr:first-child {
+	border-left:0;
+}
+.DetailHeader {
+	box-sizing: border-box;
+	height: 21px;
+	padding: 0px;
+	//padding-left: 150px;
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 12px;
+	//font-weight: bold;
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background-image: -moz-linear-gradient(top, #eee, #ccc);
+	border-top: 1px solid #c0c0c0;
+	border-bottom: 1px solid #c0c0c0;
+}
+.DetailHeader > nobr {
+	display: inline-block;
+	height: 20px;
+
+	padding-left: 2px;
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#eee), to(#ccc));
+	background-image: -moz-linear-gradient(top, #eee, #ccc);
+	//border-top: 1px solid #c0c0c0;
+	border-left: 1px solid #d8d8d8;
+
+}
+.DetailHeader > nobr.Selected {
+	background-image: -webkit-gradient(linear, center top, center bottom, from(#ccc), to(#eee));
+	background-image: -moz-linear-gradient(top, #ccc, #eee);
+}
+.DetailHeader > nobr.THead >img {
+	display: none;
+	width: 6px;
+}
+.DetailHeader > nobr.Selected >img {
+	margin-left: 2px;
+	display: inline-block;
+}
+
+
+.DetailHeader > nobr.TFolder  {
+	width: 200px;
+	border-right: 1px solid lightgray;
+	background: #e0e0e0;
+}
+.DetailHeader > nobr.TFolder > .Button  {
+	float: right;
+	height: 18px;
+}
+
+.DetailHeader > nobr.TNum      {
+	margin-left: 3px;
+	border-left: 0px solid #d8d8d8;
+//width: 38px;
+}
+
+/* => SlideHandle.js */
+.TNum       {width: 36px;}
+.TProject   {width: 80px;}
+.TTracker   {width: 70px;}
+.TPriority  {width: 48px;}
+.TAssigned  {width: 97px;}
+.TState     {width: 28px;}
+.TUpDate    {width: 54px;}
+.TStartDate {width: 54px;}
+.TDueDate   {width: 54px;}
+.TSubject   {width: 1000px;}
+
+
+.RateBar {
+	vertical-align: middole;
+	display: inline-block;
+	width: 22px;
+	height: 12px;
+	border: 1px solid lightgray;
+	margin-bottom: -2px;
+	overflow: hidden;
+}
+.RateBar > span{
+	vertical-align: top;
+	background: lightgreen;
+	display: inline-block;
+	width: 0px;
+	height: 12px;
+}
+/*------------------------------*/
+.ExTableHeader {
+	padding: 0 5px;
+}
+
+.ExTableBody {
+	padding: 4px;
+}
+.ExTableRow {
+	min-height: 20px;
+	
+	border-left:   1px solid #e0e0e0;
+	border-top:    1px solid #e0e0e0;
+
+	border-right:  1px solid #a0a0a0;
+	border-bottom: 1px solid #a0a0a0;
+
+	margin: 0px;
+	margin-right: 0px;
+	margin-bottom: 4px;
+	border-bottom-right-radius: 5px;
+	box-shadow: 1px 1px 1px #e0e0e0;
+	background: url(../img/corner.png) no-repeat ;
+	background-position: right bottom;
+	background-color: white;
+}
+.ExTableRow .ExTableColumn {
+	padding: 2px 2px 0px 2px;
+	border-right: 1px dashed lightgray;
+	line-height: 130%;
+	vertical-align: middle;
+}
+
+.TicketSelect {
+	background-color: #d0e0ff;
+}
+
+
