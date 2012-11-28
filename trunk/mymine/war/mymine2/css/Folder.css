@@ -21,12 +21,22 @@
 	//cursor: pointer;
 	overflow: hidden;
 
-	background: url(../img/folder.png) no-repeat;
+	background-image: url(../img/folder.png);
+	background-repeat: no-repeat;
 	background-position: 2px 2px;
+}
+
+.FolderSelect {
+	background-color: white;
+	border: 1px solid lightgray;
 }
 
 .Folder .Count {
 	font-size: 10px;
+}
+
+#folders {
+	padding: 4px;
 }
 
 #folders > hr {

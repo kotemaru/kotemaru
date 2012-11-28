@@ -144,7 +144,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			return false;
 		}).live("mousemove",function(ev){
 			var isClick = (200 > (new Date().getTime() - downTime));
-			if (!isClick) {
+			if (!isClick && draggable == this) {
 				Class.setDragCursor();
 				if (Class.isDrag()) {
 					Class.addSelection(this);
@@ -156,6 +156,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			}
 		}).live("mouseup",function(ev){
 			var isClick = (200 > (new Date().getTime() - downTime));
+console.log("-->",isClick,ev.ctrlKey);
 			if (isClick) {
 				if (!ev.ctrlKey) Class.clearSelection();
 				$(this).toggleClass(TicketSelect);
@@ -170,7 +171,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		});
 
 		$(document.body).live("mouseup",function(ev){
-			Class.clearSelection();
+			//Class.clearSelection();
 			draggable = null;
 			Class.isDrag(false);
 			Class.setDragCursor();
