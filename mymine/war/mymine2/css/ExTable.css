@@ -102,7 +102,7 @@ ExTableRow			: データ行
 	overflow: hidden;
 }
 
-.ExTableHeader > .ExTableColumn {
+.ExTableHeader  .ExTableColumn {
 	overflow: visible;
 	min-height: 100%;
 	cursor: pointer;

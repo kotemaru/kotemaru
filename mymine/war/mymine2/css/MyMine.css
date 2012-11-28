@@ -12,6 +12,14 @@ html,body {
 	font-size: 12px;
 	background: #f8f8ff;
 }
+body > header,
+body > footer,
+body > section
+{
+	background: #f0f0ff;
+}
+
+
 .BorderLayoutHeader {
 	border-bottom: 1px solid lightgray;
 }

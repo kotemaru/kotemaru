@@ -2,7 +2,6 @@
 function Folder(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var $TAMPLATE = $("<article class='Folder'></article>");
-	
 
 	Class.prototype.initialize = function() {
 		this.name  = null;
@@ -31,8 +30,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 		var $elem = $(this.transients.elem);
 		$elem.attr("id","folder_"+this.name);
 		$elem.data("name",this.name);
+		$elem.data("folder",this);
 		$elem.html(getTitleWithCount(this));
-		$elem.css("background","url("+this.icon+") no-repeat  2px 2px");
+		$elem.css("backgroundImage","url("+this.icon+")");
 		return this;
 	}
 
@@ -41,6 +41,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 			this.transients.elem = $TAMPLATE.clone()[0];
 		}
 		this.refresh();
+		return $(this.transients.elem);
+	}
+	Class.prototype.get$Elem = function() {
 		return $(this.transients.elem);
 	}
 	
