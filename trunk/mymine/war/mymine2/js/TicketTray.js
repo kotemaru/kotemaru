@@ -6,11 +6,12 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 	var _TICKET = "#ticketTray .ExTableRow";
 	var TicketSelect = "TicketSelect";
 	var _TicketSelect = "."+TicketSelect;
+	var _Folder = ".Folder";
 
 	
 	var SETTERS = {
 		id:			function($elem,issue) {
-			$elem[0].dataset.num = issue.id;
+			$elem[0].parentNode.dataset.num = issue.id;
 			$elem.text(issue.id);
 		},
 		project:	function($elem,issue) {$elem.html(name(issue.project));},
@@ -84,19 +85,15 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		return to2ChStr(date.getMonth()+1)+"/"+to2ChStr(date.getDate());
  	}
 	
-
-	Class.update = function() {
-		Config.redmineApiPath = "/r-labs";
-		new RedMine().getIssues(function(resData){
-			var issues = resData.issues;
-			var data = [];
-			for (var i=0; i<issues.length; i++) {
-				var issue = issues[i];
-				data.push(issue);	
-			}
-			exTable.data(data);
-		});
+	Class.setTickets = function(tickets) {
+		var data = [];
+		for (var k in tickets) {
+			var issue = tickets[k];
+			data.push(issue);
+		}
+		exTable.data(data);
 	}
+
 	
 	//---------------------------------------------------------------------
 	// Event Handler
@@ -109,12 +106,18 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.setDragCursor = function() {
+		$(document.body).css("cursor", Class.getDragCursor(true));
+		$(_Folder).css("cursor", Class.getDragCursor(false));
+	}
+
+	Class.getDragCursor = function(isNo) {
 		if (isDrag) {
 			var sels = Class.getSelection();
-			var img = (sels.length>=2) ? "tickets-no":"ticket-no";
-			$(document.body).css("cursor","url(img/"+img+".png) 16 8, pointer");
+			var img = (sels.length>=2) ? "tickets":"ticket";
+			if (isNo) img += "-no";
+			return "url(img/"+img+".png) 16 8, pointer";
 		} else {
-			$(document.body).css("cursor","default");
+			return "default";
 		}
 	}
 
@@ -143,7 +146,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			downTime = new Date().getTime();
 			return false;
 		}).live("mousemove",function(ev){
-			var isClick = (200 > (new Date().getTime() - downTime));
+			var isClick = (100 > (new Date().getTime() - downTime));
 			if (!isClick && draggable == this) {
 				Class.setDragCursor();
 				if (Class.isDrag()) {
@@ -156,7 +159,6 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			}
 		}).live("mouseup",function(ev){
 			var isClick = (200 > (new Date().getTime() - downTime));
-console.log("-->",isClick,ev.ctrlKey);
 			if (isClick) {
 				if (!ev.ctrlKey) Class.clearSelection();
 				$(this).toggleClass(TicketSelect);
@@ -172,9 +174,12 @@ console.log("-->",isClick,ev.ctrlKey);
 
 		$(document.body).live("mouseup",function(ev){
 			//Class.clearSelection();
-			draggable = null;
-			Class.isDrag(false);
-			Class.setDragCursor();
+			// ハンドラが先に実行されるので遅らせる。
+			setTimeout(function(){
+				draggable = null;
+				Class.isDrag(false);
+				Class.setDragCursor();
+			}, 10);
 		});
 	}
 

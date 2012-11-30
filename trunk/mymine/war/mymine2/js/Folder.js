@@ -2,6 +2,7 @@
 function Folder(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var $TAMPLATE = $("<article class='Folder'></article>");
+	var $SEPALATOR = $("<hr/>");
 
 	Class.prototype.initialize = function() {
 		this.name  = null;
@@ -10,6 +11,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		this.nosave = false;
 		this.tickets = {};
 		this.transients = {};
+		this.isSeparator = false;
 	}
 
 	Class.prototype.setParams = function(params) {
@@ -27,6 +29,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 	
 	Class.prototype.refresh = function() {
+		if (this.isSeparator) return this;
+		
 		var $elem = $(this.transients.elem);
 		$elem.attr("id","folder_"+this.name);
 		$elem.data("name",this.name);
@@ -38,7 +42,11 @@ function Folder(){this.initialize.apply(this, arguments)};
 
 	Class.prototype.build = function(isForce) {
 		if (this.transients.elem == null || isForce) {
-			this.transients.elem = $TAMPLATE.clone()[0];
+			if (this.isSeparator) {
+				this.transients.elem = $SEPALATOR.clone()[0];
+			} else {
+				this.transients.elem = $TAMPLATE.clone()[0];
+			}
 		}
 		this.refresh();
 		return $(this.transients.elem);
@@ -52,7 +60,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		var unchecked = 0;
 		var total = 0;
 		for (var num in folder.tickets) {
-			if (!Ticket.isChecked(num)) unchecked++;
+			if (!folder.tickets[num].isChecked) unchecked++;
 			total++;
 		}
 		if (total == 0) return folder.title;
@@ -64,6 +72,21 @@ function Folder(){this.initialize.apply(this, arguments)};
 			+") </span>"+folder.title;
 	}
 	
+	
+	Class.prototype.dropTicket = function() {
+		var ticketNums = TicketTray.getSelection();
+		for (var i=0; i<ticketNums.length; i++) {
+			this.tickets[ticketNums[i]] = TicketPool.get(ticketNums[i]);
+		}
+		return this;
+	}
+	Class.prototype.addTicket = function(num) {
+		this.tickets[num] = TicketPool.get(num);
+	}
+	Class.prototype.clearTicket = function(num) {
+		this.tickets = {};
+	}
+
 })(Folder);
 
 

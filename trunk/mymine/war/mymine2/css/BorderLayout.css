@@ -15,7 +15,7 @@ body > section
 	-moz-box-sizing: border-box;
 	display: inline-block;
 	position: absolute;
-	overflow: hidden;
+	//overflow: hidden;
 	background: white;
 }
 

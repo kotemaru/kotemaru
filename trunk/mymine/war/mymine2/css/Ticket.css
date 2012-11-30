@@ -122,6 +122,7 @@
 /*------------------------------*/
 .ExTableHeader {
 	padding: 0 5px;
+	//border-bottom: 1px solid #aaa;
 }
 
 .ExTableBody {
