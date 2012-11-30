@@ -99,9 +99,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.initialize = function(selector) {
 		this.rootSelector = selector;
-		this.sortInfo = null;
+		this.sortInfo   = null;
 		this.masterData = null;
-		this.viewRows = null;
+		this.viewRows   = null;
 		this.masterRows = null;
 		this.useVariableHeight = false;
 		this.setRowHeight(20);

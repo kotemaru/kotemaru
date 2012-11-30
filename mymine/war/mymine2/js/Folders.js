@@ -15,7 +15,7 @@ function Folders(){this.initialize.apply(this, arguments)};
 	var DEFAULT_FOLDERS = [
    	    {name:INBOX,     title:"受信箱",     icon:"img/inbox.png", nosave:true},
    	    {name:"trash",   title:"ゴミ箱",     icon:"img/bin_closed.png", nosave:true},
-   	    //{name:"sepa1",   title:"---",        icon:"---"},
+   	    {name:"sepa1",   title:"---",      icon:"---", isSeparator:true, nosave:true},
    	    {name:"now",     title:"至急",       icon:"img/alarm.png"},
    	    {name:"play",    title:"現行作業",   icon:"img/hand.png"},
    	    {name:"reserve", title:"予定作業",   icon:"img/bookmark_folder.png"},
@@ -27,14 +27,24 @@ function Folders(){this.initialize.apply(this, arguments)};
 
 	var folders = [];
 	var current = null;
+	var inbox = null;
 	
 	Class.init = function(){
 		for (var i=0; i<DEFAULT_FOLDERS.length; i++) {
 			var folder = new Folder().setParams(DEFAULT_FOLDERS[i]);
 			folder.seq = i;
 			folders.push(folder);
+			if (folder.name == INBOX) inbox = folder;
 		}
 		return this;
+	}
+	Class.select = function(folder){
+		current = folder;
+		TicketTray.setTickets(folder.tickets);
+		Class.refresh();
+	}
+	Class.getInbox = function(){
+		return inbox;
 	}
 	
 	Class.refresh = function(){
@@ -73,27 +83,30 @@ function Folders(){this.initialize.apply(this, arguments)};
 
 			var $handle = $(handle);
 			var $target = $(this);
-			
+
 			var hFolder = $handle.data("folder");
 			var tFolder = $target.data("folder");
-
+			if (tFolder.nosave) return;
+			
 			var tmp = hFolder.seq;
 			hFolder.seq = tFolder.seq;
 			tFolder.seq = tmp;
 			Class.refresh();
 
 		}).live("mouseup", function(){
-			Class.refresh();
+			var folder = $(this).data("folder");
+			if (TicketTray.isDrag()) {
+				folder.dropTicket();
+			}
+			Class.select(folder);
+			handle = null;
+		
 			var time = (new Date().getTime())- mouseDownTime;
 			mouseDownTime = 0;
 			if (time>200) return;
 		});
-
-		$(document.body).live("mouseup",function(ev){
-			handle = null;
-		});
+	
 	}
-
 	
 	$(function(){
 		bindMove();
