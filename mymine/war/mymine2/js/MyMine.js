@@ -17,6 +17,9 @@ function MyMine(){this.initialize.apply(this, arguments)};
 		UI.init();
 	}
 
+	Class.reconfig = function() {
+		Control.reconfig();
+	}
 
 	Class.isDrag = function(b) {
 		if (b !== undefined) {

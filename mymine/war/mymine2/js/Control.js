@@ -169,6 +169,110 @@ function Control(){this.initialize.apply(this, arguments)};
 		return $elem;
 	}
 
+	//-----------------------------------------------------
+	Class.customImg = [];
+	Class.customName = [];
+	Class.customQuery = [];
 
+	Class.reconfig = function(){
+		initProjects();
+		initCustomQuery();
+		initMasterTable();
+	}
+	$(function(){
+		// Control
+		$(".Button, .CheckButton, .PulldownButton>img:first-child").live("mouseover",function(ev){
+			Control.popupBalloon($(this));
+		}).live("mouseout",function(){
+			Control.hideBalloon();
+		});
+
+		$(".CheckButton").live("click",function(ev){
+			Control.toggleCheckButton(this);
+		});
+		$("#customQueryButtons > .CheckButton").live("change",function(ev, value, id, group){
+			if (group == "custom" && Control.checkButtonGroup(group) >= 0) {
+				$(".FilterButtons").addClass("Disabled");
+			} else {
+				$(".FilterButtons").removeClass("Disabled");
+			}
+			Folder.inbox();
+		});
+		// PulldownButton
+		$(".PulldownButton").live("click", function(){
+			var val = Control.getValue(this.id);
+			if (val) {
+				$(this).removeClass("PulldownButtonOn");
+				Control.setValue(this.id, null);
+			} else {
+				var opts = {element: this, corrent:{x:0,y:6}};
+				PopupMenu.open($(this).find(".PopupMenu")[0], opts);
+			}
+		});
+		$(".PulldownButton .PopupMenuItem").live("click", function(){
+			var val = $(this).attr("data-value");
+			Control.setValue(PopupMenu.options.element.id, val);
+			if (val) {
+				$(PopupMenu.options.element).addClass("PulldownButtonOn");
+			} else {
+				$(PopupMenu.options.element).removeClass("PulldownButtonOn");
+			}
+			PopupMenu.close();
+			return false;
+		});
+
+		// 空白削除
+		function removeSpace(){
+			if (this.nodeType==3) this.parentNode.removeChild(this);
+		}
+		$("#filterPack").contents().each(removeSpace);
+		$("#filterPack>span").contents().each(removeSpace);
+		$("#configPack").contents().each(removeSpace);
+		
+		Class.reconfig();
+	});
+	
+	function initProjects() {
+		new RedMine().getProjects(function(data){
+			var projects = data.projects;
+			
+			var $sel = $("#projectSelector").html("<option value=''>*</option>");
+			for (var i=0; i<projects.length; i++) {
+				var project = projects[i];
+				var $opt = $("<option/>");
+				$opt.val(project.id);
+				$opt.text(project.name);
+				$sel.append($opt);
+			}
+			//$sel.val(Storage.loadData("projectSelector"));
+		});
+		
+	}
+	function initCustomQuery() {
+		var $btns = $("#customQueryButtons");
+		$btns.html("");
+		for (var i=0; i<Class.customQuery.length; i++) {
+			if (Class.customQuery[i] == "") continue;
+
+			$btn = $("<img class='CheckButton' />");
+			$btn.attr("id", "custom_"+i);
+			$btn.attr("data-group", "custom");
+			$btn.attr("src", Class.customImg[i])
+			$btn.attr("alt", Class.customName[i]);
+			$btns.append($btn);
+		}
+	}
+	function initMasterTable() {
+		var masterTable = MasterTable.getMasterTable();
+		if (masterTable == null) return;
+
+		var $filters = $("#filterButtons").html("");
+		for (var k in masterTable) {
+			if (k.indexOf("cf_")==0) continue; // TODO:カスタムフィールドの扱い
+			var $btn = Class.makePulldownButton("filter_"+k, masterTable[k]);
+			$filters.append($btn);
+		}
+	}
+	Class.initMasterTable = initMasterTable;
 
 })(Control);

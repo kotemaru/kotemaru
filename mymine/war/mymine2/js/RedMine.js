@@ -1,7 +1,10 @@
 
 function RedMine(){this.initialize.apply(this, arguments)};
 (function(Class){
-
+	Class.absPath = "/r-labs";
+	Class.apiPath = "/r-labs";
+	Class.apiKey = "";
+	
 	Class.prototype.initialize = function() {
 	}
 
@@ -9,10 +12,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		MyMine.waiting(true);
 		MyMine.progress(50);
 
-		//var prjId = $("#projectSelector").val();
-		var url = Config.redmineApiPath + "/issues.json"
-			+ "?set_filter=1&key=" + Config.redmineApiKey
-		;
+		var url = Class.apiPath + "/issues.json?set_filter=1&key=" + Class.apiKey;
 	
 		
 		//if (Config.redmineQueryId) {
@@ -39,20 +39,20 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		});
 	}
 	Class.prototype.getIssue = function(num, callback) {
-		var url = Config.redmineApiPath + "/issues/"+num+".json"
-			+ "?key=" + Config.redmineApiKey;
+		var url = Class.apiPath + "/issues/"+num+".json"
+			+ "?key=" + Class.apiKey;
 		getJsonAsync(url, callback);
 	}
 
 	Class.prototype.getProjects = function(callback) {
-		var url = Config.redmineApiPath + "/projects.json"
-			+ "?key=" + Config.redmineApiKey;
+		var url = Class.apiPath + "/projects.json"
+			+ "?key=" + Class.apiKey;
 		getJsonAsync(url, callback);
 	}
 
 	Class.prototype.getCurrentUser = function(callback) {
-		var url = Config.redmineApiPath + "/users/current.json"
-			+ "?key=" + Config.redmineApiKey;
+		var url = Class.apiPath + "/users/current.json"
+			+ "?key=" + Class.apiKey;
 		getJsonAsync(url, callback);
 	}
 
@@ -71,7 +71,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.openIsuue = function(num) {
-		var url = Config.redmineAbsPath+"/issues/"+num;
+		var url = Class.absPath+"/issues/"+num;
 		window.open(url,"_blank");
 	}
 

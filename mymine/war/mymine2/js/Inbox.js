@@ -27,35 +27,34 @@ function Inbox(){this.initialize.apply(this, arguments)};
 	}
 
 	function inbox() {
-		//var prjId = $("#projectSelector").val();
-		var prjId = "";
-		//var opts = {page:inboxPage, project_id:prjId};
 		var opts = {page:inboxPage};
+		// プロジェクト
+		var prjId = $("#projectSelector").val();
+		if (prjId != "") opts.project_id = prjId;
 
+		// カスタムクエリ
 		var custom = Control.checkButtonGroup("custom");
 		var query = null;
 		if (custom>=0) query = Config.redmineCustomQuery[custom];
 
+		// 自分担当のみ
 		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
+		// 終了チケット含む
 		if (Control.checkButtons.filter_closed) opts.status_id="*";
+
+		// マスタ
 		var masterTable = MasterTable.getMasterTable();
 		for (var k in masterTable) {
 			var val = Control.getValue("filter_"+k);
 			if (val) opts[k+masterTable[k].idSuf] = val;
 		}
 		
-		/*
-		var sorted = Tickets.getSorted();
-		if (sorted.name) {
-			opts.sort = SORT_NAME[sorted.name];
-			if (!sorted.asc) {
-				opts.sort += ":desc";
-			}
+		// ソート条件
+		var sortInfo = TicketTray.getSortInfo();
+		if (sortInfo) {
+			opts.sort = sortInfo.name + (sortInfo.desc?":desc":"");
 		}
-		*/
 
-		Config.redmineApiPath = "/r-labs"; // TODO:Config
-		
 		new RedMine().getIssues(function(resData){
 			var issues = resData.issues;
 			var inbox = Folders.getInbox();
@@ -67,6 +66,8 @@ function Inbox(){this.initialize.apply(this, arguments)};
 			}
 			Folders.select(inbox);
 			isInboxFin = (issues.length==0);
+			
+			Control.initMasterTable();//TODO:このタイミング？
 		}, query, opts);
 	}
 
