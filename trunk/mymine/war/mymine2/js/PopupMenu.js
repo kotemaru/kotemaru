@@ -4,8 +4,9 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 	Class.options = null;
 
 	Class.open = function(name, opts){
+		Class.close();
 		Class.options = opts;
-
+		
 		var $menu  = $(name).show();
 		var offset = {left:0, top:0};
 		if (opts.offset) {
@@ -45,9 +46,16 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		});
 	}
 
-
-
-
-
+	$(function(){
+		$(".SelectableIcon").live("click", function(){
+			PopupMenu.open("#iconSelectMenu", {element: this});
+		});
+		$("#iconSelectMenu>.PopupMenuItem").live("click", function(){
+			$img = $(PopupMenu.options.element);
+			$img.attr("src", this.src);
+			PopupMenu.close("#iconSelectMenu");
+		});
+		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
+	});
 
 })(PopupMenu);

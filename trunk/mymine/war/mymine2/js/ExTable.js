@@ -140,6 +140,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	Class.prototype.data = function(data) {
 		this.masterData = data;
 		this.build();
+		this.refreshBody();
 		var self = this;
 		if (this.useVariableHeight) {
 			setTimeout(function(){self.refreshRowHight();}, 1);
@@ -159,6 +160,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		this.refreshHeader();
 		this.refreshBody();
 		return this;
+	}
+	Class.prototype.getSortInfo = function() {
+		return this.sortInfo;
 	}
 
 
@@ -326,7 +330,6 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 * @return カラム幅（＋他の情報）の配列
 	 */
 	function calcColumnSize(columnMetas, recodeWidth) {
-console.log('--->'+recodeWidth);
 		var columns = [];
 		for (var i=0; i<columnMetas.length; i++) {
 			var m = columnMetas[i];
@@ -392,7 +395,7 @@ console.log('--->'+recodeWidth);
 	Class.prototype.refreshBody = function() {
 
 		var $body = $(this.rootSelector+" "+_ExTableBody);
-		var rows = sortRow(this.viewRows, this.sortInfo);
+		var rows = sortRow(this.viewRows, this.sortInfo, this.columnMetas);
 
 		var body = $body[0];
 		for (var i=0; i<rows.length; i++) {
@@ -405,22 +408,28 @@ console.log('--->'+recodeWidth);
 	 * @param rows 行データ
 	 * @param cond ソート条件
 	 */
-	function sortRow(rows, cond) {
+	function sortRow(rows, cond, columnMetas) {
 		if (cond == null) return rows;
 
 		var idx = cond.index;
-		var type = typeof rows[0].data[idx];
-
-		function defaultComp(a,b) {
-			var A=a.data[idx], B=b.data[idx]
-			return A==B?0:(A>B?1:-1);
-		};
-		var comp = defaultComp;
-		if (type == "number") {
-			comp = function(a,b){
-				return a.data[idx]-b.data[idx];
+		var comp = null;
+		var customComp = columnMetas[idx].comparator;
+		if (customComp) {
+			comp = function(a,b){return customComp(a.data, b.data);};
+		} else {
+			var type = typeof rows[0].data[idx];
+			if (type == "number") {
+				comp = function(a,b){
+					return a.data[idx]-b.data[idx];
+				};
+			} else {
+				comp = function(a,b) {
+					var A=a.data[idx], B=b.data[idx]
+					return A==B?0:(A>B?1:-1);
+				};
 			}
 		}
+		
 		if (cond.desc) {
 			var orgComp = comp;
 			comp = function(a,b){return orgComp(b,a);}

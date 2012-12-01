@@ -29,23 +29,68 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			$elem.find(">div>span").css("width",issue.done_ratio+"%");
 		}
 	};
+	var COMPS = {
+		id:			function(a,b) {console.log(a,b);
+			return a.id-b.id;},
+		project:	function(a,b){return compId(a,b,"project");},
+		tracker:	function(a,b){return compId(a,b,"tracker");},
+		priority:	function(a,b){return compId(a,b,"priority");},
+		assigned_to:function(a,b){return compName(a,b,"assigned_to");},
+		subject:	function(a,b){var A=a.subject,B=b.subject;return(A==B?0:(A<B?-1:1));},
+		
+		start_date:	function(a,b){return compDate(a,b,"start_date");},
+		due_date:	function(a,b){return compDate(a,b,"due_date");},
+		updated_on:	function(a,b){return compDate(a,b,"updated_on");},
+
+		done_ratio: function(a,b){return(a.done_ratio-b.done_ratio);}
+	};
+	function compId(a,b,key) {
+		var A = a[key]?a[key].id:-1;
+		var B = b[key]?b[key].id:-1;
+		return A-B;
+	}
+	function compName(a,b,key) {
+		var A = a[key]?a[key].name:"";
+		var B = b[key]?b[key].name:"";
+		return (A==B?0:(A<B?-1:1));
+	}
+	function compDate(a,b,key) {
+		var A = Date.parse(a[key]);
+		var B = Date.parse(b[key]);
+		return A-B;
+	}
 
 	// カラムメタ情報
 	var COLUMN_METAS =[
-		{title:"番号",   	width:36, setter:SETTERS.id,
+		{title:"番号",   	width:36, setter:SETTERS.id, comparator:COMPS.id,
 						style:{textAlign:"right"}},
-		{title:"プロジェクト", width:80, setter:SETTERS.project },
-		{title:"トラッカー",	width:70, setter:SETTERS.tracker },
-		{title:"優先度", 		width:48, setter:SETTERS.priority },
-		{title:"担当者", 		width:97, setter:SETTERS.assigned_to },
-		{title:"更新日",		width:54, setter:SETTERS.updated_on },
-		{title:"開始日", 		width:54, setter:SETTERS.start_date },
-		{title:"期日", 		width:54, setter:SETTERS.due_date },
-		{title:"進捗", 		width:28, setter:SETTERS.done_ratio },
-		{title:"題名",   	width:"100%",  setter:SETTERS.subject,
+		{title:"プロジェクト", width:80, setter:SETTERS.project, 	 comparator:COMPS.project },
+		{title:"トラッカー",	width:70, setter:SETTERS.tracker, 	 comparator:COMPS.tracker },
+		{title:"優先度", 		width:48, setter:SETTERS.priority, 	 comparator:COMPS.priority },
+		{title:"担当者", 		width:97, setter:SETTERS.assigned_to, comparator:COMPS.assigned_to },
+		{title:"更新日",		width:54, setter:SETTERS.updated_on, comparator:COMPS.updated_on },
+		{title:"開始日", 		width:54, setter:SETTERS.start_date, comparator:COMPS.start_date },
+		{title:"期日", 		width:54, setter:SETTERS.due_date, 	 comparator:COMPS.due_date },
+		{title:"進捗", 		width:28, setter:SETTERS.done_ratio, comparator:COMPS.done_ratio },
+		{title:"題名",   	width:"100%",  setter:SETTERS.subject, comparator:COMPS.subject,
 						style:{whiteSpace:"normal", height:"auto"}}
 	];
 
+	var SORT_NAME = [
+	    "id", 
+		"project", 	 
+		"tracker", 	 
+		"priority", 	 
+		"assigned_to", 
+		"updated_on", 
+		"start_date", 
+		"due_date", 	 
+		"done_ratio", 
+		"subject"         
+	];
+	
+	
+	//------------------------------------------------------
 	var exTable = null;
 
 	// 「進捗」表示用カスタムカラム関数
@@ -94,6 +139,12 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		exTable.data(data);
 	}
 
+	Class.getSortInfo = function() {
+		var sortInfo = exTable.getSortInfo();
+		if (sortInfo == null) return null;
+		sortInfo.name = SORT_NAME[sortInfo.index];
+		return sortInfo;
+	}
 	
 	//---------------------------------------------------------------------
 	// Event Handler
@@ -188,7 +239,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 	$(function(){
 		// テーブル生成
 		exTable = new ExTable(_TICKET_TRAY);
-		exTable.header(COLUMN_METAS).data([{}]);
+		exTable.header(COLUMN_METAS).data([]);
 		bindMove();
 	})
 
