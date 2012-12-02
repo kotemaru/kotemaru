@@ -53,4 +53,39 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		}
 	}
 
+	//--------------------------------------------------------------------
+	Class.abort = function() {
+		Dialog.open("#abortDialog");
+	}
+
+	Class.download = function() {
+		var str = Storage.getDownloadString();
+		var $a = $("#downloadLink");
+		$a.attr("href","data:application/octet-stream,"+encodeURIComponent(str));
+		Dialog.open("#downloadDialog");
+	}
+
+	Class.upload = function() {
+		var $file = $("#uploadFile");
+		$file.show().bind("change", function(){
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				Storage.setUploadString(reader.result);
+				alert("設定を更新しました。ページをリロードします。");
+				location.reload();
+			};
+            reader.readAsText($file[0].files[0]);
+            Dialog.close();
+		});
+		Dialog.open("#uploadDialog");
+	}
+
+
+	Class.config = function() {
+		Dialog.open("#configDialog");
+	}
+	
+	
+	
+	
 })(Dialog);

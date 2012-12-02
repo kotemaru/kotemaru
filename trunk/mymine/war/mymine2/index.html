@@ -21,15 +21,17 @@
 
 	<script src="js/MyMine.js" ></script>
 	<script src="js/Config.js" ></script>
+	<script src="js/MasterTable.js" ></script>
 	<script src="js/Control.js" ></script>
 	<script src="js/Dialog.js" ></script>
 	<script src="js/Folder.js" ></script>
 	<script src="js/RedMine.js" ></script>
 	<script src="js/Tickets.js" ></script>
 	<script src="js/Storage.js" ></script>
-	<script src="js/UI.js" ></script>
 	<script src="js/PopupMenu.js" ></script>
-	<script src="js/MasterTable.js" ></script>
+	<script src="js/CheckButton.js" ></script>
+	<script src="js/PulldownButton.js" ></script>
+	<script src="js/Balloon.js" ></script>
 
 	<script src="js/BorderLayout.js" ></script>
 	<script src="js/ExTable.js" ></script>
@@ -67,25 +69,7 @@ $(function(){
 		left:  {size:200, resizable:true}
 	}).load().refresh();
 
-
-
-
-	$("#balloon").hide();
-	$("*[data-alt]").live("mouseover",function(){
-		var $this = $(this);
-		var offset = $this.offset();
-		var alt = $this.attr("data-alt");
-		offset.top += 20;
-		offset.left += 20;
-		$("#balloon").show().text(alt).offset(offset);
-	}).live("mouseout",function(){
-		$("#balloon").hide();
-	})
-
-//
 	Folders.init().refresh();
-
-
 });
 	</script>
 </head>
@@ -123,19 +107,19 @@ $(function(){
 			alt="MyMineについて"/>
 		<div id="buttons">
 			<div id="projectPack">
-				<select id="projectSelector" onchange="UI.changeProject(this)"></select>
+				<select id="projectSelector" ></select>
 				<img class="Button" src="img/refresh.png" onclick="Inbox.first()"
 						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
 			</div>
 
 			<div id="configPack" >
-				<img class="Button" src="img/book_open.png" onclick="UI.help()"
+				<img class="Button" src="img/book_open.png" onclick="Dialog.help()"
 						alt="ヘルプ" />
-				<img class="Button" src="img/download.png" onclick="UI.download()"
+				<img class="Button" src="img/download.png" onclick="Dialog.download()"
 						alt="フォルダの保存" />
-				<img class="Button" src="img/upload.png" onclick="UI.upload()"
+				<img class="Button" src="img/upload.png" onclick="Dialog.upload()"
 						alt="フォルダの復元"/>
-				<img class="Button" src="img/cog.png" onclick="UI.config()"
+				<img class="Button" src="img/cog.png" onclick="Dialog.config()"
 						alt="環境設定" />
 			</div>
 

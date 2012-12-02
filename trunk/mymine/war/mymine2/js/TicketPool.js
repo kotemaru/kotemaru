@@ -9,5 +9,21 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 	Class.get = function(num) {
 		return pool[num];
 	}
+	Class.getWithSave = function(num) {
+		Storage.put("issue/"+num, pool[num]);
+		return pool[num];
+	}
+
+	function load() {
+		Storage.each("issue/",function(name, data){
+			var num = parseInt(name.substr(6));
+			pool[num] = data;
+		});
+	}
+	
+	$(function(){
+		load();
+	});
+	
 
 })(TicketPool);

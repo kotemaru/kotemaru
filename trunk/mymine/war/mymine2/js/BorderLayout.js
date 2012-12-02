@@ -104,7 +104,7 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 	}
 
 	//----------------------------------------------------------
-	var STORAGE_NAME = location.pathname+":BorderLayout"
+	var STORAGE_NAME = "BorderLayout";
 	Class.init = function(opts) {
 		saveData = $.extend(true, saveData, opts);
 		initHandling();
@@ -119,13 +119,13 @@ function BorderLayout(){this.initialize.apply(this, arguments)};
 	}
 	
 	Class.save = function() {
-		localStorage[STORAGE_NAME] = JSON.stringify(saveData);
+		Storage.put(STORAGE_NAME, saveData);
 		return Class;
 	}
 	Class.load = function() {
-		var data = localStorage[STORAGE_NAME];
+		var data = Storage.get(STORAGE_NAME, saveData);
 		if (data == null) return Class;
-		saveData = JSON.parse(data);
+		saveData = data;
 		return Class;
 	}
 	

@@ -28,7 +28,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		if (query) url += "&"+query;
 		if (opts != null) {
 			for (var k in opts) {
-				url += "&"+k+"="+opts[k];
+				if (opts[k]) url += "&"+k+"="+opts[k];
 			}
 		}
 

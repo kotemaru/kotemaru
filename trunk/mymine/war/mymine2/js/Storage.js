@@ -2,7 +2,58 @@
 
 function Storage(){this.initialize.apply(this, arguments)};
 (function(Class){
-	var BASE = "MyMine"
+	var BASE = location.pathname.replace(/\/$/,"");
+
+	Class.put = function(name, data) {
+		localStorage[BASE+"/"+name] = JSON.stringify(data);
+	}
+	Class.get = function(name, defo) {
+		var data = localStorage[BASE+"/"+name];
+		if (data == null) return defo;
+		return JSON.parse(data);
+	}
+	Class.each = function(name, callback) {
+		var prefix = BASE+"/"+name;
+		var len = BASE.length+1;
+		for (var k in localStorage) {
+			if (k.indexOf(prefix) == 0) {
+				callback(k.substr(len), localStorage[k]);
+			}
+		}
+	}
+	
+	Class.getDownloadString = function(){
+		var prefix = BASE+"/";
+		var len = BASE.length+1;
+		var str = "{";
+		for (var k in localStorage) {
+			if (k.indexOf(prefix) == 0) {
+				str += '"'+k.substr(len)+'":'+localStorage[k]+",\n";
+			}
+		}
+		str += '"":0}';
+		return str;
+	}
+	Class.setUploadString = function(str){
+		Class.cleanup();
+        var data = JSON.parse(str);
+		for (var k in data) {
+			localStorage[BASE+"/"+k] = JSON.stringify(data[k]);
+		}
+	}
+	Class.cleanup = function(subname) {
+		var prefix = BASE+"/";
+		for (var k in localStorage) {
+			if (k.indexOf(prefix) == 0) delete localStorage[k];
+		}
+	}
+
+	
+	
+
+/*
+	
+	
 	var FOLDER = BASE+"/folder/";
 	var ISSUE = BASE+"/issue/";
 	var CONFIG = BASE+"/config";
@@ -98,5 +149,6 @@ function Storage(){this.initialize.apply(this, arguments)};
 		}
 		Class.loadAll();
 	}
+*/
 
 })(Storage);
