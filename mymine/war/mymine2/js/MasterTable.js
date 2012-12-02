@@ -25,13 +25,16 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 		}
 	}
 
-	var masterTable = {
+	var MASTER_TABLE_BASE = {
 		assigned_to:{name:"担当者",  idSuf:"_id",  keySort:"name", icon:"img/user_silhouette.png", values:{} },
 		author:     {name:"作成者",  idSuf:"_id",  keySort:"name", icon:"img/user.png", values:{} },
 		tracker:    {name:"トラッカー", idSuf:"_id", keySort:"id", icon:"img/dog.png", values:{} },
 		status:     {name:"進捗",      idSuf:"_id", keySort:"id", icon:"img/progress.png", values:{} },
 		priority:   {name:"優先度",    idSuf:"_id", keySort:"id", icon:"img/priority.png", values:{} }
 	};
+	
+	var masterTable = null;
+	
 	Class.getMasterTable = function() {
 		return masterTable;
 	}
@@ -51,13 +54,16 @@ function MasterTable(){this.initialize.apply(this, arguments)};
 	}
 
 	function save() {
-		Storage.saveMaster(masterTable);
+		Storage.put("MasterTable", masterTable);
 	}
-	function load(data) {
-		masterTable = data;
+	function load() {
+		masterTable = Storage.get("MasterTable", MASTER_TABLE_BASE);
 	}
-	Class.load = load;
 
+	$(function(){
+		load();
+	});
+	
 
 })(MasterTable);
 

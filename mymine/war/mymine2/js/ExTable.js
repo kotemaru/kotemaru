@@ -543,6 +543,11 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		Common.setCssRule(selector, style);
 	}
 
+	Class.prototype.trigger = function(type){
+		$(this.rootSelector).trigger(type, [this.columnMetas]);
+	}
+	
+	
 	//----------------------------------------------------------------------------
 	// イベントハンドラ。
 
@@ -552,8 +557,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	function bindResize() {
 		// Resize
 		var handle = null;
+		var isResized = false;
 		$(_ExTableHandle).live("mousedown", function(){
 			handle = this;
+			isResized = false;
 			return false;
 		}).live("click",function(){
 			return false;
@@ -581,12 +588,16 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 			exTable.updateHeader();
 			//exTable.refreshRowHight();
+			isResized = true;
 		}).live("mouseup", function(){
 			if (handle) {
 				var exTable = $(handle).parents(_ExTable).data(ExTable);
 				Common.waiting(function(){
 					exTable.refreshRowHight();
 				});
+				if (isResized) {
+					exTable.trigger("columnresize");
+				}
 			}
 			handle = null;
 		});
@@ -600,10 +611,12 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		var handle = null;
 		var lastChanged = null;
 		var mouseDownTime = 0;
+		var isMoved = false;
 		$(_ExTableHeader+" "+_ExTableColumn).live("mousedown", function(){
 			handle = this;
 			$(handle).css({cursor: "url(img/cursor-move-box-LR.png) 8 8, col-resize"});
 			mouseDownTime = new Date().getTime();
+			isMoved = false;
 			return false;
 		}).live("mousemove",function(ev){
 			if (handle == null) return;
@@ -626,8 +639,8 @@ function ExTable(){this.initialize.apply(this, arguments)};
 			var tmp = metas[hIdx].seq;
 			metas[hIdx].seq = metas[tIdx].seq;
 			metas[tIdx].seq = tmp;
-			exTable.refreshHeader();
-
+			exTable.updateHeader();
+			isMoved = true;
 		}).live("mouseup", function(){
 			var time = (new Date().getTime())- mouseDownTime;
 			mouseDownTime = 0;
@@ -650,6 +663,11 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		});
 
 		$(document.body).live("mouseup",function(ev){
+			if (isMoved && handle) {
+				var exTable = $(handle).parents(_ExTable).data(ExTable);
+				exTable.trigger("columnmove");
+			}
+			
 			$(handle).css({cursor: "pointer"});
 			handle = null;
 			lastChanged = null;

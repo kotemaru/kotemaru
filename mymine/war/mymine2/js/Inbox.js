@@ -17,37 +17,15 @@ function Inbox(){this.initialize.apply(this, arguments)};
 	}
 
 
-	var SORT_NAME = {
-		hNum      : "id",
-		hAssigned : "assigned_to",
-		hUpDate   : "updated_on",
-		hDueDate  : "due_date",
-		hDoneRate : "done_rate",
-		hSubject  : "subject"
-	}
-
 	function inbox() {
 		var opts = {page:inboxPage};
-		// プロジェクト
-		var prjId = $("#projectSelector").val();
-		if (prjId != "") opts.project_id = prjId;
 
-		// カスタムクエリ
-		var custom = Control.checkButtonGroup("custom");
-		var query = null;
-		if (custom>=0) query = Config.redmineCustomQuery[custom];
-
-		// 自分担当のみ
-		if (Control.checkButtons.filter_user) opts.assigned_to_id=Control.userId;
-		// 終了チケット含む
-		if (Control.checkButtons.filter_closed) opts.status_id="*";
-
-		// マスタ
-		var masterTable = MasterTable.getMasterTable();
-		for (var k in masterTable) {
-			var val = Control.getValue("filter_"+k);
-			if (val) opts[k+masterTable[k].idSuf] = val;
-		}
+		// Control のフィルタ条件設定
+		var query = Control.getCustomQuery();
+		opts.project_id = Control.getProjectId();
+		opts.assigned_to_id = Control.getFilterUser();
+		opts.status_id = Control.getFilterClosed();
+		Control.getFilterMasters(opts);
 		
 		// ソート条件
 		var sortInfo = TicketTray.getSortInfo();

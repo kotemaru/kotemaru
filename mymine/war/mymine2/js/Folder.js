@@ -76,12 +76,13 @@ function Folder(){this.initialize.apply(this, arguments)};
 	Class.prototype.dropTicket = function() {
 		var ticketNums = TicketTray.getSelection();
 		for (var i=0; i<ticketNums.length; i++) {
-			this.tickets[ticketNums[i]] = TicketPool.get(ticketNums[i]);
+			this.addTicket(ticketNums[i]);
 		}
 		return this;
 	}
 	Class.prototype.addTicket = function(num) {
-		this.tickets[num] = TicketPool.get(num);
+		this.tickets[num] =
+			this.nosave ? TicketPool.get(num):TicketPool.getWithSave(num);
 	}
 	Class.prototype.clearTicket = function(num) {
 		this.tickets = {};

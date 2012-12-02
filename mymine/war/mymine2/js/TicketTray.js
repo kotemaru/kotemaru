@@ -236,10 +236,27 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 
 	//----------------------------------------------------------------
 	// 初期化
+	
+	function save(ev, columnMetas) {
+		Storage.put("columnMetas", columnMetas);
+	}
+	function load(exTable) {
+		var metas = Storage.get("columnMetas", COLUMN_METAS);
+		// Note:関数は保存出来い...
+		for (var i=0; i<metas.length; i++) {
+			metas[i].setter = COLUMN_METAS[i].setter;
+			metas[i].comparator = COLUMN_METAS[i].comparator;
+		}
+		exTable.header(metas);
+	}
+	
+	
 	$(function(){
 		// テーブル生成
 		exTable = new ExTable(_TICKET_TRAY);
-		exTable.header(COLUMN_METAS).data([]);
+		load(exTable);
+		exTable.data([]);
+		$(_TICKET_TRAY).live("columnmove",save).live("columnresize",save);
 		bindMove();
 	})
 
