@@ -48,7 +48,7 @@ function PulldownButton(){this.initialize.apply(this, arguments)};
 		var $elem = $(elem);
 		var val = $elem.data("value");
 		if (val) {
-			$(this).removeClass("PulldownButtonOn");
+			$elem.removeClass("PulldownButtonOn");
 			$elem.data("value",null);
 		} else {
 			var opts = {element:elem, corrent:{x:0,y:6}};

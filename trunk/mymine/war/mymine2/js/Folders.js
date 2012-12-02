@@ -38,13 +38,24 @@ function Folders(){this.initialize.apply(this, arguments)};
 		}
 		return this;
 	}
+	
+	Class.addFolder = function(params){
+		var folder = new Folder().setParams(params);
+		folder.seq = folders.length;
+		folders.push(folder);
+	}
+	
 	Class.select = function(folder){
 		current = folder;
 		TicketTray.setTickets(folder.tickets);
 		Class.refresh();
+		$("#editFolderButton").toggle(!current.nosave)
 	}
 	Class.getInbox = function(){
 		return inbox;
+	}
+	Class.getCurrent = function(){
+		return current;
 	}
 	
 	Class.refresh = function(){
@@ -113,7 +124,7 @@ function Folders(){this.initialize.apply(this, arguments)};
 	})
 	
 	
-	
+
 	
 	
 })(Folders);
