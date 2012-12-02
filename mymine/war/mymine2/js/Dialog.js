@@ -2,6 +2,7 @@
 function Dialog(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var current = name;
+	var closureVar = null;
 	
 	Class.open = function(name){
 		current = name;
@@ -85,7 +86,35 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		Dialog.open("#configDialog");
 	}
 	
+	Class.saveAddFolder = function() {
+		var $di = $("#addFolderDialog");
+		var folder = {
+			name:  $di.find("input[name='folderName']").val(),
+			title: $di.find("input[name='folderTitle']").val(),
+			icon:  $di.find("img#folderIcon").attr("src")
+		};
+		Folder.add(folder);
+		Dialog.close();
+		Folder.refresh();
+	}
+	Class.openAddFolder = function() {
+		closureVar = {};
+		Dialog.open("#addFolderDialog");
+	}
+
+	Class.openEditFolder = function() {
+		closureVar = Folders.getCurrent();
+		Dialog.open("#addFolderDialog");
+	}
 	
+	Class.saveFolder = function() {
+		Class.save();
+		if (!(closureVar instanceof Folder)) {
+			Folders.addFolder(closureVar);
+		}
+		Folders.refresh();
+	}
+
 	
 	
 })(Dialog);

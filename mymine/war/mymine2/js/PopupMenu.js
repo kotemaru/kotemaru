@@ -55,6 +55,9 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 			$img.attr("src", this.src);
 			PopupMenu.close("#iconSelectMenu");
 		});
+		$(document.body).live("click", function(){
+			PopupMenu.close();
+		});
 		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
 	});
 

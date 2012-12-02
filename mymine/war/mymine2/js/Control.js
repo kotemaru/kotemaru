@@ -94,7 +94,16 @@ function Control(){this.initialize.apply(this, arguments)};
 			$filters.append($btn);
 		}
 	}
-	Class.initMasterTable = initMasterTable;
+	function refreshMasterTable() {
+		var masterTable = MasterTable.getMasterTable();
+		if (masterTable == null) return;
+
+		for (var k in masterTable) {
+			if (k.indexOf("cf_")==0) continue; // TODO:カスタムフィールドの扱い
+			PulldownButton.makeMenu($("#filter_"+k), masterTable[k]);
+		}
+	}
+	Class.refreshMasterTable = refreshMasterTable;
 	
 	
 	
@@ -114,6 +123,18 @@ function Control(){this.initialize.apply(this, arguments)};
 		
 		Class.reconfig();
 	});
-	
+
+	//--------------------------------------------------------------------------
+	// 検索関連
+	Class.search = function() {
+		var kw = $("#searchKeyword").val();
+		Inbox.inboxOne(parseInt(kw));
+	}
+	Class.searchKeyPress = function(ev,_this) {
+		if (ev.keyCode == 13) { // ReturnKey
+			Class.search();
+			return false;
+		}
+	}
 
 })(Control);

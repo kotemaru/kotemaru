@@ -16,6 +16,21 @@ function Inbox(){this.initialize.apply(this, arguments)};
 		inbox();
 	}
 
+	Class.inboxOne = function(num) {
+		MyMine.waiting(true);
+		isFirstInbox= false;
+		var inbox = Folders.getInbox();
+		new RedMine().getIssue(num, function(data){
+			var issue = data.issue;
+			TicketPool.put(issue);
+			inbox.addTicket(issue.id);
+			MasterTable.register(issue);
+
+			Folders.select(inbox);
+			isInboxFin = true;
+			MyMine.waiting(false);
+		});
+	}
 
 	function inbox() {
 		var opts = {page:inboxPage};
@@ -45,7 +60,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 			Folders.select(inbox);
 			isInboxFin = (issues.length==0);
 			
-			Control.initMasterTable();//TODO:このタイミング？
+			Control.refreshMasterTable();//TODO:このタイミング？
 		}, query, opts);
 	}
 
