@@ -1,9 +1,9 @@
 <!--<meta http-equiv="content-type" content="text/html; charset=utf-8">-->
 
-<div id="addFolderDialog" class="Dialog">
+<div id="editFolderDialog" class="Dialog">
 	<h3>
 		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
-		<nobr>フォルダ追加</nobr>
+		<nobr>フォルダ編集</nobr>
 	</h3>
 	<div>
 
@@ -19,7 +19,7 @@
 				<td/>
 				<td  >
 					一意のフォルダID。英数字のみ。
-					<br/><input data-path="closureVar.name" size=16/>
+					<br/><input data-path="closureVar.name" disabled="disabled" size=16/>
 					<br/>例: myfolder
 				</td>
 			</tr>
@@ -46,7 +46,7 @@
 
 		<br/>
 		<div align="center">
-			<button onclick="Dialog.addFolder()">追加</button>
+			<button onclick="Dialog.saveFolder()">保存</button>
 			<button onclick="Dialog.close()">キャンセル</button>
 		</div>
 		<br/>

@@ -20,7 +20,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 		MyMine.waiting(true);
 		isFirstInbox= false;
 		var inbox = Folders.getInbox();
-		new RedMine().getIssue(num, function(data){
+		RedMine.getIssue(num, function(data){
 			var issue = data.issue;
 			TicketPool.put(issue);
 			inbox.addTicket(issue.id);
@@ -48,7 +48,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 			opts.sort = sortInfo.name + (sortInfo.desc?":desc":"");
 		}
 
-		new RedMine().getIssues(function(resData){
+		RedMine.getIssues(function(resData){
 			var issues = resData.issues;
 			var inbox = Folders.getInbox();
 			for (var i=0; i<issues.length; i++) {
