@@ -85,6 +85,9 @@ function Dialog(){this.initialize.apply(this, arguments)};
 	Class.config = function() {
 		Dialog.open("#configDialog");
 	}
+	Class.saveConfig = function() {
+		RedMine.save();
+	}
 	
 	Class.saveAddFolder = function() {
 		var $di = $("#addFolderDialog");
@@ -101,17 +104,22 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		closureVar = {};
 		Dialog.open("#addFolderDialog");
 	}
+	Class.addFolder = function() {
+		Class.save();
+		var folder = Folders.addFolder(closureVar);
+		if (folder == null) {
+			alert("フォルダの作成に失敗しました。\nIDが衝突している可能性があります。");
+		}
+		Folders.refresh();
+	}
 
 	Class.openEditFolder = function() {
 		closureVar = Folders.getCurrent();
-		Dialog.open("#addFolderDialog");
+		Dialog.open("#editFolderDialog");
 	}
 	
 	Class.saveFolder = function() {
 		Class.save();
-		if (!(closureVar instanceof Folder)) {
-			Folders.addFolder(closureVar);
-		}
 		Folders.refresh();
 	}
 

@@ -141,4 +141,9 @@ input[name='redmineCustomQuery'], #redmineCustomQuery{
 	width: 600px;
 	//overflow-y: scroll;
 }
-
+#editFolderDialog > div {
+	//border: 1px solid gray;
+	height: 350px;
+	width: 600px;
+	//overflow-y: scroll;
+}

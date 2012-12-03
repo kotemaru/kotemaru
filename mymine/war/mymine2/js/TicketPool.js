@@ -13,6 +13,9 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 		Storage.put("issue/"+num, pool[num]);
 		return pool[num];
 	}
+	Class.removeFromStorage = function(num) {
+		Storage.remove("issue/"+num);
+	}
 
 	function load() {
 		Storage.each("issue/",function(name, data){

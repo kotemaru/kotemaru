@@ -3,28 +3,36 @@ function Folder(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var $TAMPLATE = $("<article class='Folder'></article>");
 	var $SEPALATOR = $("<hr/>");
+	var TRASH = "trash";
 
 	Class.prototype.initialize = function() {
 		this.name  = null;
 		this.title = null;
 		this.icon  = null;
 		this.nosave = false;
-		this.tickets = {};
-		this.transients = {};
+		this.tickets = [];
+		this.transients = {elem:null, tickets:{}};
 		this.isSeparator = false;
 	}
 
 	Class.prototype.setParams = function(params) {
 		for (var k in params) this[k] = params[k];
+
+		for (var i=0; i<this.tickets.length; i++) {
+			var num = this.tickets[i];
+			this.transients.tickets[num] = TicketPool.get(num);
+		}
 		return this;
 	}
 	Class.prototype.getParams = function() {
+		this.syncTickets();
 		var params = {};
-		for (var k in params) {
+		for (var k in this) {
 			if (this[k] != this.prototype && this[k] != this.transients){
 				params[k] = this[k];
 			}
 		}
+		if (this.nosave) params.tickets = [];
 		return params;
 	}
 	
@@ -59,8 +67,8 @@ function Folder(){this.initialize.apply(this, arguments)};
 		if (folder.nosave) return folder.title;
 		var unchecked = 0;
 		var total = 0;
-		for (var num in folder.tickets) {
-			if (!folder.tickets[num].isChecked) unchecked++;
+		for (var num in folder.transients.tickets) {
+			if (!folder.transients.tickets[num].isChecked) unchecked++;
 			total++;
 		}
 		if (total == 0) return folder.title;
@@ -73,21 +81,46 @@ function Folder(){this.initialize.apply(this, arguments)};
 	}
 	
 	
-	Class.prototype.dropTicket = function() {
+	Class.prototype.dropTicket = function(dstFolder) {
 		var ticketNums = TicketTray.getSelection();
 		for (var i=0; i<ticketNums.length; i++) {
 			this.addTicket(ticketNums[i]);
+			dstFolder.delTicket(ticketNums[i]);
 		}
 		return this;
 	}
 	Class.prototype.addTicket = function(num) {
-		this.tickets[num] =
-			this.nosave ? TicketPool.get(num):TicketPool.getWithSave(num);
+		this.transients.nosync = true;
+		if (this.nosave) {
+			this.transients.tickets[num] = TicketPool.get(num);
+			if (this.name == TRASH) {
+				TicketPool.removeFromStorage(num);
+			}
+		} else {
+			this.transients.tickets[num] = TicketPool.getWithSave(num);
+		}
+	}
+	Class.prototype.delTicket = function(num) {
+		this.transients.nosync = true;
+		delete this.transients.tickets[num];
 	}
 	Class.prototype.clearTicket = function(num) {
-		this.tickets = {};
+		this.tickets = [];
+		this.transients.tickets = {};
 	}
-
+	Class.prototype.getTickets = function(num) {
+		return this.transients.tickets;
+	}
+	Class.prototype.syncTickets = function() {
+		if (!this.transients.nosync) return; 
+		this.transients.nosync = false;
+		this.tickets = [];
+		for (var num in this.transients.tickets) {
+			this.tickets.push(num);
+		}
+	}
+	
+	
 })(Folder);
 
 

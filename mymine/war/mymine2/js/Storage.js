@@ -17,9 +17,12 @@ function Storage(){this.initialize.apply(this, arguments)};
 		var len = BASE.length+1;
 		for (var k in localStorage) {
 			if (k.indexOf(prefix) == 0) {
-				callback(k.substr(len), localStorage[k]);
+				callback(k.substr(len), JSON.parse(localStorage[k]));
 			}
 		}
+	}
+	Class.remove = function(name) {
+		localStorage.removeItem(BASE+"/"+name);
 	}
 	
 	Class.getDownloadString = function(){

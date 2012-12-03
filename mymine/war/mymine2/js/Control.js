@@ -53,7 +53,7 @@ function Control(){this.initialize.apply(this, arguments)};
 	}
 	
 	function initProjects() {
-		new RedMine().getProjects(function(data){
+		RedMine.getProjects(function(data){
 			var projects = data.projects;
 			
 			var $sel = $("#projectSelector").html("<option value=''>*</option>");
