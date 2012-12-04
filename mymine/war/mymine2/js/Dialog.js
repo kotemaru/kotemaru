@@ -86,7 +86,9 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		Dialog.open("#configDialog");
 	}
 	Class.saveConfig = function() {
+		Class.save();
 		RedMine.save();
+		MyMine.reconfig();
 	}
 	
 	Class.saveAddFolder = function() {

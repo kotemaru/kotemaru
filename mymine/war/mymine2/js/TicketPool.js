@@ -13,6 +13,13 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 		Storage.put("issue/"+num, pool[num]);
 		return pool[num];
 	}
+	Class.checked = function(num) {
+		pool[num].checked = new Date().getTime();
+		Storage.put("issue/"+num, pool[num]);
+	}
+	Class.isChecked = function(num) {
+		return pool[num].checked > Date.parse(pool[num].updated_on);
+	}
 	Class.removeFromStorage = function(num) {
 		Storage.remove("issue/"+num);
 	}
