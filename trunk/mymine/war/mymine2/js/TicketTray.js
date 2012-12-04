@@ -6,13 +6,16 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 	var _TICKET = "#ticketTray .ExTableRow";
 	var TicketSelect = "TicketSelect";
 	var _TicketSelect = "."+TicketSelect;
+	var TicketUnChecked = "TicketUnChecked";
 	var _Folder = ".Folder";
 
 	
 	var SETTERS = {
 		id:			function($elem,issue) {
-			$elem[0].parentNode.dataset.num = issue.id;
 			$elem.text(issue.id);
+			var $ticket = $elem.parent();
+			$ticket[0].dataset.num = issue.id;
+			$ticket.toggleClass(TicketUnChecked, !TicketPool.isChecked(issue.id));
 		},
 		project:	function($elem,issue) {$elem.html(name(issue.project));},
 		tracker:	function($elem,issue) {$elem.html(name(issue.tracker));},
@@ -216,9 +219,9 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 				draggable = null;
 			}
 		}).live("dblclick",function(ev){
-			var num = this.dataset.ticketNum;
+			var num = this.dataset.num;
 			RedMine.openIsuue(num);
-			Ticket.checked(num);
+			TicketPool.checked(num);
 			Class.refresh();
 			Folder.refresh();
 		});

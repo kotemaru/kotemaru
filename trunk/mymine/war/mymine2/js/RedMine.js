@@ -70,7 +70,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		var data = {
 			absPath: Class.absPath,
 			apiPath: Class.apiPath,
-			apiPath: Class.apiKey
+			apiKey: Class.apiKey
 		};
 		Storage.put("RedMine", data);
 	}
@@ -80,7 +80,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		if (data == null) return;
 		Class.absPath =	data.absPath; 
 		Class.apiPath =	data.apiPath; 
-		Class.apiKey  =	data.apiPath;
+		Class.apiKey  =	data.apiKey;
 	}
 	
 	$(function(){

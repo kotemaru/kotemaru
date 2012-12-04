@@ -2,14 +2,15 @@
 .BorderLayoutLeft > header {
 	font-size: 14px;
 	height: 24px;
-	padding-top: 4px;
+	padding-top: 2px;
 	background: #ddd;
-	border-bottom: 1px solid lightgray;
+	border-bottom: 1px solid #bbb;
 }
 .BorderLayoutLeft > header > img.Button {
 	float: right;
-	width: 16px;
+	width: 18px;
 }
+
 
 .Folder {
 	box-sizing: border-box;

@@ -6,37 +6,12 @@ function MyMine(){this.initialize.apply(this, arguments)};
 
 	Class.prototype.initialize = function() {
 	}
-	Class.init = function() {
-		Storage.init();
-		Config.init();
-		Ticket.init();
-		Folder.init();
-		Control.init();
-		SlideHandle.init();
-		Folder.refresh();
-		UI.init();
-	}
+
 
 	Class.reconfig = function() {
 		Control.reconfig();
 	}
 
-	Class.isDrag = function(b) {
-		if (b !== undefined) {
-			isDrag = b;
-		}
-		return isDrag;
-	}
-
-	Class.setDragCursor = function() {
-		if (isDrag) {
-			var sels = Tickets.getSelection();
-			var img = (sels.length>=2) ? "tickets-no":"ticket-no";
-			$(document.body).css("cursor","url(img/"+img+".png) 16 8, pointer");
-		} else {
-			$(document.body).css("cursor","default");
-		}
-	}
 
 
 	Class.waiting = function(b) {

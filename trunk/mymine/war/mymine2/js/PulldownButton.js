@@ -51,9 +51,13 @@ function PulldownButton(){this.initialize.apply(this, arguments)};
 			$elem.removeClass("PulldownButtonOn");
 			$elem.data("value",null);
 		} else {
-			var opts = {element:elem, corrent:{x:0,y:6}};
-			PopupMenu.open($elem.find(".PopupMenu")[0], opts);
+			Class.popup(elem);
 		}
+	}
+	Class.popup = function(elem) {
+		var $elem = $(elem);
+		var opts = {element:elem, corrent:{x:0,y:6}};
+		PopupMenu.open($elem.find(".PopupMenu")[0], opts);
 	}
 	Class.onChange = function(item) {
 		var $elem = $(PopupMenu.options.element);
@@ -70,8 +74,13 @@ function PulldownButton(){this.initialize.apply(this, arguments)};
 	//-----------------------------------------------------
 	$(function(){
 		// PulldownButton
+		$(".PulldownButtonMark").live("click", function(){
+			Class.popup(this.parentNode);
+			return false;
+		});
 		$(".PulldownButton").live("click", function(){
 			Class.onClick(this);
+			return false;
 		});
 		$(".PulldownButton .PopupMenuItem").live("click", function(){
 			Class.onChange(this);

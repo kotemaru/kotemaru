@@ -68,7 +68,7 @@ function Folder(){this.initialize.apply(this, arguments)};
 		var unchecked = 0;
 		var total = 0;
 		for (var num in folder.transients.tickets) {
-			if (!folder.transients.tickets[num].isChecked) unchecked++;
+			if (!TicketPool.isChecked(num)) unchecked++;
 			total++;
 		}
 		if (total == 0) return folder.title;
@@ -78,6 +78,9 @@ function Folder(){this.initialize.apply(this, arguments)};
 		return "<span class='Count'>("
 			+"<b>"+unchecked+"</b>/"+total
 			+") </span>"+folder.title;
+	}
+	function isCheck(issue) {
+		return issue.checked > Date.parse(issue.updated_on);
 	}
 	
 	
