@@ -10,10 +10,10 @@ function Inbox(){this.initialize.apply(this, arguments)};
 		Folders.getInbox().clearTicket();
 		inbox();
 	}
-	Class.next = function() {
+	Class.next = function(callback) {
 		if (isInboxFin) return;
 		inboxPage++ ;
-		inbox();
+		inbox(callback);
 	}
 
 	Class.inboxOne = function(num) {
@@ -32,7 +32,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 		});
 	}
 
-	function inbox() {
+	function inbox(callback) {
 		var opts = {page:inboxPage};
 
 		// Control のフィルタ条件設定
@@ -61,6 +61,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 			isInboxFin = (issues.length==0);
 			
 			Control.refreshMasterTable();//TODO:このタイミング？
+			if (callback) callback(issues);
 		}, query, opts);
 	}
 

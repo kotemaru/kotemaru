@@ -488,7 +488,10 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.build = function() {
 		var $root = $(this.rootSelector);
-		$root.html(TEMPL_ROOT);
+		var $body  = $root.find(_ExTableBody);
+		if ($body.length == 0) {
+			$root.html(TEMPL_ROOT);
+		}
 
 		buildHeader($root.find(_ExTableHeader), this.columnMetas);
 		this.refreshHeader();
@@ -496,6 +499,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 		this.viewRows = [];
 		this.masterRows = [];
 		var $body = $root.find(_ExTableBody);
+		$body.html("");
 		for (var i=0; i<this.masterData.length; i++) {
 			var $row = buildRow(this.masterData[i], this.columnMetas);
 			$body.append($row);
@@ -528,6 +532,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	function buildHeader($header, columnMetas) {
 		var $headerInner = $header.find(_ExTableHeaderRow);
+		$headerInner.html("");
 		for (var i=0; i<columnMetas.length; i++) {
 			var $col = $TEMPL_HEADER_COL.clone();
 			//$col.find("span:first-child");
