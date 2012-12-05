@@ -79,7 +79,7 @@ function ExTable(){this.initialize.apply(this, arguments)};
 
 	var TEMPL_ROOT = 
 		"<div class='"+ExTableHeader+"'><div class="+ExTableHeaderRow+"></div></div>"
-		+"<div class='"+ExTableBody+"'></div>";
+		+"<div class='"+ExTableBody+"' ></div>";
 	var $TEMPL_ROW = $("<div class='"+ExTableRow+"'></div>");
 	var $TEMPL_COL = $("<span class='"+ExTableColumn+"'></span>");
 	var $TEMPL_HEADER_COL = $(
