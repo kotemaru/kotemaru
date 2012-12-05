@@ -5,19 +5,8 @@ function Control(){this.initialize.apply(this, arguments)};
 	Class.prototype.initialize = function() {
 	}
 
-	var checkButtons = {
-		filter_user: false
-	};
-
 	Class.userId = null;
 
-	Class.init = function() {
-		new RedMine().getCurrentUser(function(data){
-			Class.userId = data.user.id;
-		});
-	}
-
-	
 	Class.getProjectId = function() {
 		return $("#projectSelector").val();
 	}
@@ -108,6 +97,12 @@ function Control(){this.initialize.apply(this, arguments)};
 	
 	
 	$(function(){
+		if (RedMine.apiKey != "") {
+			RedMine.getCurrentUser(function(data){
+				Class.userId = data.user.id;
+			});
+		}
+		
 		$("#projectSelector").live("change", function(){
 			//Folder.inbox();
 			Storage.put("projectSelector",  $(this).val());

@@ -7,6 +7,8 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 	var TicketSelect = "TicketSelect";
 	var _TicketSelect = "."+TicketSelect;
 	var TicketUnChecked = "TicketUnChecked";
+	var ExTableBody = "ExTableBody";
+	var _ExTableBody = "."+ExTableBody;
 	var _Folder = ".Folder";
 
 	
@@ -21,6 +23,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		tracker:	function($elem,issue) {$elem.html(name(issue.tracker));},
 		priority:	function($elem,issue) {$elem.html(name(issue.priority));},
 		assigned_to:function($elem,issue) {$elem.html(name(issue.assigned_to));},
+		author:     function($elem,issue) {$elem.html(name(issue.author));},
 		subject:	function($elem,issue) {$elem.text(issue.subject);},
 	
 		start_date:	function($elem,issue) {$elem.html(toYYMMDD(issue.start_date));},
@@ -39,6 +42,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		tracker:	function(a,b){return compId(a,b,"tracker");},
 		priority:	function(a,b){return compId(a,b,"priority");},
 		assigned_to:function(a,b){return compName(a,b,"assigned_to");},
+		author:     function(a,b){return compName(a,b,"author");},
 		subject:	function(a,b){var A=a.subject,B=b.subject;return(A==B?0:(A<B?-1:1));},
 		
 		start_date:	function(a,b){return compDate(a,b,"start_date");},
@@ -71,6 +75,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		{title:"トラッカー",	width:70, setter:SETTERS.tracker, 	 comparator:COMPS.tracker },
 		{title:"優先度", 		width:48, setter:SETTERS.priority, 	 comparator:COMPS.priority },
 		{title:"担当者", 		width:97, setter:SETTERS.assigned_to, comparator:COMPS.assigned_to },
+		{title:"作成者", 		width:97, setter:SETTERS.author,     comparator:COMPS.author },
 		{title:"更新日",		width:54, setter:SETTERS.updated_on, comparator:COMPS.updated_on },
 		{title:"開始日", 		width:54, setter:SETTERS.start_date, comparator:COMPS.start_date },
 		{title:"期日", 		width:54, setter:SETTERS.due_date, 	 comparator:COMPS.due_date },
@@ -253,6 +258,23 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		exTable.header(metas);
 	}
 	
+	Class.onScroll = function(_this,event) {
+
+		var $this = $(_this);
+		var $child = $this.find(">div");
+		var scrollTop =  $this.scrollTop();
+		var bottom = scrollTop+$this.height();
+		if (bottom >= $child.height()) {
+			var $section = $("#tickets");
+			$section.bind("ticketsReload", function(){
+				$this.scrollTop(scrollTop);
+				console.log(scrollTop);
+			});
+			Folder.inboxAppend();
+		}
+
+	}
+	
 	
 	$(function(){
 		// テーブル生成
@@ -261,6 +283,17 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		exTable.data([]);
 		$(_TICKET_TRAY).live("columnmove",save).live("columnresize",save);
 		bindMove();
+		
+		setTimeout(function(){
+			var $body = $(_ExTableBody);
+			$body.bind("scroll",function(){
+				console.log("->",this.scrollTop);
+			});
+			$body[0].onscroll = function(){
+				console.log("->",this.scrollTop);
+			}
+		},10);
+
 	})
 
 	
