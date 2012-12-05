@@ -70,6 +70,9 @@ function Folders(){this.initialize.apply(this, arguments)};
 	Class.getCurrent = function(){
 		return current;
 	}
+	Class.isCurrentInbox = function(){
+		return current == inbox;
+	}
 	
 	Class.refresh = function(){
 		var $section = $(_FOLDERS);

@@ -258,19 +258,18 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		exTable.header(metas);
 	}
 	
-	Class.onScroll = function(_this,event) {
-
-		var $this = $(_this);
-		var $child = $this.find(">div");
-		var scrollTop =  $this.scrollTop();
-		var bottom = scrollTop+$this.height();
-		if (bottom >= $child.height()) {
-			var $section = $("#tickets");
-			$section.bind("ticketsReload", function(){
-				$this.scrollTop(scrollTop);
-				console.log(scrollTop);
+	function onScroll() {
+		var bottom = this.scrollTop+this.clientHeight;
+		//console.log(this.scrollTop, this.scrollHeight);
+		if (Folders.isCurrentInbox() && bottom >= this.scrollHeight) {
+			var scrollTop = this.scrollTop;
+			var self = this;
+			Inbox.next(function(issues){
+				setTimeout(function(){
+					console.log("--->",self.scrollTop, scrollTop);
+					//self.scrollTop = scrollTop;
+				},3000);
 			});
-			Folder.inboxAppend();
 		}
 
 	}
@@ -284,16 +283,11 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		$(_TICKET_TRAY).live("columnmove",save).live("columnresize",save);
 		bindMove();
 		
-		setTimeout(function(){
-			var $body = $(_ExTableBody);
-			$body.bind("scroll",function(){
-				console.log("->",this.scrollTop);
-			});
-			$body[0].onscroll = function(){
-				console.log("->",this.scrollTop);
-			}
-		},10);
-
+		var $body = $(_TICKET_TRAY+" "+_ExTableBody);
+		//$body.live("scroll",function(){ // Note: 動かない。jQueryバグ？
+		//	console.log("->",this.scrollTop);
+		//});
+		$body[0].onscroll = onScroll;
 	})
 
 	
