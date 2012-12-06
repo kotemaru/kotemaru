@@ -67,6 +67,10 @@ $(function(){
 		header:{size:60, resizable:false},
 		left:  {size:200, resizable:true}
 	}).load().refresh();
+	
+	//Folders.select(Folders.inbox);
+	TicketTray.sort(6,true); // 更新日,DESC
+	Inbox.first();
 });
 	</script>
 </head>
@@ -106,7 +110,7 @@ $(function(){
 		<div id="buttons">
 			<div id="projectPack">
 				<select id="projectSelector" ></select>
-				<img class="Button" src="img/refresh.png" onclick="Inbox.first()"
+				<img class="Button" src="img/refresh.png" onclick="Control.update()"
 						alt="フォルダ内のチケットを最新化する<br/>(Shift+ で全フォルダ)"/>
 			</div>
 

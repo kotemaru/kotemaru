@@ -57,7 +57,7 @@ function Inbox(){this.initialize.apply(this, arguments)};
 				inbox.addTicket(issue.id);
 				MasterTable.register(issue);
 			}
-			Folders.select(inbox);
+			//Folders.select(inbox);
 			isInboxFin = (issues.length==0);
 			
 			Control.refreshMasterTable();//TODO:このタイミング？

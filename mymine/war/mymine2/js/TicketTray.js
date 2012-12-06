@@ -2,14 +2,14 @@
 //@Singleton
 function TicketTray(){this.initialize.apply(this, arguments)};
 (function(Class){
-	var _TICKET_TRAY = "#ticketTray";
-	var _TICKET = "#ticketTray .ExTableRow";
-	var TicketSelect = "TicketSelect";
-	var _TicketSelect = "."+TicketSelect;
+	var _TICKET_TRAY    = "#ticketTray";
+	var _TICKET         = "#ticketTray .ExTableRow";
+	var TicketSelect    = "TicketSelect";
+	var _TicketSelect   = "."+TicketSelect;
 	var TicketUnChecked = "TicketUnChecked";
-	var ExTableBody = "ExTableBody";
-	var _ExTableBody = "."+ExTableBody;
-	var _Folder = ".Folder";
+	var ExTableBody     = "ExTableBody";
+	var _ExTableBody    = "."+ExTableBody;
+	var _Folder         = ".Folder";
 
 	
 	var SETTERS = {
@@ -146,7 +146,18 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		}
 		exTable.data(data);
 	}
-
+	Class.setTicketNums = function(nums) {
+		var data = [];
+		for (var i=0; i<nums.length; i++) {
+			data.push(TicketPool.get(nums[i]));
+		}
+		exTable.data(data);
+	}
+	
+	Class.sort = function(idx, desc) {
+		return exTable.sort(idx, desc);
+	}
+	
 	Class.getSortInfo = function() {
 		var sortInfo = exTable.getSortInfo();
 		if (sortInfo == null) return null;
@@ -266,9 +277,9 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			var self = this;
 			Inbox.next(function(issues){
 				setTimeout(function(){
-					console.log("--->",self.scrollTop, scrollTop);
-					//self.scrollTop = scrollTop;
-				},3000);
+					//console.log("--->",self.scrollTop, scrollTop);
+					self.scrollTop = scrollTop;
+				},1);
 			});
 		}
 
