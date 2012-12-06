@@ -114,6 +114,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 	Class.prototype.getTickets = function(num) {
 		return this.transients.tickets;
 	}
+	Class.prototype.getTicketNums = function(num) {
+		this.syncTickets();
+		return this.tickets;
+	}
 	Class.prototype.syncTickets = function() {
 		if (!this.transients.nosync) return; 
 		this.transients.nosync = false;
@@ -121,6 +125,10 @@ function Folder(){this.initialize.apply(this, arguments)};
 		for (var num in this.transients.tickets) {
 			this.tickets.push(num);
 		}
+	}
+	Class.prototype.updateTickets = function() {
+		this.syncTickets();
+		TicketPool.update(this.tickets);
 	}
 	
 	

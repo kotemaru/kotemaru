@@ -59,7 +59,8 @@ function Folders(){this.initialize.apply(this, arguments)};
 	
 	Class.select = function(folder){
 		current = folder;
-		TicketTray.setTickets(folder.getTickets());
+		//TicketTray.setTickets(folder.getTickets());
+		TicketTray.setTicketNums(folder.getTicketNums());
 		Class.refresh();
 		$("#editFolderButton").toggle(!current.nosave)
 		$("#delFolderButton").toggle(!current.nosave)
@@ -87,6 +88,22 @@ function Folders(){this.initialize.apply(this, arguments)};
 			$section.append(folders[i].build(false));
 		}
 		return this;
+	}
+	Class.update = function(){
+		if (current == inbox) {
+			Inbox.first();
+		} else {
+			current.updateTickets();
+		}
+	}
+	Class.updateAll = function(){
+		for (var i=0; i<folders.length; i++) {
+			if (folders[i] == inbox) {
+				Inbox.first();
+			} else {
+				folders[i].updateTickets();
+			}
+		}
 	}
 
 	//------------------------------------------------------------------

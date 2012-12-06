@@ -131,5 +131,12 @@ function Control(){this.initialize.apply(this, arguments)};
 			return false;
 		}
 	}
+	Class.update = function(ev) {
+		if (event.shiftKey) {
+			Folders.updateAll();
+		} else {
+			Folders.update();
+		}
+	}
 
 })(Control);
