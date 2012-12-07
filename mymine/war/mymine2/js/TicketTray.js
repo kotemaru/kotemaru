@@ -164,6 +164,9 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 		sortInfo.name = SORT_NAME[sortInfo.index];
 		return sortInfo;
 	}
+	Class.refresh = function() {
+		return exTable.refresh();
+	}
 	
 	//---------------------------------------------------------------------
 	// Event Handler
@@ -239,7 +242,7 @@ function TicketTray(){this.initialize.apply(this, arguments)};
 			RedMine.openIsuue(num);
 			TicketPool.checked(num);
 			Class.refresh();
-			Folder.refresh();
+			Folders.refresh();
 		});
 
 		$(document.body).live("mouseup",function(ev){

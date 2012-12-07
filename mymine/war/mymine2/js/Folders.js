@@ -14,16 +14,12 @@ function Folders(){this.initialize.apply(this, arguments)};
 	}
 	
 	var DEFAULT_FOLDERS = [
-   	    {name:INBOX,     title:"受信箱",     icon:"img/inbox.png", nosave:true},
-   	    {name:TRASH,     title:"ゴミ箱",     icon:"img/bin_closed.png", nosave:true},
+   	    {name:INBOX,     title:"受信箱",     icon:"img/led24/inbox.png", nosave:true},
+   	    {name:TRASH,     title:"ゴミ箱",     icon:"img/led24/bin_closed.png", nosave:true},
    	    {name:"sepa1",   title:"---",      icon:"---", isSeparator:true, nosave:true},
-   	    {name:"now",     title:"至急",       icon:"img/alarm.png"},
-   	    {name:"play",    title:"現行作業",   icon:"img/hand.png"},
-   	    {name:"reserve", title:"予定作業",   icon:"img/bookmark_folder.png"},
-   	    {name:"todo",    title:"後回し",     icon:"img/folder.png"},
-   	    {name:"ovserve", title:"相談のみ",   icon:"img/comment.png"},
-   	    {name:"wait",    title:"進捗待ち",   icon:"img/comment.png"},
-   	    {name:"other",   title:"その他",     icon:"img/folder.png"}
+   	    {name:"now",     title:"至急",       icon:"img/led24/alarm.png"},
+   	    {name:"play",    title:"現行作業",   icon:"img/led24/hand.png"},
+   	    {name:"reserve", title:"予定作業",   icon:"img/led24/bookmark_folder.png"},
    	];
 
 	var folders = [];
@@ -42,6 +38,13 @@ function Folders(){this.initialize.apply(this, arguments)};
 		folders.push(folder);
 		save();
 		return folder;
+	}
+	Class.delFolderConfirm = function(){
+		var msg = "フォルダ "+current.title+" を削除します。\n"
+			+"よろしいですか？";
+		if (confirm(msg)) {
+			Class.delFolder();
+		}
 	}
 	Class.delFolder = function(){
 		for (var i=0; i<folders.length; i++) {
@@ -105,6 +108,7 @@ function Folders(){this.initialize.apply(this, arguments)};
 			}
 		}
 	}
+	Class.save = save;
 
 	//------------------------------------------------------------------
 	// Event Handler.

@@ -4,7 +4,13 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 (function(Class){
 	var pool = {};
 	Class.put = function(issue) {
+		if (pool[issue.id]) issue.checked = pool[issue.id].checked;
 		pool[issue.id] = issue;
+	}
+	Class.putWithSave = function(issue) {
+		var num = issue.id;
+		Class.put(issue);
+		Storage.put("issue/"+num, pool[num]);
 	}
 	Class.get = function(num) {
 		return pool[num];
@@ -28,10 +34,7 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 		var total = nums.length;
 		for (var i=0; i<nums.length; i++) {
 			RedMine.getIssue(nums[i], function(issue){
-				var num = issue.id;
-				if (pool[num]) issue = pool[num].checked;
-				pool[num] = issue;
-				Storage.put("issue/"+num, pool[num]);
+				Class.putWithSave(issue);
 				if (--count <= 0) {
 					MyMine.waiting(false);
 					Folders.refresh();
@@ -47,10 +50,7 @@ function TicketPool(){this.initialize.apply(this, arguments)};
 			count++;
 			total++;
 			RedMine.getIssue(num, function(issue){
-				var num = issue.id;
-				if (pool[num]) issue = pool[num].checked;
-				pool[num] = issue;
-				Storage.put("issue/"+num, pool[num]);
+				Class.putWithSave(issue);
 				if (--count <= 0) {
 					MyMine.waiting(false);
 					Folders.refresh();

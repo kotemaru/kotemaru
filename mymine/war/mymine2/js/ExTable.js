@@ -139,6 +139,9 @@ function ExTable(){this.initialize.apply(this, arguments)};
 	 */
 	Class.prototype.data = function(data) {
 		this.masterData = data;
+		return this.refresh();
+	}
+	Class.prototype.refresh = function() {
 		this.build();
 		this.refreshBody();
 		var self = this;
