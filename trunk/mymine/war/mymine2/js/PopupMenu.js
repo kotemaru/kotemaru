@@ -32,8 +32,10 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		$(".PopupMenu").hide();
 	}
 
-
+	var isMakedIconMenu = false;
 	Class.makeIconMenu = function(name, url) {
+		if (isMakedIconMenu) return;
+		isMakedIconMenu = true;
 		jQuery.get(url, null, function(data){
 			var $menu = $(name);
 			var icons = data.split("\n");
@@ -48,6 +50,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 
 	$(function(){
 		$(".SelectableIcon").live("click", function(){
+			PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt")
 			PopupMenu.open("#iconSelectMenu", {element: this});
 		});
 		$("#iconSelectMenu>.PopupMenuItem").live("click", function(){
@@ -58,7 +61,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		$(document.body).live("click", function(){
 			PopupMenu.close();
 		});
-		PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
+		//PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
 	});
 
 })(PopupMenu);

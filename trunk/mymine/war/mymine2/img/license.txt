@@ -1,5 +1,5 @@
 
-
+lod24/*.png
 ---------------------------------------------------------------------------------------
 The icons are free for personal use and also free for commercial use, but we require linking to our web site.
 

@@ -1,0 +1,35 @@
+/* XPM */
+static char *bullet_del__[] = {
+/* columns rows colors chars-per-pixel */
+"7 7 22 1",
+"  c #3876C7",
+". c #3E7BCA",
+"X c #3E7CCA",
+"o c #4783CF",
+"O c #4883CE",
+"+ c #4883CF",
+"@ c #4884CF",
+"# c #528CD4",
+"$ c #528DD4",
+"% c #5D95D8",
+"& c #5E95D9",
+"* c #5D96D8",
+"= c #5E96D8",
+"- c #669DDD",
+"; c #679EDD",
+": c #78A3DA",
+"> c #6DA3E0",
+", c #86AFE1",
+"< c #87AFE1",
+"1 c #94BBE7",
+"2 c gray100",
+"3 c None",
+/* pixels */
+"33>>>33",
+"3---;-3",
+"*&&&&*&",
+"$,222,$",
+"O@oOOOO",
+"3....X3",
+"33   33"
+};

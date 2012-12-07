@@ -15,7 +15,7 @@ function PulldownButton(){this.initialize.apply(this, arguments)};
 		var $img = $elem.find("img:first-child");
 
 		var icon = opts.icon;
-		if (icon==null||icon=="") icon="img/funnel.png";
+		if (icon==null||icon=="") icon="img/led24/funnel.png";
 		$elem.attr("id", id);
 		$img.attr("src", icon);
 		$img.attr("alt", opts.name);

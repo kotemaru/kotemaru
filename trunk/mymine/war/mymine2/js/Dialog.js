@@ -123,6 +123,7 @@ function Dialog(){this.initialize.apply(this, arguments)};
 	Class.saveFolder = function() {
 		Class.save();
 		Folders.refresh();
+		Folders.save();
 	}
 
 	
