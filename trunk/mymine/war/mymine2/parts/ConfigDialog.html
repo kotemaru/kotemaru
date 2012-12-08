@@ -17,10 +17,23 @@
 			</tr>
 
 			<tr >
-				<th >Redmine絶対パス</th>
+				<th >Redmine のパス</th>
 				<td/>
 				<td  >
-					Redmineの絶対URL。プロトコル、ホスト名を含むURLを設定します。
+					Redmine の相対URL。ホスト名を含まない「/」から後のパスを設定します。<br/>
+					Redmine がルートを使用している場合は「/」のみとなります。<br/>
+					リバースプロキシを設定している場合はプロキシのパスを設定します。
+					<br/>
+					<input data-path="RedMine.apiPath" size=32/> 例: /redmine/
+				</td>
+			</tr>
+			
+			<tr >
+				<th >Redmine絶対パス<br/>(オプション)</th>
+				<td/>
+				<td>
+					Redmineの絶対URL。プロトコル、ホスト名を含むURLを設定します。<br/>
+					リバースプロキシを使用している場合のみ必要です。
 					<br/>
 					<input data-path="RedMine.absPath" size=64 />
 					<br/>例: http://www.redmine.org/
@@ -28,32 +41,26 @@
 			</tr>
 
 			<tr >
-				<th >Redmine APIパス</th>
-				<td/>
-				<td  >
-					Redmine APIの相対URL。ホスト名を含まない「/」から後のパスを設定します。
-					リバースプロキシを設定している場合はプロキシのパスを設定します。
-					<br/>
-					<input data-path="RedMine.apiPath" size=32/> 例: /redmine/
-				</td>
-			</tr>
-
-			<tr >
-				<th >APIアクセスキー</th>
+				<th >APIアクセスキー<br/>(オプション)</th>
 				<td/>
 				<td  >
 					Redmineの個人設定で取得できるAPIアクセスキーを設定します。
+					<a target="help" href="help.html#apikey"><img src="img/led24/help.png" /></a><br/>
+					設定しない場合は未ログイン状態となります。
 					<br/>
 					<input data-path="RedMine.apiKey" size=64/> <br/>例: d557be383b862e3f852be39ae1716a1f
 				</td>
 			</tr>
 
 			<tr >
-				<th >カスタムクエリ<br/>(オプション)</th>
+				<th >カスタムフィルタ<br/>(オプション)</th>
 				<td/>
 				<td>
 					Redmine REST API にしたがった任意のクエリを設定します。<br/>
 					通常はRedmineでカスタムクエリを作成しそのIDを query_id パラメータで指定します。
+					<a target="help" href="help.html#customfilter"><img src="img/led24/help.png" /></a>
+					<br/>
+					ボタンが画面上部に追加されます。
 					<br/><br/>
 					<div>
 						<span id="redmineCustomImg">アイコン</span>
