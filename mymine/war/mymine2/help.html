@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>MyMine</title>
+
+	<style>
+html {
+	background: #f8f8f8;
+}
+body {
+	font-size: 10pt;
+	width: 600px;
+	margin: 0 auto;
+	padding: 16px;
+	background: white;
+}
+h2,h3,h4 {
+	background: #cceeff;
+	line-height: 100%;
+	padding-top: 0.3em;
+	padding-bottom: 0.1em;
+	padding-left: 0.5em;
+	vertical-align: bottom;
+}
+h1 {text-align: center;}
+h2 {
+	margin-top: 2em;
+	border-left: 2px solid #2244ff;
+	border-top: 1px solid #2244ff;
+	border-bottom: 1px solid #2244ff;
+}
+h3 {border-left: 4px solid #4488ff;}
+h4 {
+	margin-bottom: 0.5em;
+	border-left: 8px solid #88aaff;
+	font-weight: normal;
+}
+	</style>
+
+
+</head>
+<body>
+<h1>MyMine ヘルプ</h1>
+
+<h2>はじめに</h2>
+
+MyMine は Redmine のチケットを見やすく表示および管理するためのWebアプリです。
+Redmine の REST 機能を使用する外部プラグインとして動作します。
+
+<h3>動作環境</h3>
+
+<table border=0 cellspacing=0>
+<tr><td>Webサーバ:  </td><td>Apache推奨。本体はHTMLコンテツなのでサーバは選びません。</td></tr>
+<tr><td>ブラウザ:</td><td>Chrome推奨。HTML5対応のブラウザなら動くと思いますが未検証です。</td></tr>
+</table>
+
+
+<h2>導入</h2>
+<h3>Redmineと同じサーバへの導入</h3>
+
+配布アーカイブ内の mymine/ ディレクトリを Redmine をホストしている
+Webサーバにコピーするだけです。
+コピー先はルート以外でも構いません。
+
+<h3>Redmineと異るサーバへの導入</h3>
+
+Redmineをホストしているサーバが自身の管理化に無い場合は、別の
+Webサーバに導入する事ができます。
+
+この場合、MyMine を導入するWebサーバは Redmine のサーバへのリバースプロキシとして
+動作する必要が有ります。
+
+<h4>Apacheの設定例</h4>
+
+Apacheを使用したプロキシサーバの設定例を示します。
+
+
+<h3>環境設定</h3>
+
+<ol>
+<li>ブラウザでMyMineのページを表示します。</li>
+<li>画面右上の <img src="img/led24/cog.png"/> をクリックし環境設定ダイアログを表示します。</li>
+<li>設定画面の説明にしたがって項目を設定します。</li>
+<li>「保存」ボタンをクリックします。(画面最下部に有ります。)</li>
+</ol>
+
+<a name="apikey"/>
+<h4>APIアクセスキー</h4>
+
+環境設定のAPIアクセスキーは Redmine がユーザを特定する為の物で
+ Redmine の個人設定画面からから取得できます。
+
+<p><img border=1 src="docs/help-apikey.png" /></p>
+
+<a name="customfilter"/>
+<h4>カスタムフィルタ</h4>
+
+環境設定のカスタムフィルタは Redmine の REST 機能が提供する任意のクエリを指定できます。
+通常は query_id パラメータを指定して Redmine のカスタムクエリを指定します。
+<p/>
+カスタムクエリのIDは Redmine でカスタムクエリを表示した時のURLから分かります。
+
+<p><img border=1 src="docs/help-custom-query.png" /></p>
+
+<h2>機能</h2>
+<h3>チケットの取得</h3>
+
+Redmine からチケットを取得して表示するには以下の操作をします。
+
+<ol>
+<li><img src="img/led24/inbox.png"/>受信箱 をクリックします。</li>
+<li><img src="img/led24/arrow_refresh.png"/> をクリックします。</li>
+</ol>
+
+<p><img border=1 src="docs/inbox-1.png" /></p>
+
+ページの表示直後には既にこの状態になっています。
+
+<h4>フィルタ条件</h4>
+
+取得するチケットを制限するにはフィルタを指定してからチケットを取得します。
+
+<p><img border=1 src="docs/inbox-2.png" /></p>
+
+
+<ul>
+<li>上段のセレクタはプロジェクトを選択します。</li>
+<li></li>
+</ul>
+
+
+<h3>チケットの表示</h3>
+
+
+<h3>フォルダ</h3>
+
+<h3>検索</h3>
+<h3>エクスポートとインポート</h3>
+<h4>エクスポート</h4>
+<h4>インポート</h4>
+</body>
+</html>

@@ -1,7 +1,7 @@
 
 function RedMine(){this.initialize.apply(this, arguments)};
 (function(Class){
-	Class.absPath = "/r-labs";
+	Class.absPath = "";
 	Class.apiPath = "/r-labs";
 	Class.apiKey = "";
 	
@@ -61,7 +61,8 @@ function RedMine(){this.initialize.apply(this, arguments)};
 	}
 
 	Class.openIsuue = function(num) {
-		var url = Class.absPath+"/issues/"+num;
+		var absPath = (Class.absPath=="")?Class.apiPath:Class.absPath;
+		var url = absPath+"/issues/"+num;
 		window.open(url,"_blank");
 	}
 	
