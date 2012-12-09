@@ -4,6 +4,7 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=utf-8">
 	<title>MyMine</title>
+	<script src="jq/jquery-1.8.2.js" ></script>
 
 	<style>
 html {
@@ -29,7 +30,7 @@ h2 {
 	margin-top: 2em;
 	border-left: 2px solid #2244ff;
 	border-top: 1px solid #2244ff;
-	border-bottom: 1px solid #2244ff;
+	//border-bottom: 1px solid #2244ff;
 }
 h3 {border-left: 4px solid #4488ff;}
 h4 {
@@ -37,12 +38,79 @@ h4 {
 	border-left: 8px solid #88aaff;
 	font-weight: normal;
 }
+sup {
+	color: red;
+}
+img {
+	vertical-align: middle;
+	border-color: #88aaff;
+	padding: 2px;
+}
+pre {
+	font-size: 8px;
+	border: 1px solid #88aaff;
+	background: #f0f0ff;
+	margin: 0 8px;
+	padding: 4px;
+}
+
+.Mokuji_H2 {margin-left: 1em;}
+.Mokuji_H3 {margin-left: 2em;}
+.Mokuji_H4 {margin-left: 3em;}
+
 	</style>
+	<script>
+$(function(){
+	$("h2").addClass("Mokuji");
+	$("h3").addClass("Mokuji");
+	$("h4").addClass("Mokuji");
+	
+	makeMokuji();
+});
+function makeMokuji() {
+	var num = {H2:0, H3:0, H4:0};
+	var $mokuji = $("#mokuji");
+	$mokuji.html("");	
+	$(".Mokuji").each(function(){
+		var hn = this.tagName;
+		var hash = null;
+		if (hn == "H2") {
+			num.H2++;
+			num.H3=0;
+			num.H4=0;
+			hash = num.H2+".";
+		} else if (hn == "H3") {
+			num.H3++;
+			num.H4=0;
+			hash = num.H2+"."+num.H3;
+		} else if (hn == "H4") {
+			num.H4++;
+			hash = num.H2+"."+num.H3+"."+num.H4;
+		}
+		
+		var $this = $(this);
+		$this.text(hash+" "+$this.text());
+		$("<a/>").attr("name",hash).insertBefore($this);
+		
+		var $line = $("<div><a/></div>");
+		var $a = $line.find("a");
+		$a.text($this.text()).attr("href","#"+hash);
+		$line.addClass("Mokuji_"+hn);
+		$mokuji.append($line);
+	});
+}
+	</script>
 
 
 </head>
 <body>
 <h1>MyMine ヘルプ</h1>
+
+<hr/>
+<div><b>目次</b></div>
+<div id="mokuji"></div>
+<hr/>
+
 
 <h2>はじめに</h2>
 
@@ -61,7 +129,7 @@ Redmine の REST 機能を使用する外部プラグインとして動作しま
 <h3>Redmineと同じサーバへの導入</h3>
 
 配布アーカイブ内の mymine/ ディレクトリを Redmine をホストしている
-Webサーバにコピーするだけです。
+Webサーバにコピーしてブラウザからアクセスできるようにするだけです。
 コピー先はルート以外でも構いません。
 
 <h3>Redmineと異るサーバへの導入</h3>
@@ -75,16 +143,37 @@ Webサーバに導入する事ができます。
 <h4>Apacheの設定例</h4>
 
 Apacheを使用したプロキシサーバの設定例を示します。
+<p/>
+Apacheのインストールは省略します。<br/>
+httpd.conf に以下の設定を追加します。<br/>
+<code>https://www.redmine.org/</code> がRedmineのURLです。
+目的のURLに読み替えて下さい。
+<pre>
+LoadModule proxy_module  libexec/apache22/mod_proxy.so
+LoadModule proxy_connect_module  libexec/apache22/mod_proxy_connect.so
+LoadModule proxy_http_module  libexec/apache22/mod_proxy_http.so
+
+SSLProxyEngine On
+ProxyPass        /redmine https://www.redmine.org/
+ProxyPassReverse /redmine https://www.redmine.org/
+</pre>
+<p/>
+
+この例の場合、環境設定の「Redmineのパス」に <code>/redmine</code> を、
+「Redmineの絶対パス」に <code>https://www.redmine.org/</code> を
+設定します。
 
 
 <h3>環境設定</h3>
 
-<ol>
-<li>ブラウザでMyMineのページを表示します。</li>
-<li>画面右上の <img src="img/led24/cog.png"/> をクリックし環境設定ダイアログを表示します。</li>
-<li>設定画面の説明にしたがって項目を設定します。</li>
-<li>「保存」ボタンをクリックします。(画面最下部に有ります。)</li>
-</ol>
+
+1. ブラウザでMyMineのページを表示します。<br/>
+2. 画面右上の <img src="img/led24/cog.png"/> をクリックし環境設定ダイアログを表示します。<br/>
+<p><img border=1 src="docs/config-1.png" /></p>
+3. 画面の説明にしたがって項目を設定します。(オプション)となっている項目は任意です。
+<p><img border=1 src="docs/config-2.png" /></p>
+4.「保存」ボタンをクリックします。(画面最下部に有ります。)
+<p><img border=1 src="docs/config-3.png" /></p>
 
 <a name="apikey"/>
 <h4>APIアクセスキー</h4>
@@ -94,15 +183,6 @@ Apacheを使用したプロキシサーバの設定例を示します。
 
 <p><img border=1 src="docs/help-apikey.png" /></p>
 
-<a name="customfilter"/>
-<h4>カスタムフィルタ</h4>
-
-環境設定のカスタムフィルタは Redmine の REST 機能が提供する任意のクエリを指定できます。
-通常は query_id パラメータを指定して Redmine のカスタムクエリを指定します。
-<p/>
-カスタムクエリのIDは Redmine でカスタムクエリを表示した時のURLから分かります。
-
-<p><img border=1 src="docs/help-custom-query.png" /></p>
 
 <h2>機能</h2>
 <h3>チケットの取得</h3>
@@ -120,25 +200,212 @@ Redmine からチケットを取得して表示するには以下の操作をし
 
 <h4>フィルタ条件</h4>
 
-取得するチケットを制限するにはフィルタを指定してからチケットを取得します。
+取得するチケットを制限するにはフィルタ条件を指定してからチケットを取得します。
 
 <p><img border=1 src="docs/inbox-2.png" /></p>
 
-
 <ul>
 <li>上段のセレクタはプロジェクトを選択します。</li>
-<li></li>
+<li><img src="img/kmines-16x16.png" /> は自分が担当になっているチケットのみとします。
+    APIアクセスキーが設定されていない場合、機能しません。</li>
+<li><img src="img/closed-ticket.png" /> は終了チケットを含めます。
+    デフォルトでは終了チケットは含みません。</li>
+<li><img src="img/led24/user_silhouette.png" /> は選択した担当者のチケットのみとします。<sup>(*1)</sup></li>
+<li><img src="img/led24/user.png" /> は選択した作成者のチケットのみとします。<sup>(*1)</sup></li>
+<li><img src="img/dog.png" /> は選択したトラッカーのチケットのみとします。<sup>(*1)</sup></li>
+<li><img src="img/progress.png" /> は選択したステータスのチケットのみとします。<sup>(*1)</sup></li>
+<li><img src="img/priority.png" /> は選択した優先度のチケットのみとします。<sup>(*1)</sup></li>
 </ul>
 
+<p><sup>(*1)</sup>
+Redmineの現在のREST機能ではこれらの選択項目の一覧が予め取得できない為
+取得済みチケットから合成しています。
+したがって全ての選択項目が選べる訳では有りません。
+</p>
+
+<h4>ソート条件</h4>
+
+取得するチケットの順番はソート条件を指定してからチケットを取得します。
+ソート条件はチケット一覧のヘッダをクリックする事により指定できます。
+同じヘッダをクリックすると昇順／降順が入れ替わります。
+<p/>
+初期状態では更新日の降順となります。
+
+<p><img border=1 src="docs/sort-1.png" /></p>
+
+ソート条件の指定された項目には 昇順=△／降順=▽ のマークが付きます。
+
+<p><img border=1 src="docs/sort-2.png" /></p>
+
+<a name="customfilter"/>
+<h4>カスタムフィルタ</h4>
+
+カスタムフィルタは Redmine の REST 機能が提供する任意のクエリをユーザが定義して使用できます。
+<br/>定義の仕方：
+<ol>
+<li>画面右上の <img src="img/led24/cog.png"/> をクリックし環境設定ダイアログを表示します。</li>
+<li>カスタムフィルタの項目のアイコンとタイトル、クエリパラメータを設定します。</li>
+<li>「保存」ボタンをクリックします。(画面最下部に有ります。)</li>
+</ol>
+
+<p><img border=1 src="docs/help-customfilter-2.png" /></p>
+
+フィルタ条件にアイコンが追加されます。
+
+<p><img border=1 src="docs/help-customfilter-3.png" /></p>
+
+RedmineのカスタムクエリのIDは Redmine でカスタムクエリを表示した時のURLから分かります。
+
+<p><img border=1 src="docs/help-custom-query.png" /></p>
+
+<p><sup>※</sup>
+カスタムフィルタと他のフィルタ条件、ソート条件を併用する事はできません。
+</p>
 
 <h3>チケットの表示</h3>
+
+<h4>項目の幅の調整</h4>
+
+チケット一覧の各項目の幅はヘッダの境界線をドラッグする事により変更できます。
+最小幅は4pxで0にすることはできません。
+
+<p><img border=1 src="docs/view-column-1.png" /></p>
+
+主要な項目以外を最小化した結果です。
+
+<p><img border=1 src="docs/view-column-2.png" /></p>
+
+
+<h4>項目順の入れ換え</h4>
+
+チケット一覧の各項目の順番はヘッダをドラッグする事により変更できます。
+
+<p><img border=1 src="docs/view-column-3.png" /></p>
+
+適当に順番を入れ換えた結果です。
+
+<p><img border=1 src="docs/view-column-4.png" /></p>
 
 
 <h3>フォルダ</h3>
 
+フォルダは Redmine のチケットのコピーを格納します。
+格納したチケットはブラウザのlocalStrageに保存されるためサーバ側のデータに影響はありません。
+
+<h4>チケットの移動</h4>
+
+<p/>
+フォルダにチケットを移動するにはチケットをフォルダにドラッグ＆ドロップします。
+CTRL+クリック で複数のチケットを選択してから移動すると一度に移動できます。
+
+<p><img border=1 src="docs/folder-1.png" /></p>
+
+ドロップのフォルダが選択されフォルダ内のチケットが表示されます。
+フォルダに表示される数字は (未読チケット数/チケット数) です。
+<div>(<sup>※</sup>チケットをダブルクリックして詳細画面を表示すると既読になります)</div>
+
+<p><img border=1 src="docs/folder-2.png" /></p>
+
+チケットは常に移動になります。
+移動元のフォルダからはチケットは削除されます。
+
+
+<h4>フォルダの追加/削除/編集</h4>
+
+フォルダの操作はフォルダのヘッダにあるボタンを使用して行います。
+
+<p><img border=1 src="docs/folder-3.png" /></p>
+
+
+<table border=1 cellspacing=0>
+	<tr>
+		<th>ボタン</td>
+		<th>説明</td>
+	</tr>
+	<tr>
+		<td><img src="img/led24/add.png"/></td>
+		<td>フォルダの追加。フォルダ編集用のダイアログが表示されます。<br/>
+			フォルダID、アイコン、表示名を設定して「追加」をクリックしてください。
+		</td>
+	</tr>
+	<tr>
+		<td><img src="img/led24/cross.png"/></td>
+		<td>選択中のフォルダの削除。確認ダイアログが表示されます。<br/>
+			削除してよければ「はい」をクリックしてください。
+		</td>
+	</tr>
+	<tr>
+		<td><img src="img/led24/pencil.png"/></td>
+		<td>選択中のフォルダの編集。フォルダ編集用のダイアログが表示されます。<br/>
+			アイコン、表示名を変更して「保存」をクリックしてください。
+		</td>
+	</tr>
+</table>
+<p/>
+
+フォルダ編集ダイアログ：
+<div><img border=1 src="docs/folder-dialog-1.png" /></div>
+<p/>
+フォルダ削除確認ダイアログ：
+<div><img border=1 src="docs/folder-dialog-2.png" /></div>
+
+<h4>システムフォルダ</h4>
+
+以下はシステムで使用する特殊なフォルダです。
+<p/>
+<table border=1 cellspacing=0>
+	<tr>
+		<th width="100px">フォルダ</td>
+		<th>説明</td>
+	</tr>
+	<tr>
+		<td><img src="img/led24/inbox.png"/>受信箱</td>
+		<td>Redmineから取得したチケットを一時的に格納するフォルダです。</td>
+	</tr>
+	<tr>
+		<td><img src="img/led24/bin_closed.png"/>ゴミ箱</td>
+		<td>廃棄チケット用です。ページがリロードされるとチケットは無くなります。</td>
+	</tr>
+</table>
+
+
 <h3>検索</h3>
-<h3>エクスポートとインポート</h3>
-<h4>エクスポート</h4>
-<h4>インポート</h4>
+
+現在の所、Redmine の REST に検索機能が未実装の為、使用できません。
+数値のみを入力した場合にチケット番号として検索する機能のみが提供されています。
+
+<h3>データのエクスポートとインポート</h3>
+
+MyMine のフォルダ情報、環境設定は全てブラウザのlocalStrageに保存されます。
+バックアップおよび他のPCへのデータ移行の為にエクスポートとインポートの機能を提供します。
+
+<h4>データのエクスポート</h4>
+
+1. <img src="img/led24/page_white_put.png" /> ボタンをクリックします。
+
+<p><img border=1 src="docs/export-1.png" /></p>
+
+2. ダイアログのリンクを右クリックして別名で保存して下さい。
+
+<p><img border=1 src="docs/export-2.png" /></p>
+
+保存データの形式はJSON形式です。
+
+<h4>データのインポート</h4>
+1. <img src="img/led24/page_white_get.png" /> ボタンをクリックします。
+
+<p><img border=1 src="docs/import-1.png" /></p>
+
+2. ダイアログの「ファイルを選択」をクリックしてエクスポートしたデータを選択してください。
+
+<p><img border=1 src="docs/import-2.png" /></p>
+
+<sup>※</sup>インポートすると古いデータは全て削除されます。
+
+
+
+
+<hr/>
+以上
 </body>
 </html>
