@@ -2,7 +2,7 @@
 function RedMine(){this.initialize.apply(this, arguments)};
 (function(Class){
 	Class.absPath = "";
-	Class.apiPath = "/r-labs";
+	Class.apiPath = "/";
 	Class.apiKey = "";
 	
 	Class.prototype.initialize = function() {
@@ -13,7 +13,7 @@ function RedMine(){this.initialize.apply(this, arguments)};
 		MyMine.progress(50);
 
 		var url = Class.apiPath + "/issues.json?set_filter=1&key=" + Class.apiKey;
-	
+
 		if (query) url += "&"+query;
 		if (opts != null) {
 			for (var k in opts) {

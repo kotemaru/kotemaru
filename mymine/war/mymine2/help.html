@@ -53,10 +53,19 @@ pre {
 	margin: 0 8px;
 	padding: 4px;
 }
+blockquote {
+	font-size: 8px;
+	border: 1px inset #ccc;
+	background: #f8f8f8;
+	margin: 0 8px;
+	padding: 4px;
+}
+
 
 .Mokuji_H2 {margin-left: 1em;}
 .Mokuji_H3 {margin-left: 2em;}
 .Mokuji_H4 {margin-left: 3em;}
+noscript {color:red;}
 
 	</style>
 	<script>
@@ -107,7 +116,7 @@ function makeMokuji() {
 <h1>MyMine ヘルプ</h1>
 
 <hr/>
-<div><b>目次</b></div>
+<div><b>目次</b> <noscript>(JavaScriptを有効にして下さい)</noscript></div>
 <div id="mokuji"></div>
 <hr/>
 
@@ -128,25 +137,36 @@ Redmine の REST 機能を使用する外部プラグインとして動作しま
 <h2>導入</h2>
 <h3>Redmineと同じサーバへの導入</h3>
 
-配布アーカイブ内の mymine/ ディレクトリを Redmine をホストしている
-Webサーバにコピーしてブラウザからアクセスできるようにするだけです。
-コピー先はルート以外でも構いません。
+MyMine の導入は配布アーカイブ内の mymine/ ディレクトリをWebサーバのドキュメントルートにコピーするだけです。
+<p/>
+ドキュメントルートが「<code>/usr/local/www</code>」の場合のLinuxでの導入例。
+<pre>
+# cd /usr/local/www
+# unzip MyMine-1.0.zip
+</pre>
+<p/>
+ブラウザからアクセスできれば良いので展開場所やパスはサーバの都合により任意に変更可能です。
+
 
 <h3>Redmineと異るサーバへの導入</h3>
 
 Redmineをホストしているサーバが自身の管理化に無い場合は、別の
 Webサーバに導入する事ができます。
+<p/>
+MyMine の導入は配布アーカイブ内の mymine/ ディレクトリをWebサーバのドキュメントルートにコピーするだけです。
+<p/>
+但し、MyMine と Redmine のサーバが異る場合はクロスサイトとなる為、MyMine
+は直接 Redmine にアクセスできません。
+したがって、MyMine を導入するWebサーバは Redmine 
+のサーバへのリバースプロキシとして動作する必要が有ります。
 
-この場合、MyMine を導入するWebサーバは Redmine のサーバへのリバースプロキシとして
-動作する必要が有ります。
-
-<h4>Apacheの設定例</h4>
+<h4>リバースプロキシの設定例</h4>
 
 Apacheを使用したプロキシサーバの設定例を示します。
 <p/>
 Apacheのインストールは省略します。<br/>
 httpd.conf に以下の設定を追加します。<br/>
-<code>https://www.redmine.org/</code> がRedmineのURLです。
+「<code>https://www.redmine.org/</code>」がRedmineのURLです。
 目的のURLに読み替えて下さい。
 <pre>
 LoadModule proxy_module  libexec/apache22/mod_proxy.so
@@ -159,8 +179,11 @@ ProxyPassReverse /redmine https://www.redmine.org/
 </pre>
 <p/>
 
-この例の場合、環境設定の「Redmineのパス」に <code>/redmine</code> を、
-「Redmineの絶対パス」に <code>https://www.redmine.org/</code> を
+この例の場合、MyMine の環境設定で
+<ul>
+<li>「Redmineのパス」に 「<code>/redmine</code>」 を</li>
+<li>「Redmineの絶対パス」に 「<code>https://www.redmine.org/</code>」 を</li>
+</ul>
 設定します。
 
 
@@ -250,19 +273,31 @@ Redmineの現在のREST機能ではこれらの選択項目の一覧が予め取
 
 <p><img border=1 src="docs/help-customfilter-2.png" /></p>
 
+<blockquote>
+参考：RedmineのカスタムクエリのIDは Redmine でカスタムクエリを表示した時のURLから分かります。
+<p><img border=1 src="docs/help-custom-query.png" /></p>
+</blockquote>
+
+<p/>
 フィルタ条件にアイコンが追加されます。
 
 <p><img border=1 src="docs/help-customfilter-3.png" /></p>
 
-RedmineのカスタムクエリのIDは Redmine でカスタムクエリを表示した時のURLから分かります。
 
-<p><img border=1 src="docs/help-custom-query.png" /></p>
 
 <p><sup>※</sup>
 カスタムフィルタと他のフィルタ条件、ソート条件を併用する事はできません。
 </p>
 
 <h3>チケットの表示</h3>
+
+<h4>詳細情報画面への遷移</h4>
+
+チケットの詳細を表示するにはチケットをダブルクリックします。
+別のタブで Redmine のチケット画面が開かれます。
+
+<p><img border=1 src="docs/detail-1.png" /></p>
+<p><img border=1 src="docs/detail-2.png" /></p>
 
 <h4>項目の幅の調整</h4>
 
@@ -271,20 +306,23 @@ RedmineのカスタムクエリのIDは Redmine でカスタムクエリを表�
 
 <p><img border=1 src="docs/view-column-1.png" /></p>
 
-主要な項目以外を最小化した結果です。
+「担当者」の項目を縮める例です。
 
 <p><img border=1 src="docs/view-column-2.png" /></p>
-
+<div align="center">↓</div>
+<p><img border=1 src="docs/view-column-3.png" /></p>
 
 <h4>項目順の入れ換え</h4>
 
 チケット一覧の各項目の順番はヘッダをドラッグする事により変更できます。
 
-<p><img border=1 src="docs/view-column-3.png" /></p>
-
-適当に順番を入れ換えた結果です。
-
 <p><img border=1 src="docs/view-column-4.png" /></p>
+
+「担当者」と「優先度」の順番を入れ換える例です。
+
+<p><img border=1 src="docs/view-column-5.png" /></p>
+<div align="center">↓</div>
+<p><img border=1 src="docs/view-column-6.png" /></p>
 
 
 <h3>フォルダ</h3>
@@ -308,6 +346,21 @@ CTRL+クリック で複数のチケットを選択してから移動すると�
 
 チケットは常に移動になります。
 移動元のフォルダからはチケットは削除されます。
+
+<h4>チケットの最新化</h4>
+
+フォルダ内のチケット情報はサーバのチケットのコピーのためチケットが編集されると差異が発生します。
+フォルダ内のチケットの情報を最新化するには以下の操作をします。
+
+<ol>
+<li>更新したい フォルダ をクリックして選択します。</li>
+<li><img src="img/led24/arrow_refresh.png"/> をクリックします。</li>
+</ol>
+<p><img border=1 src="docs/folder-4.png" /></p>
+
+全てのフォルダを最新化したい場合は
+Shift+<img src="img/led24/arrow_refresh.png"/>
+をクリックします。
 
 
 <h4>フォルダの追加/削除/編集</h4>

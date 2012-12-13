@@ -36,18 +36,20 @@ function Inbox(){this.initialize.apply(this, arguments)};
 		var opts = {page:inboxPage};
 
 		// Control のフィルタ条件設定
+		opts.project_id     = Control.getProjectId();
 		var query = Control.getCustomQuery();
-		opts.project_id = Control.getProjectId();
-		opts.assigned_to_id = Control.getFilterUser();
-		opts.status_id = Control.getFilterClosed();
-		Control.getFilterMasters(opts);
-		
-		// ソート条件
-		var sortInfo = TicketTray.getSortInfo();
-		if (sortInfo) {
-			opts.sort = sortInfo.name + (sortInfo.desc?":desc":"");
+		if (query == null) {
+			opts.assigned_to_id = Control.getFilterUser();
+			opts.status_id      = Control.getFilterClosed();
+			Control.getFilterMasters(opts);
+			
+			// ソート条件
+			var sortInfo = TicketTray.getSortInfo();
+			if (sortInfo) {
+				opts.sort = sortInfo.name + (sortInfo.desc?":desc":"");
+			}
 		}
-
+		
 		RedMine.getIssues(function(resData){
 			var issues = resData.issues;
 			var inbox = Folders.getInbox();
