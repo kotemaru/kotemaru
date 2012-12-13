@@ -12,8 +12,8 @@ function Control(){this.initialize.apply(this, arguments)};
 	}
 	Class.getCustomQuery = function() {
 		var $custom = CheckButton.getGroupCheck("custom");
-		if ($custom)
-		return $custon.data("query");
+		if ($custom == null) return null;
+		return $custom.data("query");
 	}
 	Class.getFilterUser = function() {
 		return CheckButton.isChecked($("#filter_user"))?Class.userId:null;
@@ -95,6 +95,21 @@ function Control(){this.initialize.apply(this, arguments)};
 	Class.refreshMasterTable = refreshMasterTable;
 	
 	
+	function save() {
+		Storage.put("customFilter", {
+			customImg:   Class.customImg ,
+			customName:  Class.customName ,
+			customQuery: Class.customQuery
+		});
+	}
+	Class.save = save;
+
+	function load() {
+		var customFilter = Storage.get("customFilter");
+		for (var k in customFilter) {
+			Class[k] = customFilter[k];
+		}
+	}
 	
 	$(function(){
 		if (RedMine.apiKey != "") {
@@ -102,11 +117,20 @@ function Control(){this.initialize.apply(this, arguments)};
 				Class.userId = data.user.id;
 			});
 		}
+
+		load();
 		
 		$("#projectSelector").live("change", function(){
 			//Folder.inbox();
 			Storage.put("projectSelector",  $(this).val());
 		});
+
+		// カスタムフィルタボタン
+		$("#customQueryButtons>.CheckButton").live("change", function(){
+			var query = Class.getCustomQuery();
+			$(".FilterButtons").toggleClass("Disabled", query!=null);
+		});
+
 		
 		// 空白削除
 		function removeSpace(){

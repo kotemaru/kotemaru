@@ -88,6 +88,7 @@ function Dialog(){this.initialize.apply(this, arguments)};
 	Class.saveConfig = function() {
 		Class.save();
 		RedMine.save();
+		Control.save();
 		MyMine.reconfig();
 	}
 	

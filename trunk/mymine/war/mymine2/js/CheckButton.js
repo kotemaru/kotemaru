@@ -9,21 +9,24 @@ function CheckButton(){this.initialize.apply(this, arguments)};
 
 	Class.toggle = function(elem) {
 		var $elem = $(elem);
-
 		if ($elem.attr("disabled")) return;
 
+		if ($elem.hasClass(CheckButtonOn)) {
+			$elem.removeClass(CheckButtonOn);
+		} else {
+			resetGroup($elem);
+			$elem.addClass(CheckButtonOn);
+		}
+		$elem.trigger("change", [$elem.hasClass(CheckButtonOn), $elem.attr("id")]);
+	};
+	function resetGroup($elem) {
 		var group = $elem.attr("data-group");
 		if (group) {
 			var $group = $(".CheckButton[data-group='"+group+"']");
 			$group.removeClass(CheckButtonOn);
 		}
-		if ($elem.hasClass(CheckButtonOn)) {
-			$elem.removeClass(CheckButtonOn);
-		} else {
-			$elem.addClass(CheckButtonOn);
-		}
-		$elem.trigger("change", [$elem.hasClass(CheckButtonOn), $elem.attr("id"), group]);
-	};
+	}
+	
 	Class.prototype.off = function(elem) {
 		$(elem).removeClass(CheckButtonOn);
 	}
