@@ -2,7 +2,9 @@ body{
 	color: white;
 	background: black;
 	margin: 0;
+	padding:0;
 	width:640px;
+	zoom: 0.5;
 }
 #header{
 	height: 32px;
@@ -25,6 +27,7 @@ body{
 }
 #stageFrame{
 	//border: 1px solid gray;
+	border-bottom: 1px solid gray;
 	overflow: hidden;
 }
 #stage{

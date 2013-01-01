@@ -269,6 +269,7 @@ function RollingMarble() {
 		var levels = [
 			//感度        ,  反発力,        摩擦係数
 			{sensitive: 0.5, repulsion:1.3, friction:0.92},
+			//{sensitive: 0.5, repulsion:1.5, friction:0.94},
 			{sensitive: 0.5, repulsion:1.5, friction:0.94},
 			{sensitive: 0.7, repulsion:1.6, friction:0.96},
 		]
