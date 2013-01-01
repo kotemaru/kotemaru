@@ -11,6 +11,7 @@ function Util() {}
 	Class.css = function(elem, data) {
 		for (var k in data) {
 			elem.style[k] = data[k];
+			//console.log(k,elem.style[k],data[k]);
 		}
 	}
 	Class.createImg = function(src, css) {
@@ -50,6 +51,23 @@ function Util() {}
 		for (var i=0; i<images.length; i++) {
 			var img = new Image();
 			img.src = images[i];
+		}
+	}
+	
+	Class.move = function(elem, x,y) {
+		const st = elem.st;
+		st.left = (x/2)+"px";
+		st.top  = (y/2)+"px";
+	}
+	
+	Class.escapeIframe = function(){
+		var IS_IPHONE = navigator.userAgent.indexOf('iPhone') > 0 
+		|| navigator.userAgent.indexOf('iPod') > 0;
+		var IS_IFRAME = window.parent != null && window.parent != window;
+		if (IS_IPHONE && IS_IFRAME) {
+			if (confirm("描画性能改善の為、iframeを脱獄します。 よろしいですか？")){
+				window.parent.location = location;
+			}
 		}
 	}
 	

@@ -6,7 +6,7 @@ function Block(stage, src, initval){this.initialize.apply(this, arguments)};
 		this.y = initval.y*32;
 
 		this.elem = Util.createImg(src,{
-			left:this.x, top:this.y}
+			left:this.x+"px", top:this.y+"px"}
 		);
 		if (stage.elem) {
 			stage.elem.appendChild(this.elem);

@@ -10,7 +10,7 @@
 		classname="org.kotemaru.yui.YuiCompressTask"
 		classpath="../../lib/yuicompress-ant-task.jar;../../lib/yuicompressor-2.4.6.jar" />
 
-	<target name="default" depends="comp.js,play.html" />
+	<target name="default" depends="comp.js,play.html,bcoro.zip" />
 
 	<target name="comp.js">
 		<mkdir dir="min" />
@@ -79,6 +79,16 @@
 			</filterchain>
 			<fileset file="play-base.html" />
 		</concat>
+	</target>
+	
+	<target name="bcoro.zip" depends="play.html">
+		<copy file="play.html" tofile="index.html" />
+		<zip destfile="/RAM/bcoro.zip">
+	    	<fileset dir="." includes="index.html" />
+	    	<fileset dir="." includes="min/all-min.js"/>
+	    	<fileset dir="." includes="img/*.png"/>
+	    	<fileset dir="." includes="css/*"/>
+		</zip>
 	</target>
 
 </project>
