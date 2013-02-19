@@ -8,7 +8,7 @@
     <pubDate>${date}</pubDate>
     <lastBuildDate>${build-date}</lastBuildDate>
     <docs>http://blogs.law.harvard.edu/tech/rss</docs>
-    <generator>Weblog Editor 2.0</generator>
+    <generator>kblog-converter</generator>
     <webMaster>kotemaru@kotemaru.com</webMaster>
 
 #foreach ($blog in $blogs)
