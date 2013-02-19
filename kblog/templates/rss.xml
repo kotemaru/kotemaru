@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>時々、失業SEの開発日誌</title>
+    <link>http://blog.kotemaru.org/</link>
+    <description>時々、失業SEの開発日誌</description>
+    <language>ja-JP</language>
+    <pubDate>${date}</pubDate>
+    <lastBuildDate>${build-date}</lastBuildDate>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <generator>Weblog Editor 2.0</generator>
+    <webMaster>kotemaru@kotemaru.com</webMaster>
+
+#foreach ($blog in $blogs)
+    #if( $velocityCount > 15 )
+        #break
+    #end
+
+    <item>
+      <title>${blog.subject}</title>
+      <link>http://blog.kotemaru.org${root-path}/${blog.contentPath}</link>
+      <category>${blog.tags}</category>
+      <pubDate>${blog.date}</pubDate>
+    </item>
+#end
+  </channel>
+</rss>
+    

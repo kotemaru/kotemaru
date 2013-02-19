@@ -1,0 +1,74 @@
+Subject: WindowsPEのUSBメモリから起動するメモ
+Content-type: html/text
+Tags: WindowsPE, メモ
+Date: 2013/02/03
+Public: yes
+
+ITメディアの記事を参考にしたらはまったのでメモ。<br />
+(旧版の記事が検索上位にくる模様、3.1版の記事の内容は正しかった。)<br />
+<br />
+<h4>
+1. ダウンロード</h4>
+<br />
+Widows7 SP1 対応の WAIK を以下からDLする。<br />
+<br />
+<ul>
+<li><a href="http://www.microsoft.com/en-us/download/details.aspx?id=5753">http://www.microsoft.com/en-us/download/details.aspx?id=5753</a></li>
+</ul>
+<br />
+サイズ 1.6G で２時間かかった。<br />
+<br />
+<h4>
+2. WAIKインストール</h4>
+<br />
+<ul>
+<li>ISOをマウントして setup.exe を実行する。</li>
+<li>「Windows AIK のセットアップ」を選択する。</li>
+</ul>
+<br />
+<h4>
+3. WindowsPE の起動イメージ作成</h4>
+<br />
+<blockquote class="tr_bq">
+&gt; cd %WAIK_HOME%\Tools\PETools<br />
+&gt; copype x86 %WINPE_HOME%<br />
+&gt; copy x86\winpe.wim %WINPE_HOME%\ISO\sources\boot.wim</blockquote>
+%WAIK_HOME%はWAIKのインストール先。<br />
+%WINPE_HOME%はWindowsPEの起動イメージ作成先。 <br />
+<br />
+<br />
+<h4>
+4. USBメモリのフォーマット </h4>
+<br />
+diskpartコマンドを使用。<br />
+<br />
+<blockquote class="tr_bq">
+DISKPART&gt; list disk<br />
+DISKPART&gt; select disk &lt;USBメモリのディスク番号&gt;<br />
+DISKPART&gt; clean<br />
+DISKPART&gt; create partition primary<br />
+DISKPART&gt; select partition 1<br />
+DISKPART&gt; active<br />
+DISKPART&gt; format fs=fat32 quick<br />
+DISKPART&gt; assign<br />
+DISKPART&gt; exit</blockquote>
+うまく起動しない場合のおまじない。<br />
+<blockquote class="tr_bq">
+&gt; %WAIK_HOME%\Tools\PETools\bootsect /nt60 %USBメモリのドライブ%</blockquote>
+<h4>
+5. 起動イメージをUSBメモリにコピー</h4>
+まるごとコピー。エクスプローラからコピペでもOK。<br />
+<blockquote class="tr_bq">
+&gt; xcopy %WINPE_HOME%\ISO\*.* /s /e /f %USBメモリのドライブ%</blockquote>
+以上で起動できた。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-elaQy7A4FmE/UPuliazFayI/AAAAAAAAAIg/ban4myvQMe4/s1600/nexus7-1-1.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-elaQy7A4FmE/UPuliazFayI/AAAAAAAAAIg/ban4myvQMe4/s320/nexus7-1-1.jpg" height="240" width="320" /></a></div>
+<br />
+<br />
+参考：
+<br />
+<ul>
+<li>http://www.computerworld.jp/topics/560/164289</li>
+</ul>
+

@@ -1,0 +1,20 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>最近の投稿 : 時々、失業SEの開発日誌</title>
+	
+	<link rel="stylesheet" href="${root-path}/css/archive.css" type="text/css">
+</head>
+<body>
+
+<ul>
+#foreach($blog in $blogs)
+    #if( $velocityCount > 10 )
+        #break
+    #end
+	<li class="BlogItem" ><a target="_top" href="${root-path}/${blog.contentPath}">${blog.subject}</a></li>
+#end
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+Subject: VirtualBoxで物理HDDにOSをインストール
+Content-type: html/text
+Tags: FreeBSD, VirtualBox, メモ
+Date: 2013/01/05
+Public: yes
+
+VirtualBoxの仮想環境を物理HDDに作成する方法のメモ。<br />
+<br />
+試した環境は以下の通り。<br />
+<ul>
+<li>ホストOS=FreeBSD</li>
+<li>ゲストOS=WindowsXP</li>
+</ul>
+<br />
+<h4>
+1. 空の物理HDDを用意する。</h4>
+<br />
+USB接続はディスクのフォーマットで失敗したのでSATAで接続。<br />
+FreeBSD固有の問題かもしれない。<br />
+<br />
+<h4>
+2. 物理HDDを参照する仮想HDDを作成する。</h4>
+一番重要。<br />
+<br />
+<blockquote class="tr_bq">
+sudo VBoxManage internalcommands createrawvmdk -filename RealHDD.vmdk -rawdisk /dev/ad1</blockquote>
+/dev/ad1 は空のHDDのデバイス。<br />
+Windowsがホストの場合は \\.\PhysicalDrive1 とかになるらしい。<br />
+<br />
+<h4>
+3. VirtualBoxの起動</h4>
+RealHDD.vmdk を仮想HDDとして起動するだけ。<br />
+注意点は VirtualBox を一般ユーザで起動する場合に RealHDD.vmdk と /dev/ad1 にパーミッションを与えておくこと。<br />
+<br />
+後は普通にOSのインストールが出来る。<br />
+<br />
+<br />
+<h4>
+&nbsp;</h4>
+<br />
+因みに MBR 等もちゃんと書き込まれるのでこのHDDから物理マシンで起動もできる。<br />
+但し VirtualBoxでインストールした XP は起動途中で落ちた。<br />
+逆に物理マシンでインストールした XP は仮想マシンで起動ができる。<br />
+が、新しいハードウェアの検出が始まってしまうので物理／仮想での共有は非現実的かも。<br />
+<br />
+物理HDDにすると高速になるかと思ったが固定サイズの仮想HDDと XP の起動時間は変わらなかった。あんまりメリットないかも(^^;<br />
+<br />
+<br />
