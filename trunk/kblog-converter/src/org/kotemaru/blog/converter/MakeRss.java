@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,6 +42,8 @@ public class MakeRss extends MakePageBase  {
 			vctx.put("root-path", ctx.getRootPath());
 			int toIndex = blogs.size()>15 ? 15 : blogs.size();
 			vctx.put("blogs", blogs.subList(0, toIndex));
+			vctx.put("date", new Date());
+			vctx.put("build-date", new Date());
 		
 			File outFile = new File(ctx.getDocumentRoot(), "atom.xml");
 			VelocityUtil.write(ctx, "rss.xml", vctx, outFile);
