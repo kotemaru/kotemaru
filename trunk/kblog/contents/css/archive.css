@@ -1,0 +1,19 @@
+
+html,body {
+	margin: 0;
+	padding:0;
+}
+
+ul {
+	margin: 0;
+	margin-left: 1em;
+	padding:0;
+	font-size:12px;
+}
+li {
+	list-style-image: url(../img/li-mark-0.png);
+	cursor: default;
+}
+li.BlogItem {
+	list-style-image: url(../img/li-mark-2.png);
+}

@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="all" name="kblog">
+    <property name="basedir" value="."/>
+    <property name="contents" value="./contents"/>
+    <property name="document" value="./war"/>
+    <property name="templates" value="./templates"/>
+ 
+	<path id="converter.path">
+		<pathelement location="../kblog-converter/build/classes" />
+		<pathelement location="${templates}" />
+		<fileset dir="../kblog-converter/lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<typedef name="blog.convert"
+		classname="org.kotemaru.blog.converter.MakeSinglePage"
+		classpathref="converter.path" loaderref="blog"
+		
+	/>
+	<typedef name="blog.toppage"
+		classname="org.kotemaru.blog.converter.MakeTopPage"
+		classpathref="converter.path" loaderref="blog"
+	/>
+	<typedef name="blog.category"
+		classname="org.kotemaru.blog.converter.MakeTags"
+		classpathref="converter.path" loaderref="blog"
+	/>
+	<typedef name="blog.rss"
+		classname="org.kotemaru.blog.converter.MakeRss"
+		classpathref="converter.path" loaderref="blog"
+	/>
+	<typedef name="blog.archive"
+		classname="org.kotemaru.blog.converter.MakeArchive"
+		classpathref="converter.path" loaderref="blog"
+	/>
+	<typedef name="blog.recent"
+		classname="org.kotemaru.blog.converter.MakeRecent"
+		classpathref="converter.path" loaderref="blog"
+	/>
+
+	<target name="all" depends="toppage, contents, category, rss, recent, resource">
+    </target>
+	
+	<target name="toppage" >
+        <blog.toppage 
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.toppage>
+    </target>
+	
+	<target name="category" >
+        <blog.category
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.category>
+    </target>
+	
+	<target name="archive" >
+        <blog.archive
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.archive>
+    </target>
+	
+	<target name="rss" >
+        <blog.rss
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.rss>
+    </target>
+
+	<target name="recent" >
+        <blog.recent
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.recent>
+    </target>
+	
+	<target name="contents" >
+       <blog.convert 
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.convert>
+    </target>
+	
+	<target name="resource" >
+		<copy todir="${document}">
+        	<fileset dir="${contents}">
+        		<include name="**"/>
+        		<exclude name="**/*.blog"/>
+        		<exclude name="img/*.xpm"/>
+        	</fileset>
+		</copy>
+	</target>
+	
+	<target name="clean" >
+		<delete file="war/index.html"/>
+		<delete file="war/category.html"/>
+		<delete dir="war/2013"/>
+		<delete dir="war/2012"/>
+	</target>
+	
+</project>

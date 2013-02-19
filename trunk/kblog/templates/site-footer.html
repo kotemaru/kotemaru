@@ -1,0 +1,34 @@
+
+    </div>
+
+    <div id="side">
+    	<h5>サイト内検索</h5>
+		<form action="http://www.google.com/search">
+			<input type="hidden" name="hl" value="ja" />
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="hidden" name="oe" value="UTF-8">
+			<input type="hidden" value="blog.kotemaru.org" name="as_sitesearch" />
+			<input type="text" id="query" name="q" size="20" maxlength="256" value="" 
+			/><input type="submit" name="btnG" value="検索" />
+		</form> 
+
+		
+     	<p/><h5>登録</h5>
+    	<a class="RSS" href="${root-path}/atom.xml"><img src="/img/RSS.png"/><span>RSS/2.0</span></a>
+
+    	<p/><h5>カテゴリ</h5>
+		<iframe class="BlogParts" src="${root-path}/category.html"></iframe>
+
+    	<p/><h5>最近の投稿</h5>
+	 	<iframe class="BlogParts" height="200" src="${root-path}/recent.html"></iframe>
+
+    	<p/><h5>アーカイブ</h5>
+	 	<iframe class="BlogParts" src="${root-path}/archive.html"></iframe>
+    </div>
+    <br clear="all" />
+    <div id="footer">
+	Copyright 2013- @kotemaru.org
+    </div>
+  </div>
+</body>
+</html>

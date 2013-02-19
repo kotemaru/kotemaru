@@ -1,0 +1,115 @@
+Subject: VirtualBoxのAndroid 4.0 x86を縦置きにする。
+Content-type: html/text
+Tags: android, VirtualBox, メモ
+Date: 2013/02/09
+Public: yes
+
+「<a href="http://blog.kotemaru.org/2012/12/virtualboxandroid40-x86eclipse.html">VirtualBoxのAndroid4.0 x86をEclipseから使う</a>」
+の記事で宿題になっていた縦画面を調べてみた。
+<br />
+<br />
+<h4>
+画面の回転</h4>
+画面の回転は[F9]〜[F12]キーの長押しで発生させる事ができる。<br />
+<table class="KTable">
+<tbody>
+<tr><th><br />
+キー</th><th>方向</th></tr>
+<tr><td>F9</td><td>上</td></tr>
+<tr><td>F10</td><td>下</td></tr>
+<tr><td>F11</td><td>左</td></tr>
+<tr><td>F12</td><td>右</td></tr>
+</tbody></table>
+<br />
+但し、VirtualBox は回転したことは知らないのでそのまま。<br />
+<br />
+つまりこういう事になる。<br />
+<a href="https://picasaweb.google.com/lh/photo/mi3orBYDNBXD-BTOznfW5SnbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img src="https://lh3.googleusercontent.com/-PdX314lnxhA/URYCzts2A5I/AAAAAAAAAKo/qgXKnUysDQc/s800/Android5-7b.png" /></a>
+<br />
+<br />
+マウスも90度回転するのでモニタを縦にできる場合はこれて解決する。<br />
+また、ちゃんと回転イベントが発生しているようなのでテストにもちょうど良い。<br />
+<br />
+<h4>
+普通の縦画面</h4>
+縦置きできるモニタは常に有るわけでもないので普通に縦画面にできないか調べてみた。
+現行のVirtualBox-4.2はモニタの回転をサポートしていない様子。<br />
+しかし、オプションで任意のVGA解像度を指定できるらしいのでこれを試す。
+<br />
+<br />
+<h5>
+1. 仮想環境の設定ファイルをテキストエディタで開いて <extradataitem> タグを追加する。</extradataitem></h5>
+<ul>
+<li>ファイルの場所は VirtualBox のディレクトリの "仮想環境名\仮想環境名.xml" 
+ </li>
+<li>このときVirtualBoxは完全に終了させて置くこと。
+</li>
+</ul>
+<br />
+<blockquote class="tr_bq">
+&lt;ExtraData&gt;<br />
+&nbsp;&nbsp; &lt;ExtraDataItem name="CustomVideoMode1" value="640x800x32"/&gt;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; :<br />
+&lt;/ExtraData&gt;</blockquote>
+<br />
+<br />
+<h5>
+2. 起動オプションで追加したVGAモードのコードを確認する。</h5>
+<ul>
+<li>GRUB の起動メニューで 「A」を押すと起動オプションが入力できるので「vga=ask」を追加して[Enter]。
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/qHPz6KamIhNw7W6Wl-cJ-CnbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="300" src="https://lh4.googleusercontent.com/-2gqJOQbfG5Q/URYbMIcp3DI/AAAAAAAAANQ/Xt2G-1prfo0/s400/Android5-4.png" width="400" /></a>
+
+<br />
+<ul>
+<li>するとこのような画面になるのでもう一度 [Enter]。
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/WO1aeJHUabD1IsB3jk336SnbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="222" src="https://lh4.googleusercontent.com/-hIaBk_3jejs/URYbMFa5HWI/AAAAAAAAANU/qViALsi09eo/s400/Android5-5.png" width="400" /></a>
+
+<br />
+<ul>
+<li>VGAモードの一覧が出るので追加したVGAモードを探してモードのコードをメモる。
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/sGbMUJAUu57RwqS4lNpYhinbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="222" src="https://lh6.googleusercontent.com/-MgFtUH3EUDM/URYbMefOblI/AAAAAAAAANY/xuxeDwvzlZg/s400/Android5-8.png" width="400" /></a>
+
+<br />
+<h5>
+3. GRUBの起動メニューに Portrait を追加する。</h5>
+<ul>
+<li>Androidをデバッグモードで起動し GRUB の menu.lst を編集する。
+</li>
+</ul>
+<blockquote class="tr_bq">
+# mount -o remount,rw /mnt<br />
+# vi /mnt/grub/menu.lst
+</blockquote>
+<ul>
+<li>起動メニューをコピペして 「vga=モード」 を追加する。
+ </li>
+<li>モードは 16進-&gt;10進 変換が必要。(360 -&gt; 864)
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/PAyAffAYHF1uPNpbBwc91SnbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="222" src="https://lh4.googleusercontent.com/-I_RZMLFOcds/URYbHG0BBKI/AAAAAAAAANE/hRmyUror7xo/s400/Android5-1.png" width="400" /></a>
+
+<br />
+<h5>
+4. 再起動して確認</h5>
+<ul>
+<li>Portrait が増えているはず。
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/Gjs6-pUagRY-62e4dy8_vinbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="300" src="https://lh5.googleusercontent.com/-lnjE0ixE5Fc/URYbMHbGJ9I/AAAAAAAAANM/jBAc9e92X70/s400/Android5-2.png" width="400" /></a>
+
+<br />
+<ul>
+<li>縦画面になれば成功。
+ </li>
+<li>Android側の orientation の認識も Portrait になります。縦横比で決まるのでしょう。
+</li>
+</ul>
+<a href="https://picasaweb.google.com/lh/photo/3MA5a8C_pV84sQySe-vm3CnbGif4wofMycRSiWsfQ4g?feat=embedwebsite"><img height="400" src="https://lh6.googleusercontent.com/-OvV2j7z6xBo/URYCzJBbdBI/AAAAAAAAAKc/IZFIaE3wz7Q/s800/Android5-7.png" width="320" /></a><br />
+<br />
+以上。
