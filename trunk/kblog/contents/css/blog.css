@@ -3,6 +3,8 @@ html,body {
 	padding: 0;
 	background: #e0f0ff;
 	font-size: 14px;
+	background: -moz-linear-gradient(top, #8af, #248);
+	background: -webkit-gradient(linear, left top, left bottom, from(#8af), to(#248));
 }
 
 #outFrame {
@@ -20,8 +22,14 @@ html,body {
 }
 #header #mainTitle {
 	font: bold 48px sans-serif;
+	text-decoration: none;
+	color: black;
 }
-
+#header #subTitle {
+	font: normal 16px sans-serif;
+	color: #66aaee;
+	margin-top:16px;
+}
 #footer {
 	width: 100%;
 	font-size: 10px;
