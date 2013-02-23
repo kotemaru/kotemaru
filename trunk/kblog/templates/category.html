@@ -14,7 +14,7 @@ li {
 
 <ul>
 #foreach($item in ${blogs.entrySet()})
-	<li><a target="_top" href="${root-path}/category/${item.key}/">${item.key}</a> (${item.value.size()})</li>
+	<li><a target="_top" href="${root-path}/category/${tool.encode($item.key)}/">${item.key}</a> (${item.value.size()})</li>
 #end
 </ul>
 
