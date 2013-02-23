@@ -1,14 +1,18 @@
 html,body {
 	margin: 0;
 	padding: 0;
-	background: #e0f0ff;
 	font-size: 14px;
 	background: -moz-linear-gradient(top, #8af, #248);
 	background: -webkit-gradient(linear, left top, left bottom, from(#8af), to(#248));
+	width: 100%;
+<!--[if lte IE 8]>
+	background: #e0f0ff;
+<![endif]-->
 }
 
 #outFrame {
 	width: 906px;
+	max-width: 906px;
 	margin: 8px auto;
 	padding: 32px;
 	background: white;
