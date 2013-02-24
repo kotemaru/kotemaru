@@ -2,6 +2,8 @@ package org.kotemaru.blog.converter;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,13 +29,13 @@ public class MakeTags extends MakePageBase  {
 		makeCategoryPage();
 		
 		VelocityContext vctx = new VelocityContext();
+		vctx.put("tool", new Tool());
 		for (String tag : blogs.keySet()) {
 			vctx.put("subject", tag);
 			vctx.put("sub-title", "【カテゴリ: "+tag+"】");
 			MakeTopPage.makeIndexPage(getBlogContext(), vctx, 
-					"category/"+tag+"/", blogs.get(tag)); 
+					"category/"+Tool.encode(tag)+"/", blogs.get(tag)); 
 		}
-		
 	}
 
 	
@@ -41,6 +43,7 @@ public class MakeTags extends MakePageBase  {
 		try {
 			BlogContext ctx = this.getBlogContext();
 			VelocityContext vctx = new VelocityContext();
+			vctx.put("tool", new Tool());
 			vctx.put("root-path", ctx.getRootPath());
 			vctx.put("blogs", blogs);
 			File outFile = new File(ctx.getDocumentRoot(), "category.html");

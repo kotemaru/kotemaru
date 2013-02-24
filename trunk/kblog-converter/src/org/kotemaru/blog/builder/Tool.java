@@ -1,14 +1,25 @@
-package org.kotemaru.blog.converter;
+package org.kotemaru.blog.builder;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class Tool {
 	public static String getMonth(Blog blog) {
 		return zeroSuf(blog.getDate().getMonth()+1, 2);
+	}
+	
+	public static List<String> parseCamma(String str) {
+		String[] tags = str.split(",");
+		List<String> list = new ArrayList<String>(tags.length);
+		for (int i=0; i<tags.length; i++) {
+			list.add(tags[i].trim());
+		}
+		return list;
 	}
 	
 	public static String yyyymmdd(Date date) {
@@ -39,6 +50,13 @@ public class Tool {
 		SimpleDateFormat rfc822
 			= new SimpleDateFormat("EEE', 'dd' 'MMM' 'yyyy' 'HH:mm:ss' 'Z", Locale.US);
 		return rfc822.format(date);
+	}
+	
+	public static void log(Object... msg) {
+		for (Object m : msg) {
+			System.out.print(""+m);
+		}
+		System.out.println();
 	}
 
 }

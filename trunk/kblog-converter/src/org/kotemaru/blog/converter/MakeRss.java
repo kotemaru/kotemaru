@@ -42,6 +42,7 @@ public class MakeRss extends MakePageBase  {
 			vctx.put("root-path", ctx.getRootPath());
 			int toIndex = blogs.size()>15 ? 15 : blogs.size();
 			vctx.put("blogs", blogs.subList(0, toIndex));
+			vctx.put("tool", new Tool());
 			vctx.put("date", new Date());
 			vctx.put("build-date", new Date());
 		
