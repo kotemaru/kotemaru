@@ -43,7 +43,7 @@ html,body {
 }
 
 .PostedDate {
-	font: bold 12px sans-serif;
+	font: bold 12px monospace,sans-serif;
 	text-align: right;
 }
 #content {

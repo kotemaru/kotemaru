@@ -13,7 +13,7 @@ li {
 <body>
 
 <ul>
-#foreach($item in ${blogs.entrySet()})
+#foreach($item in ${tags.entrySet()})
 	<li><a target="_top" href="${root-path}/category/${tool.encode($item.key)}/">${item.key}</a> (${item.value.size()})</li>
 #end
 </ul>
