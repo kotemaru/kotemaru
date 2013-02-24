@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="all" name="kblog">
+<project basedir="." default="blog" name="kblog">
     <property name="basedir" value="."/>
     <property name="contents" value="./contents"/>
     <property name="document" value="./war"/>
@@ -38,6 +38,29 @@
 		classname="org.kotemaru.blog.converter.MakeRecent"
 		classpathref="converter.path" loaderref="blog"
 	/>
+	<typedef name="blog.builder"
+		classname="org.kotemaru.blog.builder.BlogTask"
+		classpathref="converter.path" loaderref="blog"
+	/>
+	
+	<target name="blog" depends="resource">
+        <blog.builder 
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        	build="all"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.builder>
+		
+		<copy file="${document}/atom.xml" tofile="${document}/index.rdf" />
+		<mkdir dir="${document}/feeds/posts" />
+		<copy file="${document}/atom.xml" tofile="${document}/feeds/posts/default" />
+
+    </target>
 
 	<target name="all" depends="toppage, contents, category, rss, recent, resource">
     </target>
@@ -92,6 +115,10 @@
         		<include name="**/*.blog"/>
         	</fileset>
 		</blog.rss>
+		
+		<copy file="${document}/atom.xml" tofile="${document}/index.rdf" />
+		<mkdir dir="${document}/feeds/posts" />
+		<copy file="${document}/atom.xml" tofile="${document}/feeds/posts/default" />
     </target>
 
 	<target name="recent" >
