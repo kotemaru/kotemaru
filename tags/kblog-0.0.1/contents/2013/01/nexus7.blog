@@ -1,0 +1,73 @@
+Subject: Nexus7にキーボードとマウスを付けてみた。
+Content-type: html/text
+Tags: android, メモ
+Date: 2013/01/26
+Public: yes
+
+Nexus7を開発に使っているとコンソールを使う事が多いのだがソフトウエアキーボードだと ls -l とか打つだけでも結構つらいw<br />
+<br />
+というわけでキーボードとマイクロB接続のUSBハブを購入してみた。<br />
+<br />
+その結果こういう事に。<br />
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+<a href="http://4.bp.blogspot.com/-XhIj1RGA5Ek/UQOViVAJ0nI/AAAAAAAAAI0/iYNpcf3phlU/s1600/nexus7-3-1.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-XhIj1RGA5Ek/UQOViVAJ0nI/AAAAAAAAAI0/iYNpcf3phlU/s320/nexus7-3-1.jpg" height="240" width="320" /></a></div>
+<br />
+もはや、タブレットの必然性が全く有りませんが入力は全然楽になりました。<br />
+マウスを繋ぐとちゃんとカーソルが現れてタッチと併用できます。画面に指紋を付けたく無いとき便利です。<br />
+<br />
+このキーボードは Bluetooth ですが普通のUSBキーボードでも認識します。<br />
+っぽいキーボードが欲しかったので合えて買いました。<br />
+<br />
+一見、アップル純正に見えますが中国製のパチ物で作りはチープです。<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+<a href="http://2.bp.blogspot.com/-kWsGBAOb0oY/UQOVipZKkGI/AAAAAAAAAJA/kYH_FJjduvA/s1600/nexus7-3-2.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-kWsGBAOb0oY/UQOVipZKkGI/AAAAAAAAAJA/kYH_FJjduvA/s320/nexus7-3-2.jpg" height="240" width="320" /></a></div>
+<br />
+完全な英語配列である事だけが取りえなのですが一つ落し穴が...<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: left;">
+<a href="http://3.bp.blogspot.com/-t9e1k_Z31T0/UQOVixkmAAI/AAAAAAAAAJM/khwifk3BfUo/s1600/nexus7-3-3.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-t9e1k_Z31T0/UQOVixkmAAI/AAAAAAAAAJM/khwifk3BfUo/s320/nexus7-3-3.jpg" height="240" width="320" />&nbsp;</a></div>
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+[DEL]キーの位置に意味不明のキーがあります。</div>
+<div class="separator" style="clear: both; text-align: left;">
+PCに繋いだときはブラウザ起動のホットキーになりますがAndroidの時は何も起こりません。</div>
+<div class="separator" style="clear: both; text-align: left;">
+DEL は [Fn]+[BS] に割り振られているのですが利用頻度を考えると全く意味不明です。</div>
+<div class="separator" style="clear: both; text-align: left;">
+これさえ無ければ値段相応の良いキーボードだったんですが (;_;)</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+追記：Macでは [Fn]+[BS] で DEL になるのが標準なのですね。</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+その他：</div>
+<div class="separator" style="clear: both; text-align: left;">
+ハブに USBメモリを差せば読み込みはできます。書き込みはrootを取らないと出来ないようです。</div>
+<div class="separator" style="clear: both; text-align: left;">
+商売の都合でしょうがちょっとがっかりです。</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+USBハブは必ず外部電源付きの物を買いましょう。Nexus7を電源に使っているとあっと言う間に電池が無くなります。</div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: left;">
+<br /></div>
+<iframe frameborder="0" marginheight="0" marginwidth="0" scrolling="no" src="http://rcm-jp.amazon.co.jp/e/cm?lt1=_blank&amp;bc1=000000&amp;IS2=1&amp;bg1=FFFFDD&amp;fc1=DDDDAA&amp;lc1=0000FF&amp;t=kotemaru-22&amp;o=9&amp;p=8&amp;l=as1&amp;m=amazon&amp;f=ifr&amp;ref=qf_sp_asin_til&amp;asins=B0086T4C5Q" style="height: 240px; width: 120px;"></iframe>
+
+<iframe frameborder="0" marginheight="0" marginwidth="0" scrolling="no" src="http://rcm-jp.amazon.co.jp/e/cm?t=kotemaru-22&amp;o=9&amp;p=8&amp;l=as1&amp;asins=B007F4J83Y&amp;ref=tf_til&amp;fc1=DDDDAA&amp;IS2=1&amp;lt1=_blank&amp;m=amazon&amp;lc1=0000FF&amp;bc1=000000&amp;bg1=FFFFDD&amp;f=ifr" style="height: 240px; width: 120px;"></iframe>
+
+

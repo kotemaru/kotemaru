@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+#parse("properties.vm")
+<rss version="2.0">
+  <channel>
+    <title>時々、失業SEの開発日誌</title>
+    <link>${base-url}/</link>
+    <description>時々、失業SEの開発日誌</description>
+    <language>ja-JP</language>
+    <pubDate>${tool.rfc822($date)}</pubDate>
+    <lastBuildDate>${tool.rfc822($build-date)}</lastBuildDate>
+    <docs>http://blogs.law.harvard.edu/tech/rss</docs>
+    <generator>kblog-converter</generator>
+    <webMaster>kotemaru@kotemaru.com</webMaster>
+
+#foreach ($blog in $blogs)
+    #if( $velocityCount > 15 )
+        #break
+    #end
+
+    <item>
+      <title>${blog.subject}</title>
+      <link>${base-url}${root-path}/${blog.contentPath}</link>
+      <category>${blog.tags}</category>
+      <pubDate>${tool.rfc822($blog.date)}</pubDate>
+      <description>${tool.escape($blog.content)}</description>
+    </item>
+#end
+  </channel>
+</rss>
+    

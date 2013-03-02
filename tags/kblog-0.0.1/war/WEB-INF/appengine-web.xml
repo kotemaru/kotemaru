@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
+    <application>www-kotemaru-org</application>
+    <version>blog</version>
+    <sessions-enabled>false</sessions-enabled>
+    <precompilation-enabled>true</precompilation-enabled>
+    <ssl-enabled>false</ssl-enabled>
+ 	<threadsafe>true</threadsafe>
+ 
+    <static-files>
+       <include path="*" />
+       <include path="**/*" />
+    </static-files>
+</appengine-web-app>

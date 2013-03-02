@@ -1,0 +1,29 @@
+#parse("site-header.html")
+
+<div class="Paging">
+#if(${next-blog})
+<span class="NextPage"><a href="${root-path}/${next-blog.contentPath}">${next-blog.subject} ≫</a></span>
+#end
+#if(${prev-blog})
+<span class="PrevPage"><a href="${root-path}/${prev-blog.contentPath}">≪ ${prev-blog.subject}</a></span>
+#end
+<br clear="all"/>
+<br style="line-height: 50%;"/>
+</div>
+
+<div class="PostedDate">${tool.yyyymmdd($blog.date)}</div>
+<h2><a href="${root-path}/${blog.contentPath}">${blog.subject}</a></h2>
+${blog.content}
+<hr class="ContentEnd"/>
+<div class="Paging">
+
+#if(${next-blog})
+<span class="NextPage"><a href="${root-path}/${next-blog.contentPath}">${next-blog.subject} ≫</a></span>
+#end
+#if(${prev-blog})
+<span class="PrevPage"><a href="${root-path}/${prev-blog.contentPath}">≪ ${prev-blog.subject}</a></span>
+#end
+<br clear="all"/>
+</div>
+
+#parse("site-footer.html")

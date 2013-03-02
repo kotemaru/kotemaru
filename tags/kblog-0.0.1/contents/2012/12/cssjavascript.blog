@@ -1,0 +1,128 @@
+Subject: CSSのクラスの値をJavaScriptで変更する方法
+Content-type: html/text
+Tags: css, javascript, メモ
+Date: 2012/12/30
+Public: yes
+
+jQuery に有りそうで無いのでクラスに設定したスタイルを後からJavascript変更する方法をメモ。
+<br />
+<blockquote class="tr_bq">
+function Common(){this.initialize.apply(this, arguments)};<br />
+(function(Class){<br />
+<br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* ルールのキャッシュ<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @type CSSStyleRule<br />
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br />
+&nbsp;&nbsp;&nbsp; var classCssRuleCache = {};<br />
+<br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* セレクタに一致するルールを取得。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* &lt;li&gt;検索は重いのキャッシュする。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {string} selectror セレクタ文字列<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @returns {CSSStyleRule} ルール<br />
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br />
+&nbsp;&nbsp;&nbsp; Class.getCssRule = function(selector) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (classCssRuleCache[selector]) return classCssRuleCache[selector];<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var sheets = document.styleSheets;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (var i=0; i&lt;sheets.length; i++) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var rules = sheets[i].cssRules;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (rules == null) rules = sheets[i].rules; // ForIE<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (var j=0; j&lt;rules.length; j++) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (selector == rules[j].selectorText) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; classCssRuleCache[selector] = rules[j];<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return rules[j];<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return null;<br />
+&nbsp;&nbsp;&nbsp; }<br />
+<br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* セレクタに一致するルールを取得。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* &lt;li&gt;当該セレクタのルールが存在しなければ作成する。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {string} selectror セレクタ文字列<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @returns {CSSStyleRule} ルール<br />
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br />
+&nbsp;&nbsp;&nbsp; Class.getCssRuleWithDefine = function(selector) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var rule = Class.getCssRule(selector);<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (rule) return rule;<br />
+<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var sheet = document.styleSheets[0];<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (sheet.insertRule) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sheet.insertRule(selector+"{}", sheet.cssRules.length);<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; } else {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; sheet.addRule(selector,"dummy:dummy");//forIE<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; return Class.getCssRule(selector);<br />
+&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* セレクタにルールを設定。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* &lt;li&gt;当該セレクタのルールが存在しなければ作成する。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {string} selectror セレクタ文字列<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {object} スタイルのマッピング 例：{textAling: "center",…}<br />
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br />
+&nbsp;&nbsp;&nbsp; Class.setCssRule = function(selector, style) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var rule = Class.getCssRuleWithDefine(selector);<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (rule == null) return;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (var k in style) rule.style[k] = style[k];<br />
+&nbsp;&nbsp;&nbsp; }<br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; <br />
+&nbsp;&nbsp;&nbsp; /**<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* セレクタにルールを important 付きで設定。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* &lt;li&gt;当該セレクタのルールが存在しなければ作成する。<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {string} selectror セレクタ文字列<br />
+&nbsp;&nbsp;&nbsp; &nbsp;* @param {object} スタイルのマッピング 例：{textAling: "center",…}<br />
+&nbsp;&nbsp;&nbsp; &nbsp;*/<br />
+&nbsp;&nbsp;&nbsp; Class.setCssRuleImportant = function(selector, style) {<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; var rule = Class.getCssRuleWithDefine(selector);<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; if (rule == null) return;<br />
+&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; for (var k in style) rule.style.setProperty(k, style[k], 'important');<br />
+&nbsp;&nbsp;&nbsp; }<br />
+<br />
+})(Common);</blockquote>
+使用例：<br />
+<blockquote class="tr_bq">
+Common.getCssRule(".MyClass", {textAlign:"center", color:"red"});</blockquote>
+だけ。setCssRuleImportant()を使えば !impotant 付きになる。<br />
+厳密に言うとクラスのスタイルの言うものは存在しないのでセレクタのスタイルを変更している。つまり第一引数にクラス名を指定する時はドット(.)が必須なので注意。<br />
+<br />
+<br />
+間単に解説すると読み込まれたCSSはブラウザ依存で以下のプロパティに保存されている。<br />
+<br />
+<table class="KTable" style="width: 80%;">
+<tbody>
+<tr><th>ブラウザ</th><th>プロパティ名</th></tr>
+<tr><td>IE8以前</td><td>document.styleSheets[ ].rules[ ]</td></tr>
+<tr><td>その他</td><td>document.styleSheets[ ].cssRules[ ]</td></tr>
+</tbody>
+</table>
+<br />
+cssRules[ ] の型は CSSStyleRule で以下のプロパティを持つ。<br />
+<br />
+<table class="KTable" style="width: 80%;">
+<tbody>
+<tr><th>型</th><th>プロパティ名</th><th>説明</th></tr>
+<tr><td>string</td><td>selectorText</td><td>セレクタ文字列</td></tr>
+<tr><td>CSSStyleDeclaration</td><td>style</td><td>スタイルセット</td></tr>
+</tbody>
+</table>
+<br />
+<br />
+セレクタ文字列の正規化の方法は不明だったので複雑なセレクタを変更する場合は自力で正規化をする必要があるかもしれない。(タグ名の大文字／小文字や空白の扱いの事)<br />
+<br />
+IE8以前はルールの追加方法も異る。<br />
+<br />
+<table class="KTable" style="width: 80%;">
+<tbody>
+<tr><th>ブラウザ</th><th>プロパティ名</th></tr>
+<tr><td>IE8以前</td><td>addRule(selector, style[, index])</td></tr>
+<tr><td>その他</td><td>insertRule(rule,index)</td></tr>
+</tbody>
+</table>
+<br />
+あと @import とか対応が必要だけどあんまり使わないから必要になるまで放置かな(^^;<br />
+<br />
