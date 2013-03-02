@@ -1,4 +1,4 @@
-#parse("templates/site-header.html")
+#parse("site-header.html")
 <div class="Paging">
 #if(${next-page} != "")
 <span class="NextPage"><a href="${next-page}">次へ&gt;&gt;</a></span>
@@ -27,4 +27,4 @@ ${blog.content}
 <span class="PrevPage"><a href="${prev-page}">&lt;&lt;前へ</a></span>
 #end<br clear="all"/>
 </div>
-#parse("templates/site-footer.html")
+#parse("site-footer.html")
