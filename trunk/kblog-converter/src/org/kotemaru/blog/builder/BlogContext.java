@@ -13,6 +13,7 @@ public class BlogContext {
 	private String contentTemplate;
 	private String siteTemplate;
 	private String templates;
+	private int pagingSize = 8;
 
 	private List<Blog> blogs = new ArrayList<Blog>();
 	private HashMap<String, List<Blog>> tags = new HashMap<String, List<Blog>>();
@@ -64,6 +65,12 @@ public class BlogContext {
 	}
 	public void setTags(HashMap<String, List<Blog>> tags) {
 		this.tags = tags;
+	}
+	public int getPagingSize() {
+		return pagingSize;
+	}
+	public void setPagingSize(int pagingSize) {
+		this.pagingSize = pagingSize;
 	}
 	
 

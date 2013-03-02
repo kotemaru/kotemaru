@@ -17,7 +17,8 @@ import org.apache.velocity.app.Velocity;
 public class VelocityUtil {
 	private static final String UTF8 = "utf-8";
 	
-	static {
+	public static void init(BlogContext ctx) {
+		Velocity.setProperty("file.resource.loader.path", ctx.getTemplates());
 		Velocity.init();
 	}
 	
@@ -27,6 +28,7 @@ public class VelocityUtil {
 		vctx.put("root-path", ctx.getRootPath());
 		vctx.put("tool", new Tool());
 		vctx.put("date", new Date());
+		vctx.put("content-path", "");
 		
 		if (params != null) {
 		  	for (String key : params.keySet()) {
@@ -37,8 +39,7 @@ public class VelocityUtil {
 	}
 	
 	public static String getString(BlogContext ctx, String tmpl, VelocityContext vctx) {
-	  	Template template = Velocity.getTemplate(
-	  			ctx.getTemplates()+"/"+tmpl, UTF8);
+	  	Template template = Velocity.getTemplate(tmpl, UTF8);
 	  	StringWriter sw = new StringWriter();
 	  	template.merge(vctx,sw);
 	  	return sw.toString();
@@ -50,8 +51,7 @@ public class VelocityUtil {
 		file.getParentFile().mkdirs();
 		OutputStream out = new FileOutputStream(file);
 		try {
-		  	Template template = Velocity.getTemplate(
-		  			ctx.getTemplates()+"/"+tmpl, UTF8);
+		  	Template template = Velocity.getTemplate(tmpl, UTF8);
 			Writer w = new OutputStreamWriter(out, UTF8);
 		  	template.merge(vctx,w);
 		  	w.close();

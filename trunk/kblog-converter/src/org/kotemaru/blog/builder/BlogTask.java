@@ -29,6 +29,8 @@ public class BlogTask extends Task  {
 	
 	@Override
 	public void execute() throws BuildException {
+		VelocityUtil.init(context);
+		
 		HashMap<String, Builder> builders = new HashMap<String, Builder>();
 		builders.put("index",    new BuilderTopPage());
 		builders.put("content",  new BuilderSinglePage());
@@ -170,5 +172,13 @@ public class BlogTask extends Task  {
 		this.build = build;
 	}
 	
+	public int getPagingSize() {
+		return context.getPagingSize();
+	}
+
+	public void setPagingSize(int pagingSize) {
+		context.setPagingSize(pagingSize);
+	}
+
 
 }
