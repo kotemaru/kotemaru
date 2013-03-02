@@ -146,3 +146,53 @@ table.KTable td {
 	-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
 	box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
 }
+
+/* --- ÉRÉÅÉìÉgä÷òA -----*/
+.LinkComment {
+	text-align: right;
+	font: bold 10px monospace,sans-serif;
+}
+.CommentTitle {
+	font: bold 14px monospace,sans-serif;
+	padding: 4px;
+	padding-bottom: 2px;
+	margin-top: 2em;
+	background: #ddfff0;
+}
+.CommentHead {
+	margin-top: 0.6em;
+	font: bold 10px monospace,sans-serif;
+}
+.CommentBody {
+	font-size: 14px;
+}
+.CommentFormTitle {
+	font: bold 14px monospace,sans-serif;
+	padding: 0px;
+	margin-top: 2em;
+}
+.CommentFormTable {
+	margin-left: 1em;
+	font-size: 14px;
+	width: 80%;
+}
+.CommentFormTable input,textarea{
+	font-size: 12px;
+	border: 1px solid lightgray;
+}
+.CommentFormTable textarea{
+	width: 100%;
+	height: 7em;
+}
+.CommentFormTable th {
+	white-space: nowrap;
+	padding: 0 4px;
+	text-align: left;
+	font: normal 12px monospace,sans-serif;
+	background: #f0fff8;
+}
+.CommentFormTable td {
+}
+
+
+
