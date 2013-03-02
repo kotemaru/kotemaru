@@ -1,13 +1,36 @@
+#parse("properties.vm")
+
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<link rel="stylesheet" href="${root-path}/css/blog.css" type="text/css">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="${root-path}/css/blog.css" type="text/css" />
 	<title>${subject} : 時々、失業SEの開発日誌</title>
+	<meta name="keywords" content="${tags}" /> 
+
+	<meta property="og:title" content="${subject} : 時々、失業SEの開発日誌" />
+	<meta property="og:type" content="blog" />
+	<meta property="og:url" content="${base-url}${root-path}/${content-path}" />
+	<meta property="og:locale" content="ja_JP" />
+	<meta property="og:site_name" content="時々、失業SEの開発日誌" />
+	<meta property="og:description" content="${subject}" />
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-21698246-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
 </head>
 <body>
   <div id="outFrame">
     <div id="header">
-	<a href="/" id="mainTitle">時々、失業SEの開発日誌</a>
+	<a href="${base-url}/" id="mainTitle">時々、失業SEの開発日誌</a>
 #if (${sub-title})
 	<div id="subTitle">${sub-title}</div>
 #end

@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+#parse("properties.vm")
 <rss version="2.0">
   <channel>
     <title>時々、失業SEの開発日誌</title>
-    <link>http://blog.kotemaru.org/</link>
+    <link>${base-url}/</link>
     <description>時々、失業SEの開発日誌</description>
     <language>ja-JP</language>
     <pubDate>${tool.rfc822($date)}</pubDate>
@@ -18,7 +19,7 @@
 
     <item>
       <title>${blog.subject}</title>
-      <link>http://blog.kotemaru.org${root-path}/${blog.contentPath}</link>
+      <link>${base-url}${root-path}/${blog.contentPath}</link>
       <category>${blog.tags}</category>
       <pubDate>${tool.rfc822($blog.date)}</pubDate>
       <description>${tool.escape($blog.content)}</description>

@@ -1,11 +1,11 @@
 Subject: Blog再び移転
 Content-type: html/text
-Tags: 日記
+Tags: 日記, GAE, java
 Date: 2013/02/23
 Public: yes
 
 Google の Blogger に移転した訳だがぶっちゃけめちゃくちゃ使いづらい。
-<p/>
+<p/> 
 HTMLモードにしても勝手にHTMLを書き換えて思った通りに表示されない。<br/>
 特に、ソースコードの張り付けがどうにもならなずえらい苦労した。
 <p/>
