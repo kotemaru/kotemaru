@@ -191,6 +191,15 @@ public class StoredBeanService {
 			// TODO:rollback
 		}
 	}
+	public StoredBean get(long id) throws EntityNotFoundException {
+		Transaction tx = DS.beginTransaction();
+		try {
+			return get(tx, KeyFactory.createKey(kind, id));
+		} finally {
+			tx.commit();
+			// TODO:rollback
+		}
+	}
 
 	/**
 	 * Beanの取得。
@@ -401,6 +410,9 @@ public class StoredBeanService {
 	private Key key(Key parent, String name) {
 		return KeyFactory.createKey(parent, kind, name);
 	}
+	private Key key(Key parent, long id) {
+		return KeyFactory.createKey(parent, kind, id);
+	}
 	/**
 	 * Keyのパスを返す。
 	 * <li>親キーをたどってキー名を"."で繋ぎフルパスを生成する。
@@ -528,6 +540,13 @@ public class StoredBeanService {
 
 	public void remove(String name) {
 		Key key = key(null,name);
+		if (isMemcacheEnable) {
+			memcache.delete(key);
+		}
+		DS.delete(key); // TODO:nest
+	}
+	public void remove(long id) {
+		Key key = key(null,id);
 		if (isMemcacheEnable) {
 			memcache.delete(key);
 		}

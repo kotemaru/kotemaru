@@ -58,7 +58,11 @@ public class CommentServlet extends HttpServlet {
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
-
+		if ("DELETE".equals(req.getParameter("_action"))) {
+			_doDelete(req, res);
+			return;
+		}
+		
 		CommentBean sb = new CommentBean();
 		
 		sb.setPage(req.getParameter("page"));
@@ -70,17 +74,24 @@ public class CommentServlet extends HttpServlet {
 		sb.setIpAddr(req.getRemoteAddr());
 		sb.setDate(new Date());
 		sbs.put(null, sb);
+		
+		//res.sendRedirect("/"+sb.getPage());
 	}
 	
-	public void doDelete(HttpServletRequest req, HttpServletResponse res)
+	public void _doDelete(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 
-		String game = req.getParameter("game") + ":"
-				+ req.getParameter("stage");
-		Iterator<Entity> ite = sbs.iterateKeys("game", game);
-		while (ite.hasNext()) {
-			Entity ent = (Entity) ite.next();
-			sbs.remove(ent.getKey());
+		try {
+			Long key = Long.valueOf(req.getParameter("key"));
+			String passwd = req.getParameter("passwd");
+			CommentBean comment = (CommentBean) sbs.get(key);
+			if (passwd.equals(comment.getPasswd())) {
+				sbs.remove(key);
+			} else {
+				res.setStatus(403);
+			}
+		} catch (EntityNotFoundException e) {
+			throw new ServletException(e);
 		}
 	}
 
