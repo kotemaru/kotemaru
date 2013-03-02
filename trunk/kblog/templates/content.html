@@ -22,16 +22,15 @@ Global.contentPath = "${blog.contentPath}";
 ${blog.content}
 
 <!-- ===================================================== -->
-<a name="Comment"/>
+<a name="Comment"></a>
 <div class="CommentTitle">この投稿へのコメント</div>
 
 <div id="commentView">
-	<img src="/img/waiting.gif" />
 </div>
 
 
 <div class="CommentFormTitle">コメント・フォーム</div>
-<form action="/Comment" method="POST">
+<form name="commentForm" action="/Comment" method="POST">
 	<input name="page" type="hidden" value="${blog.contentPath}" />
 	<table class="CommentFormTable" width="70%">
 		<tr><th>名前</th>	<td><input name="name" value="名無し"/></td></tr>
@@ -40,7 +39,7 @@ ${blog.content}
 		<tr><th>本文</th><td><textarea name="body"></textarea></td></tr>
 
 		<tr><td width="1%"></td><td width="99%"></td></tr>
-		<tr><td collspan="2"><input type="submit" value="書込"></td></tr>
+		<tr><td collspan="2"><button type="button" onclick="Global.commentPost()">書込</button></td></tr>
 	</table>
 </form>
 <!-- ===================================================== -->
