@@ -1,4 +1,9 @@
 #parse("site-header.html")
+<script>
+var Global = {};
+Global.contentPath = "${blog.contentPath}";
+</script>
+<script src="/js/comment.js" ></script>
 
 <div class="Paging">
 #if(${next-blog})
@@ -10,13 +15,39 @@
 <br clear="all"/>
 <br style="line-height: 50%;"/>
 </div>
+<!-- ===================================================== -->
 
 <div class="PostedDate">${tool.yyyymmdd($blog.date)}</div>
 <h2><a href="${root-path}/${blog.contentPath}">${blog.subject}</a></h2>
 ${blog.content}
-<hr class="ContentEnd"/>
-<div class="Paging">
 
+<!-- ===================================================== -->
+<a name="Comment"/>
+<div class="CommentTitle">この投稿へのコメント</div>
+
+<div id="commentView">
+	<img src="/img/waiting.gif" />
+</div>
+
+
+<div class="CommentFormTitle">コメント・フォーム</div>
+<form action="/Comment" method="POST">
+	<input name="page" type="hidden" value="${blog.contentPath}" />
+	<table class="CommentFormTable" width="70%">
+		<tr><th>名前</th>	<td><input name="name" value="名無し"/></td></tr>
+		<tr><th>EMail</th>	<td><input name="email" /></td></tr>
+		<tr><th>削除キー</th>	<td><input name="passwd" /></td></tr>
+		<tr><th>本文</th><td><textarea name="body"></textarea></td></tr>
+
+		<tr><td width="1%"></td><td width="99%"></td></tr>
+		<tr><td collspan="2"><input type="submit" value="書込"></td></tr>
+	</table>
+</form>
+<!-- ===================================================== -->
+
+<hr class="ContentEnd"/>
+
+<div class="Paging">
 #if(${next-blog})
 <span class="NextPage"><a href="${root-path}/${next-blog.contentPath}">${next-blog.subject} ≫</a></span>
 #end
@@ -25,5 +56,6 @@ ${blog.content}
 #end
 <br clear="all"/>
 </div>
+
 
 #parse("site-footer.html")

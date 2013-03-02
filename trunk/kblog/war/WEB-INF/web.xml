@@ -5,12 +5,12 @@ xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
 xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
 	<servlet>
-		<servlet-name>Kblog</servlet-name>
-		<servlet-class>org.kotemaru.blog.KblogServlet</servlet-class>
+		<servlet-name>Comment</servlet-name>
+		<servlet-class>org.kotemaru.blog.CommentServlet</servlet-class>
 	</servlet>
 	<servlet-mapping>
-		<servlet-name>Kblog</servlet-name>
-		<url-pattern>/kblog</url-pattern>
+		<servlet-name>Comment</servlet-name>
+		<url-pattern>/Comment</url-pattern>
 	</servlet-mapping>
 	<welcome-file-list>
 		<welcome-file>index.html</welcome-file>
