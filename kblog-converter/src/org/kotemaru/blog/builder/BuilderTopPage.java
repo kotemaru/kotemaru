@@ -19,7 +19,7 @@ public class BuilderTopPage implements Builder {
 			String path, List<Blog> blogs)
 			throws IOException 
 	{
-		int len = 8;
+		int len = ctx.getPagingSize();
 		for (int off=0; off<blogs.size(); off+=len ) {
 			int toIndex = off+len<blogs.size() ? off+len : blogs.size();
 			vctx.put("blogs", blogs.subList(off, toIndex));

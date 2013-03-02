@@ -7,12 +7,14 @@ import java.util.List;
 import org.apache.velocity.VelocityContext;
 
 public class BuilderCategory extends BuilderTopPage {
+	public static final String CONTENT_PATH = "category.html";
 
 	public boolean build(BlogContext ctx) throws IOException {
 		VelocityContext vctx = VelocityUtil.getVelocityContext(ctx, null);
 		vctx.put("tags", ctx.getTags());
-		//Tool.log("tags=",vctx.get("tags"));
-		File outFile = new File(ctx.getDocumentRoot(), "category.html");
+		vctx.put("content-path", CONTENT_PATH);
+		
+		File outFile = new File(ctx.getDocumentRoot(), CONTENT_PATH);
 		VelocityUtil.write(ctx, "category.html", vctx, outFile);
 		
 		
@@ -20,8 +22,11 @@ public class BuilderCategory extends BuilderTopPage {
 		for (String tag : ctx.getTags().keySet()) {
 			vctx.put(Blog.Subject, tag);
 			vctx.put("sub-title", "【カテゴリ: "+tag+"】");
+			
+			String path = "category/"+Tool.encode(tag)+"/";
+			vctx.put("content-path", path);
 			List<Blog> blogs = ctx.getTags().get(tag);
-			buildIndexPages(ctx, vctx, "category/"+Tool.encode(tag)+"/", blogs);
+			buildIndexPages(ctx, vctx, path, blogs);
 		}
 		return true;
 	}

@@ -8,6 +8,7 @@ import org.apache.velocity.VelocityContext;
 
 
 public class BuilderRecent implements Builder {
+	public static final String CONTENT_PATH = "recent.html";
 
 	public boolean build(BlogContext ctx) throws IOException {
 		List<Blog> blogs = ctx.getBlogs();
@@ -15,8 +16,9 @@ public class BuilderRecent implements Builder {
 		VelocityContext vctx = VelocityUtil.getVelocityContext(ctx, null);
 		vctx.put(Blog.Subject, "最近の投稿");
 		vctx.put("blogs", blogs);
+		vctx.put("content-path", CONTENT_PATH);
 		
-		File outFile = new File(ctx.getDocumentRoot(), "recent.html");
+		File outFile = new File(ctx.getDocumentRoot(), CONTENT_PATH);
 		VelocityUtil.write(ctx, "recent.html", vctx, outFile);
 		return true;
 	}
