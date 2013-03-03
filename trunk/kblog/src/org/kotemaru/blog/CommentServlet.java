@@ -64,8 +64,15 @@ public class CommentServlet extends HttpServlet {
 		}
 		
 		CommentBean sb = new CommentBean();
+	
+		String page = req.getParameter("page");
+		if (page == null || page.isEmpty()) {
+			res.setStatus(403);
+			res.getWriter().write("page not found.");
+			return;
+		}
 		
-		sb.setPage(req.getParameter("page"));
+		sb.setPage(page);
 		sb.setName(req.getParameter("name"));
 		sb.setEmail(req.getParameter("email"));
 		sb.setPasswd(req.getParameter("passwd"));

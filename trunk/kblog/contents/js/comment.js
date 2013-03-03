@@ -1,4 +1,5 @@
 
+$.ajaxSetup({ cache: false });
 
 $(function(){
 	function commentView(data) {
@@ -35,10 +36,10 @@ $(function(){
 			url: "/Comment?_action=DELETE",
 			data: params,
 			success: function(){
-				commentLoad()
+				commentLoad(1000); 
 				//alert("削除に成功しました。\nコメントを再読込します。");
 			},
-			error: function(){alert("削除に失敗しました。");},
+			error: function(){alert("削除に失敗しました。");}
 		});
 	}
 
@@ -59,30 +60,39 @@ $(function(){
 			url: "/Comment",
 			data: params,
 			success: function(){
-				commentLoad()
-				for (var i=0; i<form.length; i++) {
-					form[i].value = "";
-				}
-				alert("書込に成功しました。\nコメントを再読込します。");
+				commentLoad(1000);
+				form.name.value = "名無し";
+				form.email.value = "";
+				form.passwd.value = "";
+				form.body.value = "";
+				//alert("書込に成功しました。\nコメントを再読込します。");
 			},
-			error: function(){alert("書込に失敗しました。");},
+			error: function(){alert("書込に失敗しました。");}
 		});
-	}
-	Global.commentPost = commentPost;
-	
-	function commentLoad() {
+		// for IE
 		var $view = $("#commentView");
-		$view.html("<img src='/img/waiting.gif' />");
+		$view.html("<img src='/img/waiting.gif' />コメント読込中...");
+	}
+	
+	function commentLoad(delay) {
+		if (delay == null) delay = 10;
+		
+		var $view = $("#commentView");
+		$view.html("<img src='/img/waiting.gif' />コメント読込中...");
 
-		$.ajax({
-			async: true,
-			type: "GET",
-			url: "/Comment",
-			data: {limit:100, asc:true, page: Global.contentPath},
-			success: commentView,
-			error: commentFail
-		});
+		setTimeout(function(){
+			$.ajax({
+				async: true,
+				type: "GET",
+				url: "/Comment",
+				data: {limit:100, asc:true, page: Global.contentPath},
+				success: commentView,
+				error: commentFail
+			});
+		}, delay);
 	}
 	
 	commentLoad();
+	Global.commentPost = commentPost;
+	Global.commentLoad = commentLoad;
 });
