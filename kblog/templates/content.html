@@ -19,11 +19,14 @@ Global.contentPath = "${blog.contentPath}";
 
 <div class="PostedDate">${tool.yyyymmdd($blog.date)}</div>
 <h2><a href="${root-path}/${blog.contentPath}">${blog.subject}</a></h2>
+<div class="ContentBody">
 ${blog.content}
-
+</div>
 <!-- ===================================================== -->
 <a name="Comment"></a>
-<div class="CommentTitle">この投稿へのコメント</div>
+<div class="CommentTitle">この投稿へのコメント
+<img src="/img/refresh.png" onclick="Global.commentLoad()"/>
+</div>
 
 <div id="commentView">
 </div>
@@ -39,7 +42,10 @@ ${blog.content}
 		<tr><th>本文</th><td><textarea name="body"></textarea></td></tr>
 
 		<tr><td width="1%"></td><td width="99%"></td></tr>
-		<tr><td collspan="2"><button type="button" onclick="Global.commentPost()">書込</button></td></tr>
+		<tr><td colspan="2">
+			<button type="button" onclick="Global.commentPost()">書込</button>
+			(コメントが反映されない場合はリロードしてください。)
+		</td></tr>
 	</table>
 </form>
 <!-- ===================================================== -->
