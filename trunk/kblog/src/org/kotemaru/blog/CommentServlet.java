@@ -7,7 +7,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.*;
 
@@ -23,7 +32,13 @@ public class CommentServlet extends HttpServlet {
 	
 	//private static final String UTF8 = "utf-8";
 	private StoredBeanService sbs = SBSFactory.getComment();
+	private String email;
 
+	public void init() {
+		ServletConfig sc = getServletConfig();
+		this.email = sc.getInitParameter("email");
+	}
+	  
 	public void doGet(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 		try {
@@ -82,6 +97,7 @@ public class CommentServlet extends HttpServlet {
 		sb.setDate(new Date());
 		sbs.put(null, sb);
 		
+		sendMail(sb);
 		//res.sendRedirect("/"+sb.getPage());
 	}
 	
@@ -102,4 +118,27 @@ public class CommentServlet extends HttpServlet {
 		}
 	}
 
+	private void sendMail(CommentBean cb) throws ServletException {
+		try {
+			Properties props = new Properties();
+			Session session = Session.getDefaultInstance(props, null);
+
+			Message msg = new MimeMessage(session);
+
+			msg.setFrom(new InternetAddress(this.email));
+			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this.email));
+			((MimeMessage) msg).setSubject("Blogコメント通知", "UTF-8");
+			
+			String text =
+				cb.getName()+"<"+cb.getEmail()+">"+"さんより\n\n"
+				+cb.getBody()
+				+"\n--\n以上";
+			msg.setText(text);
+
+			Transport.send(msg);
+		} catch (Exception e) {
+			throw new ServletException(e);
+		}
+	}
+	
 }
