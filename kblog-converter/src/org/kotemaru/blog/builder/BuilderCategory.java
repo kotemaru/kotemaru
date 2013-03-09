@@ -25,8 +25,10 @@ public class BuilderCategory extends BuilderTopPage {
 			
 			String path = "category/"+Tool.encode(tag)+"/";
 			vctx.put("content-path", path);
-			List<Blog> blogs = ctx.getTags().get(tag);
-			buildIndexPages(ctx, vctx, path, blogs);
+			Category category = ctx.getTags().get(tag);
+			if (category.isUpdate()) {
+				buildIndexPages(ctx, vctx, path, category);
+			}
 		}
 		return true;
 	}
