@@ -125,7 +125,11 @@ public class CommentServlet extends HttpServlet {
 
 			Message msg = new MimeMessage(session);
 
-			msg.setFrom(new InternetAddress(this.email));
+			String appid = System.getProperty("com.google.appengine.application.id");
+			appid = appid.replaceFirst("^s~", "");
+			String sender = "blog@"+appid+".appspotmail.com";
+			
+			msg.setFrom(new InternetAddress(sender));
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this.email));
 			((MimeMessage) msg).setSubject("Blogコメント通知", "UTF-8");
 			
