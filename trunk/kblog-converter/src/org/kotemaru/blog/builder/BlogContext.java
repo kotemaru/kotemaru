@@ -16,7 +16,7 @@ public class BlogContext {
 	private int pagingSize = 8;
 
 	private List<Blog> blogs = new ArrayList<Blog>();
-	private HashMap<String, List<Blog>> tags = new HashMap<String, List<Blog>>();
+	private HashMap<String, Category> tags = new HashMap<String, Category>();
 
 	public File getContentsRoot() {
 		return contentsRoot;
@@ -60,10 +60,10 @@ public class BlogContext {
 	public void setBlogs(List<Blog> blogs) {
 		this.blogs = blogs;
 	}
-	public HashMap<String, List<Blog>> getTags() {
+	public HashMap<String, Category> getTags() {
 		return tags;
 	}
-	public void setTags(HashMap<String, List<Blog>> tags) {
+	public void setTags(HashMap<String, Category> tags) {
 		this.tags = tags;
 	}
 	public int getPagingSize() {

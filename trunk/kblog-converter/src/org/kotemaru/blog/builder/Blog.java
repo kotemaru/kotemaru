@@ -23,9 +23,11 @@ public class Blog extends HashMap<String, Object> {
 	
 	private long lastModified;
 	private String relativePath;
-	
+	private boolean update;
+
 	private Date date;
-	
+	private boolean publish;
+
 	private String content;
 
 	public Blog() {
@@ -38,6 +40,7 @@ public class Blog extends HashMap<String, Object> {
 		String relPath = file.getAbsolutePath().substring(len+1);
 		blog.setRelativePath(relPath);
 		blog.setLastModified(file.lastModified());
+		blog.setUpdate(blog.isUpdate(ctx));
 		return blog.load(file);
 	}
 	public static Blog loadNoBody(BlogContext ctx, File file) throws IOException, ParseException {
@@ -68,6 +71,9 @@ public class Blog extends HashMap<String, Object> {
 			? new SimpleDateFormat("yyyy/MM/dd")
 			: new SimpleDateFormat("yyyy/MM/dd HH:mm");
 		setDate(fmt.parse((String) this.get(Date)));
+		
+		String _public = ((String) this.get(Public)).toLowerCase();
+		setPublish("yes".equals(_public) || "true".equals(_public));
 		return this;
 	}
 
@@ -83,6 +89,11 @@ public class Blog extends HashMap<String, Object> {
 	
 	public String getContentPath() throws IOException {
 		return relativePath.replaceFirst("[.]blog$", ".html");
+	}
+	public boolean isUpdate(BlogContext ctx) throws IOException {
+		File file = new File(ctx.getDocumentRoot(), this.getContentPath());
+		if (file.exists() == false) return true;
+		return this.getLastModified()>file.lastModified();
 	}
 
 	//====================================================================
@@ -116,6 +127,22 @@ public class Blog extends HashMap<String, Object> {
 
 	public void setLastModified(long lastModified) {
 		this.lastModified = lastModified;
+	}
+
+	public boolean isPublish() {
+		return publish;
+	}
+
+	public void setPublish(boolean publish) {
+		this.publish = publish;
+	}
+
+	public boolean isUpdate() {
+		return update;
+	}
+
+	public void setUpdate(boolean update) {
+		this.update = update;
 	}
 
 

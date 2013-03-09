@@ -52,7 +52,7 @@ public class BlogTask extends Task  {
 				}
 			}
 			
-			new BuilderTopPage().build(context);
+			//new BuilderTopPage().build(context);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BuildException(e);
@@ -72,25 +72,30 @@ public class BlogTask extends Task  {
 				}
 			}
 		}
+		
 		sortDate(blogs);
 		
-		HashMap<String, List<Blog>> tags = context.getTags();
+		HashMap<String, Category> tags = context.getTags();
+		
 		for (Blog blog : blogs) {
 			addTags(tags, blog);
 		}
 	}
 	
-	private void addTags(HashMap<String, List<Blog>> tagMap, Blog blog) {
+	private void addTags(HashMap<String, Category> tagMap, Blog blog) throws IOException {
+		boolean isUpdate = blog.isUpdate(context);
+		
 		String[] tags = ((String)blog.get(Blog.Tags)).split(",");
 		for (int i=0; i<tags.length; i++) {
 			String tag = tags[i].trim();
 			if (!tag.isEmpty()) {
-				List<Blog> list = tagMap.get(tag);
-				if (list == null) {
-					list = new ArrayList<Blog>();
-					tagMap.put(tag, list);
+				Category category = tagMap.get(tag);
+				if (category == null) {
+					category = new Category(tag);
+					tagMap.put(tag, category);
 				}
-				list.add(blog);
+				category.add(blog);
+				if (isUpdate) category.setUpdate(true);
 			}
 		}
 	}

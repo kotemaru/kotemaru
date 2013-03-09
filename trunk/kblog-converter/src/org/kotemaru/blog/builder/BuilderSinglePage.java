@@ -26,6 +26,11 @@ public class BuilderSinglePage implements Builder {
 		boolean isUpdate = isUpdate(ctx,blogs[0]) 
 				|| isUpdate(ctx,blog) 
 				|| isUpdate(ctx,blogs[2]);
+		//Tool.log(blog.get(Blog.Subject)+":"
+		//		+","+isUpdate(ctx,blogs[0])
+		//		+","+isUpdate(ctx,blog) 
+		//		+","+isUpdate(ctx,blogs[2])
+		//);
 		if (!isUpdate) return false;
 
 		VelocityContext vctx = VelocityUtil.getVelocityContext(ctx, blog);
@@ -41,10 +46,7 @@ public class BuilderSinglePage implements Builder {
 	
 	private static boolean isUpdate(BlogContext ctx, Blog blog) throws IOException {
 		if (blog == null) return false;
-		File file = new File(ctx.getDocumentRoot(), blog.getContentPath());
-		//Tool.log("isUpdate:", file, " ",
-		//		new Date(blog.getLastModified()), file.lastModified());
-		return blog.getLastModified()>file.lastModified();
+		return blog.isUpdate();
 	}
 
 }
