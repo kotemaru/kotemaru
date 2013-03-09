@@ -133,8 +133,9 @@ public class CommentServlet extends HttpServlet {
 			msg.addRecipient(Message.RecipientType.TO, new InternetAddress(this.email));
 			((MimeMessage) msg).setSubject("Blogコメント通知", "UTF-8");
 			
-			String text =
-				cb.getName()+"<"+cb.getEmail()+">"+"さんより\n\n"
+			String text = ""
+				+"http://"+appid+".appspot.com/"+cb.getPage()+" にコメント\n\n"
+				+cb.getName()+"<"+cb.getEmail()+">"+"さんより\n\n"
 				+cb.getBody()
 				+"\n--\n以上";
 			msg.setText(text);
