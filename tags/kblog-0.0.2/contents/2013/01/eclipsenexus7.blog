@@ -1,0 +1,75 @@
+Subject: eclipseにNexus7を繋げてみた
+Content-type: html/text
+Tags: android, メモ
+Date: 2013/01/20
+Public: yes
+
+Nexus7を買ったので eclipse と繋げてみたのだが軽くハマったのでメモ。<br />
+<br />
+Nexus7はWin7に繋げるとストレージとして認識される。<br />
+但し、eclipse からはそのままだと認識されない。ドライバが必要らしい。<br />
+<br />
+Android実機が eclipse から認識されてアプリを実行するまでの手順。<br />
+<br />
+<h4>
+1. Nexus7をデバッグモードにする。</h4>
+4.1.2 から[開発者向けオプション]が隠しになったらしく <br />
+[設定]-&gt;[タブレット情報]の[ビルド番号]を７回タップする必要がある。<br />
+<br />
+情報元<br />
+<ul>
+<li><a href="http://blog.livedoor.jp/moonlight_aska/archives/50743668.html%20" target="_blank">http://blog.livedoor.jp/moonlight_aska/archives/50743668.html&nbsp;</a></li>
+</ul>
+<br />
+ついでに開発元不明のアプリを有効にする。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-g3zpJ_06Jlo/UPt_p1Z7kYI/AAAAAAAAAG4/Bq7uiGTJzas/s1600/Nexus7-2-1.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-g3zpJ_06Jlo/UPt_p1Z7kYI/AAAAAAAAAG4/Bq7uiGTJzas/s320/Nexus7-2-1.png" height="320" width="200" /></a>
+<a href="http://2.bp.blogspot.com/-T6KBHejVYpM/UPt_qBs4G6I/AAAAAAAAAHE/aXTGJOtHi-M/s1600/Nexus7-2-2.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-T6KBHejVYpM/UPt_qBs4G6I/AAAAAAAAAHE/aXTGJOtHi-M/s320/Nexus7-2-2.png" height="320" width="200" /></a></div>
+<br />
+<h4>
+2. ドライバのインストール</h4>
+<br />
+開発用にSDKのドライバをインストールする必要が有る。<br />
+オプションなのでまず SDK Manager から「Google USB Driver」をインストール。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-UUBSVxPEmLg/UPt_qpzJl0I/AAAAAAAAAHQ/STWT5RK3mTc/s1600/Nexus7-2-3.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://1.bp.blogspot.com/-UUBSVxPEmLg/UPt_qpzJl0I/AAAAAAAAAHQ/STWT5RK3mTc/s320/Nexus7-2-3.png" height="307" width="320" />&nbsp;</a></div>
+<br />
+デバイスマネージャからNexus7のドライバを更新。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-B2SieDQTmPQ/UPt_rMNK1UI/AAAAAAAAAHc/K0UcJD8gIPg/s1600/Nexus7-2-4.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-B2SieDQTmPQ/UPt_rMNK1UI/AAAAAAAAAHc/K0UcJD8gIPg/s320/Nexus7-2-4.png" height="229" width="320" /></a></div>
+<br />
+Android-SDK のフォルダを指定する。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<br /></div>
+<div class="separator" style="clear: both; text-align: center;">
+</div>
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://4.bp.blogspot.com/-AICU93pQr3E/UPt_rtzYnnI/AAAAAAAAAHo/g4g4zgBUGLo/s1600/Nexus7-2-5.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://4.bp.blogspot.com/-AICU93pQr3E/UPt_rtzYnnI/AAAAAAAAAHo/g4g4zgBUGLo/s320/Nexus7-2-5.png" height="259" width="320" /></a></div>
+<br />
+OSにデバイスが認識される。<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://3.bp.blogspot.com/-vWwymnPjutk/UPt_04kePJI/AAAAAAAAAH0/o3lk-V1HluM/s1600/Nexus7-2-6.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://3.bp.blogspot.com/-vWwymnPjutk/UPt_04kePJI/AAAAAAAAAH0/o3lk-V1HluM/s320/Nexus7-2-6.png" height="226" width="320" /></a></div>
+<br />
+<br />
+<h4>
+3. eclipse から実行</h4>
+<br />
+DDMSのパースペクティブを開くとNexus7が認識されている。<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://1.bp.blogspot.com/-h5aDgh8eegQ/UPt_1bm2cgI/AAAAAAAAAIA/kHEef0HioDw/s1600/Nexus7-2-7.png" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://1.bp.blogspot.com/-h5aDgh8eegQ/UPt_1bm2cgI/AAAAAAAAAIA/kHEef0HioDw/s320/Nexus7-2-7.png" height="189" width="320" /></a></div>
+<br />
+アプリを実行するとNexus7側にいきなりアプリが起動してくる。<br />
+<br />
+<br />
+<div class="separator" style="clear: both; text-align: center;">
+<a href="http://2.bp.blogspot.com/-JeeHxZGLdFI/UPt_1niKuYI/AAAAAAAAAIQ/kwjadfAc6yU/s1600/nexus7-1-5.jpg" imageanchor="1" style="margin-left: 1em; margin-right: 1em;"><img border="0" src="http://2.bp.blogspot.com/-JeeHxZGLdFI/UPt_1niKuYI/AAAAAAAAAIQ/kwjadfAc6yU/s320/nexus7-1-5.jpg" height="320" width="240" /></a></div>
+<br />
+以上。<br />
+<br />

@@ -1,0 +1,66 @@
+#parse("site-header.html")
+<script>
+var Global = {};
+Global.contentPath = "${blog.contentPath}";
+</script>
+<script src="/js/comment.js" ></script>
+
+<div class="Paging">
+#if(${next-blog})
+<span class="NextPage"><a href="${root-path}/${next-blog.contentPath}">${next-blog.subject} ≫</a></span>
+#end
+#if(${prev-blog})
+<span class="PrevPage"><a href="${root-path}/${prev-blog.contentPath}">≪ ${prev-blog.subject}</a></span>
+#end
+<br clear="all"/>
+<br style="line-height: 50%;"/>
+</div>
+<!-- ===================================================== -->
+
+<div class="PostedDate">${tool.yyyymmdd($blog.date)}</div>
+<h2><a href="${root-path}/${blog.contentPath}">${blog.subject}</a></h2>
+<div class="ContentBody">
+${blog.content}
+</div>
+<!-- ===================================================== -->
+<a name="Comment"></a>
+<div class="CommentTitle">この投稿へのコメント
+<img src="/img/refresh.png" onclick="Global.commentLoad()"/>
+</div>
+
+<div id="commentView">
+</div>
+
+
+<div class="CommentFormTitle">コメント・フォーム</div>
+<form name="commentForm" action="/Comment" method="POST">
+	<input name="page" type="hidden" value="${blog.contentPath}" />
+	<table class="CommentFormTable" width="70%">
+		<tr><th>名前</th>	<td><input name="name" value="名無し"/></td></tr>
+		<tr><th>EMail</th>	<td><input name="email" /></td></tr>
+		<tr><th>削除キー</th>	<td><input name="passwd" /></td></tr>
+		<tr><th>本文</th><td><textarea name="body"></textarea></td></tr>
+
+		<tr><td width="1%"></td><td width="99%"></td></tr>
+		<tr><td colspan="2">
+			<button type="button" onclick="Global.commentPost()">書込</button>
+			(コメントが反映されない場合はリロードしてください。)
+		</td></tr>
+	</table>
+</form>
+<!-- ===================================================== -->
+
+<hr class="ContentEnd"/>
+
+<div class="Paging">
+#if(${next-blog})
+<span class="NextPage"><a href="${root-path}/${next-blog.contentPath}">${next-blog.subject} ≫</a></span>
+#end
+#if(${prev-blog})
+<span class="PrevPage"><a href="${root-path}/${prev-blog.contentPath}">≪ ${prev-blog.subject}</a></span>
+#end
+<br clear="all"/>
+</div>
+
+
+#parse("site-footer.html")
