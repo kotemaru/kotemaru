@@ -12,6 +12,8 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Date;
 
+import com.petebevin.markdown.MarkdownProcessor;
+
 public class Blog extends HashMap<String, Object> {
 	private static final long serialVersionUID = 1L;
 	
@@ -20,6 +22,10 @@ public class Blog extends HashMap<String, Object> {
 	public static final String Tags = "tags";
 	public static final String Date = "date";
 	public static final String Public = "public";
+	
+	public static final String PLAIN_TEXT = "html/text";
+	public static final String HTML_TEXT = "html/text";
+	public static final String MARKDOWN_TEXT = "markdown/text";
 	
 	private long lastModified;
 	private String relativePath;
@@ -58,13 +64,22 @@ public class Blog extends HashMap<String, Object> {
 		while (line.length() > 0) {
 			int idx = line.indexOf(':');
 			String name  = line.substring(0, idx).trim().toLowerCase();
-			String value = line.substring(idx+1);
+			String value = line.substring(idx+1).trim();
 			this.put(name, value);
 			line = r.readLine().trim();
 		}
 		
-		setContent(getString(r));
+		String rawText = getString(r);
 		in.close();
+		
+		String cType = (String) get(ContentType);
+		if (MARKDOWN_TEXT.equals(cType)) {
+			MarkdownProcessor markdown = new MarkdownProcessor();
+			setContent(markdown.markdown(rawText));
+		} else {
+			setContent(rawText);
+		}
+		
 		
 		String dateStr = ((String) this.get(Date)).trim();
 		SimpleDateFormat fmt = (dateStr.length()<=10)
