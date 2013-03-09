@@ -147,6 +147,14 @@ table.KTable td {
 	-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
 	box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
 }
+.ContentBody pre,xmp {
+	background: #F0F0FF;
+	border: 1px solid #A0A0FF;
+	padding: 4px;
+	font-size: 80%;
+	margin-top: 0.5em;
+	margin-left: 2em;
+}
 
 /* --- ÉRÉÅÉìÉgä÷òA -----*/
 .LinkComment {
