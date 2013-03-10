@@ -77,36 +77,69 @@ html,body {
 	float: left;
 }
 
-h2,h3,h4,h5 {
+h1,h2,h3,h4,h5,h6 {
 	margin-top: 0.25em;
 	margin-bottom: 0.25em;
 }
-h2 {
+h1.ContentHeader {
+	font-size: 22px;
 	background: aliceBlue;
 	padding-left: 4px;
 	padding-top: 3px;
+	margin-bottom: 12px;
+	border-bottom: none;
 }
-h2 a {
+h1.ContentHeader a {
 	text-decoration: none;
 	color: blue;
 }
-h2 a:hover  {
+h1.ContentHeader a:hover  {
 	text-decoration: underline;
 	color: blue;
 }
-h2 a:visited  {
+h1.ContentHeader a:visited  {
 	text-decoration: underline;
 	color: #8800ee;
 }
 
-h4 {
-	border-left: 6px solid #A0C0FF;
-	border-bottom: 1px solid #A0C0FF;
+h1 {
+	font-size: 22px;
+}
+
+h2 {
+	font-size: 20px;
+	border-left: 4px solid #4080FF;
+	border-bottom: 1px solid #4080FF;
+	padding-left: 4px;
+	padding-top: 3px;
+}
+h3 {
+	font-size: 18px;
+	border-left: 6px solid #80A0FF;
+	border-bottom: 1px solid #80A0FF;
 	padding-left: 4px;
 	padding-top: 3px;
 	margin-bottom: 0.5em;
 }
-
+h4 {
+	font-size: 16px;
+	border-left: 8px solid #A0C0FF;
+	border-bottom: 1px solid #A0C0FF;
+	padding-left: 4px;
+	padding-top: 3px;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+h5 {
+	font-size: 14px;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+h6 {
+	font-size: 12px;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
 #side h5 {
 	margin:0;
 	margin-bottom: 4px;
@@ -155,6 +188,29 @@ table.KTable td {
 	margin-top: 0.5em;
 	margin-left: 2em;
 }
+.ContentBody blockquote {
+	background: #f8f8f8;
+	border: 1px solid #d0d0d0;
+	padding: 4px;
+	font-size: 80%;
+	margin: 0;
+	margin-top: 0.5em;
+	margin-left: 2em;
+}
+.ContentBody ul {
+	margin: 0;
+	padding: 0;
+}
+.ContentBody li {
+	margin: 0;
+	margin-left: 2em;
+}
+
+.ContentBody hr {
+	width: 80%;
+}
+
+
 
 /* --- ÉRÉÅÉìÉgä÷òA -----*/
 .LinkComment {

@@ -2,7 +2,7 @@ Subject: 自前ブログエンジンにコメント機能
 Content-type: html/text
 Tags: GAE, java
 Date: 2013/03/09
-Public: yes 
+Public: yes
 
 このブログにコメント機能を追加した。<br/>
 右下の「》この投稿へのコメント」から行けます。

@@ -17,18 +17,18 @@
     	<a class="RSS" href="${root-path}/atom.xml"><img src="/img/RSS.png"/><span>RSS/2.0</span></a>
 
     	<p/><h5>カテゴリ</h5>
-		<iframe class="BlogParts" height="200" src="${root-path}/category.html" frameborder="0" ></iframe>
+		<iframe class="BlogParts" height="200" src="${root-path}/category.html?${timestamp}" frameborder="0" ></iframe>
 
     	<p/><h5>最近の投稿</h5>
-	 	<iframe class="BlogParts" height="200" src="${root-path}/recent.html" frameborder="0" ></iframe>
+	 	<iframe class="BlogParts" height="200" src="${root-path}/recent.html?${timestamp}" frameborder="0" ></iframe>
 
     	<p/><h5>アーカイブ</h5>
-	 	<iframe class="BlogParts" src="${root-path}/archive.html" frameborder="0" ></iframe>
+	 	<iframe class="BlogParts" src="${root-path}/archive.html?${timestamp}" frameborder="0" ></iframe>
     </div>
     <br clear="all" />
     <div id="footer">
 	Copyright 2013- @kotemaru.org<br/>
-	<img src="https://developers.google.com/appengine/images/appengine-noborder-120x30.gif"
+	<img src="http://developers.google.com/appengine/images/appengine-noborder-120x30.gif"
 alt="Powered by Google App Engine" />
     </div>
   </div>
