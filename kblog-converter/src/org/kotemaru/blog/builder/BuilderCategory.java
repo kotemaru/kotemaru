@@ -27,6 +27,7 @@ public class BuilderCategory extends BuilderTopPage {
 			vctx.put("content-path", path);
 			Category category = ctx.getTags().get(tag);
 			if (category.isUpdate()) {
+				BlogTask.sortDate(category);
 				buildIndexPages(ctx, vctx, path, category);
 			}
 		}

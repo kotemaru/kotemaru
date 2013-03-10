@@ -8,6 +8,7 @@ import java.io.OutputStreamWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import org.apache.velocity.Template;
@@ -28,6 +29,7 @@ public class VelocityUtil {
 		vctx.put("root-path", ctx.getRootPath());
 		vctx.put("tool", new Tool());
 		vctx.put("date", new Date());
+		vctx.put("timestamp", new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()));
 		vctx.put("content-path", "");
 		
 		if (params != null) {

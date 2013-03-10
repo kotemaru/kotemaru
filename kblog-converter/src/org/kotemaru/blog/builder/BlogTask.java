@@ -38,16 +38,26 @@ public class BlogTask extends Task  {
 		builders.put("arcive",   new BuilderArchive());
 		builders.put("recent",   new BuilderRecent());
 		builders.put("rss",      new BuilderRss());
+		//builders.put("draft",    new BuilderDraft());
+		
+		List<String> builds = Tool.parseCamma(build);
+		boolean isDraft = builds.contains("draft");
+		if (isDraft && builds.size() != 1) {
+			throw new BuildException("Other builders cannot coexist with a draft.");
+		}
 		
 		try {
-			initBlogContext();
-
+			initBlogContext(isDraft);
+			if (isDraft) {
+				new BuilderDraft().build(context);
+				return;
+			}
 			if ("all".equals(build)) {
 				for (String name : builders.keySet()) {
 					builders.get(name).build(context);
 				}
 			} else {
-				for (String name : Tool.parseCamma(build)) {
+				for (String name : builds) {
 					builders.get(name).build(context);
 				}
 			}
@@ -59,7 +69,7 @@ public class BlogTask extends Task  {
 		}
 	}	
 	
-	public void initBlogContext() throws IOException, ParseException {
+	public void initBlogContext(boolean isDraft) throws IOException, ParseException {
 		List<Blog> blogs = context.getBlogs();
 		
 		for (ResourceCollection rc : rclist) {
@@ -72,15 +82,44 @@ public class BlogTask extends Task  {
 				}
 			}
 		}
+
+		if (isDraft) draftSetup(blogs);
 		
-		sortDate(blogs);
-		
+		// 下書き削除前にやる必要がある。
 		HashMap<String, Category> tags = context.getTags();
-		
 		for (Blog blog : blogs) {
 			addTags(tags, blog);
 		}
+		
+		sortDate(blogs);
+		if (!isDraft) removeDraft(blogs);
 	}
+	private void removeDraft(List<Blog> blogs) throws IOException {
+		Iterator<Blog> ite = blogs.iterator();
+		Blog beforeBlog = null; 
+		while (ite.hasNext()) {
+			Blog blog = ite.next();
+			if (!blog.isPublish()) {
+				ite.remove();
+				File file = new File(context.getDocumentRoot(), blog.getContentPath());
+				file.delete();
+				if (beforeBlog != null) beforeBlog.setUpdate(true);
+			}
+			if (beforeBlog != null && !beforeBlog.isPublish()) {
+				blog.setUpdate(true);
+			}
+			beforeBlog = blog;
+		}
+	}
+
+	private void draftSetup(List<Blog> blogs) throws IOException {
+		Iterator<Blog> ite = blogs.iterator();
+		while (ite.hasNext()) {
+			Blog blog = ite.next();
+			if (blog.isPublish()) ite.remove();
+		}
+	}
+	
 	
 	private void addTags(HashMap<String, Category> tagMap, Blog blog) throws IOException {
 		boolean isUpdate = blog.isUpdate(context);
