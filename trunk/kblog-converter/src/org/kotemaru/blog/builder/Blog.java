@@ -85,10 +85,13 @@ public class Blog extends HashMap<String, Object> {
 		SimpleDateFormat fmt = (dateStr.length()<=10)
 			? new SimpleDateFormat("yyyy/MM/dd")
 			: new SimpleDateFormat("yyyy/MM/dd HH:mm");
-		setDate(fmt.parse((String) this.get(Date)));
-		
-		String _public = ((String) this.get(Public)).toLowerCase();
-		setPublish("yes".equals(_public) || "true".equals(_public));
+		Date date = fmt.parse((String) this.get(Date));
+		setDate(date);
+
+		if (date.getTime() < System.currentTimeMillis()) {
+			String _public = ((String) this.get(Public)).toLowerCase();
+			setPublish("yes".equals(_public) || "true".equals(_public));
+		}
 		return this;
 	}
 
