@@ -27,6 +27,20 @@
 		classpathref="converter.path" loaderref="blog"
 	/>
 	
+	<target name="blog-draft" >
+        <blog.builder 
+        	contentsRoot="${contents}"
+        	documentRoot="${document}"
+        	rootPath=""
+        	templates="${templates}"
+        	build="draft"
+        >
+        	<fileset dir="${contents}">
+        		<include name="**/*.blog"/>
+        	</fileset>
+		</blog.builder>
+    </target>
+	
 	<target name="blog" depends="resource">
         <blog.builder 
         	contentsRoot="${contents}"
