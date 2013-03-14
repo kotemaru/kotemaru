@@ -77,6 +77,10 @@ public class CommentServlet extends HttpServlet {
 			_doDelete(req, res);
 			return;
 		}
+		if (!"1234567".equals(req.getParameter("keycode"))) {
+			res.setStatus(403);
+			return;
+		}
 		
 		CommentBean sb = new CommentBean();
 	

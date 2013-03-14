@@ -234,6 +234,7 @@ table.KTable td {
 }
 .CommentBody {
 	font-size: 14px;
+	margin: 0;
 }
 .CommentFormTitle {
 	font: bold 14px monospace,sans-serif;
