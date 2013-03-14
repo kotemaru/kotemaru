@@ -3,7 +3,7 @@
 var Global = {};
 Global.contentPath = "${blog.contentPath}";
 </script>
-<script src="/js/comment.js" ></script>
+<script src="/js/comment.js?${timestamp}" ></script>
 
 <div class="Paging">
 #if(${next-blog})
@@ -43,7 +43,7 @@ ${blog.content}
 
 		<tr><td width="1%"></td><td width="99%"></td></tr>
 		<tr><td colspan="2">
-			<button type="button" onclick="Global.commentPost()">書込</button>
+			<button type="Button" onclick="Global.commentPost()">書込</button>
 			(コメントが反映されない場合はリロードしてください。)
 		</td></tr>
 	</table>

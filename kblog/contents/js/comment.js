@@ -13,7 +13,7 @@ $(function(){
 					+comment.date+" にコメント"
 					+" [<a href='javascript:' class='CommentDel' key='"
 							+comment.key+"'>削除</a>]</div>"
-					+"<div class='CommentBody'>"+comment.body+"</div>";
+					+"<pre class='CommentBody'>"+comment.body+"</pre>";
 			$view.append($(html));
 		}
 		$view.find("a.CommentDel").bind("click", function(){
@@ -53,6 +53,7 @@ $(function(){
 			alert("本文は必須です。");
 			return;
 		}
+		params.keycode = 1234567;
 		
 		$.ajax({
 			async: true,
