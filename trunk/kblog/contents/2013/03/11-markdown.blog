@@ -2,7 +2,7 @@ Subject: markdown のサポート
 Content-type: markdown/text
 Tags: GAE,java
 Date: 2013/03/11
-Public: yes 
+Public: yes
 
 ブログのWiki対応で最初は標準化を謳っている Wiki Creole にしようと思って
 いたんだけど仕様が曖昧で実装も良さげな物が無い。
