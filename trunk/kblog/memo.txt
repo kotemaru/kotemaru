@@ -1,0 +1,3 @@
+
+- javaのCalanderのtimeリセット方法
+- 部ログのスパム対策。
