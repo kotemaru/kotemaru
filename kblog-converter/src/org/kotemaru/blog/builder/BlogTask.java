@@ -126,7 +126,7 @@ public class BlogTask extends Task  {
 		
 		String[] tags = ((String)blog.get(Blog.Tags)).split(",");
 		for (int i=0; i<tags.length; i++) {
-			String tag = tags[i].trim();
+			String tag = trimTag(tags[i]);
 			if (!tag.isEmpty()) {
 				Category category = tagMap.get(tag);
 				if (category == null) {
@@ -138,6 +138,12 @@ public class BlogTask extends Task  {
 			}
 		}
 	}
+	private static String trimTag(String tag) {
+		tag = tag.trim();
+		if ("Java".equals(tag)) tag = "java";
+		return tag;
+	}
+	
 
 	public static List<Blog> sortDate(List<Blog> blogs) {
 		Collections.sort(blogs, new Comparator<Blog>(){
