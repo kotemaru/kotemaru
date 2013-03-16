@@ -15,8 +15,8 @@ li {
 <body>
 
 <ul>
-#foreach($item in ${tags.entrySet()})
-	<li><a target="_top" href="${root-path}/category/${tool.encode($item.key)}/">${item.key}</a> (${item.value.size()})</li>
+#foreach($category in ${tags})
+	<li><a target="_top" href="${root-path}/category/${tool.encode($category.tag)}/">${category.tag}</a> (${category.size()})</li>
 #end
 </ul>
 

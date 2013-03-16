@@ -210,6 +210,11 @@ table.KTable td {
 	width: 80%;
 }
 
+.ContentBody blockquote p {
+	margin: 0;
+	padding: 0;
+}
+
 
 
 /* --- ƒRƒƒ“ƒgŠÖ˜A -----*/
