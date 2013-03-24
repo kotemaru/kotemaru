@@ -27,7 +27,10 @@
 		classpathref="converter.path" loaderref="blog"
 	/>
 	
-	<target name="blog-draft" >
+	<target name="blog-draft" depends="resource,blog-draft-main">
+	</target>
+	
+	<target name="blog-draft-main" >
         <blog.builder 
         	contentsRoot="${contents}"
         	documentRoot="${document}"
