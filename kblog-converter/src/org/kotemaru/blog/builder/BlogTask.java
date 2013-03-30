@@ -126,12 +126,12 @@ public class BlogTask extends Task  {
 		
 		String[] tags = ((String)blog.get(Blog.Tags)).split(",");
 		for (int i=0; i<tags.length; i++) {
-			String tag = trimTag(tags[i]);
-			if (!tag.isEmpty()) {
-				Category category = tagMap.get(tag);
+			String key = trimTag(tags[i]);
+			if (!key.isEmpty()) {
+				Category category = tagMap.get(key);
 				if (category == null) {
-					category = new Category(tag);
-					tagMap.put(tag, category);
+					category = new Category(tags[i]);
+					tagMap.put(key, category);
 				}
 				category.add(blog);
 				if (isUpdate) category.setUpdate(true);
@@ -140,8 +140,8 @@ public class BlogTask extends Task  {
 	}
 	private static String trimTag(String tag) {
 		tag = tag.trim();
-		if ("Java".equals(tag)) tag = "java";
-		return tag;
+		//if ("Java".equals(tag)) tag = "java";
+		return tag.toLowerCase();
 	}
 	
 
