@@ -24,13 +24,15 @@ public class BuilderCategory extends BuilderTopPage {
 		
 		
 		// 各カテゴリのindex.html
-		for (String tag : ctx.getTags().keySet()) {
+		for (String key : ctx.getTags().keySet()) {
+			Category category = ctx.getTags().get(key);
+			String tag = category.getTag();
+			
 			vctx.put(Blog.Subject, tag);
 			vctx.put("sub-title", "【カテゴリ: "+tag+"】");
 			
 			String path = "category/"+Tool.encode(tag)+"/";
 			vctx.put("content-path", path);
-			Category category = ctx.getTags().get(tag);
 			if (category.isUpdate()) {
 				BlogTask.sortDate(category);
 				buildIndexPages(ctx, vctx, path, category);
