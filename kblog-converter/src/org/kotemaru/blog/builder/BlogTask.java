@@ -130,7 +130,7 @@ public class BlogTask extends Task  {
 			if (!key.isEmpty()) {
 				Category category = tagMap.get(key);
 				if (category == null) {
-					category = new Category(tags[i]);
+					category = new Category(tags[i].trim());
 					tagMap.put(key, category);
 				}
 				category.add(blog);
