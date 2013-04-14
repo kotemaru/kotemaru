@@ -1,0 +1,58 @@
+
+div,span {
+	user-select: none; /* CSS3 */
+	-moz-user-select: none; /* Firefox */
+	-webkit-user-select: none; /* SafariAChrome‚È‚Ç */
+	-ms-user-select: none; /* IE10‚©‚ç‚ç‚µ‚¢ */
+}
+#commands {
+	text-align: center;
+	background: #f0f0e0;
+}
+
+#commands > span {
+	display: block;
+	width: 36px;
+	height: 20px;
+	padding: 0px;
+	margin: 2px;
+	border: 1px outset #f0f0f0;
+	background: #f0f0f0;
+}
+#commands > span.Selected {
+	border: 1px inset #f0f0f0;
+}
+
+#commands > span > img {
+	padding: 2px;
+}
+
+#menus {
+	position: absolute;
+}
+
+.Menu {
+	position: absolute;
+	background: #e0e0e0;
+	border: 1px solid gray;
+	font-size: 12px;
+	cursor: pointer;
+}
+.MenuHeader {
+	background: #f8f8f8;
+	font-weight: bold;
+	color: white;
+	text-align: center;
+	background: #808080;
+}
+.MenuItem:hover {
+	background: #f8f8f8;
+}
+#menuCable {
+	position: absolute;
+	width: 100px;
+	display: none;
+}
+
+
+
