@@ -95,7 +95,13 @@ function Action(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.onDblClick  = function(ev) {
 		var item = Canvas.getItem(ev.offsetX, ev.offsetY);
-		if (item != null && item.getDialog) {
+		if (item == null) {
+			// TODO: canvas menu.
+			var data = {svg: Canvas.toSVG()};
+			Dialog.open("#dialogSVG", data);
+			var ifr = $("#iframeSvg")[0];
+			ifr.contentDocument.body.innerHTML = data.svg;
+		} else if (item.getDialog) {
 			Canvas.select(item);
 			Canvas.refresh();
 			Dialog.open(item.getDialog(), item);

@@ -32,14 +32,29 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		return null;
 	}
 	
-	_class.refresh = function(evx,evy) {
+	_class.refresh = function() {
 		context2d.clearRect(0,0,1000,1000);
+		var drawer = new Drawer(context2d);
 		for (var i=0; i<items.length; i++) {
-			items[i].draw(context2d);
+			drawer.beginItem(items[i]);
+			items[i].draw(drawer);
+			drawer.endItem(items[i]);
 		}
 		for (var i=0; i<selectItems.length; i++) {
 			selectItems[i].drawHandle(context2d);
 		}
+		drawer.close();
+	}
+	
+	_class.toSVG = function() {
+		var drawer = new DrawerSVG(context2d);
+		for (var i=0; i<items.length; i++) {
+			drawer.beginItem(items[i]);
+			items[i].draw(drawer);
+			drawer.endItem(items[i]);
+		}
+		drawer.close();
+		return drawer.getSVG();
 	}
 	
 	_class.select = function(item) {

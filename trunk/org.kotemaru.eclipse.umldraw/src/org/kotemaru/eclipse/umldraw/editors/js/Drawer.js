@@ -1,9 +1,36 @@
 
-function DrawUtil(){this.initialize.apply(this, arguments)};
+function Drawer(){this.initialize.apply(this, arguments)};
 (function(_class){
 	
-	_class.textSize = function(dc, font, str) {
-		dc.font = font;
+	_class.prototype.initialize = function(canvasCtx) {
+		this.dc = canvasCtx;
+	}
+
+	_class.prototype.close = function() {
+		// nop.
+	}
+	
+	_class.prototype.beginItem = function(item) {
+		this.dc.save();
+	}
+	_class.prototype.endItem = function() {
+		this.dc.restore();
+	}
+	
+	_class.prototype.clipStart = function(x1,y1,w,h) {
+		var dc = this.dc;
+		dc.rect(x1-1,y1-1,w+2,h+2);
+		dc.clip();
+	}
+	_class.prototype.clipEnd = function(x1,y1,w,h) {
+		var dc = this.dc;
+		dc.rect(0,0,10000,10000);
+		dc.clip();
+	}
+	
+	_class.prototype.textSize = function(font, str) {
+		var dc = this.dc;
+		dc.font = font.name;
 		var m = dc.measureText(str);
 		if (str == null || str == "") return {w:m.width, h:0};
 
@@ -16,9 +43,10 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 		return {w:width, h: h*lines.length};
 	}
 	
-	_class.drawText = function(dc, font, str, xx, yy) {
+	_class.prototype.drawText = function(font, str, xx, yy) {
+		var dc = this.dc;
 		dc.fillStyle = "black";
-		dc.font = font;
+		dc.font = font.name;
 		dc.textBaseline = "top";
 		var h = font.height;
 		var lines = str.split("\n");
@@ -28,7 +56,8 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 		}
 	}
 	
-	_class.drawTextLine = function(dc, font, str, xx, yy) {
+	_class.prototype.drawTextLine = function(font, str, xx, yy) {
+		var dc = this.dc;
 		dc.strokeStyle = "white";
 		dc.lineWidth = 2;
 		dc.fillStyle = "black";
@@ -38,7 +67,8 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 		dc.fillText(str, xx, yy);
 	}
 
-	_class.drawBox = function(dc, x,y,w,h) {
+	_class.prototype.drawBox = function(x,y,w,h) {
+		var dc = this.dc;
 		dc.fillStyle = "white";
 		dc.strokeStyle = "black";
 		dc.fillRect(x, y, w, h);
@@ -46,6 +76,30 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 		dc.strokeRect(x, y, w, h);
 	}
 	
+	_class.prototype.drawLines = function(lines) {
+		var dc = this.dc;
+		dc.strokeStyle = "black";
+		dc.lineWidth = 2;
+		dc.beginPath();
+		
+		dc.moveTo(lines[0].x1, lines[0].y1);
+		for (var i=0; i<lines.length; i++) {
+			dc.lineTo(lines[i].x2, lines[i].y2);
+		}
+	
+		dc.stroke();
+		dc.closePath();
+	}
+	_class.prototype.drawLine = function(x1,y1,x2,y2) {
+		var dc = this.dc;
+		dc.strokeStyle = "black";
+		dc.lineWidth = 2;
+		dc.beginPath();
+		dc.moveTo(x1, y1);
+		dc.lineTo(x2, y2);
+		dc.stroke();
+		dc.closePath();
+	}
 	
 	var NONE     = "none";
 	var ARROW    = "arrow"; // ↑
@@ -57,7 +111,8 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 	_class.RHOMBI   = RHOMBI;
 	
 	
-	_class.drawArrow = function(dc, shape, x1,y1,x2,y2) {
+	_class.prototype.drawArrow = function(shape, x1,y1,x2,y2) {
+		var dc = this.dc;
 		if (shape == NONE) return;
 		var isFill = shape.match(/-B$/);
 		shape = shape.replace(/-B$/,"");
@@ -100,5 +155,5 @@ function DrawUtil(){this.initialize.apply(this, arguments)};
 	}
 
 
-})(DrawUtil);
+})(Drawer);
 	

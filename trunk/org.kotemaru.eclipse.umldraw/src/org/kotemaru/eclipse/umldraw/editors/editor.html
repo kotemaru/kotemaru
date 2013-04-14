@@ -30,6 +30,8 @@
 <script src="js/Util.js"></script>
 <script src="js/Commands.js"></script>
 <script src="js/DrawUtil.js"></script>
+<script src="js/Drawer.js"></script>
+<script src="js/DrawerSVG.js"></script>
 
 <script>
 Eclipse.setContent = function(content) {
@@ -128,9 +130,9 @@ $(function(){
 	<div>
 		<br/>
 		<div align="center">
-			<input class="LineComment" data-path="comment_su" value="" type="text"/>
-			<input class="LineComment" data-path="comment_cu" value="" type="text"/>
-			<input class="LineComment" data-path="comment_eu" value="" type="text"/>
+			<input class="LineComment" data-path="startText" value="" type="text"/>
+			<input class="LineComment" data-path="centerText" value="" type="text"/>
+			<input class="LineComment" data-path="endText" value="" type="text"/>
 		</div>
 		<div align="center">
 			<img src="img/handle-s.png" />
@@ -175,11 +177,6 @@ $(function(){
 			</span>
 			<img src="img/handle-e.png" />
 		</div>
-		<div align="center">
-			<input class="LineComment" data-path="comment_sd" value="" type="text"/>
-			<input class="LineComment" data-path="comment_cd" value="" type="text"/>
-			<input class="LineComment" data-path="comment_ed" value="" type="text"/>
-		</div>
 		<br/>
 		<div align="center">
 			<button onclick="Dialog.save()">Save</button>
@@ -188,6 +185,23 @@ $(function(){
 		<br/>
 	</div>
 </div>
+
+		
+<div id="dialogSVG" class="Dialog">
+	<h3>
+		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+		<nobr>Class Properties</nobr>
+	</h3>
+	<div>
+<!--
+		<textarea id="SVG" data-path="svg" style="width:100%;" rows="10"></textarea>
+-->
+		<iframe id="iframeSvg" style="width:100%;height:100%;"></iframe>
+
+	</div>
+</div>
+
+
 
 	</div>
 

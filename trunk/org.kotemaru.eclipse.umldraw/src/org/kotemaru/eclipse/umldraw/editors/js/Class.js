@@ -9,14 +9,21 @@ function Class(){this.initialize.apply(this, arguments)};
 	 */
 	_class.prototype.initialize = function(coorBase) {
 		_super.prototype.initialize.apply(this, arguments);
-		this.isAutoSize = true;
 		
+		this.isAutoSize = true;
 		this.ptype = "protoEg-type";
 		this.name = "XxxxEgClass\nEgEG";
 		this.attrs = "";
 		this.methods = "";
-		
-		
+	}
+	_class.prototype.toJson = function() {
+		var json = _super.prototype.initialize.toJson(this);
+		json.ptype = this.ptype;
+		json.name = this.name;
+		json.attrs = this.attrs;
+		json.methods = this.methods;
+		json.isAutoSize = this.isAutoSize;
+		return json;
 	}
 
 	_class.prototype.setW = function(v) {
@@ -29,42 +36,42 @@ function Class(){this.initialize.apply(this, arguments)};
 	}
 	
 
-	_class.prototype.draw = function(dc) {
+	_class.prototype.draw = function(dr) {
 		with (this) {
-			var size1 = Font.textSize(dc, Font.S, ptype);
-			var size2 = Font.textSize(dc, Font.M, name);
-			var size3 = Font.textSize(dc, Font.M, attrs);
-			var size4 = Font.textSize(dc, Font.M, methods);
+			var size1 = dr.textSize(Font.S, ptype);
+			var size2 = dr.textSize(Font.M, name);
+			var size3 = dr.textSize(Font.M, attrs);
+			var size4 = dr.textSize(Font.M, methods);
 			
 			if (isAutoSize) {
 				this._w = Util.grid(Math.max(size1.w, size2.w, size3.w, size4.w,100)+4);
 				this._h = Util.grid(size1.h + size2.h + size3.h + size4.h + 16);
 			}
 			
+			var w1 = w();
+			var h1 = h();
 			var x1 = coor.x();
 			var y1 = coor.y();
-			dc.save();
-			dc.rect(x1-1,y1-1,_w+2,_h+2);
-			dc.clip();
+			var x2 = x1+w1;
+			var y2 = y1+h1;
+			dr.clipStart(x1,y1,w1,h1);
 			
-			DrawUtil.drawBox(dc, x1, y1, _w, _h);
+			dr.drawBox(x1, y1, w1, h1);
 			
 			var yy = y1 + 2;
-			DrawUtil.drawText(dc, Font.S, ptype, x1+2, yy);
+			dr.drawText(Font.S, ptype, x1+2, yy);
 			yy += size1.h;
 			
-			DrawUtil.drawText(dc, Font.M, name, x1+2, yy);
+			dr.drawText(Font.M, name, x1+2, yy);
 			yy += size2.h+4;
-			dc.lineWidth = 1;
-			dc.strokeRect(x1, yy, _w, 0);
+			dr.drawLine(x1, yy, x2, yy);
 
-			DrawUtil.drawText(dc, Font.M, attrs, x1+2, yy);
+			dr.drawText(Font.M, attrs, x1+2, yy);
 			yy += size3.h+4;
-			dc.strokeRect(x1, yy, _w, 0);
+			dr.drawLine(x1, yy, x2, yy);
 			
-			DrawUtil.drawText(dc, Font.M, methods, x1+2, yy);
-			
-			dc.restore();		
+			dr.drawText(Font.M, methods, x1+2, yy);
+			dr.clipEnd();
 		}
 		
 		return this;

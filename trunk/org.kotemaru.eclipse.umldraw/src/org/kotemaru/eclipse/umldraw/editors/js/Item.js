@@ -4,6 +4,10 @@ function Item(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	_class.prototype = new _super();
 	_class.prototype.isDrawable=true;
+	
+	_class.prototype.toJsonRef = function() {
+		return {itemRef: this.id};
+	}
 
 	_class.prototype.getHandle = function(xx,yy) {
 		throw "abstract";
