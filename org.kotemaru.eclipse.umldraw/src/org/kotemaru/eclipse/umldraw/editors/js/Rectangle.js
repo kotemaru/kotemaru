@@ -26,6 +26,12 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 			self.setH(yy-self.y());
 		}
 	}
+	_class.prototype.toJson = function() {
+		var json = _super.prototype.initialize.toJson(this);
+		json._w = this._w;
+		json._h = this._h;
+		return json;
+	}
 	
 	
 	_class.prototype.w = function() {

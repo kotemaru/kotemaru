@@ -2,14 +2,42 @@
 
 function Coor(){this.initialize.apply(this, arguments)};
 (function(_class){
+	var idCount = 0;
+	var jsonCache = {}; // for data save.
+	
 	_class.prototype.initialize = function(opts) {
 		if (opts == null) opts = {};
-		this._origin = opts.origin; // Coor
-		this._origin2 = opts.origin2; // Coor
+		this._origin = opts.origin; // Item
+		this._origin2 = opts.origin2; // Item
 		this._x = opts.x;
 		this._y = opts.y;
+		this.id = idCount++;
+	}
+
+	_class.clearJsonCache = function() {
+		jsonCache = {};
+	}
+	_class.getJsonCache = function() {
+		return jsonCache;
 	}
 	
+	_class.prototype.toJsonRef = function() {
+		if (jsonCache[this.id] == null) {
+			jsonCache[this.id] = this.toJson();
+		}
+		return {coorRef: this.id};
+	}
+	
+	_class.prototype.toJson = function() {
+		if (jsonCache[this.id]) return jsonCache[this.id];
+		
+		var json = {};
+		json._origin = Util.toJsonRef(this._origin2);
+		json._origin2 = Util.toJsonRef(this._origin2);
+		json._x = this._x;
+		json._y = this._y;
+		return json;
+	}
 	
 	_class.prototype.origin = function(v) {
 		if (v) {

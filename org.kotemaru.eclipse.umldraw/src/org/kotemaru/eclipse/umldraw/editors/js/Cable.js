@@ -12,6 +12,10 @@ function Cable(){this.initialize.apply(this, arguments)};
 		this.startType = "none";
 		this.endType   = "none";
 		
+		this.startText  = "startText";
+		this.centerText = "centerText";
+		this.endText    = "endText";
+		
 		this.points = [];
 		var coor1 = new Coor(), coor2 = new Coor();
 		this.startPoint = {
@@ -72,62 +76,76 @@ function Cable(){this.initialize.apply(this, arguments)};
 		var ry1 = ty-r;
 		var rx2 = tx+r;
 		var ry2 = ty+r;
-		with (this) {
-			var coor1 = startPoint.coor;
-			var coor2 = points.length>0 ? points[0].coor : endPoint.coor;
-			var xy = toEdge(coor1, coor2);
-			var lx1 = xy.x;
-			var ly1 = xy.y;
-			var lx2;
-			var ly2;
+		var lines = getLines(this);
 		
-			for (var i=0; i<points.length; i++) {
-				var coor = points[i].coor;
-				lx2 = coor.x();
-				ly2 = coor.y();
-				var hits = Util.crossRectLineRaw(rx1,ry1,rx2,ry2, lx1,ly1,lx2,ly2);
-				if (hits.length>0) return true;
-				lx1 = lx2;
-				ly1 = ly2;
-			}
-			var i = points.length-1;
-			coor1 = points.length>0 ? points[i].coor : startPoint.coor;
-			coor2 = endPoint.coor;
-			xy = toEdge(coor2, coor1);
-			lx2 = xy.x;
-			ly2 = xy.y;
-			hits = Util.crossRectLineRaw(rx1,ry1,rx2,ry2, lx1,ly1,lx2,ly2);
+		for (var i=0; i<lines.length; i++) {
+			var hits = Util.crossRectLineRaw(rx1,ry1,rx2,ry2, 
+					lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
 			if (hits.length>0) return true;
 		}
 		return false;
 	}
 
-	_class.prototype.draw= function(dc) {
+	_class.prototype.draw= function(dr) {
 		with (this) {
 			var lines = getLines(this);
-			
-			dc.strokeStyle = "black";
-			dc.lineWidth = 2;
-			dc.beginPath();
-			
-			dc.moveTo(lines[0].x1, lines[0].y1);
-			for (var i=0; i<lines.length; i++) {
-				dc.lineTo(lines[i].x2, lines[i].y2);
-			}
-		
-			dc.stroke();
-			dc.closePath();
+			dr.drawLines(lines);
 	
-			DrawUtil.drawArrow(dc, startType, 
+			dr.drawArrow(startType, 
 					lines[0].x2, lines[0].y2, lines[0].x1, lines[0].y1);
 			
 			var i = lines.length-1;
-			DrawUtil.drawArrow(dc, endType, 
+			dr.drawArrow(endType, 
 					lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
+
+			drawText(dr, lines[0], 0);
+			drawText(dr, lines[Math.floor(lines.length/2)], 1);
+			drawText(dr, lines[i], 2);
 		}
 		return this;
 	}
+	_class.prototype.drawText = function(dr, line, mode) {
+		with (this) {
+			var x1 = line.x1;
+			var y1 = line.y1;
+			var x2 = line.x2;
+			var y2 = line.y2;
+			var x3 = x1 + (x2 - x1)/2;
+			var y3 = y1 + (y2 - y1)/2;
 	
+			var size1 = dr.textSize(Font.M, startText);
+			var size2 = dr.textSize(Font.M, endText);
+			var size3 = dr.textSize(Font.M, centerText);
+			var w1 = size1.w;
+			var w2 = size2.w;
+			var w3 = size3.w;
+	
+			var PADDING = 8;
+			if (x1 < x2) {
+				x1 = x1 + PADDING;
+				x2 = x2 - w2 - PADDING;
+			} else {
+				x1 = x1 - w1 - PADDING;
+				x2 = x2 + PADDING;
+			}
+			if (y1 < y2) {
+				y2 = y2 - size1.h;
+			} else {
+				y1 = y1 - size1.h;
+			}
+			x3 = x3 - w3/2;
+			y3 = y3 - size1.h/2;
+
+			if (mode == 0) {
+				dr.drawTextLine(Font.M, startText,  x1, y1);
+			} else if (mode == 1) {
+				dr.drawTextLine(Font.M, centerText, x3, y3);
+			} else {
+				dr.drawTextLine(Font.M, endText,    x2, y2);
+			}
+		}
+	}
+
 	function getLines(self) {
 		var lines = [];
 		with (self) {

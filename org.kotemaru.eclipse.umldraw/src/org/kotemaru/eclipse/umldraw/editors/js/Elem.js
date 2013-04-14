@@ -12,6 +12,9 @@ function Elem(){this.initialize.apply(this, arguments)};
 	_class.prototype.initialize = function(coorBase) {
 		this.coor = new Coor(coorBase);
 	}
+	_class.prototype.toJson = function() {
+		return {coor: this.coor.toJsonRef()};
+	}
 	
 	_class.prototype.origin = function(v) {
 		return this.coor.origin(v);
