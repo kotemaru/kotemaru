@@ -76,10 +76,30 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.strokeRect(x, y, w, h);
 	}
 	
-	_class.prototype.drawLines = function(lines) {
+	
+	function setLineStyle(dc, style) {
+		if (style == null) style = "normal-2";
+		
+		var parts = style.split("-");
+		var patt = null;
+		if (parts[0] == "dotted") patt = [4,4];
+
+		if (dc.setLineDash) {
+			dc.setLineDash(patt);
+		} else {
+			dc.mozDash = patt;
+		}
+		
+		dc.lineWidth = 2;
+		if (parts.length>=2) {
+			dc.lineWidth = parseInt(parts[1]);
+		}
+	}
+	
+	_class.prototype.drawLines = function(lines, style) {
 		var dc = this.dc;
 		dc.strokeStyle = "black";
-		dc.lineWidth = 2;
+		setLineStyle(dc, style);
 		dc.beginPath();
 		
 		dc.moveTo(lines[0].x1, lines[0].y1);
@@ -90,10 +110,10 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.stroke();
 		dc.closePath();
 	}
-	_class.prototype.drawLine = function(x1,y1,x2,y2) {
+	_class.prototype.drawLine = function(x1,y1,x2,y2, style) {
 		var dc = this.dc;
 		dc.strokeStyle = "black";
-		dc.lineWidth = 2;
+		setLineStyle(dc, style);
 		dc.beginPath();
 		dc.moveTo(x1, y1);
 		dc.lineTo(x2, y2);
@@ -114,6 +134,8 @@ function Drawer(){this.initialize.apply(this, arguments)};
 	_class.prototype.drawArrow = function(shape, x1,y1,x2,y2) {
 		var dc = this.dc;
 		if (shape == NONE) return;
+		setLineStyle(dc, null);
+		
 		var isFill = shape.match(/-B$/);
 		shape = shape.replace(/-B$/,"");
 

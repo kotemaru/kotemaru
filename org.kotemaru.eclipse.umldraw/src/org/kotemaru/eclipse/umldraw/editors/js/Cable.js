@@ -89,7 +89,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 	_class.prototype.draw= function(dr) {
 		with (this) {
 			var lines = getLines(this);
-			dr.drawLines(lines);
+			dr.drawLines(lines, lineType);
 	
 			dr.drawArrow(startType, 
 					lines[0].x2, lines[0].y2, lines[0].x1, lines[0].y1);
