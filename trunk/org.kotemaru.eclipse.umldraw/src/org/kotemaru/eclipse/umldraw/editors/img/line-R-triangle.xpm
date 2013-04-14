@@ -1,0 +1,14 @@
+/* XPM */
+static char * line_R_triangle_xpm[] = {
+"16 8 3 1",
+" 	s None	c None",
+".	c black",
+"X	c white",
+"     .          ",
+"     ...        ",
+"     .XX..      ",
+"......XXXX..    ",
+"......XXXX..    ",
+"     .XX..      ",
+"     ...        ",
+"     .          "};

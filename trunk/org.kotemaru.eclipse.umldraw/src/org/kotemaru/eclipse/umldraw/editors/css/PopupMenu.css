@@ -1,0 +1,41 @@
+
+.PopupMenu {
+	display: none;
+	position: absolute;
+	border: 1px solid black;
+	box-shadow: 4px 4px 8px;
+	overflow-y: scroll;
+	background: white;
+	width: 150px;
+	height: 150px;
+	padding: 2px;
+	
+	font-size: 12px;
+	font-weight: normal;
+	line-height: 110%;
+}
+
+
+div.PopupMenuItem {
+	white-space: nowrap;
+	overflow: hidden;
+	margin-bottom: 2px;
+}
+.PopupMenuItem:hover {
+	background: #eee;
+}
+.PulldownButton {
+	cursor: pointer;
+}
+
+#popupMenu-line-L,
+#popupMenu-line-R {
+	width: 24px;
+	height: 100px;
+	overflow-y: hidden;
+}
+#popupMenu-line {
+	width: 50px;
+	height: 60px;
+	overflow-y: hidden;
+}
