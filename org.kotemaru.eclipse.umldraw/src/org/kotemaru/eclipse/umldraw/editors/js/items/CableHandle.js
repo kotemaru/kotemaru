@@ -1,5 +1,5 @@
 
-function HandleCable(){this.initialize.apply(this, arguments)};
+function CableHandle(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	_class.prototype = new _super();
 	
@@ -26,4 +26,4 @@ function HandleCable(){this.initialize.apply(this, arguments)};
 		//this.coor.origin().xy(xx,yy); // 非センター
 	}
 	
-})(HandleCable, Handle);
+})(CableHandle, Handle);

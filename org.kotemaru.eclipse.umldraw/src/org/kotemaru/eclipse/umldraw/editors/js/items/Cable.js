@@ -20,11 +20,11 @@ function Cable(){this.initialize.apply(this, arguments)};
 		var coor1 = new Coor(), coor2 = new Coor();
 		this.startPoint = {
 			coor: coor1, 
-			handle:new HandleCable(coor1, this, "setStartPoint")
+			handle:new CableHandle(coor1, this, "setStartPoint")
 		};
 		this.endPoint   = {
 			coor: coor2, 
-			handle:new HandleCable(coor2, this, "setEndPoint")
+			handle:new CableHandle(coor2, this, "setEndPoint")
 		};
 		this.startPoint.handle.color = Handle.COLOR_START;
 		this.endPoint.handle.color = Handle.COLOR_END;
@@ -34,7 +34,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.prototype.addPoint = function(coor) {
-		var handle = new HandleCable(coor, this, "setPoint", this.points.length);
+		var handle = new CableHandle(coor, this, "setPoint", this.points.length);
 		this.points.push({coor:coor, handle:handle});
 	}
 	
@@ -208,14 +208,14 @@ function Cable(){this.initialize.apply(this, arguments)};
 		}
 		return null;
 	}
-	_class.prototype.getMenu = function(xx,yy) {
-		return $("#menuCable");
+	_class.prototype.getMenu = function() {
+		return "#cableMenu";
 	}
-	_class.prototype.getDialog = function(xx,yy) {
+	_class.prototype.getDialog = function() {
 		return "#dialogCable";
 	}
 	_class.prototype.doMenuItem = function($menuItem,xx,yy) {
-		var cmd = $menuItem.attr("data-alt");
+		var cmd = $menuItem.attr("data-value");
 		if (cmd == "addPoint") {
 			var coor = new Coor({
 				origin:this.startPoint.coor, 
@@ -223,6 +223,8 @@ function Cable(){this.initialize.apply(this, arguments)};
 			});
 			coor.xy(xx,yy);
 			this.addPoint(coor);
+		} else if (cmd == "properties") {
+			Dialog.open(this.getDialog(), this);
 		}
 	}
 	

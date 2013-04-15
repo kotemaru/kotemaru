@@ -18,12 +18,12 @@
 <script src="js/CoorDiag.js"></script>
 <script src="js/Elem.js"></script>
 <script src="js/Handle.js"></script>
-<script src="js/HandleCable.js"></script>
 <script src="js/Item.js"></script>
 <script src="js/Action.js"></script>
 <script src="js/Rectangle.js"></script>
-<script src="js/Class.js"></script>
-<script src="js/Cable.js"></script>
+<script src="js/items/Class.js"></script>
+<script src="js/items/Cable.js"></script>
+<script src="js/items/CableHandle.js"></script>
 
 <script src="js/Canvas.js"></script>
 <script src="js/Font.js"></script>
@@ -32,6 +32,20 @@
 <script src="js/DrawUtil.js"></script>
 <script src="js/Drawer.js"></script>
 <script src="js/DrawerSVG.js"></script>
+
+<script>
+$(function(){
+	function include(sel, url) {
+		$.get(url,null,function(data){
+			$(sel).append(data);
+		});
+	}
+	
+	include("#menus","js/items/CableMenu.html");
+	include("#dialogs","js/items/CableDialog.html");
+	include("#dialogs","js/items/ClassDialog.html");
+});
+</script>
 
 <script>
 Eclipse.setContent = function(content) {
@@ -88,103 +102,11 @@ $(function(){
 	</div>
 -->
 	<div id="menus">
-		<div class="Menu" id="menuCable">
-			<div class="MenuHeader">Cable menu</div>
-			<div class="MenuItem" data-alt="addPoint">Add point</div>
-		</div>
 	</div>
 	
-	<div id="dialogPanel" class="DialogPanel" >
+	<div id="dialogs" class="DialogPanel" >
 		<div class="DialogMask" > </div>
 		<!-- Include -->
-		
-<div id="dialogClass" class="Dialog">
-	<h3>
-		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
-		<nobr>Class Properties</nobr>
-	</h3>
-	<div>
-		<p align="center">
-			<table>
-				<tr><th>Prototype:</th><td><input data-path="ptype" /></td></tr>
-				<tr><th>Class name:</th><td><textarea data-path="name" rows=2></textarea></td></tr>
-				<tr><th>Attribute:</th><td><textarea data-path="attrs" rows=4></textarea></td></tr>
-				<tr><th>Method:</th><td><textarea data-path="methods" rows=4></textarea></td></tr>
-			</table>
-		</p>
-		<br/>
-		<div align="center">
-			<button onclick="Dialog.save()">Save</button>
-			<button onclick="Dialog.close()">Cancel</button>
-		</div>
-		<br/>
-	</div>
-</div>
-
-
-<div id="dialogCable" class="Dialog">
-	<h3>
-		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
-		<nobr>Line Properties</nobr>
-	</h3>
-	<div>
-		<br/>
-		<div align="center">
-			<input class="LineComment" data-path="startText" value="" type="text"/>
-			<input class="LineComment" data-path="centerText" value="" type="text"/>
-			<input class="LineComment" data-path="endText" value="" type="text"/>
-		</div>
-		<div align="center">
-			<img src="img/handle-s.png" />
-			<span class="PulldownButton" data-path="startType" >
-				<img src="img/line-L-arrow.png" />
-				<div class="PopupMenu" id="popupMenu-line-L">
-					<div class="PopupMenuItem" data-value="none"><img src="img/line-L-none.png" /></div>
-					<div class="PopupMenuItem" data-value="arrow"><img src="img/line-L-arrow.png" /></div>
-					<div class="PopupMenuItem" data-value="rhombi-B"><img src="img/line-L-rhombi-B.png" /></div>
-					<div class="PopupMenuItem" data-value="rhombi"><img src="img/line-L-rhombi.png" /></div>
-					<div class="PopupMenuItem" data-value="triangle-B"><img src="img/line-L-triangle-B.png" /></div>
-					<div class="PopupMenuItem" data-value="triangle"><img src="img/line-L-triangle.png" /></div>
-				</div>
-			</span>
-	
-			<span class="PulldownButton"  data-path="lineType" >
-				<img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" 
-				/><img src="img/line-normal.png" />
-				<div class="PopupMenu" id="popupMenu-line">
-					<div class="PopupMenuItem" data-value="normal"><img src="img/line-normal.png" /></div>
-					<div class="PopupMenuItem" data-value="dotted"><img src="img/line-dotted.png" /></div>
-					<div class="PopupMenuItem" data-value="normal-1"><img src="img/line-normal-1.png" /></div>
-					<div class="PopupMenuItem" data-value="dotted-1"><img src="img/line-dotted-1.png" /></div>
-				</div>
-			</span>
-
-			<span class="PulldownButton"  data-path="endType" >
-				<img src="img/line-R-arrow.png" />
-				<div class="PopupMenu" id="popupMenu-line-R">
-					<div class="PopupMenuItem" data-value="none"><img src="img/line-R-none.png" /></div>
-					<div class="PopupMenuItem" data-value="arrow"><img src="img/line-R-arrow.png" /></div>
-					<div class="PopupMenuItem" data-value="rhombi-B"><img src="img/line-R-rhombi-B.png" /></div>
-					<div class="PopupMenuItem" data-value="rhombi"><img src="img/line-R-rhombi.png" /></div>
-					<div class="PopupMenuItem" data-value="triangle-B"><img src="img/line-R-triangle-B.png" /></div>
-					<div class="PopupMenuItem" data-value="triangle"><img src="img/line-R-triangle.png" /></div>
-				</div>
-			</span>
-			<img src="img/handle-e.png" />
-		</div>
-		<br/>
-		<div align="center">
-			<button onclick="Dialog.save()">Save</button>
-			<button onclick="Dialog.close()">Cancel</button>
-		</div>
-		<br/>
-	</div>
-</div>
 
 		
 <div id="dialogSVG" class="Dialog">
@@ -200,8 +122,6 @@ $(function(){
 
 	</div>
 </div>
-
-
 
 	</div>
 
