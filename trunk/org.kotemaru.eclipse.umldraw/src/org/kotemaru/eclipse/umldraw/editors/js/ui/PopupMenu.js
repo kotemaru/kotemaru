@@ -29,6 +29,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 
 	Class.close = function(){
 		// TODO: 複数Popup
+		$(".PulldownMenu").hide();
 		$(".PopupMenu").hide();
 	}
 
@@ -41,7 +42,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 			var icons = data.split("\n");
 
 			for (var i=0; i<icons.length; i++) {
-				var $img = $("<img class='PopupMenuItem'/>");
+				var $img = $("<img class='MenuItem'/>");
 				$img.attr("src", icons[i]);
 				$menu.append($img);
 			}
@@ -50,10 +51,10 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 
 	$(function(){
 		$(".PulldownButton").live("click", function(){
-			PopupMenu.open($(this).find(".PopupMenu"), {element: this});
+			PopupMenu.open($(this).find(".PulldownMenu"), {element: this});
 			return false;
 		});
-		$(".PopupMenuItem").live("click", function(){
+		$(".PulldownMenu > .MenuItem").live("click", function(){
 			var $elem = $(PopupMenu.options.element);
 			var $sel = $(this);
 			
@@ -62,6 +63,14 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 			$elem.attr("data-value", $sel.attr("data-value"));
 			
 			PopupMenu.close();
+			return false;
+		});
+		$(".PopupMenu > .MenuItem").live("click", function(){
+			if (PopupMenu.options.item) {
+				PopupMenu.options.item.doMenuItem($(this));
+			}
+			PopupMenu.close();
+			Canvas.refresh();
 			return false;
 		});
 		$(document.body).live("click", function(){

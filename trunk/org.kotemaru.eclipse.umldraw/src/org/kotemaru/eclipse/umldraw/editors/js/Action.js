@@ -82,14 +82,9 @@ function Action(){this.initialize.apply(this, arguments)};
 		} else if (item.getMenu) {
 			Canvas.select(item);
 			Canvas.refresh();
-			$menu = item.getMenu(ev.offsetX, ev.offsetY);
-			$menu.show();
-			$menu.offset({left:ev.clientX, top:ev.clientY});
-			$menu.find(".MenuItem").unbind("mouseup").bind("mouseup",function(){
-				item.doMenuItem($(this),ev.offsetX, ev.offsetY);
-				$menu.hide();
-				Canvas.refresh();
-			});
+			var name = item.getMenu();
+			var opts = {event:ev, item:item};
+			PopupMenu.open(name, opts);
 		}
 	}
 	
