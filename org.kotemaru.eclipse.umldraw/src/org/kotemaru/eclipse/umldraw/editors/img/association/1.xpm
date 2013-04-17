@@ -1,0 +1,14 @@
+/* XPM */
+static char * scratch[] = {
+"32 8 3 1",
+" 	s None	c None",
+".	c black",
+"X	c white",
+"                                ",
+"                        ..      ",
+"                      ..XX..    ",
+"  ....................XXXXXX..  ",
+"  ....................XXXXXX..  ",
+"                      ..XX..    ",
+"                        ..      ",
+"                                "};
