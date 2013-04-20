@@ -2,11 +2,6 @@
 
 function Util(){this.initialize.apply(this, arguments)};
 (function(_class){
-	_class.toJsonRef = function(ori) {
-		if (ori == null) return null;
-		return ori.toJsonRef()
-	}
-
 
 	_class.crossRectLine = function(rect, coor1, coor2) {
 		if (rect == null || !rect.isRectangle ) return [];

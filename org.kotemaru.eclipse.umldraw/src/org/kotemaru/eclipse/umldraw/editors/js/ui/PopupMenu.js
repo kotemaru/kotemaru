@@ -67,7 +67,9 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		});
 		$(".PopupMenu > .MenuItem").live("click", function(){
 			if (PopupMenu.options.item) {
-				PopupMenu.options.item.doMenuItem($(this));
+				var ev = PopupMenu.options.event;
+				PopupMenu.options.item.doMenuItem($(this),
+									ev.offsetX, ev.offsetY);
 			}
 			PopupMenu.close();
 			Canvas.refresh();

@@ -4,38 +4,42 @@ function Canvas(){this.initialize.apply(this, arguments)};
 (function(_class){
 	var canvas;
 	var context2d;
-	var items = [];
+	var items = {};
 	var selectItems = [];
 	
 	_class.init = function(elem) {
 		canvas = elem;
 		context2d = canvas.getContext('2d');
 	}
+	_class.reset = function() {
+		items = {};
+		selectItems = [];
+	}
 	_class.addItem = function(item) {
-		if (item.id) {
+		if (items[item.internalId]) {
 			throw "Confrict";
 		}
-		item.id = items.length;
-		items.push(item);
+		items[item.internalId] = item;
 	}
 	_class.delItem = function(item) {
-		var idx = items.indexOf(item);
-		if (idx < 0) return;
-		items.splice(idx,1);
+		delete items[item.internalId];
 	}
 	_class.getItem = function(ex,ey, ignore) {
-		for (var i=items.length-1; i>=0; i--) {
+		for (var i in items) {
 			if (items[i] != ignore && items[i].onPoint(ex, ey)) {
 				return items[i];
 			}
 		}
 		return null;
 	}
+	_class.getItems = function() {
+		return items;
+	}
 	
 	_class.refresh = function() {
 		context2d.clearRect(0,0,1000,1000);
 		var drawer = new Drawer(context2d);
-		for (var i=0; i<items.length; i++) {
+		for (var i in items) {
 			drawer.beginItem(items[i]);
 			items[i].draw(drawer);
 			drawer.endItem(items[i]);
@@ -48,7 +52,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	
 	_class.toSVG = function() {
 		var drawer = new DrawerSVG(context2d);
-		for (var i=0; i<items.length; i++) {
+		for (var i in items) {
 			drawer.beginItem(items[i]);
 			items[i].draw(drawer);
 			drawer.endItem(items[i]);

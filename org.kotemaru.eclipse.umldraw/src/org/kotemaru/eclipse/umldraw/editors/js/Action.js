@@ -93,9 +93,13 @@ function Action(){this.initialize.apply(this, arguments)};
 		if (item == null) {
 			// TODO: canvas menu.
 			var data = {svg: Canvas.toSVG()};
-			Dialog.open("#dialogSVG", data);
-			var ifr = $("#iframeSvg")[0];
-			ifr.contentDocument.body.innerHTML = data.svg;
+			Dialog.open("#debugDialog", data);
+			//var ifr = $("#iframeSvg")[0];
+			//ifr.contentDocument.body.innerHTML = data.svg;
+			var data = Store.save(Canvas.getItems());
+			$("#saveText").val(JSON.stringify(data,null, "  "));
+			Store.load(data);
+	
 		} else if (item.getDialog) {
 			Canvas.select(item);
 			Canvas.refresh();
