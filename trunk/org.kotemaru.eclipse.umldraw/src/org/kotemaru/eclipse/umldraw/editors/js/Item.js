@@ -4,10 +4,18 @@ function Item(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	_class.prototype = new _super();
 	_class.prototype.isDrawable=true;
+	_class.attributes = {
+		coor : new Point()
+	};
+
 	
-	_class.prototype.toJsonRef = function() {
-		return {itemRef: this.id};
+	var idCount = 1;
+	
+	_class.prototype.initialize = function(coorBase) {
+		_super.prototype.initialize.apply(this, arguments);
+		this.internalId = idCount++;
 	}
+	
 
 	_class.prototype.getHandle = function(xx,yy) {
 		throw "abstract";

@@ -2,7 +2,19 @@
 
 function Cable(){this.initialize.apply(this, arguments)};
 (function(_class,_super){
-	_class.prototype = new _super();
+	Lang.extend(_class, _super);
+	_class.attributes = Lang.copy(_super.attributes, {
+		lineType   : "normal",
+		startType  : "none",
+		endType    : "none",
+		startText  : "",
+		centerText : "",
+		endText    : "",
+		points     : [new Point()],
+		startPoint : new Point(),
+		endPoint   : new Point(),
+	});
+
 	
 	/**
 	 * コンストラクタ。
@@ -17,35 +29,32 @@ function Cable(){this.initialize.apply(this, arguments)};
 		this.endText    = "endText";
 		
 		this.points = [];
-		var coor1 = new Coor(), coor2 = new Coor();
-		this.startPoint = {
-			coor: coor1, 
-			handle:new CableHandle(coor1, this, "setStartPoint")
-		};
-		this.endPoint   = {
-			coor: coor2, 
-			handle:new CableHandle(coor2, this, "setEndPoint")
-		};
-		this.startPoint.handle.color = Handle.COLOR_START;
-		this.endPoint.handle.color = Handle.COLOR_END;
+		this.startPoint = new Coor();
+		//this.startPoint.handle = 
+		//	new CableHandle(this.startPoint, this, "setStartPoint")
+		this.endPoint = new Coor();
+		//this.endPoint.handle = 
+		//	new CableHandle(this.endPoint, this, "setEndPoint")
+		//this.startPoint.handle.color = Handle.COLOR_START;
+		//this.endPoint.handle.color = Handle.COLOR_END;
 
 		this.setStartPoint(new Coor(coorBase));
-		this.setEndPoint(new Coor({origin:this.startPoint.coor, x:20, y:20}));
+		this.setEndPoint(new Coor({origin:this.startPoint, x:20, y:20}));
 	}
 	
 	_class.prototype.addPoint = function(coor) {
-		var handle = new CableHandle(coor, this, "setPoint", this.points.length);
-		this.points.push({coor:coor, handle:handle});
+		//coor.handle = new CableHandle(coor, this, "setPoint", this.points.length);
+		this.points.push(coor);
 	}
 	
 	_class.prototype.setStartPoint = function(item) {
-		setPoint(this.startPoint.coor, item);
+		setPoint(this.startPoint, item);
 	}
 	_class.prototype.setEndPoint = function(item) {
-		setPoint(this.endPoint.coor, item);
+		setPoint(this.endPoint, item);
 	}
 	_class.prototype.setPoint = function(item, no) {
-		var coor = this.points[no].coor;
+		var coor = this.points[no];
 		coor.xy(item.x(), item.y());
 	}
 	function setPoint(coor, item) {
@@ -149,22 +158,22 @@ function Cable(){this.initialize.apply(this, arguments)};
 	function getLines(self) {
 		var lines = [];
 		with (self) {
-			var coor1 = startPoint.coor;
-			var coor2 = points.length>0 ? points[0].coor : endPoint.coor;
+			var coor1 = startPoint;
+			var coor2 = points.length>0 ? points[0] : endPoint;
 			var xy = toEdge(coor1, coor2);
 			var firstXy = xy;
 			var beforeXy = xy;
 
 			for (var i=0; i<points.length; i++) {
-				var coor = points[i].coor;
+				var coor = points[i];
 				xy = {x:coor.x(), y:coor.y()};
 				lines.push({x1:beforeXy.x, y1:beforeXy.y, x2:xy.x, y2:xy.y});
 				beforeXy = xy;
 			}
 			
 			var i = points.length-1;
-			coor1 = points.length>0 ? points[i].coor : startPoint.coor;
-			coor2 = endPoint.coor;
+			coor1 = points.length>0 ? points[i] : startPoint;
+			coor2 = endPoint;
 			xy = toEdge(coor2, coor1);
 			lines.push({x1:beforeXy.x, y1:beforeXy.y, x2:xy.x, y2:xy.y});
 		}
@@ -190,8 +199,23 @@ function Cable(){this.initialize.apply(this, arguments)};
 		return points[0];
 	}
 	
-	
+	function makeHandle(coor, self, method, no) {
+		if (coor.handle) return;
+		var color = Handle.COLOR_VISIT;
+		if (method == "setStartPoint") color = Handle.COLOR_START;
+		if (method == "setEndPoint") color = Handle.COLOR_END;
+		coor.handle = new CableHandle(coor, self, method, no);
+		coor.handle.color = color;
+	}
+	_class.prototype.makeHandle = function(coor) {
+		makeHandle(this.startPoint,this,"setStartPoint");
+		makeHandle(this.endPoint,this,"setEndPoint");
+		for (var i=0; i<this.points.length; i++) {
+			makeHandle(this.points[i],this,"setPoint", i);
+		}
+	}	
 	_class.prototype.drawHandle = function(dc) {
+		this.makeHandle();
 		this.startPoint.handle.draw(dc);
 		this.endPoint.handle.draw(dc);
 		for (var i=0; i<this.points.length; i++) {
@@ -218,8 +242,8 @@ function Cable(){this.initialize.apply(this, arguments)};
 		var cmd = $menuItem.attr("data-value");
 		if (cmd == "addPoint") {
 			var coor = new Coor({
-				origin:this.startPoint.coor, 
-				origin2:this.endPoint.coor,
+				origin:this.startPoint, 
+				origin2:this.endPoint,
 			});
 			coor.xy(xx,yy);
 			this.addPoint(coor);

@@ -2,7 +2,14 @@
 
 function Class(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
-	_class.prototype = new _super();
+	Lang.extend(_class, _super);
+	_class.attributes = Lang.copy(_super.attributes, {
+		ptype      : "",
+		name       : "",
+		attrs      : "",
+		methods    : "",
+		isAutoSize : true
+	});
 
 	/**
 	 * コンストラクタ。
@@ -12,18 +19,9 @@ function Class(){this.initialize.apply(this, arguments)};
 		
 		this.isAutoSize = true;
 		this.ptype = "protoEg-type";
-		this.name = "XxxxEgClass\nEgEG";
+		this.name = "XxxxEgClass\nEgEGnEgEG";
 		this.attrs = "";
 		this.methods = "";
-	}
-	_class.prototype.toJson = function() {
-		var json = _super.prototype.initialize.toJson(this);
-		json.ptype = this.ptype;
-		json.name = this.name;
-		json.attrs = this.attrs;
-		json.methods = this.methods;
-		json.isAutoSize = this.isAutoSize;
-		return json;
 	}
 
 	_class.prototype.setW = function(v) {

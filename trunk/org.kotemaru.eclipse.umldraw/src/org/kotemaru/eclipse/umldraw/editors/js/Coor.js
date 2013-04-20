@@ -1,9 +1,16 @@
 
-
 function Coor(){this.initialize.apply(this, arguments)};
 (function(_class){
-	var idCount = 0;
-	var jsonCache = {}; // for data save.
+	Lang.define(_class);
+	_class.prototype.isCoor = true;
+	_class.attributes = {
+		_origin : new Point(),
+		_origin2: new Point(),
+		_x      : 0,
+		_y      : 0,
+	};
+	
+	var idCount = 1;
 	
 	_class.prototype.initialize = function(opts) {
 		if (opts == null) opts = {};
@@ -11,34 +18,9 @@ function Coor(){this.initialize.apply(this, arguments)};
 		this._origin2 = opts.origin2; // Item
 		this._x = opts.x;
 		this._y = opts.y;
-		this.id = idCount++;
+		this.internalId = idCount++;
 	}
 
-	_class.clearJsonCache = function() {
-		jsonCache = {};
-	}
-	_class.getJsonCache = function() {
-		return jsonCache;
-	}
-	
-	_class.prototype.toJsonRef = function() {
-		if (jsonCache[this.id] == null) {
-			jsonCache[this.id] = this.toJson();
-		}
-		return {coorRef: this.id};
-	}
-	
-	_class.prototype.toJson = function() {
-		if (jsonCache[this.id]) return jsonCache[this.id];
-		
-		var json = {};
-		json._origin = Util.toJsonRef(this._origin2);
-		json._origin2 = Util.toJsonRef(this._origin2);
-		json._x = this._x;
-		json._y = this._y;
-		return json;
-	}
-	
 	_class.prototype.origin = function(v) {
 		if (v) {
 			this._origin = v;
@@ -128,17 +110,3 @@ function Coor(){this.initialize.apply(this, arguments)};
 	
 })(Coor);
 
-function Coor2(){this.initialize.apply(this, arguments)};
-(function(_class, _super){
-	_class.prototype.initialize = function(opts) {
-		_super.prototype.initialize.apply(this, arguments);
-	}
-	
-	_class.prototype.x = function(v) {
-		return this._origin.x() + this._origin.w();
-	}
-	_class.prototype.y = function(v) {
-		return this._origin.y() + this._origin.h();
-	}
-	
-})(Coor2,Coor);
