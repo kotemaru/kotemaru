@@ -1,0 +1,60 @@
+Subject: HTML5のCanvasで点線が書けないなんて...
+Content-type: markdown/text
+Tags: html5,javascript
+Date: 2013/04/14
+Public: yes 
+
+ブラウザ上でツールを作っていて気が付いたのだが HTML5 の Canvas
+は点線、破線が書けない。
+
+そんな馬鹿なと思ったが、仕様上持っておらずほんとに書けない。
+
+Webでググるといかにも力技な解決策を教えて貰えます。
+
+- http://stackoverflow.com/questions/4576724/dotted-stroke-in-canvasより。
+<pre>
+var CP = window.CanvasRenderingContext2D && CanvasRenderingContext2D.prototype;
+if (CP.lineTo) {
+    CP.dashedLine = function(x, y, x2, y2, da) {
+        if (!da) da = [10,5];
+        this.save();
+        var dx = (x2-x), dy = (y2-y);
+        var len = Math.sqrt(dx*dx + dy*dy);
+        var rot = Math.atan2(dy, dx);
+        this.translate(x, y);
+        this.moveTo(0, 0);
+        this.rotate(rot);       
+        var dc = da.length;
+        var di = 0, draw = true;
+        x = 0;
+        while (len > x) {
+            x += da[di++ % dc];
+            if (x > len) x = len;
+            draw ? this.lineTo(x, 0): this.moveTo(x, 0);
+            draw = !draw;
+        }       
+        this.restore();
+    }
+}
+</pre>
+
+
+作成中のツールが動的に Canvas を使うものだったのでやりたく無いなー
+と思ってもう少し調べたら同じページにブラウザ毎の対処方がのってました。
+
+<pre>
+var c=document.getElementById("myCanvas");
+var ctx=c.getContext("2d");
+
+if ( ctx.setLineDash !== undefined )   ctx.setLineDash([5,10]);
+if ( ctx.mozDash !== undefined )       ctx.mozDash = [5,10];
+</pre>
+
+Chrome は setLineDash()、Firefox は mozDash を使えば行けるようです。
+
+IE は...  サポートする気無いからいいや。
+
+点線の書けない 2D 系のAPIなんで初めてみました。早く仕様に取り込んで欲しいものです。
+
+
+
