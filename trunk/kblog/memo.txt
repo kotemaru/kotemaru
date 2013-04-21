@@ -1,4 +1,6 @@
 
-- javaのCalanderのtimeリセット方法
+x javaのCalanderのtimeリセット方法
 - 部ログのスパム対策。
 - String[] の動的生成。
+x Canvasで点線が掛けない。
+- iOSのWebViewの制限ire
