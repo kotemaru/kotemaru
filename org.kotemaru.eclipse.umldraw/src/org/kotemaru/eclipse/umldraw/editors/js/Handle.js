@@ -27,8 +27,8 @@ function Handle(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.draw = function(dc) {
 		with (this) {
-			var x1 = coor.x();
-			var y1 = coor.y();
+			var x1 = Math.ceil(coor.x());
+			var y1 = Math.ceil(coor.y());
 			dc.globalAlpha = 0.5;
 			dc.fillStyle = color;
 			dc.fillRect(x1, y1, SIZE, SIZE);

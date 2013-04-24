@@ -90,7 +90,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	//--------------------------------------------------------------------
 	// Canvas ハンドラ設定。
 	function onMouseDown(ev) {
-		var action = Commands.getAction();
+		var action = Actions.getAction();
 		if(event.which == 1) {
 			action.onMouseDown(ev);
 		} else if(event.which == 3) {
@@ -98,19 +98,19 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		}
 	}
 	function onMouseMove(ev) {
-		var action = Commands.getAction();
+		var action = Actions.getAction();
 		if(event.which == 1) {
 			action.onMouseMove(ev);
 		}
 	}
 	function onMouseUp(ev) {
-		var action = Commands.getAction();
+		var action = Actions.getAction();
 		if(event.which == 1) {
 			action.onMouseUp(ev);
 		}
 	}
 	function onDblClick(ev) {
-		var action = Commands.getAction();
+		var action = Actions.getAction();
 		if(event.which == 1) {
 			action.onDblClick(ev);
 		}

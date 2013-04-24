@@ -4,7 +4,6 @@
 		<nobr>Line Properties</nobr>
 	</h3>
 	<div>
-		<br/>
 		<div align="center">
 			<input class="LineComment" data-path="startText" value="" type="text"/>
 			<input class="LineComment" data-path="centerText" value="" type="text"/>
@@ -55,9 +54,19 @@
 		</div>
 		<br/>
 		<div align="center">
-			<button onclick="Dialog.save()">Save</button>
-			<button onclick="Dialog.close()">Cancel</button>
+			<span class="PulldownButton"  data-path="lineRoute" data-velue="N">
+				<img src="img/line-route-N.png" />
+				<div class="PulldownMenu" id="popupMenu-line-route">
+					<div class="MenuItem" data-value="N"><img src="img/line-route-N.png" /></div>
+					<div class="MenuItem" data-value="S"><img src="img/line-route-S.png" /></div>
+					<div class="MenuItem" data-value="L"><img src="img/line-route-L.png" /></div>
+				</div>
+			</span>
 		</div>
-		<br/>
+		
+		<div class="DialogButtons">
+			<button onclick="Dialog.close()">Cancel</button>
+			<button onclick="Dialog.save()">OK</button>
+		</div>
 	</div>
 </div>

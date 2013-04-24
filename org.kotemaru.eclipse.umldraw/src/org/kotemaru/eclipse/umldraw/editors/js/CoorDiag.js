@@ -9,9 +9,11 @@ function CoorDiag(){this.initialize.apply(this, arguments)};
 	}
 
 	_class.prototype.x = function(v) {
+		if (this.origin().w === undefined) return this.origin().x(); // TODO:
 		return this.origin().x() + this.origin().w();
 	}
 	_class.prototype.y = function(v) {
+		if (this.origin().h === undefined) return this.origin().y(); // TODO:
 		return this.origin().y() + this.origin().h();
 	}
 	

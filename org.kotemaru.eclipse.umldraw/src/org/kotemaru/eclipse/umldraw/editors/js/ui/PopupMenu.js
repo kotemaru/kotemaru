@@ -51,14 +51,18 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 
 	$(function(){
 		$(".PulldownButton").live("click", function(){
-			PopupMenu.open($(this).find(".PulldownMenu"), {element: this});
+			var optsAttr = $(this).attr("data-opts");
+			var opts = optsAttr ? eval("("+optsAttr+")") : {};
+			opts.element = this;
+			PopupMenu.open($(this).find(".PulldownMenu"), opts);
 			return false;
 		});
 		$(".PulldownMenu > .MenuItem").live("click", function(){
 			var $elem = $(PopupMenu.options.element);
 			var $sel = $(this);
+			var dataImg = $elem.attr("data-img");
 			
-			$img = $elem.find(">img");
+			var $img = dataImg ? $(dataImg) : $elem.find(">img");
 			$img.attr("src", $sel.find(">img").attr("src"));
 			$elem.attr("data-value", $sel.attr("data-value"));
 			

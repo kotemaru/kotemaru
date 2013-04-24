@@ -98,18 +98,59 @@ function Drawer(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.drawLines = function(lines, style) {
 		var dc = this.dc;
+		dc.fillStyle = "transparent";
 		dc.strokeStyle = "black";
 		setLineStyle(dc, style);
 		dc.beginPath();
 		
-		dc.moveTo(lines[0].x1, lines[0].y1);
+		//dc.moveTo(lines[0].x1, lines[0].y1);
 		for (var i=0; i<lines.length; i++) {
+			dc.moveTo(lines[i].x1, lines[i].y1);
 			dc.lineTo(lines[i].x2, lines[i].y2);
 		}
-	
+
 		dc.stroke();
 		dc.closePath();
 	}
+	_class.prototype.drawLinesS = function(lines, style) {
+		var dc = this.dc;
+		dc.fillStyle = "transparent";
+
+		dc.lineWidth = 0.1;
+		dc.strokeStyle = "#00fff0";
+		dc.beginPath();
+		
+		var centers = [];
+		for (var i=0; i<lines.length; i++) {
+			centers.push(Util.getCenter(lines[i]));
+			// Guid line
+			dc.moveTo(lines[i].x1, lines[i].y1);
+			dc.lineTo(lines[i].x2, lines[i].y2);
+		}
+		dc.stroke();
+		
+		
+		setLineStyle(dc, style);
+		dc.strokeStyle = "black";
+		dc.beginPath();
+
+		dc.moveTo(lines[0].x1, lines[0].y1);
+		dc.lineTo(centers[0].x, centers[0].y);
+		for (var i=0; i<lines.length-1; i++) {
+			dc.moveTo(centers[i].x, centers[i].y);
+			dc.quadraticCurveTo(lines[i].x2, lines[i].y2, 
+					centers[i+1].x, centers[i+1].y);
+		}
+		var i = lines.length-1;
+		dc.moveTo(centers[i].x, centers[i].y);
+		dc.lineTo(lines[i].x2, lines[i].y2);
+
+		dc.stroke();
+		dc.closePath();
+	}
+
+	
+	
 	_class.prototype.drawLine = function(x1,y1,x2,y2, style) {
 		var dc = this.dc;
 		dc.strokeStyle = "black";

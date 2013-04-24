@@ -48,7 +48,7 @@ function Action(){this.initialize.apply(this, arguments)};
 	}
 	
 	//-----------------------------------------------------------
-	_class.prototype.commandSelect = function() {
+	_class.prototype.selectMe = function() {
 		if (this.targetClass) {
 			Canvas.cursor("new");
 		} else {

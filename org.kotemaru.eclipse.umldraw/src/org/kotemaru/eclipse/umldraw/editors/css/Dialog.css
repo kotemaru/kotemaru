@@ -18,8 +18,9 @@
 .Dialog {
 	position: absolute;
 	//width: 900px;
+	height: auto;
 	border-radius: 10px;
-	overflow:hidden;
+	//overflow:hidden;
 	box-shadow: 4px 4px 8px;
 	font-size: 14px;
 }
@@ -27,7 +28,7 @@
 .Dialog > div{
 	background: white;
 	border-radius:  0px 0px 8px 8px;
-	height: 200px;
+	height: auto;
 	width: 400px;
 	overflow-y: hidden;
 }
@@ -56,7 +57,10 @@
 	vertical-align: middle;
 	line-height: 24px;
 }
-
+.Dialog input {
+	border: 1px solid lightgray;
+	padding: 1px 4px;
+}
 .CloseImg {
 	float: right;
 	width: 10px;
@@ -64,6 +68,14 @@
 	padding: 4px;
 	margin: 4px;
 	cursor: pointer;
+}
+
+div.DialogButtons {
+	text-align: right;
+	margin: 8px;
+}
+div.DialogButtons button {
+	width: 70px;
 }
 
 #configDialog > div {
@@ -76,7 +88,7 @@
 
 #dialogClass > div {
 	width: 350px;
-	height: 400px;
+	height: auto;
 }
 .Dialog table {
 	width: 90%;

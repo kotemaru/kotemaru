@@ -25,12 +25,13 @@
 <script src="js/items/Class.js"></script>
 <script src="js/items/Cable.js"></script>
 <script src="js/items/CableHandle.js"></script>
+<script src="js/items/CableAction.js"></script>
 
+<script src="js/RemoveAction.js"></script>
 <script src="js/Canvas.js"></script>
 <script src="js/Font.js"></script>
 <script src="js/Util.js"></script>
-<script src="js/Commands.js"></script>
-<script src="js/DrawUtil.js"></script>
+<script src="js/Actions.js"></script>
 <script src="js/Drawer.js"></script>
 <script src="js/DrawerSVG.js"></script>
 <script src="js/store/Referer.js"></script>
@@ -75,9 +76,6 @@ $(function(){
 	
 });
 
-
-
-
 </script>
 
 </head>
@@ -89,19 +87,37 @@ $(function(){
 	</div>
 
 	<div id="borderLayoutLeft" class="BorderLayoutFrame">
-		<div id="commands" class="borderLayoutScrollInner">
-			<span class="PulldownButton" >
-				<img src="img/association/0.png" /><img src="img/arrowD.png"/>
-				<div class="PulldownMenu" id="popupMenu-association">
-					<div class="MenuItem" data-value="0"><img src="img/association/0.png" /></div>
-					<div class="MenuItem" data-value="1"><img src="img/association/1.png" /></div>
-					<div class="MenuItem" data-value="2"><img src="img/association/2.png" /></div>
-					<div class="MenuItem" data-value="3"><img src="img/association/3.png" /></div>
-					<div class="MenuItem" data-value="4"><img src="img/association/4.png" /></div>
-					<div class="MenuItem" data-value="5"><img src="img/association/5.png" /></div>
-					<div class="MenuItem" data-value="6"><img src="img/association/6.png" /></div>
-				</div>
+		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">System</div>
+		<div class="ActionGroup" id="systemActionGroup">
+			<span class="Action Small" data-value="cursor"><img src="img/cursor.png"/></span>
+			<span class="Action Small" data-value="config"><img src="img/config.png"/></span>
+			<span class="Action Small" data-value="remove"><img src="img/led/cross.png"/></span>
+		</div>
+	
+		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Class</div>
+		<div class="ActionGroup" id="classActionGroup">
+			<span class="Action" data-value="Class"><img src="img/Class.png"/></span>
+			<span>
+				<span class="Action" data-value="Cable"><img id="cableImg" src="img/association/0.png"/></span
+				><span class="PulldownButton" id="association" data-value="0" 
+							data-img="#cableImg" data-opts="{corrent:{x:-40, y:0}}"
+					><img src="img/pulldown-mark.png" />
+					<div class="PulldownMenu" id="popupMenu-association">
+						<div class="MenuItem" data-value="0"><img src="img/association/0.png" /></div>
+						<div class="MenuItem" data-value="1"><img src="img/association/1.png" /></div>
+						<div class="MenuItem" data-value="2"><img src="img/association/2.png" /></div>
+						<div class="MenuItem" data-value="3"><img src="img/association/3.png" /></div>
+						<div class="MenuItem" data-value="4"><img src="img/association/4.png" /></div>
+						<div class="MenuItem" data-value="5"><img src="img/association/5.png" /></div>
+						<div class="MenuItem" data-value="6"><img src="img/association/6.png" /></div>
+					</div>
+				</span>
 			</span>
+		</div>
+		
+		
+		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Other</div>
+		<div id="commands" class="borderLayoutScrollInner">
 		</div>
 	</div>
 <!--

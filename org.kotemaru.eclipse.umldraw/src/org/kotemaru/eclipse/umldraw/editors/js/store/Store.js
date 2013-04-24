@@ -41,6 +41,10 @@ function Store(){this.initialize.apply(this, arguments)};
 			return null;
 		} else if (obj.isCoor) {
 			return {coorRef: toJsonWrap(coorRef,obj).id};
+		} else if (obj.isRemove) {
+			var xy = {x:obj.x(), y:obj.y()};
+			var coor = new Coor(xy);
+			return {coorRef: toJsonWrap(coorRef,coor).id};
 		} else {
 			return {itemRef: toJsonWrap(itemRef,obj).id};
 		}
