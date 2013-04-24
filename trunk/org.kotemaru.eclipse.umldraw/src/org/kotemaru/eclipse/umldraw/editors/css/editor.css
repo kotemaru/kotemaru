@@ -5,26 +5,9 @@ div,span {
 	-webkit-user-select: none; /* SafariAChrome‚È‚Ç */
 	-ms-user-select: none; /* IE10‚©‚ç‚ç‚µ‚¢ */
 }
-#commands {
-	text-align: center;
-	background: #f0f0e0;
-}
 
-#commands > span {
-	display: block;
-	width: 36px;
-	height: 20px;
-	padding: 0px;
-	margin: 2px;
-	border: 1px outset #f0f0f0;
-	background: #f0f0f0;
-}
-#commands > span.Selected {
-	border: 1px inset #f0f0f0;
-}
-
-#commands > span > img {
-	padding: 2px;
+#canvas {
+	background: #f8f8f8;	
 }
 
 #menus {
@@ -53,6 +36,53 @@ div,span {
 	width: 100px;
 	display: none;
 }
+#borderLayoutLeft {
+	background: #f0f0e0;
+}
+.ActionGroup {
+	background: #f0f0e0;
+	clear:both;
+}
+.ActionGroup > span{
+	float: left;
+}
+
+.ActionGroup .Action {
+	display: inline-block;
+	width: 36px;
+	height: 20px;
+	padding: 0px;
+	margin: 2px;
+	border: 1px outset #f0f0f0;
+	background: #f0f0f0;
+	cursor: pointer;
+}
+
+.ActionGroup .Small {
+	width: 20px;
+	height: 20px;
+}
+.ActionGroup .Action>img {
+	padding: 2px;
+}
+img#cableImg {
+	padding-top: 6px;
+}
+
+.ActionGroup .Selected {
+	border: 1px inset #f0f0f0;
+}
 
 
+.ActionGroupHeader {
+	font-size: 12px;
+	font-weight: bold;
+	height: 12px;
+	background: #f0d080;
+	clear:both;
+}
+.ActionGroupHeader > img.OpenClose {
+	float: right;
+	padding: 2px;
+}
 

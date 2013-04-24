@@ -1,0 +1,13 @@
+-template
+-attributes
+-group
+-copy&paste
+-delete trancate
+--CoorDiag再考
+
+-L cable
+-S cable
+-side connect
+
+- config
+-- 用紙サイズとか

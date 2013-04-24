@@ -50,11 +50,23 @@ function Util(){this.initialize.apply(this, arguments)};
 		}
 		return null;
 	}	
+	_class.getCenter = function(line) {
+		var x1 = line.x1;
+		var y1 = line.y1;
+		var x2 = line.x2;
+		var y2 = line.y2;
+		return {x:(x1+(x2-x1)/2), y:(y1+(y2-y1)/2)};
+	}
 	
 	_class.grid = function(n) {
 		var m = n%4;
 		if (m == 0) return n;
 		return n + (4-m);
+	}
+	
+	_class.update = function(src, dst) {
+		for (var k in dst) src[k] = dst[k];
+		return src;
 	}
 	
 })(Util);

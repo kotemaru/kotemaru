@@ -7,13 +7,15 @@
 	box-shadow: 2px 2px 4px;
 	//overflow-y: scroll;
 	background: white;
-	width: 150px;
+	width: auto;
 	height: auto;
 	padding: 2px;
 	
 	font-size: 14px;
 	font-weight: 700;
 	line-height: 120%;
+	
+	z-index: 99999999;
 }
 .PopupMenu {
 	background: #f0f0f0;
