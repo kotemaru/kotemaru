@@ -67,6 +67,18 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	_class.cursor = function(type) {
 		canvas.style.cursor = "url(img/cursor_"+type+".png),default";
 	}
+	
+	var copyBuff;
+	_class.doMenuItem = function($menuItem,xx,yy) {
+		var cmd = $menuItem.attr("data-value");
+		if (cmd == "copy") {
+			copyBuff = Store.copy(selectGroup.getItems());
+		} else if (cmd == "paste") {
+			Store.paste(copyBuff, xx,yy);
+		} else if (cmd == "properties") {
+			Dialog.open(this.getDialog(), this);
+		}
+	}
 
 	//--------------------------------------------------------------------
 	// Canvas ハンドラ設定。

@@ -7,9 +7,10 @@ function Store(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.initialize = function() {}
 
-	_class.save = function(items) {
+	_class.save = function(itemsObj) {
 		coorRef.reset();
 		itemRef.reset();
+		var items = itemsObj.getItems(); //Note:速度優先。 
 		for (var i in items) toJsonRef(items[i]);
 		var data = {
 			coors: coorRef.getJsons(),
@@ -34,7 +35,32 @@ function Store(){this.initialize.apply(this, arguments)};
 		Canvas.refresh();
 	}
 
+	_class.copy = function(itemsObj) {
+		return _class.save(itemsObj);
+	}
 	
+	_class.paste = function(data, ex,ey) {
+		coorRef.reset();
+		itemRef.reset();
+		coorRef.preLoad(data.coors);
+		itemRef.preLoad(data.items);
+		coorRef.load(fromJson, data.coors);
+		itemRef.load(fromJson, data.items);
+
+		var selectGroup;
+		for (var i in itemRef.objs) {
+			var item = itemRef.objs[i];
+			if (item instanceof SelectGroup) selectGroup = item;
+			Canvas.addItem(item);
+		}
+		if (selectGroup) {
+			selectGroup.xy(ex,ey);
+			selectGroup.clear();
+			Canvas.delItem(selectGroup);
+		}
+	}
+	
+
 	
 	function toJsonRef(obj) {
 		if (obj == null) {
@@ -45,6 +71,8 @@ function Store(){this.initialize.apply(this, arguments)};
 			var xy = {x:obj.x(), y:obj.y()};
 			var coor = new Coor(xy);
 			return {coorRef: toJsonWrap(coorRef,coor).id};
+		} else if (obj.isGroup) {
+			return {groupRef: toJsonWrap(itemRef,obj).id};
 		} else {
 			return {itemRef: toJsonWrap(itemRef,obj).id};
 		}
@@ -69,6 +97,8 @@ function Store(){this.initialize.apply(this, arguments)};
 				json[k] = obj[k];
 			} else if (attrs[k] instanceof Point) {
 				json[k] = toJsonRef(obj[k]);
+			} else if (attrs[k].isGroup) {
+				json[k] = toJsonRef(obj[k]);
 			} else if (attrs[k] instanceof Array) {
 				var ary = [];
 				for (var i=0; i<obj[k].length; i++) {
@@ -90,6 +120,8 @@ function Store(){this.initialize.apply(this, arguments)};
 			return null;
 		} else if (json.coorRef) {
 			return coorRef.getObj(json.coorRef);
+		} else if (json.groupRef) {
+			return itemRef.getObj(json.groupRef);
 		} else {
 			return itemRef.getObj(json.itemRef);
 		}
@@ -104,6 +136,10 @@ function Store(){this.initialize.apply(this, arguments)};
 				obj[k] = json[k];
 			} else if (attrs[k] instanceof Point) {
 				obj[k] = fromJsonRef(json[k]);
+			} else if (attrs[k].isGroup) {
+				var group = fromJsonRef(json[k]);
+				obj[k] = group;
+				if (group) group.getItems().addItem(obj);
 			} else if (attrs[k] instanceof Array) {
 				var ary = [];
 				for (var i=0; i<json[k].length; i++) {

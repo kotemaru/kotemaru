@@ -3,6 +3,7 @@
 function Group(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	Lang.extend(_class, _super);
+	_class.prototype.isGroup = true;
 
 	/**
 	 * コンストラクタ。
@@ -41,7 +42,7 @@ function Group(){this.initialize.apply(this, arguments)};
 	
 
 	_class.prototype.draw = function(dr) {
-		items.draw(dr);
+		this.items.draw(dr);
 		return this;
 	}
 	
@@ -53,7 +54,6 @@ function Group(){this.initialize.apply(this, arguments)};
 	}
 
 })(Group, Rectangle);
-
 
 
 //EOF

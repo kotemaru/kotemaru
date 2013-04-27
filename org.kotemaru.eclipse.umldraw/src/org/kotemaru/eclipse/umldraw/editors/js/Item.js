@@ -5,7 +5,8 @@ function Item(){this.initialize.apply(this, arguments)};
 	_class.prototype = new _super();
 	_class.prototype.isDrawable=true;
 	_class.attributes = {
-		coor : new Point()
+		coor : new Point(),
+		group : {isGroup: true}
 	};
 
 	
