@@ -43,6 +43,8 @@ function Action(){this.initialize.apply(this, arguments)};
 		}
 		if (elem && elem.isDraggable) {
 			_class.dragStart(elem, ex,ey);
+		} else if (elem == null) {
+			AreaSelect.dragStart(ex,ey);
 		}
 		Canvas.refresh();
 	}
@@ -67,11 +69,18 @@ function Action(){this.initialize.apply(this, arguments)};
 	}
 
 	_class.prototype.onMouseMove = function(ev) {
-		_class.dragMove(ev.offsetX, ev.offsetY);
+		if (dragItem) {
+			_class.dragMove(ev.offsetX, ev.offsetY);
+		} else {
+			AreaSelect.dragMove(ev.offsetX, ev.offsetY)
+		}
 	}
 	_class.prototype.onMouseUp  = function(ev) {
-		//Canvas.select();
-		_class.dragEnd(ev.offsetX, ev.offsetY);
+		if (dragItem) {
+			_class.dragEnd(ev.offsetX, ev.offsetY);
+		} else {
+			AreaSelect.dragEnd(ev.offsetX, ev.offsetY)
+		}
 	}
 	
 	_class.prototype.openMenu = function(ev) {

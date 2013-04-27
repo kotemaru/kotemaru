@@ -23,6 +23,7 @@ function Elem(){this.initialize.apply(this, arguments)};
 		return this.coor.xy(xx,yy);
 	}
 	_class.prototype.x = function(v) {
+		if (v) console.log("setx",this.internalId,v);
 		return this.coor.x(v);
 	}
 	_class.prototype.y = function(v) {
@@ -51,6 +52,13 @@ function Elem(){this.initialize.apply(this, arguments)};
 			var x2 = x1 + w();
 			var y2 = y1 + h();
 			return tx1<=x1 && x2<=tx2 && ty1<=y1 && y2<=ty2;
+		}
+	}
+	_class.prototype.getOutBounds = function() {
+		with (this) {
+			var x1 = coor.x();
+			var y1 = coor.y();
+			return {x1:x1, y1:y1, x2:x1+w(), y2:y1+h()};
 		}
 	}
 

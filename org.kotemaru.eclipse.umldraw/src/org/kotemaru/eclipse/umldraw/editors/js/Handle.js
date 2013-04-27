@@ -5,10 +5,6 @@ function Handle(){this.initialize.apply(this, arguments)};
 	_class.prototype = new _super();
 	_class.prototype.isDraggable=true;
 
-	_class.COLOR_START = "#ff8888";
-	_class.COLOR_VISIT = "#88ff88";
-	_class.COLOR_END   = "#88aaff";
-
 	var SIZE = 8;
 	
 	/**
@@ -16,7 +12,7 @@ function Handle(){this.initialize.apply(this, arguments)};
 	 */
 	_class.prototype.initialize = function(origin) {
 		_super.prototype.initialize.apply(this, [{origin:origin, x:-(SIZE/2), y:-(SIZE/2)}]);
-		this.color = _class.COLOR_START;
+		this.color = Color.HANDLE_START;
 	}
 	_class.prototype.w = function() {
 		return SIZE;

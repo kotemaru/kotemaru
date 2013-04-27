@@ -35,6 +35,7 @@ function Class(){this.initialize.apply(this, arguments)};
 	
 
 	_class.prototype.draw = function(dr) {
+		console.log("draw",this.internalId,this.coor.origin(),this.x(),this.y());
 		with (this) {
 			var size1 = dr.textSize(Font.S, ptype);
 			var size2 = dr.textSize(Font.M, name);
@@ -78,13 +79,6 @@ function Class(){this.initialize.apply(this, arguments)};
 	_class.prototype.drawHandle = function(dc) {
 		this.handle.begin.draw(dc);
 		this.handle.end.draw(dc);
-	}
-	_class.prototype.getHandle = function(xx,yy) {
-		with (this.handle) {
-			if (begin.onPoint(xx,yy)) return begin;
-			if (end.onPoint(xx,yy)) return end;
-		}
-		return null;
 	}
 	
 	_class.prototype.getDialog = function() {
