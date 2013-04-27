@@ -39,15 +39,15 @@ function Cable(){this.initialize.apply(this, arguments)};
 		this.endPoint = new Coor();
 		//this.endPoint.handle = 
 		//	new CableHandle(this.endPoint, this, "setEndPoint")
-		//this.startPoint.handle.color = Handle.COLOR_START;
-		//this.endPoint.handle.color = Handle.COLOR_END;
+		//this.startPoint.handle.color = Color.HANDLE_START;
+		//this.endPoint.handle.color = Color.HANDLE_END;
 
 		this.setStartPoint(new Coor(coorBase));
 		this.setEndPoint(new Coor({origin:this.startPoint, x:20, y:20}));
 	}
 	
 	_class.prototype.addPoint = function(coor) {
-		var idx = this.onPointImdex(coor.x(),coor.y());
+		var idx = this.onPointIndex(coor.x(),coor.y());
 		if (idx >= 0) {
 			this.points.splice(idx,0,coor);
 			// clear handle.
@@ -89,10 +89,16 @@ function Cable(){this.initialize.apply(this, arguments)};
 		}
 	}
 	_class.prototype.onPoint = function(tx,ty) {
-		return this.onPointImdex(tx,ty)>=0;
+		return this.onPointIndex(tx,ty)>=0;
 	}
-
-	_class.prototype.onPointImdex = function(tx,ty) {
+	_class.prototype.inRect = function(tx1,ty1,tx2,ty2) {
+		var b = Util.getOutBounds(getLines(this));
+		return tx1<=b.x1 && b.x2<=tx2 && ty1<=b.y1 && b.y2<=ty2;
+	}
+	_class.prototype.getOutBounds = function() {
+		return Util.getOutBounds(getLines(this));
+	}
+	_class.prototype.onPointIndex = function(tx,ty) {
 		var r = 3;
 		var rx1 = tx-r;
 		var ry1 = ty-r;
@@ -262,9 +268,9 @@ function Cable(){this.initialize.apply(this, arguments)};
 	
 	function makeHandle(coor, self, method, no) {
 		if (coor.handle) return;
-		var color = Handle.COLOR_VISIT;
-		if (method == "setStartPoint") color = Handle.COLOR_START;
-		if (method == "setEndPoint") color = Handle.COLOR_END;
+		var color = Color.HANDLE_VISIT;
+		if (method == "setStartPoint") color = Color.HANDLE_START;
+		if (method == "setEndPoint") color = Color.HANDLE_END;
 		coor.handle = new CableHandle(coor, self, method, no);
 		coor.handle.color = color;
 	}
@@ -308,6 +314,9 @@ function Cable(){this.initialize.apply(this, arguments)};
 			});
 			coor.xy(xx,yy);
 			this.addPoint(coor);
+		} else if (cmd == "fixPoint") {
+			// TODO:
+
 		} else if (cmd == "properties") {
 			Dialog.open(this.getDialog(), this);
 		}

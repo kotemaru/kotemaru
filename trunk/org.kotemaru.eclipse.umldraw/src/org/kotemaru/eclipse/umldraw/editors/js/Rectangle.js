@@ -24,11 +24,18 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 			end:   new Handle(this.coorDiag),
 		};
 		var self = this;
-		this.handle.end.color = Handle.COLOR_END;
+		this.handle.end.color = Color.HANDLE_END;
 		this.handle.end.dragMove = function(xx,yy) {
 			self.setW(xx-self.x());
 			self.setH(yy-self.y());
 		}
+	}
+	_class.prototype.getHandle = function(xx,yy) {
+		with (this.handle) {
+			if (begin.onPoint(xx,yy)) return begin;
+			if (end.onPoint(xx,yy)) return end;
+		}
+		return null;
 	}
 	
 	_class.prototype.w = function() {

@@ -117,7 +117,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.fillStyle = "transparent";
 
 		dc.lineWidth = 0.1;
-		dc.strokeStyle = "#00fff0";
+		dc.strokeStyle = Color.GUIDE;
 		dc.beginPath();
 		
 		var centers = [];

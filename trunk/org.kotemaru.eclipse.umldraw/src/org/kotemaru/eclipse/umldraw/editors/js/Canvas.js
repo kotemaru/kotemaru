@@ -4,34 +4,23 @@ function Canvas(){this.initialize.apply(this, arguments)};
 (function(_class){
 	var canvas;
 	var context2d;
-	var items = {};
-	var selectItems = [];
-	
+	var items;
+	var selectItem;
+	var selectGroup = new SelectGroup();
+
 	_class.init = function(elem) {
 		canvas = elem;
 		context2d = canvas.getContext('2d');
+		_class.reset();
 	}
 	_class.reset = function() {
-		items = {};
-		selectItems = [];
+		items = new Items();
+		selectItem = null;
+		selectGroup.clear();
 	}
-	_class.addItem = function(item) {
-		if (items[item.internalId]) {
-			throw "Confrict";
-		}
-		items[item.internalId] = item;
-	}
-	_class.delItem = function(item) {
-		delete items[item.internalId];
-	}
-	_class.getItem = function(ex,ey, ignore) {
-		for (var i in items) {
-			if (items[i] != ignore && items[i].onPoint(ex, ey)) {
-				return items[i];
-			}
-		}
-		return null;
-	}
+	_class.addItem = function(item) {return items.addItem(item);}
+	_class.delItem = function(item) {return items.delItem(item);}
+	_class.getItem = function(ex,ey, ignore) {return items.getItem(ex,ey, ignore);}
 	_class.getItems = function() {
 		return items;
 	}
@@ -39,48 +28,40 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	_class.refresh = function() {
 		context2d.clearRect(0,0,1000,1000);
 		var drawer = new Drawer(context2d);
-		for (var i in items) {
-			drawer.beginItem(items[i]);
-			items[i].draw(drawer);
-			drawer.endItem(items[i]);
-		}
-		for (var i=0; i<selectItems.length; i++) {
-			selectItems[i].drawHandle(context2d);
-		}
+		items.draw(drawer);
+		if (selectItem) selectItem.drawHandle(context2d);
+		AreaSelect.drawOutBounds(context2d);
 		drawer.close();
 	}
 	
 	_class.toSVG = function() {
 		var drawer = new DrawerSVG(context2d);
-		for (var i in items) {
-			drawer.beginItem(items[i]);
-			items[i].draw(drawer);
-			drawer.endItem(items[i]);
-		}
+		items.draw(drawer);
 		drawer.close();
 		return drawer.getSVG();
 	}
 	
 	_class.select = function(item) {
-		selectItems.length = 0;
-		_class.addSelect(item)
+		_class.clearSelect();
+		selectItem = item;
 	}
-	_class.addSelect = function(item) {
-		if (item) selectItems.push(item);
+	_class.clearSelect = function() {
+		if (selectItem && selectItem.clear) selectItem.clear();
+		selectItem = null;
 	}
-	_class.delSelect = function(item) {
-		var idx = selectItems.indexOf(item);
-		if (idx < 0) return;
-		selectItems.splice(idx,1);
+	//_class.addSelect = function(item) {selectGroup.addItem(item);}
+	//_class.delSelect = function(item) {selectGroup.getItems().delItem(item);}
+	_class.getSelectGroup = function() {
+		return selectGroup;
 	}
-	
 	
 	_class.getHandle = function(ex,ey) {
-		for (var i=selectItems.length-1; i>=0; i--) {
-			var handle = selectItems[i].getHandle(ex, ey);
-			if (handle) return handle;
+		var handle = null;
+		if (selectItem == selectGroup) {
+			if (selectGroup.onPoint(ex, ey)) return selectGroup
 		}
-		return null;
+		if (selectItem) handle = selectItem.getHandle(ex, ey);
+		return handle;
 	}
 	
 	_class.cursor = function(type) {

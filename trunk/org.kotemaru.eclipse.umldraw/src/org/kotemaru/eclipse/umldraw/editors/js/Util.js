@@ -69,6 +69,54 @@ function Util(){this.initialize.apply(this, arguments)};
 		return src;
 	}
 	
+	_class.formalRect = function(x1,y1,x2,y2) {
+		return {
+			x1: Math.min(x1,x2), y1: Math.min(y1,y2),
+			x2: Math.max(x1,x2), y2: Math.max(y1,y2)
+		};
+	}
+	_class.getOutBounds = function(items) {
+		var x1 = 1000000;
+		var y1 = 1000000;
+		var x2 = 0;
+		var y2 = 0;
+		
+		for (var i=0; i<items.length; i++) {
+			var bounds = items[i].getOutBounds ? items[i].getOutBounds() : items[i];
+			x1 = Math.min(x1, bounds.x1, bounds.x2);
+			y1 = Math.min(y1, bounds.y1, bounds.y2);
+			x2 = Math.max(x2, bounds.x1, bounds.x2);
+			y2 = Math.max(y2, bounds.y1, bounds.y2);
+		}
+		return {x1:x1, y1:y1, x2:x2, y2:y2, w:(x2-x1), h:(y2-y1)};
+	}
+	_class.getOutBoundsEach = function(items) {
+		var x1 = 1000000;
+		var y1 = 1000000;
+		var x2 = 0;
+		var y2 = 0;
+		
+		for (var i in items) {
+			var bounds = items[i].getOutBounds ? items[i].getOutBounds() : items[i];
+			x1 = Math.min(x1, bounds.x1, bounds.x2);
+			y1 = Math.min(y1, bounds.y1, bounds.y2);
+			x2 = Math.max(x2, bounds.x1, bounds.x2);
+			y2 = Math.max(y2, bounds.y1, bounds.y2);
+		}
+		return {x1:x1, y1:y1, x2:x2, y2:y2, w:(x2-x1), h:(y2-y1)};
+	}
+	
+	_class.drawOutBounds = function(dc, x1,y1,x2,y2) {
+		dc.fillStyle   = Color.GUIDE;
+		dc.strokeStyle = Color.GUIDE;
+		dc.globalAlpha = 0.05;
+		dc.fillRect(x1, y1, (x2-x1), (y2-y1));
+		dc.lineWidth = 1;
+		dc.globalAlpha = 1.0;
+		dc.strokeRect(x1-0.5, y1-0.5, (x2-x1)+1, (y2-y1)+1);
+	}
+	
+	
 })(Util);
 
 

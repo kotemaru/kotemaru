@@ -10,7 +10,7 @@ function CableHandle(){this.initialize.apply(this, arguments)};
 		_super.prototype.initialize.apply(this, arguments);
 		this.cable = cable;
 		this.setterName = setterName;
-		this.color = Handle.COLOR_VISIT;
+		this.color = Color.HANDLE_VISIT;
 		this.absCoor = new Coor();
 		this.pointNo = no;
 	}
