@@ -87,7 +87,11 @@ function Action(){this.initialize.apply(this, arguments)};
 		if ($menu) $menu.hide();
 		var item = Canvas.getItem(ev.offsetX, ev.offsetY);
 		if (item == null) {
-			// TODO: canvas menu.
+			//Canvas.select(null);
+			//Canvas.refresh();
+			var opts = {event:ev, item:Canvas};
+			PopupMenu.open("#canvasMenu", opts);
+			
 		} else if (item.getMenu) {
 			Canvas.select(item);
 			Canvas.refresh();

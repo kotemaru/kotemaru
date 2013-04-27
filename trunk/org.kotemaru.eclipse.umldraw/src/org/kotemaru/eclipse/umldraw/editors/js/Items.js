@@ -10,6 +10,9 @@ function Items(){this.initialize.apply(this, arguments)};
 		for (var i in this.children) size++;
 		return size;
 	}
+	_class.prototype.getItems = function() {
+		return this.children;
+	}
 	
 	_class.prototype.clear = function() {
 		this.children = {};
