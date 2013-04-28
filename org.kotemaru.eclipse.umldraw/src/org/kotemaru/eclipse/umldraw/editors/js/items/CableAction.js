@@ -45,6 +45,7 @@ function CableAction(){this.initialize.apply(this, arguments)};
 			this.cable.setEndPoint(new Coor(xy));
 		}
 		Canvas.refresh();
+		Actions.resetAction();
 	}
 	
 })(CableAction, Action);

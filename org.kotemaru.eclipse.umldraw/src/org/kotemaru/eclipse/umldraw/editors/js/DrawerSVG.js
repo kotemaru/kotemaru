@@ -46,19 +46,8 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 		this.add("</g>");
 	}
 	
-	_class.prototype.textSize = function(font, str) {
-		var dc = this.dc;
-		dc.font = font.name;
-		var m = dc.measureText(str);
-		if (str == null || str == "") return {w:m.width, h:0};
-
-		var h = font.height;
-		var lines = str.split("\n");
-		var width = 1;
-		for (var i=0; i<lines.length; i++) {
-			width = Math.max(width, dc.measureText(lines[i]).width);
-		}
-		return {w:width, h: h*lines.length};
+	_class.prototype.textSize = function(font, str, minLine) {
+		return Drawer.textSize(this.dc, font, str, minLine);
 	}
 	
 	_class.prototype.drawText = function(font, str, xx, yy) {
@@ -68,6 +57,7 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	 		this.add("<text x='"+xx+"' y='"+yy+"'"
 	 			+" font-size='"+font.size+"px'"
 	  			+" font-family='"+font.family+"'"
+	  			+" text-decoration'"+font.decoration+"'"
 	 			+" dominant-baseline='hanging' >"
 	 			+lines[i]+"</text>");
 			yy += font.height;

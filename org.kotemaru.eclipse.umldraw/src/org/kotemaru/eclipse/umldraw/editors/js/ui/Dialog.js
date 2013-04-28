@@ -48,6 +48,8 @@ function Dialog(){this.initialize.apply(this, arguments)};
 			return $input.attr("src");
 		} else if ($input.hasClass("PulldownButton")) {
 			return $input.attr("data-value");
+		} else if($input[0].type == "checkbox") {
+			return $input.attr("checked");
 		} else {
 			return $input.val();
 		}
@@ -59,6 +61,8 @@ function Dialog(){this.initialize.apply(this, arguments)};
 			$input.attr("data-value",val);
 			$img = $input.find(">img");
 			$img.attr("src", $input.find("div[data-value='"+val+"']>img").attr("src"));
+		} else if($input[0].type == "checkbox") {
+			$input.attr("checked", val);
 		} else {
 			$input.val(val);
 		}

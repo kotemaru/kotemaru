@@ -1,14 +1,23 @@
--template
--attributes
--group
---Save&store
--copy&paste
--delete trancate
---CoorDiag再考
 
--L cable
--S cable
--side connect
+-group再考
+--Save&store
+
+- Cable
+-- side connect
+-- fix point
+-- selector UI
+-- type?style
+
+- Class
+-- isAutoSize
+-- menu
+-- 
+
+- SelectGtoup
+-- menu
+
+- UI
+- img 整理
 
 - config
 -- 用紙サイズとか

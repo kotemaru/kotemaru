@@ -24,13 +24,15 @@
 <script src="js/CoorDiag.js"></script>
 <script src="js/Elem.js"></script>
 <script src="js/Handle.js"></script>
-<script src="js/Item.js"></script>
+<script src="js/items/Item.js"></script>
 <script src="js/Action.js"></script>
-<script src="js/Rectangle.js"></script>
+<script src="js/items/Rectangle.js"></script>
 <script src="js/Group.js"></script>
 <script src="js/SelectGroup.js"></script>
 
 <script src="js/items/Class.js"></script>
+<script src="js/items/Object.js"></script>
+<script src="js/items/Note.js"></script>
 <script src="js/items/Cable.js"></script>
 <script src="js/items/CableHandle.js"></script>
 <script src="js/items/CableAction.js"></script>
@@ -54,8 +56,12 @@ $(function(){
 	
 	include("#menus","js/items/CableMenu.html");
 	include("#menus","js/CanvasMenu.html");
+	include("#menus","js/items/ItemMenu.html");
+	include("#menus","js/SelectGroupMenu.html");
 	include("#dialogs","js/items/CableDialog.html");
 	include("#dialogs","js/items/ClassDialog.html");
+	include("#dialogs","js/items/ObjectDialog.html");
+	include("#dialogs","js/items/NoteDialog.html");
 	include("#dialogs","js/debug/DebugDialog.html");
 });
 </script>
@@ -71,14 +77,16 @@ $(function(){
 		Eclipse.fireEvent("change");
 	});
 	
-	var cls1 = new Class({x:10,y:10});
-	var cls2 = new Class({x:100,y:100});
+	var cls1 = new Class({x:10,y:10,name:"TestClass"});
+	var cls2 = new Class({x:100,y:100,name:"EgEg\nEgEg",attrs:"xxxxx"});
+	var obj1 = new Object({x:100,y:100,name:"EgEg\nEnnngEg",attrs:"xxxxx"});
 	var cable = new Cable();
 	cable.setStartPoint(cls1);
 	cable.setEndPoint(cls2);
 	
 	Canvas.addItem(cls1);
 	Canvas.addItem(cls2);
+	Canvas.addItem(obj1);
 	Canvas.addItem(cable);
 	Canvas.refresh();
 	
@@ -95,21 +103,27 @@ $(function(){
 	</div>
 
 	<div id="borderLayoutLeft" class="BorderLayoutFrame">
+		<div>
 		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">System</div>
 		<div class="ActionGroup" id="systemActionGroup">
 			<span class="Action Small" data-value="cursor"><img src="img/cursor.png"/></span>
 			<span class="Action Small" data-value="config"><img src="img/config.png"/></span>
 			<span class="Action Small" data-value="remove"><img src="img/led/cross.png"/></span>
 		</div>
+		</div>
 	
+		<div>
 		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Class</div>
 		<div class="ActionGroup" id="classActionGroup">
 			<span class="Action" data-value="Class"><img src="img/Class.png"/></span>
+			<span class="Action" data-value="Object"><img src="img/Object.png"/></span>
+
 			<span>
-				<span class="Action" data-value="Cable"><img id="cableImg" src="img/association/0.png"/></span
+				<span class="Action" data-value="Cable"
+				><img id="cableImg" src="img/association/0.png"/></span
 				><span class="PulldownButton" id="association" data-value="0" 
 							data-img="#cableImg" data-opts="{corrent:{x:-40, y:0}}"
-					><img src="img/pulldown-mark.png" />
+					><img id="cablePulldownMark" src="img/pulldown-mark.png" />
 					<div class="PulldownMenu" id="popupMenu-association">
 						<div class="MenuItem" data-value="0"><img src="img/association/0.png" /></div>
 						<div class="MenuItem" data-value="1"><img src="img/association/1.png" /></div>
@@ -122,10 +136,14 @@ $(function(){
 				</span>
 			</span>
 		</div>
+		</div>
 		
 		
+		<div>
 		<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Other</div>
-		<div id="commands" class="borderLayoutScrollInner">
+		<div class="ActionGroup" id="otherActionGroup">
+			<span class="Action" data-value="Note"><img src="img/Note.png"/></span>
+		</div>
 		</div>
 	</div>
 <!--

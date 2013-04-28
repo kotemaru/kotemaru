@@ -12,9 +12,11 @@ function RemoveAction(){this.initialize.apply(this, arguments)};
 	_class.prototype.onMouseUp  = function(ev) {
 		var xy = {x:ev.offsetX, y:ev.offsetY};
 		var item = Canvas.getItem(xy.x, xy.y);
-		item.isRemove = true;
-		Canvas.delItem(item);
-		Canvas.refresh();
+		if (item) {
+			item.remove();
+			Canvas.delItem(item);
+			Canvas.refresh();
+		}
 	}
 	
 })(RemoveAction, Action);

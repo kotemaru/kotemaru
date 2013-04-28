@@ -4,16 +4,16 @@ function Cable(){this.initialize.apply(this, arguments)};
 (function(_class,_super){
 	Lang.extend(_class, _super);
 	_class.attributes = Lang.copy(_super.attributes, {
-		lineType   : "normal",
-		lineRoute  : "N",
-		startType  : "none",
-		endType    : "none",
-		startText  : "",
-		centerText : "",
-		endText    : "",
-		points     : [new Point()],
-		startPoint : new Point(),
-		endPoint   : new Point(),
+		lineType   : {type: "string", value:"normal"},
+		lineRoute  : {type: "string", value:"N"},
+		startType  : {type: "string", value:"none"},
+		endType    : {type: "string", value:"none"},
+		startText  : {type: "string", value:""},
+		centerText : {type: "string", value:""},
+		endText    : {type: "string", value:""},
+		points     : {type: "Point[]", value:[]},
+		startPoint : {type: "Point", value:null},
+		endPoint   : {type: "Point", value:null},
 	});
 
 	
@@ -21,27 +21,11 @@ function Cable(){this.initialize.apply(this, arguments)};
 	 * コンストラクタ。
 	 */
 	_class.prototype.initialize = function(coorBase) {
+		Lang.initAttibutes(this, _class.attributes);
 		_super.prototype.initialize.apply(this, arguments);
 		
-		this.lineType  = "normal";
-		this.lineRoute  = "N";
-		this.startType = "none";
-		this.endType   = "none";
-		
-		this.startText  = "startText";
-		this.centerText = "centerText";
-		this.endText    = "endText";
-		
-		this.points = [];
 		this.startPoint = new Coor();
-		//this.startPoint.handle = 
-		//	new CableHandle(this.startPoint, this, "setStartPoint")
 		this.endPoint = new Coor();
-		//this.endPoint.handle = 
-		//	new CableHandle(this.endPoint, this, "setEndPoint")
-		//this.startPoint.handle.color = Color.HANDLE_START;
-		//this.endPoint.handle.color = Color.HANDLE_END;
-
 		this.setStartPoint(new Coor(coorBase));
 		this.setEndPoint(new Coor({origin:this.startPoint, x:20, y:20}));
 	}
@@ -115,8 +99,8 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 
 	_class.prototype.draw= function(dr) {
+		var lines = getLines(this);
 		with (this) {
-			var lines = getLines(this);
 			if (lineRoute == "S") {
 				dr.drawLinesS(lines, lineType);
 			} else {
