@@ -29,7 +29,8 @@
 	background: white;
 	border-radius:  0px 0px 8px 8px;
 	height: auto;
-	width: 400px;
+	width: auto;
+	padding: 8px;
 	overflow-y: hidden;
 }
 
@@ -72,7 +73,8 @@
 
 div.DialogButtons {
 	text-align: right;
-	margin: 8px;
+	//margin: 8px;
+	margin-top: 8px;
 }
 div.DialogButtons button {
 	width: 70px;
@@ -86,10 +88,7 @@ div.DialogButtons button {
 }
 
 
-#dialogClass > div {
-	width: 350px;
-	height: auto;
-}
+
 .Dialog table {
 	width: 90%;
 }

@@ -4,10 +4,10 @@ function Coor(){this.initialize.apply(this, arguments)};
 	Lang.define(_class);
 	_class.prototype.isCoor = true;
 	_class.attributes = {
-		_origin : new Point(),
-		_origin2: new Point(),
-		_x      : 0,
-		_y      : 0,
+		_origin : {type: "Point", value:null},
+		_origin2: {type: "Point", value:null},
+		_x      : {type: "number", value:0},
+		_y      : {type: "number", value:0}
 	};
 	
 	var idCount = 1;
@@ -55,6 +55,10 @@ function Coor(){this.initialize.apply(this, arguments)};
 			return this;
 		}
 		
+		this.checkRemove();
+		return this.calcX();
+	}
+	_class.prototype.calcX = function() {
 		if (this._origin) {
 			var x1 = this._origin.x();
 			if (this._origin2) {
@@ -83,6 +87,10 @@ function Coor(){this.initialize.apply(this, arguments)};
 			return this;
 		}
 		
+		this.checkRemove();
+		return this.calcY();
+	}
+	_class.prototype.calcY = function() {
 		if (this._origin) {
 			var y1 = this._origin.y();
 			if (this._origin2) {
@@ -95,7 +103,17 @@ function Coor(){this.initialize.apply(this, arguments)};
 			return this._y;
 		}
 	}
+	_class.prototype.checkRemove = function() {
+		with (this) {
+			if (_origin && _origin.isRemove) setOrigin(null);
+			if (_origin2 && _origin2.isRemove) setOrigin2(null);
+		}
+	}
 	_class.prototype.setOrigin = function(v) {
+		if (v == null) {
+			this._x = this.calcX();
+			this._y = this.calcY();
+		}
 		this._origin = v;
 	}
 	_class.prototype.setOrigin2 = function(v) {

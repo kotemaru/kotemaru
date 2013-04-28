@@ -38,6 +38,9 @@ function Action(){this.initialize.apply(this, arguments)};
 	function selectAndDrag(ex,ey) {
 		var elem = Canvas.getHandle(ex,ey);
 		if (elem == null) {
+			elem = Canvas.getSelectGroup(ex,ey);
+		}
+		if (elem == null) {
 			elem = Canvas.getItem(ex,ey);
 			if (elem) Canvas.select(elem);
 		}
@@ -81,11 +84,16 @@ function Action(){this.initialize.apply(this, arguments)};
 		} else {
 			AreaSelect.dragEnd(ev.offsetX, ev.offsetY)
 		}
+		Actions.resetAction();
 	}
 	
 	_class.prototype.openMenu = function(ev) {
 		if ($menu) $menu.hide();
-		var item = Canvas.getItem(ev.offsetX, ev.offsetY);
+		var item = Canvas.getSelectGroup(ev.offsetX, ev.offsetY);
+		if (item == null) {
+			item = Canvas.getItem(ev.offsetX, ev.offsetY);
+		}
+		
 		if (item == null) {
 			//Canvas.select(null);
 			//Canvas.refresh();

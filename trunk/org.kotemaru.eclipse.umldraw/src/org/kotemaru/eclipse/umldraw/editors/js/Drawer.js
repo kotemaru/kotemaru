@@ -28,13 +28,18 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.clip();
 	}
 	
-	_class.prototype.textSize = function(font, str) {
-		var dc = this.dc;
+	_class.prototype.textSize = function(font, str, minLine) {
+		return _class.textSize(this.dc, font, str, minLine);
+	}
+	_class.textSize = function(dc, font, str, minLine) {
+		minLine = minLine ? minLine : 0;
 		dc.font = font.name;
-		var m = dc.measureText(str);
-		if (str == null || str == "") return {w:m.width, h:0};
-
 		var h = font.height;
+		if (str == null || str == "") {
+			return {w:0, h:h*minLine};
+		}
+
+		var m = dc.measureText(str);
 		var lines = str.split("\n");
 		var width = 1;
 		for (var i=0; i<lines.length; i++) {
@@ -45,15 +50,32 @@ function Drawer(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.drawText = function(font, str, xx, yy) {
 		var dc = this.dc;
+		var isUnderLine = (font.decoration == "underline");
+
 		dc.fillStyle = "black";
 		dc.font = font.name;
 		dc.textBaseline = "top";
+		
 		var h = font.height;
 		var lines = str.split("\n");
 		for (var i=0; i<lines.length; i++) {
 			dc.fillText(lines[i], xx, yy);
+			if (isUnderLine) {
+				var m = dc.measureText(lines[i]);
+				this.drawHLine(xx, yy+h*0.8, m.width);
+			}
 			yy += h;
 		}
+	}
+	_class.prototype.drawHLine = function(xx,yy,ww) {
+		yy = Math.floor(yy)+0.5;
+		var dc = this.dc;
+		dc.strokeStyle = "black";
+		dc.lineWidth = 1;
+		dc.beginPath();
+		dc.moveTo(xx, yy);
+		dc.lineTo(xx+ww, yy);
+		dc.stroke();
 	}
 	
 	_class.prototype.drawTextLine = function(font, str, xx, yy) {
@@ -76,6 +98,20 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.strokeRect(x, y, w, h);
 	}
 	
+	_class.prototype.drawPoly = function(points) {
+		var dc = this.dc;
+		dc.fillStyle = "white";
+		dc.strokeStyle = "black";
+		dc.beginPath();
+		
+		dc.moveTo(points[0].x-0.5, points[0].y-0.5);
+		for (var i=1; i<points.length; i++) {
+			dc.lineTo(points[i].x-0.5, points[i].y-0.5);
+		}
+		dc.closePath();
+		dc.fill();
+		dc.stroke();
+	}
 	
 	function setLineStyle(dc, style) {
 		if (style == null) style = "normal-2";

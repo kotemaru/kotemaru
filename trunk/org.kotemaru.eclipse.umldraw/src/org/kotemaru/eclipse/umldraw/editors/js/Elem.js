@@ -23,7 +23,6 @@ function Elem(){this.initialize.apply(this, arguments)};
 		return this.coor.xy(xx,yy);
 	}
 	_class.prototype.x = function(v) {
-		if (v) console.log("setx",this.internalId,v);
 		return this.coor.x(v);
 	}
 	_class.prototype.y = function(v) {

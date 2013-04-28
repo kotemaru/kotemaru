@@ -6,17 +6,17 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 	_class.prototype.isDraggable=true;
 	_class.prototype.isRectangle=true;
 	_class.attributes = Lang.copy(_super.attributes, {
-		_w : 0,
-		_h : 0
+		_w : {type:"number", value:0},
+		_h : {type:"number", value:0},
+		isAutoSize : {type: "boolean", value:true}
 	});
 
 	/**
 	 * コンストラクタ。
 	 */
 	_class.prototype.initialize = function(origin, cable, setterName) {
+		Lang.initAttibutes(this, _class.attributes);
 		_super.prototype.initialize.apply(this, arguments);
-		this._w = 0;
-		this._h = 0;
 		
 		this.coorDiag = new CoorDiag({origin:this});
 		this.handle = {
@@ -28,14 +28,24 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 		this.handle.end.dragMove = function(xx,yy) {
 			self.setW(xx-self.x());
 			self.setH(yy-self.y());
+			self.isAutoSize = false;
 		}
 	}
+	_class.prototype.remove = function() {
+		this.isRemove = true;
+		this.coorDiag.isRemove = true;
+	}
+
 	_class.prototype.getHandle = function(xx,yy) {
 		with (this.handle) {
 			if (begin.onPoint(xx,yy)) return begin;
 			if (end.onPoint(xx,yy)) return end;
 		}
 		return null;
+	}
+	_class.prototype.drawHandle = function(dc) {
+		this.handle.begin.draw(dc);
+		this.handle.end.draw(dc);
 	}
 	
 	_class.prototype.w = function() {

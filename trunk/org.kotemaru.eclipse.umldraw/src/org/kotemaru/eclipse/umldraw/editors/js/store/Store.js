@@ -92,14 +92,14 @@ function Store(){this.initialize.apply(this, arguments)};
 		json._class = obj._class.name;
 		
 		for (var k in attrs) {
-			var type = typeof attrs[k];
+			var type = attrs[k].type;
 			if (type == "string" || type == "number") {
 				json[k] = obj[k];
-			} else if (attrs[k] instanceof Point) {
+			} else if (type == "Point") {
 				json[k] = toJsonRef(obj[k]);
-			} else if (attrs[k].isGroup) {
+			} else if (type == "Group") {
 				json[k] = toJsonRef(obj[k]);
-			} else if (attrs[k] instanceof Array) {
+			} else if (type == "Point[]") {
 				var ary = [];
 				for (var i=0; i<obj[k].length; i++) {
 					ary.push(toJsonRef(obj[k][i]));
@@ -131,16 +131,16 @@ function Store(){this.initialize.apply(this, arguments)};
 		var attrs = getAttibutes(obj._class);
 
 		for (var k in attrs) {
-			var type = typeof attrs[k];
+			var type = attrs[k].type;
 			if (type == "string" || type == "number") {
 				obj[k] = json[k];
-			} else if (attrs[k] instanceof Point) {
+			} else if (type == "Point") {
 				obj[k] = fromJsonRef(json[k]);
-			} else if (attrs[k].isGroup) {
+			} else if (type == "Group") {
 				var group = fromJsonRef(json[k]);
 				obj[k] = group;
 				if (group) group.getItems().addItem(obj);
-			} else if (attrs[k] instanceof Array) {
+			} else if (type == "Point[]") {
 				var ary = [];
 				for (var i=0; i<json[k].length; i++) {
 					ary.push(fromJsonRef(json[k][i]));

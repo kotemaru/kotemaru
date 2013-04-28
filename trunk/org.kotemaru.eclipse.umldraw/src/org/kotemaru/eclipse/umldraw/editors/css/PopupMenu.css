@@ -24,7 +24,9 @@
 .PopupMenu .MenuItem > img {
 	vertical-align: -2px;
 }
-
+.PopupMenu .Disabled {
+	opacity: 0.25;
+}
 
 div.MenuItem {
 	white-space: nowrap;

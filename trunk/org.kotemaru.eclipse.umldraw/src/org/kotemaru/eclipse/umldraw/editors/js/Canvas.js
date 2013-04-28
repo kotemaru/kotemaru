@@ -20,7 +20,9 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	_class.addItem = function(item) {return items.addItem(item);}
 	_class.delItem = function(item) {return items.delItem(item);}
-	_class.getItem = function(ex,ey, ignore) {return items.getItem(ex,ey, ignore);}
+	_class.getItem = function(ex,ey, ignore) {
+		return items.getItem(ex,ey, ignore);
+	}
 	_class.getItems = function() {
 		return items;
 	}
@@ -42,7 +44,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.select = function(item) {
-		_class.clearSelect();
+		if (selectItem != item) _class.clearSelect();
 		selectItem = item;
 	}
 	_class.clearSelect = function() {
@@ -51,15 +53,18 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	//_class.addSelect = function(item) {selectGroup.addItem(item);}
 	//_class.delSelect = function(item) {selectGroup.getItems().delItem(item);}
-	_class.getSelectGroup = function() {
+	_class.getSelectGroup = function(ex,ey) {
+		if (ex) {
+			if (selectItem == selectGroup) {
+				if (selectGroup.onPoint(ex, ey)) return selectGroup;
+			}
+			return null;
+		}
 		return selectGroup;
 	}
 	
 	_class.getHandle = function(ex,ey) {
 		var handle = null;
-		if (selectItem == selectGroup) {
-			if (selectGroup.onPoint(ex, ey)) return selectGroup
-		}
 		if (selectItem) handle = selectItem.getHandle(ex, ey);
 		return handle;
 	}

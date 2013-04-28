@@ -31,5 +31,19 @@ function Lang(){this.initialize.apply(this, arguments)};
 		for (var k in opts) dst[k] = opts[k];
 		return dst;
 	}
+	_class.initAttibutes = function(dst, attributes) {
+		for (var k in attributes) {
+			dst[k] = attributes[k].value;
+		}
+		return dst;
+	}
+	_class.mergeAttibutes = function(dst, attrs) {
+		if (attrs == null) return;
+		var attributes = dst._class.attributes;
+		for (var k in attributes) {
+			if (attrs[k] !== undefined) dst[k] = attrs[k];
+		}
+		return dst;
+	}
 	
 })(Lang);

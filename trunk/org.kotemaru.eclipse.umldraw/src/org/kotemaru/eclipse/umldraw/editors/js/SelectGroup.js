@@ -28,7 +28,13 @@ function SelectGroup(){this.initialize.apply(this, arguments)};
 		//this.handle.end.draw(dc);
 	}
 
-	
+	_class.prototype.getMenu = function() {
+		return "#selectGroupMenu";
+	}
+	_class.prototype.doMenuItem = function($menuItem,xx,yy) {
+		Canvas.doMenuItem($menuItem,xx,yy);
+	}
+
 })(SelectGroup, Group);
 
 

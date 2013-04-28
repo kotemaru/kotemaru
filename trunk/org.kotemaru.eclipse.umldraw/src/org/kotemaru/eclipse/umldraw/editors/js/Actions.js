@@ -9,12 +9,15 @@ function Actions(){this.initialize.apply(this, arguments)};
 		"remove": new RemoveAction(null),
 		
 		"Class" : new Action(Class),
+		"Object" : new Action(Object),
+		"Note" : new Action(Note),
 		"Cable" : new CableAction(Cable),
 		//"Cable" : new CableAction(),
 		"":null
 	};
 	
 	var currentIdx = "cursor";
+	var isLock = false;
 	
 	_class.prototype.initialize = function(opts) {
 	}
@@ -25,18 +28,42 @@ function Actions(){this.initialize.apply(this, arguments)};
 	_class.setAction = function(idx) {
 		currentIdx = idx;
 		ACTIONS[currentIdx].selectMe();
+		
+		var $btns = $(".Action");
+		var $btn = $(".Action[data-value='"+idx+"']");
+		$btns.removeClass("Selected");
+		$btn.addClass("Selected");
+	}
+	_class.resetAction = function() {
+		if (!isLock) _class.setAction("cursor");
 	}
 
 	function init() {
 		var $btns = $(".Action");
-		$btns.bind("click",function(ev){
-			var $this = $(this);
+		function onClick($this) {
 			var value = $this.attr("data-value");
-
-			$btns.removeClass("Selected");
 			_class.setAction(value);
-			$this.addClass("Selected");
-			
+			isLock = false;
+		}
+		
+		$btns.bind("click",function(ev){
+			onClick($(this));
+		}).bind("dblclick",function(ev){
+			onClick($(this));
+			isLock = true;
+		});
+		
+		$("#cablePulldownMark").bind("click",function(){
+			_class.setAction("Cable");
+		})
+		
+		
+		$(".ActionGroupHeader>.OpenClose").bind("click",function(){
+			var $this = $(this);
+			var $tgt = $this.parent().parent().find(".ActionGroup");
+			$tgt.toggle();
+			this.src = $tgt.is(":visible") ? "img/pullup.png":"img/pulldown.png";
+
 		});
 	}	
 

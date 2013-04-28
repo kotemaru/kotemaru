@@ -84,5 +84,6 @@ img#cableImg {
 .ActionGroupHeader > img.OpenClose {
 	float: right;
 	padding: 2px;
+	cursor: pointer;
 }
 

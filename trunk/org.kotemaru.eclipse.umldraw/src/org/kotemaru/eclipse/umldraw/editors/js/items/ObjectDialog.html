@@ -1,31 +1,21 @@
 <style>
-#classDialog {
+#objectDialog {
 	width: 250px;
 }
-#classDialog textarea {
+#objectDialog textarea {
 	width: 95%;
-}
-#classDialog #stereo_type {
-	font-size: 12px;
-}
-#classDialog #stereo_type > input{
-	font-size: 10px;
 }
 </style>
 		
-<div id="classDialog" class="Dialog">
+<div id="objectDialog" class="Dialog">
 	<h3>
 		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
 		<nobr>Class Properties</nobr>
 	</h3>
 	<div>
 		<div align="center">
-			<div id="stereo_type">
-				&lt;&lt;<input data-path="stype" placeholder="Stereo type"/>&gt;&gt;
-			</div>
-			<textarea data-path="name" rows=2 placeholder="Class name"></textarea>
+			<textarea data-path="name" rows=2 placeholder="Object name"></textarea>
 			<textarea data-path="attrs" rows=4 placeholder="Attributes"></textarea>
-			<textarea data-path="methods" rows=4 placeholder="Methods"></textarea>
 		</div>
 		<input type=checkbox data-path="isAutoSize" >Auto sizing</input>
 		<br/>
