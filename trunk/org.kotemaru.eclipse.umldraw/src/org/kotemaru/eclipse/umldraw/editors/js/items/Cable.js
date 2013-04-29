@@ -24,6 +24,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 		Lang.initAttibutes(this, _class.attributes);
 		_super.prototype.initialize.apply(this, arguments);
 		
+		this.points = [];
 		this.startPoint = new Coor();
 		this.endPoint = new Coor();
 		this.setStartPoint(new Coor(coorBase));
@@ -41,46 +42,46 @@ function Cable(){this.initialize.apply(this, arguments)};
 		}
 	}
 	
-	_class.prototype.setStartPoint = function(item) {
-		setPoint(this.startPoint, item);
+	_class.prototype.setStartPoint = function(item,ex,ey) {
+		setPoint(this.startPoint, item,ex,ey);
 	}
-	_class.prototype.setEndPoint = function(item) {
-		setPoint(this.endPoint, item);
+	_class.prototype.setEndPoint = function(item,ex,ey) {
+		setPoint(this.endPoint, item,ex,ey);
 	}
-	_class.prototype.setPoint = function(item, no) {
+	_class.prototype.setPoint = function(item,ex,ey, no) {
 		var coor = this.points[no];
 		coor.xy(item.x(), item.y());
 	}
-	function setPoint(coor, item) {
+	function setPoint(coor, item,ex,ey) {
 		if (item) {
 			coor.origin(item);
 			coor.origin2(item.coorDiag);
 			if (item.coorDiag) {
-				// TODO:
-				coor._x = 0.5;
-				coor._y = 0.5;
+				var xy = CableUtil.edgePoint(item,ex,ey);
+				if (xy) {
+					coor.xy(xy.x, xy.y);
+				} else {
+					coor.setX(0.5);
+					coor.setY(0.5);
+				}
 			} else {
 				coor._x = 0;
 				coor._y = 0;
 			}
 		} else {
-			var x0 = coor.x();
-			var y0 = coor.y();
-			coor.origin(null);
-			coor._origin = null; // TOOD;
-			coor.origin2(null);
-			coor.xy(x0,y0);
+			coor.setOrigin(null);
+			coor.setOorigin2(null);
 		}
 	}
 	_class.prototype.onPoint = function(tx,ty) {
 		return this.onPointIndex(tx,ty)>=0;
 	}
 	_class.prototype.inRect = function(tx1,ty1,tx2,ty2) {
-		var b = Util.getOutBounds(getLines(this));
+		var b = Util.getOutBounds(CableUtil.getLines(this));
 		return tx1<=b.x1 && b.x2<=tx2 && ty1<=b.y1 && b.y2<=ty2;
 	}
 	_class.prototype.getOutBounds = function() {
-		return Util.getOutBounds(getLines(this));
+		return Util.getOutBounds(CableUtil.getLines(this));
 	}
 	_class.prototype.onPointIndex = function(tx,ty) {
 		var r = 3;
@@ -88,7 +89,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 		var ry1 = ty-r;
 		var rx2 = tx+r;
 		var ry2 = ty+r;
-		var lines = getLines(this);
+		var lines = CableUtil.getLines(this);
 		
 		for (var i=0; i<lines.length; i++) {
 			var hits = Util.crossRectLineRaw(rx1,ry1,rx2,ry2, 
@@ -99,7 +100,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 
 	_class.prototype.draw= function(dr) {
-		var lines = getLines(this);
+		var lines = CableUtil.getLines(this);
 		with (this) {
 			if (lineRoute == "S") {
 				dr.drawLinesS(lines, lineType);
@@ -165,74 +166,6 @@ function Cable(){this.initialize.apply(this, arguments)};
 		}
 	}
 	
-	function getLines(self) {
-		if (self.lineRoute == "L") {
-			return getLinesL(self.startPoint, self.points, self.endPoint);
-		} else {
-			return getLinesN(self.startPoint, self.points, self.endPoint);
-		}
-	}
-	
-	function getLinesN(startPoint,points,endPoint) {
-		var lines = [];
-		var coor1 = startPoint;
-		var coor2 = points.length>0 ? points[0] : endPoint;
-		var xy = toEdge(coor1, coor2);
-		var firstXy = xy;
-		var beforeXy = xy;
-
-		for (var i=0; i<points.length; i++) {
-			var coor = points[i];
-			xy = {x:coor.x(), y:coor.y()};
-			lines.push({x1:beforeXy.x, y1:beforeXy.y, x2:xy.x, y2:xy.y});
-			beforeXy = xy;
-		}
-		
-		var i = points.length-1;
-		coor1 = points.length>0 ? points[i] : startPoint;
-		coor2 = endPoint;
-		xy = toEdge(coor2, coor1);
-		lines.push({x1:beforeXy.x, y1:beforeXy.y, x2:xy.x, y2:xy.y});
-		return lines;
-	}
-
-	
-	function getLinesL(startPoint,points,endPoint) {
-		var lines = [];
-		function pt(vertical, pt1, pt2) {
-			if (vertical) {
-				return new Point(pt1.x(), pt2.y());
-			} else {
-				return new Point(pt2.x(), pt1.y());
-			}
-		}
-		function initVertical(pt1, pt2) {
-			var ww = pt1.x()-pt2.x();
-			var hh = pt1.y()-pt2.y();
-			return ww>hh;
-		}
-		var Lpoints = [];
-	
-		var pt1 = startPoint;
-		var pt2 = points.length>0 ? points[0] : endPoint;
-		var vertical = initVertical(pt1,pt2);
-		Lpoints.push(pt(vertical,pt1,pt2));
-		vertical = !vertical;
-		pt1 = pt2;
-		
-		for (var i=1; i<points.length; i++) {
-			pt2 = points[i];
-			Lpoints.push(pt(vertical,pt1,pt2));
-			vertical = !vertical;
-			pt1 = pt2;
-		}
-		if (pt1 != endPoint) {
-			pt2 = endPoint;
-			Lpoints.push(pt(vertical,pt1,pt2));
-		}
-			
-		return getLinesN(startPoint,Lpoints,endPoint);
-	}
 	
 	_class.prototype.getHandle = function(xx,yy) {
 		with (this) {

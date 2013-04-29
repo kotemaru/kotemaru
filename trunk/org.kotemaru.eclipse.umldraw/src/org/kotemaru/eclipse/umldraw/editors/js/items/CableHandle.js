@@ -17,11 +17,15 @@ function CableHandle(){this.initialize.apply(this, arguments)};
 	_class.prototype.dragMove = function(xx,yy) {
 		this.absCoor.xy(xx,yy);
 		this.cable[this.setterName](this.absCoor, this.pointNo);
+		
+		var item = Canvas.getItem(xx, yy, this.cable);
+		var xy = CableUtil.edgePoint(item,xx,yy);
+		Canvas.cursor(item?(xy?"connect2":"connect"):"");
 	}
 	_class.prototype.dragEnd = function(xx,yy) {
 		var item = Canvas.getItem(xx,yy, this.cable);
 		if (item && this.cable != item) {
-			this.cable[this.setterName](item, this.pointNo);
+			this.cable[this.setterName](item,xx,yy, this.pointNo);
 		}
 		//this.coor.origin().xy(xx,yy); // 非センター
 	}

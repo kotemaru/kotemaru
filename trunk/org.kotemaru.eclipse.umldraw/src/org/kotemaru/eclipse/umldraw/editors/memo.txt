@@ -8,13 +8,6 @@
 -- selector UI
 -- type?style
 
-- Class
--- isAutoSize
--- menu
--- 
-
-- SelectGtoup
--- menu
 
 - UI
 - img 整理

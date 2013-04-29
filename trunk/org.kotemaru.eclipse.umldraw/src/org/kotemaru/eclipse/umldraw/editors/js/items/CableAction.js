@@ -33,8 +33,13 @@ function CableAction(){this.initialize.apply(this, arguments)};
 	}
 
 	_class.prototype.onMouseMove = function(ev) {
-		this.cable.setEndPoint(new Coor({x:ev.offsetX, y:ev.offsetY}));
+		var xy = {x:ev.offsetX, y:ev.offsetY};
+		this.cable.setEndPoint(new Coor(xy));
 		Canvas.refresh();
+
+		var item = Canvas.getItem(xy.x, xy.y, this.cable);
+		var xy = CableUtil.edgePoint(item,xy.x, xy.y);
+		Canvas.cursor(item?(xy?"connect2":"connect"):"");
 	}
 	_class.prototype.onMouseUp  = function(ev) {
 		var xy = {x:ev.offsetX, y:ev.offsetY};
