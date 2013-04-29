@@ -1,11 +1,11 @@
 
 function Dialog(){this.initialize.apply(this, arguments)};
-(function(Class){
+(function(_class){
 	var current = name;
 	var closureVar = null;
 	var targetItem;
 
-	Class.open = function(name, item){
+	_class.open = function(name, item){
 		current = name;
 		targetItem = item;
 		
@@ -17,13 +17,13 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		$di.trigger("opened");
 	}
 	
-	Class.close = function(){
+	_class.close = function(){
 		$(".DialogPanel").hide();
 		$(current).trigger("closed");
 		Canvas.refresh();
 	}
 	
-	Class.save = function() {
+	_class.save = function() {
 		$dialog = $(current);
 		$inputs = $dialog.find("*[data-path]");
 		$inputs.each(function(){
@@ -31,7 +31,8 @@ function Dialog(){this.initialize.apply(this, arguments)};
 			var path = $input.attr("data-path");
 			targetItem[path] = getValue($input);
 		});
-		Class.close();
+		$dialog.trigger("saved");
+		_class.close();
 	}
 	
 	function restoreDialog($dialog) {
@@ -48,8 +49,10 @@ function Dialog(){this.initialize.apply(this, arguments)};
 			return $input.attr("src");
 		} else if ($input.hasClass("PulldownButton")) {
 			return $input.attr("data-value");
+		} else if ($input.hasClass("Selector")) {
+			return $input.attr("data-value");
 		} else if($input[0].type == "checkbox") {
-			return $input.attr("checked");
+			return $input.attr("checked") != null;
 		} else {
 			return $input.val();
 		}
@@ -58,9 +61,9 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		if ($input[0].tagName == "IMG") {
 			$input.attr("src",val);
 		} else if ($input.hasClass("PulldownButton")) {
-			$input.attr("data-value",val);
-			$img = $input.find(">img");
-			$img.attr("src", $input.find("div[data-value='"+val+"']>img").attr("src"));
+			PopupMenu.setValue($input,val);
+		} else if ($input.hasClass("Selector")) {
+			Selector.setValue($input,val);
 		} else if($input[0].type == "checkbox") {
 			$input.attr("checked", val);
 		} else {

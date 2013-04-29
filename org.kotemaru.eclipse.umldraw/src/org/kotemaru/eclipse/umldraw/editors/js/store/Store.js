@@ -13,6 +13,8 @@ function Store(){this.initialize.apply(this, arguments)};
 		var items = itemsObj.getItems(); //Note:速度優先。 
 		for (var i in items) toJsonRef(items[i]);
 		var data = {
+			version: Version.CURRENT,
+			canvas: Canvas.getAttributes(),
 			coors: coorRef.getJsons(),
 			items: itemRef.getJsons(),
 		};

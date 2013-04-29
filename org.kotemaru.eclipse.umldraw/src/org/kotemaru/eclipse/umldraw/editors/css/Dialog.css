@@ -58,6 +58,11 @@
 	vertical-align: middle;
 	line-height: 24px;
 }
+
+.Dialog h4 {
+	margin: 0;
+}
+
 .Dialog input {
 	border: 1px solid lightgray;
 	padding: 1px 4px;

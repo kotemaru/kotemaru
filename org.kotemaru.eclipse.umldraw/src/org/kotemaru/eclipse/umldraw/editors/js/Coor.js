@@ -56,7 +56,10 @@ function Coor(){this.initialize.apply(this, arguments)};
 		}
 		
 		this.checkRemove();
-		return this.calcX();
+		var xx = this.calcX();
+		if (xx<0) xx = 0;
+		if (xx>Canvas.width()) xx = Canvas.width;
+		return xx;
 	}
 	_class.prototype.calcX = function() {
 		if (this._origin) {
@@ -87,8 +90,10 @@ function Coor(){this.initialize.apply(this, arguments)};
 			return this;
 		}
 		
-		this.checkRemove();
-		return this.calcY();
+		var yy = this.calcY();
+		if (yy<0) yy = 0;
+		if (yy>Canvas.height()) yy = Canvas.height;
+		return yy;
 	}
 	_class.prototype.calcY = function() {
 		if (this._origin) {
