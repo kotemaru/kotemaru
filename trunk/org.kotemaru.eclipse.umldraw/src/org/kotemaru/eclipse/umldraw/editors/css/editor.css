@@ -6,6 +6,10 @@ div,span {
 	-ms-user-select: none; /* IE10‚©‚ç‚ç‚µ‚¢ */
 }
 
+#borderLayoutMainInner {
+	background: #a0a0a0;
+}
+
 #canvas {
 	background: #f8f8f8;	
 }
@@ -41,6 +45,7 @@ div,span {
 }
 .ActionGroup {
 	background: #f0f0e0;
+	border-bottom: 1px solid  #a0a040;
 	clear:both;
 }
 .ActionGroup > span{

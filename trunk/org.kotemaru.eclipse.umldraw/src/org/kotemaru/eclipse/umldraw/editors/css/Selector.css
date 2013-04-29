@@ -1,0 +1,14 @@
+
+.Selector {
+}
+.Selector .SelectorItem {
+	display: inline-block;
+	border: 1px solid transparent;
+	padding: 2px 4px;
+}
+.Selector .Selected {
+	border: 1px inset #f0f0f0;
+}
+.Selector .SelectorItem img {
+	vertical-align: middle;
+}

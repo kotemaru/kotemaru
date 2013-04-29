@@ -3,14 +3,32 @@
 --Save&store
 
 - Cable
--- side connect
+--o side connect
 -- fix point
--- selector UI
+--o selector UI
 -- type?style
+--o bug:
 
+-用語
+--attributes->properties
+
+- 自動登録
+-- Dialog
+-- Menu
+-- item
+
+- DrawSVG
+-- Poly
+
+- Cut&paset
+-- 整理
 
 - UI
 - img 整理
+- menu無効か
 
 - config
--- 用紙サイズとか
+--o 用紙サイズとか
+-- 印刷
+
+-o UNDO,RODO

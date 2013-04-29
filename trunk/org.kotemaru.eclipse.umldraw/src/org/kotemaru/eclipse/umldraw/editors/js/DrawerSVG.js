@@ -6,9 +6,10 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 		this.dc = canvasCtx;
 		this.result = [];
 		this.add("<?xml version='1.0' encoding='utf-8' ?>");
-		this.add("<svg xml:space='preserve' width='400' height='400'"
+		this.add("<svg xml:space='preserve'"
+				+"width='"+Canvas.width()+"' height='"+Canvas.height()+"'"
 				+" xmlns='http://www.w3.org/2000/svg'"
-				+" viewBox='0 0 400 400'>"
+				+" viewBox='0 0 "+Canvas.width()+" "+Canvas.height()+"'>"
 		);
 	}
 	_class.prototype.add = function(str) {

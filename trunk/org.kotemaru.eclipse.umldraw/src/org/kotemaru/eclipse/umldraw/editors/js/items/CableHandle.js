@@ -16,7 +16,7 @@ function CableHandle(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.dragMove = function(xx,yy) {
 		this.absCoor.xy(xx,yy);
-		this.cable[this.setterName](this.absCoor, this.pointNo);
+		this.cable[this.setterName](this.absCoor, xx,yy, this.pointNo);
 		
 		var item = Canvas.getItem(xx, yy, this.cable);
 		var xy = CableUtil.edgePoint(item,xx,yy);
@@ -28,6 +28,12 @@ function CableHandle(){this.initialize.apply(this, arguments)};
 			this.cable[this.setterName](item,xx,yy, this.pointNo);
 		}
 		//this.coor.origin().xy(xx,yy); // 非センター
+	}
+	_class.prototype.fixed = function(xx,yy) {
+		this.cable[this.setterName](null,xx,yy, this.pointNo);
+	}
+	_class.prototype.unfixed = function(xx,yy) {
+		// TODO:
 	}
 	
 })(CableHandle, Handle);

@@ -33,6 +33,7 @@ function Action(){this.initialize.apply(this, arguments)};
 		dragItem.dragEnd(evx-rx,evy-ry);
 		dragItem = null;
 		Canvas.refresh();
+		Canvas.backup();
 	}
 	
 	function selectAndDrag(ex,ey) {
@@ -66,6 +67,7 @@ function Action(){this.initialize.apply(this, arguments)};
 			var item = new this.targetClass({x:ev.offsetX, y:ev.offsetY});
 			Canvas.addItem(item);
 			Canvas.refresh();
+			Canvas.backup();
 		} else {
 			selectAndDrag(ev.offsetX, ev.offsetY);
 		}
@@ -93,7 +95,7 @@ function Action(){this.initialize.apply(this, arguments)};
 		if (item == null) {
 			item = Canvas.getItem(ev.offsetX, ev.offsetY);
 		}
-		
+
 		if (item == null) {
 			//Canvas.select(null);
 			//Canvas.refresh();
@@ -118,7 +120,7 @@ function Action(){this.initialize.apply(this, arguments)};
 			//var ifr = $("#iframeSvg")[0];
 			//ifr.contentDocument.body.innerHTML = data.svg;
 			var data = Store.save(Canvas.getItems());
-			$("#saveText").val(JSON.stringify(data,null, "  "));
+			$("#saveText").val(JSON.stringify(data,null, "\t"));
 			Store.load(data);
 	
 		} else if (item.getDialog) {

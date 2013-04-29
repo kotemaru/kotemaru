@@ -1,11 +1,11 @@
 
 function PopupMenu(){this.initialize.apply(this, arguments)};
-(function(Class){
-	Class.options = null;
+(function(_class){
+	_class.options = null;
 
-	Class.open = function(name, opts){
-		Class.close();
-		Class.options = opts;
+	_class.open = function(name, opts){
+		_class.close();
+		_class.options = opts;
 		
 		var $menu  = $(name).show();
 		var offset = {left:0, top:0};
@@ -27,26 +27,16 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		$menu.offset(offset);
 	}
 
-	Class.close = function(){
+	_class.close = function(){
 		// TODO: 複数Popup
 		$(".PulldownMenu").hide();
 		$(".PopupMenu").hide();
 	}
-
-	var isMakedIconMenu = false;
-	Class.makeIconMenu = function(name, url) {
-		if (isMakedIconMenu) return;
-		isMakedIconMenu = true;
-		jQuery.get(url, null, function(data){
-			var $menu = $(name);
-			var icons = data.split("\n");
-
-			for (var i=0; i<icons.length; i++) {
-				var $img = $("<img class='MenuItem'/>");
-				$img.attr("src", icons[i]);
-				$menu.append($img);
-			}
-		});
+	
+	_class.setValue = function($btn, val){
+		$btn.attr("data-value",val);
+		$img = $btn.find(">img");
+		$img.attr("src", $btn.find("div[data-value='"+val+"']>img").attr("src"));
 	}
 
 	$(function(){

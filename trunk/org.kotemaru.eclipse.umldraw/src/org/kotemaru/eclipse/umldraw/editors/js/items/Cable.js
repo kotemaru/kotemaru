@@ -50,7 +50,12 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.setPoint = function(item,ex,ey, no) {
 		var coor = this.points[no];
-		coor.xy(item.x(), item.y());
+		if (item != null) {
+			coor.xy(item.x(), item.y());
+		} else {
+			coor.setOrigin(null);
+			coor.setOrigin2(null);
+		}
 	}
 	function setPoint(coor, item,ex,ey) {
 		if (item) {
@@ -70,7 +75,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 			}
 		} else {
 			coor.setOrigin(null);
-			coor.setOorigin2(null);
+			coor.setOrigin2(null);
 		}
 	}
 	_class.prototype.onPoint = function(tx,ty) {
@@ -232,7 +237,10 @@ function Cable(){this.initialize.apply(this, arguments)};
 			coor.xy(xx,yy);
 			this.addPoint(coor);
 		} else if (cmd == "fixPoint") {
-			// TODO:
+			var handle = Canvas.getHandle(xx,yy);
+			if (handle && handle.fixed) {
+				handle.fixed(xx,yy);
+			}
 
 		} else if (cmd == "properties") {
 			Dialog.open(this.getDialog(), this);
