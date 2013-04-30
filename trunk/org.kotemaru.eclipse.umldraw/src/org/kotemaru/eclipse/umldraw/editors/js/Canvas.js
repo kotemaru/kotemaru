@@ -3,7 +3,7 @@
 function Canvas(){this.initialize.apply(this, arguments)};
 (function(_class){
 	
-	_class.attributes = {
+	_class.properties = {
 		width: 1123,
 		height: 794,
 		size : "A4",
@@ -87,34 +87,16 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		canvas.style.cursor = "url(img/cursor_"+type+".png),default";
 	}
 	
-	var copyBuff;
 	_class.doMenuItem = function($menuItem,xx,yy) {
 		var cmd = $menuItem.attr("data-value");
 		if (cmd == "cut") {
-			copyBuff = Store.copy(selectGroup.getItems());
-			selectGroup.getItems().each(function(item){
-				Canvas.delItem(item);
-			});
+			EditBuffer.cut();
 		} else if (cmd == "copy") {
-			copyBuff = Store.copy(selectGroup.getItems());
+			EditBuffer.copy();
 		} else if (cmd == "paste") {
-			Store.paste(copyBuff, xx,yy);
+			EditBuffer.paste(xx,yy);
 		} else if (cmd == "properties") {
-			Dialog.open(this.getDialog(), _class.attributes);
-		} else if (cmd == "saveLoad") {
-			Dialog.open("#debugDialog", data);
-			var data = Store.save(Canvas.getItems());
-			$("#saveText").val(JSON.stringify(data,null, "\t"));
-			Store.load(data);
-		} else if (cmd == "SVG") {
-			Dialog.open("#svgDialog", data);
-			var data = {svg: Canvas.toSVG()};
-			var ifr = $("#iframeSvg")[0];
-			ifr.contentDocument.body.innerHTML = data.svg;
-		} else if (cmd == "undo") {
-			Canvas.undo();
-		} else if (cmd == "redo") {
-			Canvas.redo();
+			Dialog.open(this.getDialog(), _class.properties);
 		}
 	}
 	_class.getDialog = function() {
@@ -122,44 +104,23 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.width = function() {
-		return _class.attributes.width;
+		return _class.properties.width;
 	}
 	_class.height = function() {
-		return _class.attributes.height;
+		return _class.properties.height;
 	}
-	_class.setAttributes = function(attrs) {
-		if (attrs) _class.attributes = attrs;
-		$(canvas).attr("width", _class.attributes.width);
-		$(canvas).attr("height", _class.attributes.height);
+	_class.setProperties = function(attrs) {
+		if (attrs) _class.properties = attrs;
+		$(canvas).attr("width", _class.properties.width);
+		$(canvas).attr("height", _class.properties.height);
 	}
-	_class.getAttributes = function(attrs) {
-		return _class.attributes;
+	_class.getProperties = function(attrs) {
+		return _class.properties;
 	}
 	$("#canvasDialog").live("saved",function(){
-		_class.setAttributes();
+		_class.setProperties();
 	});
 	
-	var undoBuff = [];
-	var redoBuff = [];
-	var curData = null; // todo初期データ。
-	_class.backup = function(data) {
-		if (data) curData = data;
-		undoBuff.push(curData);
-		redoBuff.length = 0;
-		curData = Store.save(Canvas.getItems());
-	}
-	_class.undo = function() {
-		if (undoBuff.length == 0) return;
-		redoBuff.push(curData);
-		curData = undoBuff.pop();
-		Store.load(curData);
-	}
-	_class.redo = function() {
-		if (redoBuff.length == 0) return;
-		undoBuff.push(curData);
-		curData = redoBuff.pop();
-		Store.load(curData);
-	}
 
 	//--------------------------------------------------------------------
 	// Canvas ハンドラ設定。
@@ -199,6 +160,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		$can.bind("mouseup",onMouseUp);
 		$can.bind("dblclick",onDblClick);
 		
+		// Defaule menu disabled.
 		$(document).bind("contextmenu",function(){return false;});
 	})
 	

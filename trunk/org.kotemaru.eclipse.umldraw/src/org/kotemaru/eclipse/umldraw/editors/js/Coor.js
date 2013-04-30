@@ -3,7 +3,7 @@ function Coor(){this.initialize.apply(this, arguments)};
 (function(_class){
 	Lang.define(_class);
 	_class.prototype.isCoor = true;
-	_class.attributes = {
+	_class.properties = {
 		_origin : {type: "Point", value:null},
 		_origin2: {type: "Point", value:null},
 		_x      : {type: "number", value:0},

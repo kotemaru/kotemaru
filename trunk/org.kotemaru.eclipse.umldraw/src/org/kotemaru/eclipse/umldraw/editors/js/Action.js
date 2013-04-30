@@ -33,7 +33,7 @@ function Action(){this.initialize.apply(this, arguments)};
 		dragItem.dragEnd(evx-rx,evy-ry);
 		dragItem = null;
 		Canvas.refresh();
-		Canvas.backup();
+		EditBuffer.backup();
 	}
 	
 	function selectAndDrag(ex,ey) {
@@ -67,7 +67,7 @@ function Action(){this.initialize.apply(this, arguments)};
 			var item = new this.targetClass({x:ev.offsetX, y:ev.offsetY});
 			Canvas.addItem(item);
 			Canvas.refresh();
-			Canvas.backup();
+			EditBuffer.backup();
 		} else {
 			selectAndDrag(ev.offsetX, ev.offsetY);
 		}

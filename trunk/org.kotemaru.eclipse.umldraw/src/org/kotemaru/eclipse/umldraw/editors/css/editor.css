@@ -45,8 +45,9 @@ div,span {
 }
 .ActionGroup {
 	background: #f0f0e0;
-	border-bottom: 1px solid  #a0a040;
 	clear:both;
+	overflow:hidden;
+	margin: 2px 0px;
 }
 .ActionGroup > span{
 	float: left;
@@ -61,6 +62,7 @@ div,span {
 	border: 1px outset #f0f0f0;
 	background: #f0f0f0;
 	cursor: pointer;
+	text-align: center;
 }
 
 .ActionGroup .Small {
@@ -82,9 +84,10 @@ img#cableImg {
 .ActionGroupHeader {
 	font-size: 12px;
 	font-weight: bold;
-	height: 12px;
+	height: 13px;
 	background: #f0d080;
-	clear:both;
+	overflow:hidden;
+	border-bottom: 1px solid  #a0a040;
 }
 .ActionGroupHeader > img.OpenClose {
 	float: right;

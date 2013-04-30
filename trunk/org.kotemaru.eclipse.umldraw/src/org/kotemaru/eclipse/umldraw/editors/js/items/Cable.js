@@ -2,8 +2,8 @@
 
 function Cable(){this.initialize.apply(this, arguments)};
 (function(_class,_super){
-	Lang.extend(_class, _super);
-	_class.attributes = Lang.copy(_super.attributes, {
+	Item.extend(_class, _super);
+	_class.properties = Lang.copy(_super.properties, {
 		lineType   : {type: "string", value:"normal"},
 		lineRoute  : {type: "string", value:"N"},
 		startType  : {type: "string", value:"none"},
@@ -16,12 +16,13 @@ function Cable(){this.initialize.apply(this, arguments)};
 		endPoint   : {type: "Point", value:null},
 	});
 
+	Actions.registerAction(_class.name, new CableAction(_class));
 	
 	/**
 	 * コンストラクタ。
 	 */
 	_class.prototype.initialize = function(coorBase) {
-		Lang.initAttibutes(this, _class.attributes);
+		Lang.initAttibutes(this, _class.properties);
 		_super.prototype.initialize.apply(this, arguments);
 		
 		this.points = [];

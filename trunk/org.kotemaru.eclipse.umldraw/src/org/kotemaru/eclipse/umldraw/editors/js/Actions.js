@@ -3,18 +3,26 @@
 function Actions(){this.initialize.apply(this, arguments)};
 (function(_class){
 	
-	var ACTIONS = {
-		"cursor": new Action(null),
-		"config": new Action(null),
-		"remove": new RemoveAction(null),
-		
-		"Class" : new Action(Class),
-		"Object" : new Action(Object),
-		"Note" : new Action(Note),
-		"Cable" : new CableAction(Cable),
-		//"Cable" : new CableAction(),
-		"":null
-	};
+	var ACTIONS = {};
+	$(function(){
+		function config() {
+			Dialog.open("#configDialog");
+			setTimeout(function(){
+				Actions.resetAction(true);
+			},200);
+		}
+		registerAction("cursor", new Action(null));
+		registerAction("config", {selectMe:config});
+		registerAction("remove", new RemoveAction(null));
+	})
+	function registerAction(name, action) {
+		if (ACTIONS[name]) {
+			console.info( "Duplicate registerAction "+name);
+		}
+		ACTIONS[name] = action;
+	}
+	_class.registerAction = registerAction;
+
 	
 	var currentIdx = "cursor";
 	var isLock = false;
@@ -34,8 +42,8 @@ function Actions(){this.initialize.apply(this, arguments)};
 		$btns.removeClass("Selected");
 		$btn.addClass("Selected");
 	}
-	_class.resetAction = function() {
-		if (!isLock) _class.setAction("cursor");
+	_class.resetAction = function(isForce) {
+		if (!isLock || isForce) _class.setAction("cursor");
 	}
 
 	function init() {

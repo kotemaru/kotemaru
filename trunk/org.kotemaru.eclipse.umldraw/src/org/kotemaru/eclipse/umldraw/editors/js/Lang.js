@@ -31,16 +31,16 @@ function Lang(){this.initialize.apply(this, arguments)};
 		for (var k in opts) dst[k] = opts[k];
 		return dst;
 	}
-	_class.initAttibutes = function(dst, attributes) {
-		for (var k in attributes) {
-			dst[k] = attributes[k].value;
+	_class.initAttibutes = function(dst, properties) {
+		for (var k in properties) {
+			dst[k] = properties[k].value;
 		}
 		return dst;
 	}
 	_class.mergeAttibutes = function(dst, attrs) {
 		if (attrs == null) return;
-		var attributes = dst._class.attributes;
-		for (var k in attributes) {
+		var properties = dst._class.properties;
+		for (var k in properties) {
 			if (attrs[k] !== undefined) dst[k] = attrs[k];
 		}
 		return dst;
