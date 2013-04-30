@@ -37,6 +37,10 @@ div.MenuItem {
 .MenuItem:hover {
 	background: #d0d0d0;
 }
+div.Disabled:hover {
+	background: transparent;
+	cursor: url(../img/cursor_disabled.png), default;
+}
 .PulldownButton {
 	cursor: pointer;
 	line-height: 16px;

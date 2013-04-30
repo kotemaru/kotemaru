@@ -76,6 +76,10 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		}
 		return selectGroup;
 	}
+	_class.hasSelectGroup = function(ex,ey) {
+		return selectItem == selectGroup
+			&& selectGroup.getItem().size()>0;
+	}
 	
 	_class.getHandle = function(ex,ey) {
 		var handle = null;
@@ -87,18 +91,6 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		canvas.style.cursor = "url(img/cursor_"+type+".png),default";
 	}
 	
-	_class.doMenuItem = function($menuItem,xx,yy) {
-		var cmd = $menuItem.attr("data-value");
-		if (cmd == "cut") {
-			EditBuffer.cut();
-		} else if (cmd == "copy") {
-			EditBuffer.copy();
-		} else if (cmd == "paste") {
-			EditBuffer.paste(xx,yy);
-		} else if (cmd == "properties") {
-			Dialog.open(this.getDialog(), _class.properties);
-		}
-	}
 	_class.getDialog = function() {
 		return "#canvasDialog";
 	}
