@@ -1,0 +1,25 @@
+/* XPM */
+static char * Disk_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"32 16 3 1",
+/* colors */
+" 	s None	c None",
+".	c black",
+"X	c white",
+/* pixels */
+"        ...............         ",
+"     ...XXXXXXXXXXXXXXX...      ",
+"   ..XXXXXXXXXXXXXXXXXXXXX..    ",
+"  ..XXXXXXXXXXXXXXXXXXXXXXX..   ",
+"  .X..XXXXXXXXXXXXXXXXXXX..X.   ",
+"  .XXX...XXXXXXXXXXXXX...XXX.   ",
+"  .XXXXXX.............XXXXXX.   ",
+"  .XXXXXXXXXXXXXXXXXXXXXXXXX.   ",
+"  .XXXXXXXXXXXXXXXXXXXXXXXXX.   ",
+"  .XXXXXXXXXXXXXXXXXXXXXXXXX.   ",
+"  .XXXXXXXXXXXXXXXXXXXXXXXXX.   ",
+"  .XXXXXXXXXXXXXXXXXXXXXXXXX.   ",
+"   ..XXXXXXXXXXXXXXXXXXXXX..    ",
+"     .....................      ",
+"        ...............         ",
+"                                "};

@@ -44,7 +44,7 @@ public class BrowserEditor extends TextEditor {
 	@Override
 	public void createPartControl(Composite parent) {
 		try {
-			browser = new Browser(parent, SWT.NONE);
+			browser = new Browser(parent, SWT.MOZILLA);
 			browser.setJavascriptEnabled(true);			
 			browser.addStatusTextListener(new MyStatusTextListener());
 			

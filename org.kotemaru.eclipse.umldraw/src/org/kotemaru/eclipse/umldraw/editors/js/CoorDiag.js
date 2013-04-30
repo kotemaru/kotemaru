@@ -2,7 +2,7 @@
 function CoorDiag(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	Lang.extend(_class, _super);
-	_class.attributes = _super.attributes;
+	_class.properties = _super.properties;
 	
 	_class.prototype.initialize = function(opts) {
 		_super.prototype.initialize.apply(this, arguments);

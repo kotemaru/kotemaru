@@ -4,13 +4,15 @@
 
 - Cable
 --o side connect
--- fix point
+--o fix point
+-- unfix point
+-- on marker
 --o selector UI
--- type?style
+--x type?style
 --o bug:
 
 -用語
---attributes->properties
+--oattributes->properties
 
 - 自動登録
 -- Dialog
@@ -19,13 +21,16 @@
 
 - DrawSVG
 -- Poly
+-- VLine
+
 
 - Cut&paset
--- 整理
+--o 整理
 
 - UI
-- img 整理
-- menu無効か
+-- img 整理
+--- Disk icon 
+-- menu disable
 
 - config
 --o 用紙サイズとか

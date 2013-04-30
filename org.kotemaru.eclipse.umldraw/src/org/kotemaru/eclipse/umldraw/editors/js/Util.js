@@ -116,6 +116,12 @@ function Util(){this.initialize.apply(this, arguments)};
 		dc.strokeRect(x1-0.5, y1-0.5, (x2-x1)+1, (y2-y1)+1);
 	}
 	
+	_class.include = function(sel, url) {
+		$.get(url,null,function(data){
+			$(sel).append(data);
+		});
+	}
+
 	
 })(Util);
 

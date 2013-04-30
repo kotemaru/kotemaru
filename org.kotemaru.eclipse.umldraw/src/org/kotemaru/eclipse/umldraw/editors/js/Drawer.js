@@ -67,17 +67,52 @@ function Drawer(){this.initialize.apply(this, arguments)};
 			yy += h;
 		}
 	}
-	_class.prototype.drawHLine = function(xx,yy,ww) {
+	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
 		yy = Math.floor(yy)+0.5;
 		var dc = this.dc;
 		dc.strokeStyle = "black";
-		dc.lineWidth = 1;
+		dc.lineWidth = lw?lw:1;
 		dc.beginPath();
 		dc.moveTo(xx, yy);
 		dc.lineTo(xx+ww, yy);
 		dc.stroke();
 	}
-	
+	_class.prototype.drawVLine = function(xx,yy,hh, lw) {
+		yy = Math.floor(yy)+0.5;
+		var dc = this.dc;
+		dc.strokeStyle = "black";
+		dc.lineWidth = lw?lw:1;
+		dc.beginPath();
+		dc.moveTo(xx, yy);
+		dc.lineTo(xx, yy+hh);
+		dc.stroke();
+	}
+	_class.prototype.whiteBox = function(xx,yy,ww,hh) {
+		var dc = this.dc;
+		dc.fillStyle= "white";
+		dc.fillRect(xx,yy,ww,hh);
+	}
+	_class.prototype.ellipse = function(x,y,width,height) {
+		var dc = this.dc;
+		var radW = width/2;
+		var radH = height/2;
+		x = x + radW;
+		y = y + radH;
+		dc.lineWidth = 2;
+		dc.strokeStyle = "black";
+		dc.fillStyle = "white";
+		dc.beginPath();
+		dc.bezierCurveTo(x, y - radH, x + radW , y - radH, x + radW, y);
+		dc.bezierCurveTo(x + radW, y, x + radW, y + radH, x, y + radH);
+		dc.bezierCurveTo(x, y + radH, x - radW, y + radH, x - radW, y);
+		dc.bezierCurveTo(x - radW, y, x - radW, y - radH, x, y - radH);
+		//dc.closePath();
+		dc.fill();
+		dc.stroke();
+	};
+	_class.prototype.drawMarker = function(image, xx, yy) {
+		this.dc.drawImage(image, xx, yy);
+	}
 	_class.prototype.drawTextLine = function(font, str, xx, yy) {
 		var dc = this.dc;
 		dc.strokeStyle = "white";

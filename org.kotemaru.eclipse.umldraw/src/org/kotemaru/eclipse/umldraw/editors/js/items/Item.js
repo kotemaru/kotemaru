@@ -4,16 +4,20 @@ function Item(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	_class.prototype = new _super();
 	_class.prototype.isDrawable=true;
-	_class.attributes = {
+	_class.properties = {
 		coor : {type:"Point", value:new Coor(0,0)},
 		group : {type:"Group", value:null}
 	};
-
+	
+	_class.extend = function(__class, __super) {
+		Lang.extend(__class, __super);
+		Actions.registerAction(__class.name, new Action(__class));
+	}
 	
 	var idCount = 1;
 	
 	_class.prototype.initialize = function(coorBase) {
-		Lang.initAttibutes(this, _class.attributes);
+		Lang.initAttibutes(this, _class.properties);
 		_super.prototype.initialize.apply(this, arguments);
 		this.internalId = idCount++;
 	}

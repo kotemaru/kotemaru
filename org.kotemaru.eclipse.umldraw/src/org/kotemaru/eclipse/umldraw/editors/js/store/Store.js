@@ -14,7 +14,7 @@ function Store(){this.initialize.apply(this, arguments)};
 		for (var i in items) toJsonRef(items[i]);
 		var data = {
 			version: Version.CURRENT,
-			canvas: Canvas.getAttributes(),
+			canvas: Canvas.getProperties(),
 			coors: coorRef.getJsons(),
 			items: itemRef.getJsons(),
 		};
@@ -113,7 +113,7 @@ function Store(){this.initialize.apply(this, arguments)};
 	}
 	function getAttibutes(__class) {
 		if (__class == undefined) return {};
-		if (__class.attributes) return __class.attributes;
+		if (__class.properties) return __class.properties;
 		return getAttibutes(__class._super);
 	}
 	

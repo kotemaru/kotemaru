@@ -2,8 +2,8 @@
 
 function Object(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
-	Lang.extend(_class, _super);
-	_class.attributes = Lang.copy(_super.attributes, {
+	Item.extend(_class, _super);
+	_class.properties = Lang.copy(_super.properties, {
 		name       : {type: "string", value:""},
 		attrs      : {type: "string", value:""},
 	});
@@ -12,7 +12,7 @@ function Object(){this.initialize.apply(this, arguments)};
 	 * コンストラクタ。
 	 */
 	_class.prototype.initialize = function(attrs) {
-		Lang.initAttibutes(this, _class.attributes);
+		Lang.initAttibutes(this, _class.properties);
 		_super.prototype.initialize.apply(this, arguments);
 		Lang.mergeAttibutes(this, attrs);
 	}

@@ -5,7 +5,7 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 	Lang.extend(_class, _super);
 	_class.prototype.isDraggable=true;
 	_class.prototype.isRectangle=true;
-	_class.attributes = Lang.copy(_super.attributes, {
+	_class.properties = Lang.copy(_super.properties, {
 		_w : {type:"number", value:0},
 		_h : {type:"number", value:0},
 		isAutoSize : {type: "boolean", value:true}
@@ -15,7 +15,7 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 	 * コンストラクタ。
 	 */
 	_class.prototype.initialize = function(origin, cable, setterName) {
-		Lang.initAttibutes(this, _class.attributes);
+		Lang.initAttibutes(this, _class.properties);
 		_super.prototype.initialize.apply(this, arguments);
 		
 		this.coorDiag = new CoorDiag({origin:this});
