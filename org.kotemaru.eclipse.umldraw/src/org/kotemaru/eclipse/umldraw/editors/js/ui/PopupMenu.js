@@ -6,8 +6,11 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 	_class.open = function(name, opts){
 		_class.close();
 		_class.options = opts;
+
+		var $menu  = $(name);
+		setupDisabled($menu);
 		
-		var $menu  = $(name).show();
+		$(name).show();
 		var offset = {left:0, top:0};
 		if (opts.offset) {
 			offset = opts.offset;
@@ -38,8 +41,36 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		$img = $btn.find(">img");
 		$img.attr("src", $btn.find("div[data-value='"+val+"']>img").attr("src"));
 	}
+	
+	function setupDisabled($menu) {
+		var $items = $menu.find(".MenuItem");
+		$items.removeClass("Disabled");
+		$items.each(function(){
+			var $item = $(this);
+			var cmd = $item.attr("data-value");
+			var item = PopupMenu.options.item;
+			var x=event.offsetX, y=event.offsetY;
+			if (!MenuManager.isEnable(cmd,item,x,y)) {
+				$item.addClass("Disabled");
+			}
+		});
+	}
 
 	$(function(){
+		var reserve = null;
+
+		$(document.body).live("click", function(){
+			PopupMenu.close();
+/*
+			// trigger first
+			reserve = PopupMenu.close;
+			setTimeout(function(){
+				if (reserve) reserve();
+				reserve = null;
+			}, 100);
+*/
+		});
+		
 		$(".PulldownButton").live("click", function(){
 			var optsAttr = $(this).attr("data-opts");
 			var opts = optsAttr ? eval("("+optsAttr+")") : {};
@@ -60,17 +91,20 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 			return false;
 		});
 		$(".PopupMenu > .MenuItem").live("click", function(){
+			reserve = null;
+			if ($(this).hasClass("Disabled")) return false;
+			
 			if (PopupMenu.options.item) {
 				var ev = PopupMenu.options.event;
-				PopupMenu.options.item.doMenuItem($(this),
-									ev.offsetX, ev.offsetY);
+				MenuManager.doMenuItem(
+					PopupMenu.options.item,
+					$(this),
+					ev.offsetX, ev.offsetY
+				);
 			}
 			PopupMenu.close();
 			Canvas.refresh();
 			return false;
-		});
-		$(document.body).live("click", function(){
-			PopupMenu.close();
 		});
 		//PopupMenu.makeIconMenu("#iconSelectMenu", "icons.txt");
 	});
