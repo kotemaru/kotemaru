@@ -5,11 +5,13 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	_class.prototype.initialize = function(canvasCtx) {
 		this.dc = canvasCtx;
 		this.result = [];
+		
+		var b = Canvas.getOutBounds();
 		this.add("<?xml version='1.0' encoding='utf-8' ?>");
 		this.add("<svg xml:space='preserve'"
-				+"width='"+Canvas.width()+"' height='"+Canvas.height()+"'"
+				+" width='"+b.w+"' height='"+b.h+"'"
 				+" xmlns='http://www.w3.org/2000/svg'"
-				+" viewBox='0 0 "+Canvas.width()+" "+Canvas.height()+"'>"
+				+" viewBox='"+space(b.x1, b.y1, b.w, b.h)+"'>"
 		);
 	}
 	_class.prototype.add = function(str) {
@@ -139,6 +141,9 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 			+" points='"+pointsStr+"'"
 			+"/>"
 		);
+	}
+	_class.prototype.drawPolyGuide = function(points) {
+		// no print.
 	}
 	
 	_class.prototype.drawLines = function(lines) {

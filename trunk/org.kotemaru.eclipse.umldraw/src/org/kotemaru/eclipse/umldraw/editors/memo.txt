@@ -20,8 +20,8 @@
 -- item
 
 - DrawSVG
--- Poly
--- VLine
+--o Poly
+--o VLine
 
 
 - Cut&paset
@@ -35,7 +35,7 @@
 - config
 --o 用紙サイズとか
 -- 印刷
---- crop
+--o crop
 
 -o UNDO,RODO
 
