@@ -17,7 +17,7 @@ function Actions(){this.initialize.apply(this, arguments)};
 	})
 	function registerAction(name, action) {
 		if (ACTIONS[name]) {
-			console.info( "Duplicate registerAction "+name);
+			Eclipse.log( "Duplicate registerAction "+name);
 		}
 		ACTIONS[name] = action;
 	}

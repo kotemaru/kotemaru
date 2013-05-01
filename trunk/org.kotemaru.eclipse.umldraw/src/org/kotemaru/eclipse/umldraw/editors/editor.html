@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="css/PopupMenu.css" type="text/css" media="all">
 <link rel="stylesheet" href="css/Selector.css" type="text/css" media="all">
 
+
 <script src="jq/jquery-1.8.2.js"></script>
 <script src="js/Lang.js"></script>
 <script src="js/Eclipse.js"></script>
@@ -88,13 +89,10 @@ $(function(){
 </script>
 
 <script>
-Eclipse.setContent = function(content) {
-};
-Eclipse.getContent = function() {
-};
 
 
 $(function(){
+	/*
 	$("input").bind("change",function() {
 		Eclipse.fireEvent("change");
 	});
@@ -111,9 +109,22 @@ $(function(){
 	Canvas.addItem(obj1);
 	Canvas.addItem(cable);
 	Canvas.refresh();
-	
-	
+	*/
+	Eclipse.fireEvent("load");
+	Eclipse.fireEvent("");
+
 });
+Eclipse.setContentUrl = function(url) {
+	//alert(url);
+	$.get(url, function(xmlDoc){
+		var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
+		//alert(data);
+		Store.load(JSON.parse(data));
+	},"xml");
+};
+Eclipse.getContent = function() {
+	return Canvas.toSVG();
+};
 
 </script>
 
