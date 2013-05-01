@@ -5,6 +5,8 @@ function Note(){this.initialize.apply(this, arguments)};
 	Item.extend(_class, _super);
 	_class.properties = Lang.copy(_super.properties, {
 		comment : {type: "string", value:""},
+		isStrip: {type: "boolean", value:false},
+		fontSize: {type: "string", value:"M"}
 	});
 	
 	/**
@@ -18,7 +20,7 @@ function Note(){this.initialize.apply(this, arguments)};
 
 	_class.prototype.draw = function(dr) {
 		with (this) {
-			var size1 = dr.textSize(Font.M, comment, 1);
+			var size1 = dr.textSize(Font[fontSize], comment, 1);
 			
 			if (isAutoSize) {
 				this._w = Util.grid(Math.max(size1.w, 100)+4);
@@ -40,8 +42,12 @@ function Note(){this.initialize.apply(this, arguments)};
 				{x:x1,y:y2}, {x:x1,y:y1}, {x:x3,y:y1},
 				{x:x3,y:y3}, {x:x2,y:y3}
 			];
-			dr.drawPoly(points);
-			dr.drawText(Font.M, comment, x1+2, y1+2);
+			if (isStrip) {
+				dr.drawPolyGuide(points);
+			} else {
+				dr.drawPoly(points);
+			}
+			dr.drawText(Font[fontSize], comment, x1+2, y1+2);
 			dr.clipEnd();
 		}
 		

@@ -138,6 +138,16 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		var dc = this.dc;
 		dc.fillStyle = "white";
 		dc.strokeStyle = "black";
+		drawPoly(dc, points);
+	}
+	_class.prototype.drawPolyGuide = function(points) {
+		var dc = this.dc;
+		dc.fillStyle = "transparent";
+		dc.strokeStyle = Color.GUIDE;
+		dc.lineWidth = 0.25;
+		drawPoly(dc, points);
+	}
+	function drawPoly(dc, points) {
 		dc.beginPath();
 		
 		dc.moveTo(points[0].x-0.5, points[0].y-0.5);

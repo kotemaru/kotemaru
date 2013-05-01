@@ -13,6 +13,9 @@ function Font(){this.initialize.apply(this, arguments)};
 	_class.S = new _class(10, "sans-serif");
 	_class.M = new _class(12, "sans-serif");
 	_class.L = new _class(14, "sans-serif");
+	_class.LL = new _class(18, "sans-serif");
+	_class.BIG = new _class(24, "sans-serif");
+	
 	_class.MU = new _class(12, "sans-serif", {decoration:"underline"});
 		
 })(Font);

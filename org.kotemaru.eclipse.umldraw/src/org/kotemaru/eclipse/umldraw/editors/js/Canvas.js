@@ -56,6 +56,15 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		drawer.close();
 		return drawer.getSVG();
 	}
+	_class.getOutBounds = function() {
+		var pr = _class.properties;
+		if (pr.autoCrop) {
+			var b = items.getOutBounds();
+			return {x1:b.x1-4, y1:b.y1-4, w:b.w+8, h:b.h+8};
+		} else {
+			return {x1:0, y1:0, w:pr.width, h:pr.height};
+		}
+	}
 	
 	_class.select = function(item) {
 		if (selectItem != item) _class.clearSelect();

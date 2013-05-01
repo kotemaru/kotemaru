@@ -49,7 +49,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 			var $item = $(this);
 			var cmd = $item.attr("data-value");
 			var item = PopupMenu.options.item;
-			var x=opts.event.offsetX, y=opts.event.offsetY;
+			var x=event.offsetX, y=event.offsetY;
 			if (!MenuManager.isEnable(cmd,item,x,y)) {
 				$item.addClass("Disabled");
 			}

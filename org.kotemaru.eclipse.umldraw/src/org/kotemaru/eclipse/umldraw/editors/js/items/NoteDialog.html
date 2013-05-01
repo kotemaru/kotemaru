@@ -16,7 +16,15 @@
 		<div align="center">
 			<textarea data-path="comment" rows=8 placeholder="Comment"></textarea>
 		</div>
-		<input type=checkbox data-path="isAutoSize" >Auto sizing</input>
+		<div class="Selector" data-path="fontSize">
+			<input type=radio name="fontSize" value="S" ><span style="font-size:12px;">Small</span>
+			<input type=radio name="fontSize" value="M" ><span style="font-size:14px;">Middle</span>
+			<input type=radio name="fontSize" value="L" ><span style="font-size:16px;">Large</span>
+			<input type=radio name="fontSize" value="LL" ><span style="font-size:18px;">LLarge</span>
+			<input type=radio name="fontSize" value="BIG" ><span style="font-size:24px;">Big</span>
+		</div>
+		<input type=checkbox data-path="isAutoSize" >Auto sizing</input><br/>
+		<input type=checkbox data-path="isStrip" >Strip frame</input>
 		<br/>
 		<div class="DialogButtons">
 			<button onclick="Dialog.close()">Cancel</button>
