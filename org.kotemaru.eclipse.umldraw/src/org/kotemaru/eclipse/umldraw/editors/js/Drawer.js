@@ -67,6 +67,16 @@ function Drawer(){this.initialize.apply(this, arguments)};
 			yy += h;
 		}
 	}
+	_class.prototype.drawTextLine = function(font, str, xx, yy) {
+		var dc = this.dc;
+		dc.strokeStyle = "white";
+		dc.lineWidth = 2;
+		dc.fillStyle = "black";
+		dc.font = font;
+		dc.textBaseline = "top";
+		dc.strokeText(str, xx, yy);
+		dc.fillText(str, xx, yy);
+	}
 	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
 		yy = Math.floor(yy)+0.5;
 		var dc = this.dc;
@@ -78,7 +88,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.stroke();
 	}
 	_class.prototype.drawVLine = function(xx,yy,hh, lw) {
-		yy = Math.floor(yy)+0.5;
+		xx = Math.floor(xx)+0.5;
 		var dc = this.dc;
 		dc.strokeStyle = "black";
 		dc.lineWidth = lw?lw:1;
@@ -113,16 +123,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 	_class.prototype.drawMarker = function(image, xx, yy) {
 		this.dc.drawImage(image, xx, yy);
 	}
-	_class.prototype.drawTextLine = function(font, str, xx, yy) {
-		var dc = this.dc;
-		dc.strokeStyle = "white";
-		dc.lineWidth = 2;
-		dc.fillStyle = "black";
-		dc.font = font;
-		dc.textBaseline = "top";
-		dc.strokeText(str, xx, yy);
-		dc.fillText(str, xx, yy);
-	}
+
 
 	_class.prototype.drawBox = function(x,y,w,h) {
 		var dc = this.dc;

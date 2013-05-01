@@ -62,8 +62,12 @@
 $(function(){
 	function include(sel, url) {
 		$.get(url,null,function(data){
-			$(sel).append(data);
-		});
+			try {
+				$(sel).append(data);
+			} catch (e) {
+				Eclipse.log("include-fail:"+url+":"+e);
+			}
+		},"html");
 	}
 	
 	include("#menus","js/items/CableMenu.html");
@@ -88,6 +92,7 @@ Eclipse.setContent = function(content) {
 };
 Eclipse.getContent = function() {
 };
+
 
 $(function(){
 	$("input").bind("change",function() {

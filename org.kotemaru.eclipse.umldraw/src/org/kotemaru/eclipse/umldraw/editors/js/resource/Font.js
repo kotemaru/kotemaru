@@ -6,6 +6,7 @@ function Font(){this.initialize.apply(this, arguments)};
 		this.family = family;
 		this.name   = size+"px "+family;
 		this.height = Math.floor(size * 1.2);
+		this.acender = size;
 		for (var k in opts) this[k] = opts[k];
 	}
 	

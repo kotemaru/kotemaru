@@ -3,6 +3,10 @@
 function RemoveAction(){this.initialize.apply(this, arguments)};
 (function(_class,_super){
 	Lang.extend(_class, _super);
+
+	_class.prototype.selectMe = function() {
+		Canvas.cursor("remove");
+	}
 	
 	_class.prototype.onMouseDown = function(ev) {
 	}
@@ -16,6 +20,8 @@ function RemoveAction(){this.initialize.apply(this, arguments)};
 			item.remove();
 			Canvas.delItem(item);
 			Canvas.refresh();
+			EditBuffer.backup();
+			Actions.resetAction();
 		}
 	}
 	
