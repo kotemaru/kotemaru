@@ -1,5 +1,0 @@
-P7 332
-#XVVERSION:version 3.10a-jumboFix+Enh of 20081216 (interim!)
-#BUILTIN:UNKNOWN
-#IMGINFO:
-#END_OF_COMMENTS
