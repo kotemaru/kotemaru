@@ -25,6 +25,7 @@ Eclipse.getContent = function() {
  */
 Eclipse.fireEvent = function(type) {
 	window.status = type;
+	window.status = null;
 };
 
 //window.onload = function() {
@@ -32,10 +33,12 @@ Eclipse.fireEvent = function(type) {
 //};
 window.onerror = function(err){
 	window.status = "error "+err+"\n"+err.stack;
+	window.status = null;
 	throw err;
 };
 Eclipse.log = function(msg){
 	//if (console) console.log(msg);
 	window.status = "log "+msg;
+	window.status = null;
 };
 //EOF
