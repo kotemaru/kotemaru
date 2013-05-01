@@ -1,11 +1,12 @@
 package org.kotemaru.eclipse.umldraw.editors;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.File;
 import java.net.URL;
+
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
@@ -70,7 +71,7 @@ public class BrowserEditor extends TextEditor {
 			}
 		}
 	}
-	
+/*
 	private void onLoad(String[] params) {
 		StringBuilder sbuf = new StringBuilder();
 		try {
@@ -91,9 +92,20 @@ public class BrowserEditor extends TextEditor {
 			throw new RuntimeException(e);
 		}
 		String data = sbuf.toString();
-		data = data.replaceAll("'", "\\'").replaceAll("\n", "\\n");
+		//data = data.replaceAll("[']", "\\\'").replaceAll("[\\n]", "\\\n");
 		
 		browser.execute("Eclipse.setContent('"+data+"')");
+	}
+*/
+	private void onLoad(String[] params) {
+		IFileEditorInput input = (IFileEditorInput)getEditorInput();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();  
+		File workspaceDirectory = workspace.getRoot().getLocation().toFile(); 
+		String path = input.getFile().getFullPath().toString().replaceFirst("^/","");
+		File file = new File(workspaceDirectory,path);
+		
+		String url = "file:///"+file.getAbsolutePath().replaceAll("[\\\\]","/");
+		browser.execute("Eclipse.setContentUrl('"+url+"')");
 	}
 	
 	private void onChange(String[] params) {

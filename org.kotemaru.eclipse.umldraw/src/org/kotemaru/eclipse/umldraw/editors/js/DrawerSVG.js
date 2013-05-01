@@ -6,27 +6,24 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 		this.dc = canvasCtx;
 		this.result = [];
 		
-		var b = Canvas.getOutBounds();
-		this.add("<?xml version='1.0' encoding='utf-8' ?>");
-		this.add("<svg xml:space='preserve'"
-				+" width='"+b.w+"' height='"+b.h+"'"
-				+" xmlns='http://www.w3.org/2000/svg'"
-				+" viewBox='"+space(b.x1, b.y1, b.w, b.h)+"'>"
-		);
 	}
 	_class.prototype.add = function(str) {
 		this.result.push(str);
 	}
 	_class.prototype.getSVG = function(items) {
-/*
-		var data = {items:{}};
-		for (var i=0; i<items.length; i++) {
-			var item = items[i];
-			data.items[item.id] = item.toJson();
-		}
-		data.coors = Coor.getJsonCache();
-*/		
-		return this.result.join("\n");
+		var b = Canvas.getOutBounds();
+		var header = "<?xml version='1.0' encoding='utf-8' ?>\n"
+			+"<svg xml:space='preserve'"
+			+" width='"+b.w+"' height='"+b.h+"'"
+			+" xmlns='http://www.w3.org/2000/svg'"
+			+" viewBox='"+space(b.x1, b.y1, b.w, b.h)+"'>\n";
+
+		var data = Store.save(Canvas.getItems());
+		
+		return header
+			+ "<metadata id='umldraw-data'>"+JSON.stringify(data,null,"\t")+"</metadata>"
+			+ this.result.join("\n")
+		;
 	}
 
 	_class.prototype.close = function() {

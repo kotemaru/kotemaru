@@ -177,7 +177,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		$can.bind("dblclick",onDblClick);
 		
 		// Defaule menu disabled.
-		$(document).bind("contextmenu",function(){return false;});
+		$can.bind("contextmenu",function(){return false;});
 	})
 	
 	
