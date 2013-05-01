@@ -12,7 +12,7 @@
 --o bug:
 
 -用語
---oattributes->properties
+--o attributes->properties
 
 - 自動登録
 -- Dialog
@@ -30,7 +30,7 @@
 - UI
 -- img 整理
 --- Disk icon 
--- menu disable
+--o menu disable
 
 - config
 --o 用紙サイズとか
