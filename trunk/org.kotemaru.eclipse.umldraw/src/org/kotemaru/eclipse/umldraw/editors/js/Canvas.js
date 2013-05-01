@@ -88,7 +88,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.cursor = function(type) {
-		canvas.style.cursor = "url(img/cursor_"+type+".png),default";
+		canvas.style.cursor = "url(img/cursor_"+type+".cur),default";
 	}
 	
 	_class.getDialog = function() {
@@ -116,29 +116,36 @@ function Canvas(){this.initialize.apply(this, arguments)};
 
 	//--------------------------------------------------------------------
 	// Canvas ハンドラ設定。
+	function forIe9Event(ev) {
+		if (ev.which == undefined) {
+			ev.which = ev.buttons;
+		}
+		return ev;
+	}
 	function onMouseDown(ev) {
+		ev = forIe9Event(ev);
 		var action = Actions.getAction();
-		if(event.which == 1) {
+		if(ev.which == 1) {
 			action.onMouseDown(ev);
-		} else if(event.which == 3) {
+		} else if(ev.which == 3) {
 			action.openMenu(ev);
 		}
 	}
 	function onMouseMove(ev) {
 		var action = Actions.getAction();
-		if(event.which == 1) {
+		if(ev.which == 1) {
 			action.onMouseMove(ev);
 		}
 	}
 	function onMouseUp(ev) {
 		var action = Actions.getAction();
-		if(event.which == 1) {
+		if(ev.which == 1) {
 			action.onMouseUp(ev);
 		}
 	}
 	function onDblClick(ev) {
 		var action = Actions.getAction();
-		if(event.which == 1) {
+		if(ev.which == 1) {
 			action.onDblClick(ev);
 		}
 	}

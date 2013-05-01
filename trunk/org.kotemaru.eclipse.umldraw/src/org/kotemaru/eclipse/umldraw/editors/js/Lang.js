@@ -13,9 +13,17 @@ function Lang(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.define = function(__class) {
+		if (__class.name == undefined) {
+			__class.name = getFunctionName(__class);
+		}
 		CLASSES[__class.name] = __class;
 		__class.prototype._class = __class;
 	}
+	
+	// for IE9
+	function getFunctionName(fn) {
+	    return (fn.toString().match(/function (.+?)\(/)||[,''])[1];
+	}		
 	
 	_class.extend = function(__class, __super) {
 		__class.prototype = new __super();
