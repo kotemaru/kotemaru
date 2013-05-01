@@ -43,6 +43,7 @@
 	width: 100%;
 	height: 24px;
 	line-height: 24px;
+	background: #bbf;
 	background: -webkit-gradient(linear, center top, center bottom, from(#ccf), to(#aaf));
 	background: -moz-linear-gradient(top, #eef, #ccf);
 

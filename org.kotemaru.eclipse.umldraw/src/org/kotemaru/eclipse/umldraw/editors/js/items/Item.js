@@ -10,6 +10,7 @@ function Item(){this.initialize.apply(this, arguments)};
 	};
 	
 	_class.extend = function(__class, __super) {
+		Lang.define(__class);
 		Lang.extend(__class, __super);
 		Actions.registerAction(__class.name, new Action(__class));
 	}
