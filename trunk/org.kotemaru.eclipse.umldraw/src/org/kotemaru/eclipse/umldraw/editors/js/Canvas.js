@@ -78,7 +78,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	_class.hasSelectGroup = function(ex,ey) {
 		return selectItem == selectGroup
-			&& selectGroup.getItem().size()>0;
+			&& selectGroup.getItems().size()>0;
 	}
 	
 	_class.getHandle = function(ex,ey) {
@@ -120,6 +120,11 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		if (ev.which == undefined) {
 			ev.which = ev.buttons;
 		}
+		// for FF
+		if (ev.offsetX == undefined) {
+			ev.offsetX = ev.originalEvent.layerX;
+			ev.offsetY = ev.originalEvent.layerY;
+		}
 		return ev;
 	}
 	function onMouseDown(ev) {
@@ -132,18 +137,21 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		}
 	}
 	function onMouseMove(ev) {
+		ev = forIe9Event(ev);
 		var action = Actions.getAction();
 		if(ev.which == 1) {
 			action.onMouseMove(ev);
 		}
 	}
 	function onMouseUp(ev) {
+		ev = forIe9Event(ev);
 		var action = Actions.getAction();
 		if(ev.which == 1) {
 			action.onMouseUp(ev);
 		}
 	}
 	function onDblClick(ev) {
+		ev = forIe9Event(ev);
 		var action = Actions.getAction();
 		if(ev.which == 1) {
 			action.onDblClick(ev);

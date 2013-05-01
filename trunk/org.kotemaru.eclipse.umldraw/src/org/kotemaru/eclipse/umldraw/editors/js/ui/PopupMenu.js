@@ -8,7 +8,7 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		_class.options = opts;
 
 		var $menu  = $(name);
-		setupDisabled($menu);
+		setupDisabled($menu,opts);
 		
 		$(name).show();
 		var offset = {left:0, top:0};
@@ -42,14 +42,14 @@ function PopupMenu(){this.initialize.apply(this, arguments)};
 		$img.attr("src", $btn.find("div[data-value='"+val+"']>img").attr("src"));
 	}
 	
-	function setupDisabled($menu) {
+	function setupDisabled($menu,opts) {
 		var $items = $menu.find(".MenuItem");
 		$items.removeClass("Disabled");
 		$items.each(function(){
 			var $item = $(this);
 			var cmd = $item.attr("data-value");
 			var item = PopupMenu.options.item;
-			var x=event.offsetX, y=event.offsetY;
+			var x=opts.event.offsetX, y=opts.event.offsetY;
 			if (!MenuManager.isEnable(cmd,item,x,y)) {
 				$item.addClass("Disabled");
 			}

@@ -29,6 +29,13 @@ Eclipse.fireEvent = function(type) {
 
 window.onload = function() {
 	Eclipse.fireEvent("load");
-}
-
+};
+window.onerror = function(err){
+	window.status = "error "+err+"\n"+err.stack;
+	throw err;
+};
+Eclipse.log = function(msg){
+	console.log(msg);
+	window.status = "log "+msg;
+};
 //EOF

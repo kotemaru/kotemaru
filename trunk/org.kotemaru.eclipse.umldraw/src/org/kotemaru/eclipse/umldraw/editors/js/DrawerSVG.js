@@ -52,31 +52,70 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.prototype.drawText = function(font, str, xx, yy) {
+		var isUnderLine = (font.decoration == "underline");
 		var lines = str.split("\n");
-		yy += 2;
+		yy += 2 + font.acender;
 		for (var i=0; i<lines.length; i++) {
 	 		this.add("<text x='"+xx+"' y='"+yy+"'"
 	 			+" font-size='"+font.size+"px'"
 	  			+" font-family='"+font.family+"'"
-	  			+" text-decoration'"+font.decoration+"'"
-	 			+" dominant-baseline='hanging' >"
-	 			+lines[i]+"</text>");
+	 			//+" dominant-baseline='text-before-edge'" +
+	 			+" >"+lines[i]+"</text>");
+	 		if (isUnderLine) {
+				var m = this.dc.measureText(lines[i]);
+				this.drawHLine(xx, yy, m.width, 0.5);
+	 		}
 			yy += font.height;
 		}
 	}
 	
 	_class.prototype.drawTextLine = function(font, str, xx, yy) {
-		yy += 2;
+		yy += 2 + font.acender;
  		this.add("<text stroke='white' stroke-width='2' x='"+xx+"' y='"+yy+"'"
  			+" font-size='"+font.size+"px'"
   			+" font-family='"+font.family+"'"
- 			+" dominant-baseline='hanging' >"
- 			+str+"</text>");
+ 			//+" dominant-baseline='text-before-edge'"
+ 			+" >"+str+"</text>");
  		this.add("<text x='"+xx+"' y='"+yy+"'"
  			+" font-size='"+font.size+"px'"
   			+" font-family='"+font.family+"'"
- 			+" dominant-baseline='hanging' >"
- 			+str+"</text>");
+ 			//+" dominant-baseline='text-before-edge"
+ 			+" >"+str+"</text>");
+	}
+	
+	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
+		yy = Math.floor(yy)+0.5;
+		this.add("<polyline fill='white' stroke='black'" 
+			+" stroke-width='"+(lw?lw:1)+"'"
+			+" points='"+space(xx,yy,xx+ww,yy)+"'"
+			+"/>"
+		);
+	}
+	_class.prototype.drawVLine = function(xx,yy,hh, lw) {
+		this.add("<polyline fill='white' stroke='black'" 
+			+" stroke-width='"+(lw?lw:1)+"'"
+			+" points='"+space(xx,yy,xx,yy+hh)+"'"
+			+"/>"
+		);
+	}
+	_class.prototype.whiteBox = function(xx,yy,ww,hh) {
+		this.add("<rect fill='white' stroke='white'" 
+			+" x='"+xx+"'"
+			+" y='"+yy+"'"
+			+" width='"+ww+"'"
+			+" height='"+hh+"'"
+			+" stroke-width='"+0+"'/>"
+		);
+	}
+	_class.prototype.ellipse = function(x,y,width,height) {
+		var rw = width/2, rh = height/2;
+ 		this.add("<ellipse stroke='black' fill='white'"
+	 		+" cx='"+(x+rw)+"' cy='"+(y+rh)+"' rx='"+rw+"' ry='"+rh+"'"
+			+" stroke-width='"+2+"'/>"
+		);
+	};
+	_class.prototype.drawMarker = function(image, xx, yy) {
+		// no print.
 	}
 
 	_class.prototype.drawBox = function(x,y,w,h) {
@@ -86,6 +125,19 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 			+" width='"+w+"'"
 			+" height='"+h+"'"
 			+" stroke-width='"+2+"'/>"
+		);
+	}
+	
+	_class.prototype.drawPoly = function(points) {
+		var pointsStr = "";
+		pointsStr += points[0].x+" "+points[0].y;
+		for (var i=0; i<points.length; i++) {
+			pointsStr += " "+points[i].x+" "+points[i].y;
+		}
+		this.add("<polyline fill='white' stroke='black'" 
+			+" stroke-width='"+1+"'"
+			+" points='"+pointsStr+"'"
+			+"/>"
 		);
 	}
 	

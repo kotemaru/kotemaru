@@ -35,5 +35,13 @@
 - config
 --o 用紙サイズとか
 -- 印刷
+--- crop
 
 -o UNDO,RODO
+
+- IE
+-- マウスカーソルのhotspot
+
+- firefox
+-- extendsがうまく行ってない。
+
