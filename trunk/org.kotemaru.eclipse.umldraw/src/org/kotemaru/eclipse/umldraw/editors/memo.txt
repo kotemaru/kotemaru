@@ -40,7 +40,7 @@
 -o UNDO,RODO
 
 - IE
--- マウスカーソルのhotspot
+--o マウスカーソルのhotspot
 
 - firefox
 -- extendsがうまく行ってない。
