@@ -36,7 +36,9 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		return items.delItem(item);
 	}
 	_class.getItem = function(ex,ey, ignore) {
-		return items.getItem(ex,ey, ignore);
+		var item = items.getMarkerItem(ex,ey, ignore);
+		if (item == null) item = items.getItem(ex,ey, ignore);
+		return item;
 	}
 	_class.getItems = function() {
 		return items;

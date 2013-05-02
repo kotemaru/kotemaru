@@ -57,12 +57,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.setPoint = function(item,ex,ey, no) {
 		var coor = this.points[no];
-		if (item != null) {
-			coor.xy(item.x(), item.y());
-		} else {
-			coor.setOrigin(null);
-			coor.setOrigin2(null);
-		}
+		setPoint(coor, item,ex,ey);
 	}
 	_class.prototype.getPoint = function(no) {
 		return this.points[no];

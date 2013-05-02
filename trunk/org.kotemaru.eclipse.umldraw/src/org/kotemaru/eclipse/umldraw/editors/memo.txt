@@ -5,7 +5,7 @@
 - Cable
 --o side connect
 --o fix point
--- unfix point
+--o unfix point
 -- on marker
 --o selector UI
 --x type?style

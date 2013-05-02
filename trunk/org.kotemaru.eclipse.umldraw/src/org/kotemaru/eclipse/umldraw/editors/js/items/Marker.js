@@ -6,6 +6,7 @@ function Marker(){this.initialize.apply(this, arguments)};
 	//_class.properties = Lang.copy(_super.properties, {
 	//	name : {type: "string", value:"EgEgEg"},
 	//});
+	_class.prototype.isMarker = true;
 	
 	var markerImg;
 	$(function(){
