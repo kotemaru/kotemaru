@@ -41,7 +41,9 @@ function Actions(){this.initialize.apply(this, arguments)};
 			var $btns = $(".Action");
 			var $btn = $(".Action[data-value='"+idx+"']");
 			$btns.removeClass("Selected");
+			$btns.removeClass("Locked");
 			$btn.addClass("Selected");
+			if (isLock) $btn.addClass("Locked");
 		},100);
 	}
 	_class.resetAction = function(isForce) {

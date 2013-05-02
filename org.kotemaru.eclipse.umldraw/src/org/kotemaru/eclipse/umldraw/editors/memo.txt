@@ -2,45 +2,27 @@
 -group再考
 --Save&store
 
-- Cable
---o side connect
---o fix point
---o unfix point
--- on marker
---o selector UI
---x type?style
---o bug:
-
--用語
---o attributes->properties
-
 - 自動登録
 -- Dialog
 -- Menu
 -- item
 
-- DrawSVG
---o Poly
---o VLine
-
-
-- Cut&paset
---o 整理
 
 - UI
 -- img 整理
 --- Disk icon 
---o menu disable
+-- eclipseのアイコン
+-- canvasのバルーン
+-- バルーンの英語
+
 
 - config
---o 用紙サイズとか
 -- 印刷
---o crop
+-- cableのデフォルト
+-- バルーン不要
 
--o UNDO,RODO
 
 - IE
---o マウスカーソルのhotspot
 
 - firefox
 -- extendsがうまく行ってない。

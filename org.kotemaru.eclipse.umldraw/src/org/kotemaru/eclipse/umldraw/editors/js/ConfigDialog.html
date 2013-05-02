@@ -9,6 +9,7 @@
 <script>
 $(function(){
 	$("#userAgent").text(navigator.userAgent);
+	$("#userLang").text(Util.browserLanguage());
 });
 </script>
 
@@ -20,6 +21,7 @@ $(function(){
 	<div>
 		<div>UML Draw Ver-0.0.1</div>
 		<div>User-Agent:<span id="userAgent"></span></div>
+		<div>Lang:<span id="userLang"></span></div>
 		<div class="DialogButtons">
 			<button onclick="Dialog.close()">Done</button>
 		</div>
