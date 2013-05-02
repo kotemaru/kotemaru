@@ -32,9 +32,15 @@ function Cable(){this.initialize.apply(this, arguments)};
 		this.setEndPoint(new Coor({origin:this.startPoint, x:20, y:20}));
 	}
 	
-	_class.prototype.addPoint = function(coor) {
-		var idx = this.onPointIndex(coor.x(),coor.y());
+	_class.prototype.addPoint = function(xx,yy) {
+		var idx = this.onPointIndex(xx,yy);
 		if (idx >= 0) {
+			var coor = new Coor({
+				origin:this.startPoint, 
+				origin2:this.endPoint,
+			});
+			coor.xy(xx,yy);
+			
 			this.points.splice(idx,0,coor);
 			// clear handle.
 			for (var i=0; i<this.points.length; i++) {
@@ -58,6 +64,11 @@ function Cable(){this.initialize.apply(this, arguments)};
 			coor.setOrigin2(null);
 		}
 	}
+	_class.prototype.getPoint = function(no) {
+		return this.points[no];
+	}
+	
+	
 	function setPoint(coor, item,ex,ey) {
 		if (item) {
 			coor.origin(item);
