@@ -87,11 +87,12 @@ img#cableImg {
 
 
 .ActionGroupHeader {
-	font-size: 12px;
+	font-size: 10px;
 	font-weight: bold;
-	height: 13px;
+	height: 12px;
 	background: #f0d080;
 	overflow:hidden;
+	padding-top: 1px;
 	border-bottom: 1px solid  #a0a040;
 }
 .ActionGroupHeader > img.OpenClose {

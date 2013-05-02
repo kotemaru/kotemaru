@@ -37,13 +37,17 @@ function Actions(){this.initialize.apply(this, arguments)};
 		currentIdx = idx;
 		ACTIONS[currentIdx].selectMe();
 		
-		var $btns = $(".Action");
-		var $btn = $(".Action[data-value='"+idx+"']");
-		$btns.removeClass("Selected");
-		$btn.addClass("Selected");
+		setTimeout(function(){
+			var $btns = $(".Action");
+			var $btn = $(".Action[data-value='"+idx+"']");
+			$btns.removeClass("Selected");
+			$btn.addClass("Selected");
+		},100);
 	}
 	_class.resetAction = function(isForce) {
-		if (!isLock || isForce) _class.setAction("cursor");
+		if (!isLock || isForce) {
+			_class.setAction("cursor");
+		}
 	}
 
 	function init() {

@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <link rel="stylesheet" href="css/BorderLayout.css" type="text/css" media="all">
 <link rel="stylesheet" href="css/editor.css" type="text/css" media="all">
@@ -92,38 +94,24 @@ $(function(){
 
 
 $(function(){
-	/*
-	$("input").bind("change",function() {
-		Eclipse.fireEvent("change");
-	});
-	
-	var cls1 = new Class({x:10,y:10,name:"TestClass"});
-	var cls2 = new Class({x:100,y:100,name:"EgEg\nEgEg",attrs:"xxxxx"});
-	var obj1 = new Object({x:100,y:100,name:"EgEg\nEnnngEg",attrs:"xxxxx"});
-	var cable = new Cable();
-	cable.setStartPoint(cls1);
-	cable.setEndPoint(cls2);
-	
-	Canvas.addItem(cls1);
-	Canvas.addItem(cls2);
-	Canvas.addItem(obj1);
-	Canvas.addItem(cable);
-	Canvas.refresh();
-	*/
 	Eclipse.fireEvent("load");
 	Eclipse.fireEvent("");
-
 });
 Eclipse.setContentUrl = function(url) {
-	//alert(url);
-	$.get(url, function(xmlDoc){
-		var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
-		//alert(data);
-		Store.load(JSON.parse(data));
-	},"xml");
+	$.ajax({type:"GET", url:url, cache:false,
+		success: function(xmlDoc){
+			var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
+			Store.load(JSON.parse(data));
+		},
+		error: function(xreq,state,err){alert(err);},
+		dataType: "xml"
+	});
 };
 Eclipse.getContent = function() {
 	return Canvas.toSVG();
+};
+Eclipse.startup = function() {
+	Debug.disable();
 };
 
 </script>
@@ -132,28 +120,35 @@ Eclipse.getContent = function() {
 <body>
 	<div id="borderLayoutMain" class="BorderLayoutFrame">
 		<div id="borderLayoutMainInner">
-			<canvas id="canvas" width="1000" height="1000"></canvas>
+			<canvas id="canvas"></canvas>
 		</div>
 	</div>
 
 	<div id="borderLayoutLeft" class="BorderLayoutFrame">
-		<div>
+		<div id="debugActionGroup">
 			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Debug</div>
 			<div class="ActionGroup" >
 				<div></div>
+				<span class="Action Small" data-value="load"><img src="img/led/folder.png"/></span>
 				<span class="Action Small" data-value="save"><img src="img/led/save.png"/></span>
 				<span class="Action Small" data-value="print"><img src="img/led/printer.png"/></span>
+			</div>
+		</div>
+		<div>
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">System</div>
+			<div class="ActionGroup" >
+				<div></div>
 				<span class="Action Small" data-value="undo"><img src="img/led/undo.png"/></span>
 				<span class="Action Small" data-value="redo"><img src="img/led/redo.png"/></span>
+				<span class="Action Small" data-value="config"><img src="img/config.png"/></span>
 			</div>
 		</div>
 		
 		<div>
-			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">System</div>
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">-</div>
 			<div class="ActionGroup" id="systemActionGroup">
 				<div></div>
 				<span class="Action Small" data-value="cursor"><img src="img/cursor.png"/></span>
-				<span class="Action Small" data-value="config"><img src="img/config.png"/></span>
 				<span class="Action Small" data-value="remove"><img src="img/led/cross.png"/></span>
 			</div>
 		</div>

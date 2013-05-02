@@ -41,4 +41,9 @@ Eclipse.log = function(msg){
 	window.status = "log "+msg;
 	window.status = null;
 };
+
+Eclipse.startup = function() {
+	alert("Abstract function Eclipse.startup() not implemented.");
+};
+
 //EOF
