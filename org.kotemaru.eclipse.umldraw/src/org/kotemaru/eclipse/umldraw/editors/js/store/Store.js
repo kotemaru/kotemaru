@@ -99,7 +99,7 @@ function Store(){this.initialize.apply(this, arguments)};
 		
 		for (var k in attrs) {
 			var type = attrs[k].type;
-			if (type == "string" || type == "number") {
+			if (type == "string" || type == "number" || type == "boolean") {
 				json[k] = obj[k];
 			} else if (type == "Point") {
 				json[k] = toJsonRef(obj[k]);
@@ -138,7 +138,7 @@ function Store(){this.initialize.apply(this, arguments)};
 
 		for (var k in attrs) {
 			var type = attrs[k].type;
-			if (type == "string" || type == "number") {
+			if (type == "string" || type == "number" || type == "boolean") {
 				obj[k] = json[k];
 			} else if (type == "Point") {
 				obj[k] = fromJsonRef(json[k]);

@@ -99,6 +99,7 @@ $(function(){
 $(function(){
 	Eclipse.fireEvent("load");
 	Eclipse.fireEvent("");
+	Actions.resetAction(true);
 });
 Eclipse.setContentUrl = function(url) {
 	$.ajax({type:"GET", url:url, cache:false,

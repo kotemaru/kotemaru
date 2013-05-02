@@ -17,6 +17,7 @@
 -- eclipseのアイコン
 -- canvasのバルーン
 -- バルーンの英語
+-- Actionボタンの回復調整
 
 
 - config
