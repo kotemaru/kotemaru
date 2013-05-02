@@ -22,6 +22,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	_class.init = function(elem) {
 		canvas = elem;
 		context2d = canvas.getContext('2d');
+		_class.setProperties(_class.properties);
 		_class.reset();
 	}
 	_class.reset = function() {
@@ -42,7 +43,8 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.refresh = function() {
-		context2d.clearRect(0,0,1000,1000);
+		var pr = _class.properties;
+		context2d.clearRect(0,0,pr.width, pr.height);
 		var drawer = new Drawer(context2d);
 		items.draw(drawer);
 		if (selectItem) selectItem.drawHandle(context2d);
@@ -125,46 +127,59 @@ function Canvas(){this.initialize.apply(this, arguments)};
 
 	//--------------------------------------------------------------------
 	// Canvas ハンドラ設定。
-	function forIe9Event(ev) {
-		if (ev.which == undefined) {
-			ev.which = ev.buttons;
+	function onMouseDown(ev) {
+		ev = formalEvent(ev);
+		var action = Actions.getAction();
+		if(ev.btn == 1) {
+			action.onMouseDown(ev);
+		} else if(ev.btn == 3) {
+			action.openMenu(ev);
 		}
+	}
+	function onMouseMove(ev) {
+		ev = formalEvent(ev);
+		var action = Actions.getAction();
+		if(ev.btn == 1) {
+			action.onMouseMove(ev);
+		}
+	}
+	function onMouseUp(ev) {
+		ev = formalEvent(ev);
+		var action = Actions.getAction();
+		if(ev.btn == 1) {
+			action.onMouseUp(ev);
+		}
+	}
+	function onDblClick(ev) {
+		ev = formalEvent(ev);
+		var action = Actions.getAction();
+		if(ev.which == 1) {
+			action.onDblClick(ev);
+		}
+	}
+	
+	var event_btn = 0;
+	function formalEvent(ev) {
+		if (ev.buttons !== undefined) { // for IE9
+			if (ev.type == "mousedown") {
+				if (ev.buttons == 1) event_btn = 1;
+				if (ev.buttons == 2) event_btn = 3;
+			} 
+			ev.btn = event_btn;
+			if (ev.type == "mouseup") {
+				event_btn = 0;
+			}
+		} else { // for chrome
+			ev.btn = ev.which;
+		}
+		
+		//console.log(ev.type," ",ev.btn," ",ev.button," ",ev.buttons," ",ev.which);
 		// for FF
 		if (ev.offsetX == undefined) {
 			ev.offsetX = ev.originalEvent.layerX;
 			ev.offsetY = ev.originalEvent.layerY;
 		}
 		return ev;
-	}
-	function onMouseDown(ev) {
-		ev = forIe9Event(ev);
-		var action = Actions.getAction();
-		if(ev.which == 1) {
-			action.onMouseDown(ev);
-		} else if(ev.which == 3) {
-			action.openMenu(ev);
-		}
-	}
-	function onMouseMove(ev) {
-		ev = forIe9Event(ev);
-		var action = Actions.getAction();
-		if(ev.which == 1) {
-			action.onMouseMove(ev);
-		}
-	}
-	function onMouseUp(ev) {
-		ev = forIe9Event(ev);
-		var action = Actions.getAction();
-		if(ev.which == 1) {
-			action.onMouseUp(ev);
-		}
-	}
-	function onDblClick(ev) {
-		ev = forIe9Event(ev);
-		var action = Actions.getAction();
-		if(ev.which == 1) {
-			action.onDblClick(ev);
-		}
 	}
 	
 	$(function(){
@@ -177,7 +192,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		$can.bind("dblclick",onDblClick);
 		
 		// Defaule menu disabled.
-		$can.bind("contextmenu",function(){return false;});
+		$(document).bind("contextmenu",function(){return false;});
 	})
 	
 	

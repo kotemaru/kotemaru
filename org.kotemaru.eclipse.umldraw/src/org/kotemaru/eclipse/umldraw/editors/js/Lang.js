@@ -5,6 +5,9 @@ function Lang(){this.initialize.apply(this, arguments)};
 	var CLASSES = {};
 
 	_class.classForName = function(name) {
+		if (name == null) {
+			throw "Name null";
+		}
 		var cls = CLASSES[name];
 		if (cls == null) {
 			throw "Class not found: "+name;
@@ -15,6 +18,9 @@ function Lang(){this.initialize.apply(this, arguments)};
 	_class.define = function(__class) {
 		if (__class.name == undefined) {
 			__class.name = getFunctionName(__class);
+		}
+		if (__class.name == null) {
+			throw "Not find class name:"+__class;
 		}
 		CLASSES[__class.name] = __class;
 		__class.prototype._class = __class;

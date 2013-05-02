@@ -98,6 +98,8 @@ public class BrowserEditor extends TextEditor {
 	}
 */
 	private void onLoad(String[] params) {
+		browser.execute("Eclipse.startup()");
+		
 		IFileEditorInput input = (IFileEditorInput)getEditorInput();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();  
 		File workspaceDirectory = workspace.getRoot().getLocation().toFile(); 

@@ -2,6 +2,7 @@
 
 function Group(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
+	Lang.define(_class);
 	Lang.extend(_class, _super);
 	_class.prototype.isGroup = true;
 

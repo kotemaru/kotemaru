@@ -92,6 +92,10 @@ function Store(){this.initialize.apply(this, arguments)};
 		var attrs = getAttibutes(obj._class);
 		var json = {};
 		json._class = obj._class.name;
+		if (json._class == null) {
+			throw "Not find class name:"+obj.__class;
+		}
+		
 		
 		for (var k in attrs) {
 			var type = attrs[k].type;
