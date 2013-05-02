@@ -77,9 +77,6 @@ div,span {
 .ActionGroup .Action>img {
 	vertical-align: middle;
 }
-img#cableImg {
-	padding-top: 6px;
-}
 
 .ActionGroup .Selected {
 	border: 1px inset #f0f0f0;
