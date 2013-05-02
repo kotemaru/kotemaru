@@ -121,7 +121,12 @@ function Util(){this.initialize.apply(this, arguments)};
 			$(sel).append(data);
 		});
 	}
-
+	
+	_class.browserLanguage = function(defo) {
+		var lang = navigator.browserLanguage || navigator.language || navigator.userLanguage;
+		if (lang == null) return defo;
+		return lang.substr(0, 2);
+	}
 	
 })(Util);
 
