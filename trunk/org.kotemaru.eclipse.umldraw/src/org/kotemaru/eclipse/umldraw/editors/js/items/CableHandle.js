@@ -29,11 +29,22 @@ function CableHandle(){this.initialize.apply(this, arguments)};
 		}
 		//this.coor.origin().xy(xx,yy); // 非センター
 	}
-	_class.prototype.fixed = function(xx,yy) {
-		this.cable[this.setterName](null,xx,yy, this.pointNo);
+	
+	_class.prototype.isFixed = function() {
+		var coor = this.cable.getPoint(this.pointNo);
+		return coor.origin();
 	}
-	_class.prototype.unfixed = function(xx,yy) {
-		// TODO:
+	_class.prototype.fixed = function() {
+		var coor = this.cable.getPoint(this.pointNo);
+		coor.setOrigin(null);
+		coor.setOrigin2(null);
+	}
+	_class.prototype.unfixed = function() {
+		var coor = this.cable.getPoint(this.pointNo);
+		var xx=coor.x(),yy=coor.y();
+		coor.setOrigin(this.cable.startPoint);
+		coor.setOrigin2(this.cable.endPoint);
+		coor.xy(xx,yy);
 	}
 	
 })(CableHandle, Handle);

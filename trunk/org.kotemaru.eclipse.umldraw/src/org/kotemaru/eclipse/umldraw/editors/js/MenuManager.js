@@ -12,7 +12,14 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 		paste: function(){return EditBuffer.getCopyBuffer() != null;},
 		
 		delPoint: function(item,xx,yy){return Canvas.getHandle(xx,yy) != null;},
-		fixPoint: function(item,xx,yy){return Canvas.getHandle(xx,yy) != null;},
+		fixPoint: function(item,xx,yy){
+			var handle = Canvas.getHandle(xx,yy);
+			return handle && handle.isFixed && handle.isFixed();
+		},
+		unfixPoint: function(item,xx,yy){
+			var handle = Canvas.getHandle(xx,yy);
+			return handle && handle.isFixed && !handle.isFixed();
+		},
 	};
 	
 	
@@ -36,16 +43,16 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 
 		// Cables
 		} else if (cmd == "addPoint") {
-			var coor = new Coor({
-				origin:this.startPoint, 
-				origin2:this.endPoint,
-			});
-			coor.xy(xx,yy);
-			item.addPoint(coor);
+			item.addPoint(xx,yy);
 		} else if (cmd == "fixPoint") {
 			var handle = Canvas.getHandle(xx,yy);
 			if (handle && handle.fixed) {
-				handle.fixed(xx,yy);
+				handle.fixed();
+			}
+		} else if (cmd == "unfixPoint") {
+			var handle = Canvas.getHandle(xx,yy);
+			if (handle && handle.unfixed) {
+				handle.unfixed();
 			}
 		}
 	}
