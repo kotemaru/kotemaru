@@ -29,8 +29,18 @@ function Items(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.getItem = function(ex,ey, ignore) {
 		for (var i in this.children) {
-			if (this.children[i] != ignore && this.children[i].onPoint(ex, ey)) {
-				return this.children[i];
+			var child = this.children[i];
+			if (child != ignore && child.onPoint(ex, ey)) {
+				return child;
+			}
+		}
+		return null;
+	}
+	_class.prototype.getMarkerItem = function(ex,ey, ignore) {
+		for (var i in this.children) {
+			var child = this.children[i];
+			if (child.isMarker && child != ignore && child.onPoint(ex, ey)) {
+				return child;
 			}
 		}
 		return null;
