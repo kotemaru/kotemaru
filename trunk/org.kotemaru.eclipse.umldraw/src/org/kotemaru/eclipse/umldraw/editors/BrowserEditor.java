@@ -27,7 +27,8 @@ public class BrowserEditor extends TextEditor {
 	private static final String ENCODING = "utf-8";
 	
 	private Browser browser;
-	private boolean isDirty = false;
+	private int changeHistoryCount = 0;
+	private int savedHistoryCount  = 0;
 	
 	public BrowserEditor() {
 		super();
@@ -71,32 +72,7 @@ public class BrowserEditor extends TextEditor {
 			}
 		}
 	}
-/*
-	private void onLoad(String[] params) {
-		StringBuilder sbuf = new StringBuilder();
-		try {
-			IFileEditorInput input = (IFileEditorInput)getEditorInput();
-			InputStream in = input.getFile().getContents();
-			try {
-				Reader reader = new InputStreamReader(in, ENCODING);
-				int n;
-				char[] buff = new char[1024];
-				while ((n=reader.read(buff))>=0) {
-					sbuf.append(buff,0,n);
-				}
-			} finally {
-				in.close();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e);
-		}
-		String data = sbuf.toString();
-		//data = data.replaceAll("[']", "\\\'").replaceAll("[\\n]", "\\\n");
-		
-		browser.execute("Eclipse.setContent('"+data+"')");
-	}
-*/
+
 	private void onLoad(String[] params) {
 		browser.execute("Eclipse.startup()");
 		
@@ -111,7 +87,8 @@ public class BrowserEditor extends TextEditor {
 	}
 	
 	private void onChange(String[] params) {
-		setDirty(true);
+		changeHistoryCount = Integer.valueOf(params[1]);
+		firePropertyChange(EditorPart.PROP_DIRTY); 
 	}
 	
 
@@ -125,21 +102,17 @@ public class BrowserEditor extends TextEditor {
 				true,  // keep saving, even if IFile is out of sync with the Workspace
 				false, // dont keep history
 				monitor); // progress monitor
-			setDirty(false);
+			savedHistoryCount = changeHistoryCount;
+			firePropertyChange(EditorPart.PROP_DIRTY); 
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}
 	}
 
-	public void setDirty(boolean b) {
-		isDirty = b;
-		firePropertyChange(EditorPart.PROP_DIRTY); 
-	}
-
 	@Override
 	public boolean isDirty() {
-		return isDirty;
+		return savedHistoryCount != changeHistoryCount;
 	}
 
 

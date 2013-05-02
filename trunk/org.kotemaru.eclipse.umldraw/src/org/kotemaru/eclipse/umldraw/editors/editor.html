@@ -102,6 +102,7 @@ Eclipse.setContentUrl = function(url) {
 		success: function(xmlDoc){
 			var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
 			Store.load(JSON.parse(data));
+			EditBuffer.init();
 		},
 		error: function(xreq,state,err){alert(err);},
 		dataType: "xml"
