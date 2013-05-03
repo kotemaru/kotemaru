@@ -1,11 +1,11 @@
 <style>
-#dialogCable input {
+#cableDialog input[type=text] {
 	width: 100px;
 }
 </style>
 		
 
-<div id="dialogCable" class="Dialog">
+<div id="cableDialog" class="Dialog">
 	<h3>
 		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
 		<nobr>Line Properties</nobr>
@@ -67,10 +67,11 @@
 				<span class="SelectorItem" data-value="L"><img src="img/line-route-L.png" /></span>
 			</span>
 		</div>
+		<div align="right"><font size=1>(<input type=checkbox name="routeDefault">This routing style is default.)</font></div>
 		
 		<div class="DialogButtons">
 			<button onclick="Dialog.close()">Cancel</button>
-			<button onclick="Dialog.save()">OK</button>
+			<button onclick="CableAction.dialogSave();Dialog.save();">OK</button>
 		</div>
 	</div>
 </div>

@@ -20,7 +20,7 @@
 	//width: 900px;
 	height: auto;
 	border-radius: 10px;
-	//overflow:hidden;
+	overflow:hidden;
 	box-shadow: 4px 4px 8px;
 	font-size: 14px;
 }
@@ -87,15 +87,6 @@ div.DialogButtons {
 div.DialogButtons button {
 	width: 70px;
 }
-
-#configDialog > div {
-	//border: 1px solid gray;
-	height: 400px;
-	width: 700px;
-	overflow-y: scroll;
-}
-
-
 
 .Dialog table {
 	width: 90%;

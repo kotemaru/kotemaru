@@ -242,7 +242,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 		return "#cableMenu";
 	}
 	_class.prototype.getDialog = function() {
-		return "#dialogCable";
+		return "#cableDialog";
 	}
 	_class.prototype.doMenuItem = function($menuItem,xx,yy) {
 		var cmd = $menuItem.attr("data-value");
