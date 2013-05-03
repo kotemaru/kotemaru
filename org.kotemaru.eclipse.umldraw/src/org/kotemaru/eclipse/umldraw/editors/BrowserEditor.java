@@ -2,6 +2,7 @@ package org.kotemaru.eclipse.umldraw.editors;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -9,6 +10,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
@@ -108,6 +110,11 @@ public class BrowserEditor extends TextEditor {
 			String key = PrefInit.KEYS[i];
 			String val = (String) browser.evaluate("return Eclipse.getPreferences('"+key+"')");
 			store.setValue(key, val);
+		}
+		try {
+			((IPersistentPreferenceStore)store).save();
+		} catch (Exception e) {
+			log("Error:"+e);
 		}
 	}
 	private void onChange(String[] params) {
