@@ -48,6 +48,12 @@ function Cable(){this.initialize.apply(this, arguments)};
 			}
 		}
 	}
+	_class.prototype.delPoint = function(no) {
+		this.points.splice(no,1);
+		for (var i=0; i<this.points.length; i++) {
+			this.points[i].handle = null;
+		}
+	}
 	
 	_class.prototype.setStartPoint = function(item,ex,ey) {
 		setPoint(this.startPoint, item,ex,ey);

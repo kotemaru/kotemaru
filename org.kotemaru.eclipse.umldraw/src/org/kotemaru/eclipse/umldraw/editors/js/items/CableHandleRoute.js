@@ -27,10 +27,13 @@ function CableHandleRoute(){this.initialize.apply(this, arguments)};
 		}
 		//this.coor.origin().xy(xx,yy); // 非センター
 	}
-	
 	_class.prototype.isFixed = function() {
 		var coor = this.cable.getPoint(this.pointNo);
 		return coor.origin();
+	}
+	
+	_class.prototype.remove = function() {
+		this.cable.delPoint(this.pointNo);
 	}
 	_class.prototype.fixed = function() {
 		var coor = this.cable.getPoint(this.pointNo);
