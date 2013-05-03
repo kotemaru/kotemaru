@@ -8,7 +8,7 @@
 -- item
 
 - cable
--- unfix point bug
+--o unfix point bug
 -- bound out float point
 
 - UI

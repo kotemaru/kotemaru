@@ -44,8 +44,15 @@ function Coor(){this.initialize.apply(this, arguments)};
 			if (this._origin) {
 				var x1 = this._origin.x();
 				if (this._origin2) {
-					var w = this._origin2.x() - x1;
-					this._x = (v - x1) / w ;
+					var x2 = this._origin2.x();
+					var per = (v - x1) / (x2-x1);
+					
+					if (-1.0 <= per && per<= 1.0) {
+						this._x = per;
+					} else {
+						var ox = x1 + (x2-x1)/2;
+						this._x = v - ox;
+					}
 				} else {
 					this._x = v - x1 ;
 				}
@@ -65,8 +72,15 @@ function Coor(){this.initialize.apply(this, arguments)};
 		if (this._origin) {
 			var x1 = this._origin.x();
 			if (this._origin2) {
-				var w = this._origin2.x() - x1;
-				return x1 + w * this._x;
+				var x2 = this._origin2.x();
+				var w = x2 - x1;
+				var per = this._x;
+				
+				if (-1.0 <= per && per <= 1.0) {
+					return x1 + w * per;
+				} else {
+					return x1 + w/2 + this._x;
+				}
 			} else {
 				return x1 + this._x;
 			}
