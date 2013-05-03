@@ -14,17 +14,11 @@ function CableAction(){this.initialize.apply(this, arguments)};
 		6: {startType:"rhombi", lineType:"dotted", endType:"arrow"},
 	};
 	
-	var lineRouteDefault = "N";
-	
-	$(function(){
-		lineRouteDefault = Eclipse.getPreferences("lineRouteDefault");
-	});
-	
 	_class.dialogSave = function() {
 		var $di = $("#cableDialog");
 		var isDef = $di.find("input[name='routeDefault']").attr("checked");
 		if (isDef) {
-			lineRouteDefault =
+			var lineRouteDefault =
 				$di.find("*[data-path='lineRoute']").attr("data-value");
 			Eclipse.setPreferences("lineRouteDefault", lineRouteDefault);
 		}
@@ -35,7 +29,7 @@ function CableAction(){this.initialize.apply(this, arguments)};
 		var xy = {x:ev.offsetX, y:ev.offsetY};
 		this.cable = new this.targetClass(xy);
 		Util.update(this.cable, STYLES[asso]);
-		this.cable.lineRoute = lineRouteDefault;
+		this.cable.lineRoute = Eclipse.getPreferences("lineRouteDefault");;
 		
 		Canvas.addItem(this.cable);
 		Canvas.select(this.cable);
