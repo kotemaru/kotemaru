@@ -117,7 +117,8 @@ Eclipse.setContentUrl = function(url) {
 Eclipse.getContent = function() {
 	return Canvas.toSVG();
 };
-Eclipse.startup = function() {
+Eclipse.startup = function(pref) {
+	Eclipse.preferences = pref;
 	Debug.disable();
 };
 
