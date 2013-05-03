@@ -1,7 +1,53 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="make" name="umldraw">
+<project basedir="." default="make2" name="umldraw">
+	<property name="project.root" value="../../../../../.."/>
+
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+	  <classpath>
+	    <pathelement location="${project.root}/lib/ant-contrib-1.0b3.jar"/>
+	  </classpath>
+	</taskdef>
+	
 	<property name="version" value="0.0.1"/>
 	
     <target name="make">
+    	<fileset id="" dir=".">
+    	    <include name="**/*." />
+    	</fileset>
+
+    	<pathconvert property="files" refid="myfileset" pathsep=";" dirsep="/" >
+    		<map from="${basedir}/" to="" />
+    	</pathconvert>
+    	<echo file="htmls.txt">${files}</echo>
 	</target>
+	
+    <target name="make2">
+    	<antcall target="makeListFile">
+    		<param name="includes" value="**/*.html"/>
+    		<param name="file" value="htmls.txt"/>
+    		<param name="prefix" value="include('"/>
+        	<param name="suffix" value="');"/>
+    	</antcall>
+    </target>
+	
+    <target name="makeListFile">
+ 	 	<fileset id="fileset" dir=".">
+     	    <include name="${includes}" />
+    	</fileset>
+
+    	<pathconvert property="files" refid="fileset" pathsep=";" dirsep="/" >
+    		<map from="${basedir}/" to="" />
+    	</pathconvert>
+    	
+    	<echo file="${file}"></echo>
+    	<foreach target="addLine" param="name" inheritall="true"
+	   		list="${files}" delimiter=";"
+    	>
+	   </foreach>
+	</target>
+    <target name="addLine">
+			<echo append="true" file="${file}">${prefix}${name}${suffix}
+</echo>
+	</target>
+
 </project>

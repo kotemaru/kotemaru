@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+
+<style>
+#canvasDialog .Selector {
+	padding: 4px;
+}
+#canvasDialog .Selector img {
+	vertical-align: middle;
+}
+</style>
+
+<script>
+$(function(){
+	var SIZE = { // portrait
+		A5: {w:148 , h:210},
+		B5: {w:176 , h:250},
+		A4: {w:210 , h:297},
+		B4: {w:250 , h:353},
+		A3: {w:297 , h:420},
+		B3: {w:353 , h:500},
+		Letter: {w:216 , h:279}
+	}
+
+	$("#canvasDialog input[type=radio]").live("change",function(){
+		var $di = $("#canvasDialog");
+		var size = $di.find("input[name=size]:checked").val();
+		//var dpi  = $di.find("input[name=dpi]:checked").val();
+		var dpi  = 96;
+		var dir  = $di.find("input[name=dir]:checked").val();
+
+		var w,h;
+		if (dir=="portrait"){
+			w = Math.round(SIZE[size].w * dpi / 25.4);
+			h = Math.round(SIZE[size].h * dpi / 25.4);
+		} else {
+			h = Math.round(SIZE[size].w * dpi / 25.4);
+			w = Math.round(SIZE[size].h * dpi / 25.4);
+		}
+		
+		$di.find("input[name=width]").val(w);
+		$di.find("input[name=height]").val(h);
+	});
+});
+</script>
+
+<div id="canvasDialog" class="Dialog">
+	<h3>
+		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+		<nobr>Canvas Properties</nobr>
+	</h3>
+	<div>
+		<h4>Sheet</h4>
+<form name="sheet">
+		<div>
+			Size: <input name="width" data-path="width" size=4 />
+			x <input name="height" data-path="height" size=4/> px (96dpi)
+		</div>
+		<div class="Selector" data-path="size">
+			<input type=radio name="size" value="A5" >A5
+			<input type=radio name="size" value="B5" >B5
+			<input type=radio name="size" value="A4" >A4
+			<input type=radio name="size" value="Letter" >Letter
+			<input type=radio name="size" value="B4" >B4
+			<input type=radio name="size" value="A3" >A3
+			<input type=radio name="size" value="B3" >B3
+		</div>
+		<!-- 
+		<div class="Selector" data-path="dpi">
+			<input type=radio name="dpi" value="72" >72dpi
+			<input type=radio name="dpi" value="96" >96dpi
+			<input type=radio name="dpi" value="120" >120dpi
+		</div>
+		--->
+		<div class="Selector" data-path="dir">
+			<input type=radio name="dir" value="portrait" ><img width=32 src="img/portrait.png" />
+			<input type=radio name="dir" value="landscape" ><img width=32 src="img/landscape.png" />
+		</div>
+		<div>
+			<input type=checkbox data-path="autoCrop" value="true"/>Auto crop
+		</div>
+</form>
+		
+		<div class="DialogButtons">
+			<button onclick="Dialog.close()">Cancel</button>
+			<button onclick="Dialog.save()">OK</button>
+		</div>
+	</div>
+</div>

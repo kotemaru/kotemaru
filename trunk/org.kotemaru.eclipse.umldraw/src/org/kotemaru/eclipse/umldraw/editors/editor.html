@@ -13,6 +13,7 @@
 
 
 <script src="jq/jquery-1.8.2.js"></script>
+
 <script src="js/Lang.js"></script>
 <script src="js/Eclipse.js"></script>
 <script src="js/Version.js"></script>
@@ -77,20 +78,20 @@ $(function(){
 		},"html");
 	}
 	
-	include("#menus","js/items/CableMenu.html");
-	include("#menus","js/CanvasMenu.html");
-	include("#menus","js/items/ItemMenu.html");
-	include("#menus","js/SelectGroupMenu.html");
+	include("#menus","html/menu/CableMenu.html");
+	include("#menus","html/menu/CanvasMenu.html");
+	include("#menus","html/menu/ItemMenu.html");
+	include("#menus","html/menu/SelectGroupMenu.html");
 	
-	include("#dialogs","js/CanvasDialog.html");
-	include("#dialogs","js/ConfigDialog.html");
-	include("#dialogs","js/items/CableDialog.html");
-	include("#dialogs","js/items/ClassDialog.html");
-	include("#dialogs","js/items/ObjectDialog.html");
-	include("#dialogs","js/items/NoteDialog.html");
-	include("#dialogs","js/items/DiskDialog.html");
-	include("#dialogs","js/debug/DebugDialog.html");
-	include("#dialogs","js/debug/SvgDialog.html");
+	include("#dialogs","html/dialog/CanvasDialog.html");
+	include("#dialogs","html/dialog/ConfigDialog.html");
+	include("#dialogs","html/dialog/CableDialog.html");
+	include("#dialogs","html/dialog/ClassDialog.html");
+	include("#dialogs","html/dialog/ObjectDialog.html");
+	include("#dialogs","html/dialog/NoteDialog.html");
+	include("#dialogs","html/dialog/DiskDialog.html");
+	include("#dialogs","html/dialog/DebugDialog.html");
+	include("#dialogs","html/dialog/SvgDialog.html");
 });
 </script>
 

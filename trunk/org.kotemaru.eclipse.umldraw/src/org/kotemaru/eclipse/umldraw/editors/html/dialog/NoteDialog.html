@@ -1,0 +1,34 @@
+<style>
+#noteDialog {
+	width: 400px;
+}
+#noteDialog textarea {
+	width: 95%;
+}
+</style>
+		
+<div id="noteDialog" class="Dialog">
+	<h3>
+		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+		<nobr>Note Properties</nobr>
+	</h3>
+	<div>
+		<div align="center">
+			<textarea data-path="comment" rows=8 placeholder="Comment"></textarea>
+		</div>
+		<div class="Selector" data-path="fontSize">
+			<input type=radio name="fontSize" value="S" ><span style="font-size:12px;">Small</span>
+			<input type=radio name="fontSize" value="M" ><span style="font-size:14px;">Middle</span>
+			<input type=radio name="fontSize" value="L" ><span style="font-size:16px;">Large</span>
+			<input type=radio name="fontSize" value="LL" ><span style="font-size:18px;">LLarge</span>
+			<input type=radio name="fontSize" value="BIG" ><span style="font-size:24px;">Big</span>
+		</div>
+		<input type=checkbox data-path="isAutoSize" >Auto sizing</input><br/>
+		<input type=checkbox data-path="isStrip" >Strip frame</input>
+		<br/>
+		<div class="DialogButtons">
+			<button onclick="Dialog.close()">Cancel</button>
+			<button onclick="Dialog.save()">OK</button>
+		</div>
+	</div>
+</div>

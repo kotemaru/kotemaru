@@ -1,0 +1,76 @@
+<style>
+#dialogCable input {
+	width: 100px;
+}
+</style>
+		
+
+<div id="dialogCable" class="Dialog">
+	<h3>
+		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
+		<nobr>Line Properties</nobr>
+	</h3>
+	<div>
+		<div align="center">
+			<input class="LineComment" data-path="startText" value="" type="text"/>
+			<input class="LineComment" data-path="centerText" value="" type="text"/>
+			<input class="LineComment" data-path="endText" value="" type="text"/>
+		</div>
+		<div align="center">
+			<img src="img/handle-s.png" />
+			<span class="PulldownButton" data-path="startType" >
+				<img src="img/line-L-arrow.png" />
+				<div class="PulldownMenu" id="popupMenu-line-L">
+					<div class="MenuItem" data-value="none"><img src="img/line-L-none.png" /></div>
+					<div class="MenuItem" data-value="arrow"><img src="img/line-L-arrow.png" /></div>
+					<div class="MenuItem" data-value="rhombi-B"><img src="img/line-L-rhombi-B.png" /></div>
+					<div class="MenuItem" data-value="rhombi"><img src="img/line-L-rhombi.png" /></div>
+					<div class="MenuItem" data-value="triangle-B"><img src="img/line-L-triangle-B.png" /></div>
+					<div class="MenuItem" data-value="triangle"><img src="img/line-L-triangle.png" /></div>
+				</div>
+			</span>
+	
+			<span class="PulldownButton"  data-path="lineType" >
+				<img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" 
+				/><img src="img/line-normal.png" />
+				<div class="PulldownMenu" id="popupMenu-line">
+					<div class="MenuItem" data-value="normal"><img src="img/line-normal.png" /></div>
+					<div class="MenuItem" data-value="dotted"><img src="img/line-dotted.png" /></div>
+					<div class="MenuItem" data-value="normal-1"><img src="img/line-normal-1.png" /></div>
+					<div class="MenuItem" data-value="dotted-1"><img src="img/line-dotted-1.png" /></div>
+				</div>
+			</span>
+
+			<span class="PulldownButton"  data-path="endType" >
+				<img src="img/line-R-arrow.png" />
+				<div class="PulldownMenu" id="popupMenu-line-R">
+					<div class="MenuItem" data-value="none"><img src="img/line-R-none.png" /></div>
+					<div class="MenuItem" data-value="arrow"><img src="img/line-R-arrow.png" /></div>
+					<div class="MenuItem" data-value="rhombi-B"><img src="img/line-R-rhombi-B.png" /></div>
+					<div class="MenuItem" data-value="rhombi"><img src="img/line-R-rhombi.png" /></div>
+					<div class="MenuItem" data-value="triangle-B"><img src="img/line-R-triangle-B.png" /></div>
+					<div class="MenuItem" data-value="triangle"><img src="img/line-R-triangle.png" /></div>
+				</div>
+			</span>
+			<img src="img/handle-e.png" />
+		</div>
+		<br/>
+		<div align="center">
+			<span class="Selector"  data-path="lineRoute" data-velue="N">
+				<span class="SelectorItem" data-value="N"><img src="img/line-route-N.png" /></span>
+				<span class="SelectorItem" data-value="S"><img src="img/line-route-S.png" /></span>
+				<span class="SelectorItem" data-value="L"><img src="img/line-route-L.png" /></span>
+			</span>
+		</div>
+		
+		<div class="DialogButtons">
+			<button onclick="Dialog.close()">Cancel</button>
+			<button onclick="Dialog.save()">OK</button>
+		</div>
+	</div>
+</div>
