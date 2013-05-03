@@ -9,12 +9,12 @@
 
 - cable
 -- unfix point bug
--- out float point
+-- bound out float point
 
 - UI
 -- img 整理
 --- Disk icon 
--- eclipseのアイコン
+--o eclipseのアイコン
 -- canvasのバルーン
 -- バルーンの英語
 -- Actionボタンの回復調整

@@ -200,7 +200,11 @@ function Cable(){this.initialize.apply(this, arguments)};
 		var color = Color.HANDLE_VISIT;
 		if (method == "setStartPoint") color = Color.HANDLE_START;
 		if (method == "setEndPoint") color = Color.HANDLE_END;
-		coor.handle = new CableHandle(coor, self, method, no);
+		if (no != undefined) {
+			coor.handle = new CableHandleRoute(coor, self, no);
+		} else {
+			coor.handle = new CableHandle(coor, self, method);
+		}
 		coor.handle.color = color;
 	}
 	_class.prototype.makeHandle = function(coor) {
