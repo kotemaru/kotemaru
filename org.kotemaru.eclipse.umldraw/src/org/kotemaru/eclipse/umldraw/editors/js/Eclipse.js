@@ -55,7 +55,7 @@ Eclipse.getPreferences = function(key) {
 };
 Eclipse.setPreferences = function(key, val) {
 	Eclipse.preferences[key] = val;
-	window.status = "syncPreferences";
+	Eclipse.fireEvent("syncPreferences");
 };
 
 
