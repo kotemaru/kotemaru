@@ -21,10 +21,9 @@ function Strings(){this.initialize.apply(this, arguments)};
 			
 		"Action.Note": "ノート要素を作成します。"+common2,
 		"Action.Disk": "データベース要素を作成します。"+common2,
-		"Action.Marker": "マーカーを作成します。"
+		"Action.Marker": "マーカーを作成します。"+common2
 			+"<br/>マーカーは印刷されません。"
-			+"<br/>ケーブルの経路と集約を制御する為に存在します。"
-			+common1
+			+"<br/>ケーブルの経路を制御する為に存在します。"
 			,
 	};
 	
