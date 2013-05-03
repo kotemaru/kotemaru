@@ -44,6 +44,12 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 		// Cables
 		} else if (cmd == "addPoint") {
 			item.addPoint(xx,yy);
+		} else if (cmd == "delPoint") {
+			var handle = Canvas.getHandle(xx,yy);
+			if (handle && handle.remove) {
+				handle.remove();
+			}
+			item.delPoint(xx,yy);
 		} else if (cmd == "fixPoint") {
 			var handle = Canvas.getHandle(xx,yy);
 			if (handle && handle.fixed) {
