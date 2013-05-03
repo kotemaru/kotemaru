@@ -110,7 +110,7 @@ function Coor(){this.initialize.apply(this, arguments)};
 				var y2 = this._origin2.y();
 				var w = y2-y1;
 				var per = (v - y1) / w;
-				console.log(per);
+
 				if (0.0 <= per && per<= 1.0) {
 					this.mode = 2; // FLOATING-IN-BOUNDS
 					this._y = per;

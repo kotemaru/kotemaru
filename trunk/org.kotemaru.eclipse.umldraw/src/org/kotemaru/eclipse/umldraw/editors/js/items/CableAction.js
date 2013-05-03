@@ -14,11 +14,23 @@ function CableAction(){this.initialize.apply(this, arguments)};
 		6: {startType:"rhombi", lineType:"dotted", endType:"arrow"},
 	};
 	
+	var lineRouteDefault = "N";
+	
+	_class.dialogSave = function() {
+		var $di = $("#cableDialog");
+		var isDef = $di.find("input[name='routeDefault']").attr("checked");
+		if (isDef) {
+			lineRouteDefault =
+				$di.find("*[data-path='lineRoute']").attr("data-value");
+		}
+	}
+	
 	_class.prototype.onMouseDown = function(ev) {
 		var asso = $("#association").attr("data-value");
 		var xy = {x:ev.offsetX, y:ev.offsetY};
 		this.cable = new this.targetClass(xy);
 		Util.update(this.cable, STYLES[asso]);
+		this.cable.lineRoute = lineRouteDefault;
 		
 		Canvas.addItem(this.cable);
 		Canvas.select(this.cable);

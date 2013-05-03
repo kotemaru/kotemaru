@@ -8,7 +8,7 @@
 
 <script>
 $(function(){
-	$("#userAgent").text(navigator.userAgent);
+	$("#userAgent").text(Version.getBrowserName());
 	$("#userLang").text(Util.browserLanguage());
 });
 </script>
@@ -16,14 +16,14 @@ $(function(){
 <div id="configDialog" class="Dialog">
 	<h3>
 		<img class="CloseImg" src="img/batu-red.png" onclick="Dialog.close()"/>
-		<nobr>Abort</nobr>
+		<nobr>Configuration</nobr>
 	</h3>
 	<div>
-		<div>UML Draw Ver-0.0.1</div>
-		<div>User-Agent:<span id="userAgent"></span></div>
-		<div>Lang:<span id="userLang"></span></div>
+		<input type="checkbox" data-path="balloon" /> Enable directions balloon.<br/>
+
 		<div class="DialogButtons">
-			<button onclick="Dialog.close()">Done</button>
+			<button onclick="Dialog.close()">Cancel</button>
+			<button onclick="Dialog.save()">OK</button>
 		</div>
 	</div>
 </div>
