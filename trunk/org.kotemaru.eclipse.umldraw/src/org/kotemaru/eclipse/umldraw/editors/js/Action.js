@@ -114,15 +114,7 @@ function Action(){this.initialize.apply(this, arguments)};
 	_class.prototype.onDblClick  = function(ev) {
 		var item = Canvas.getItem(ev.offsetX, ev.offsetY);
 		if (item == null) {
-			// TODO: canvas menu.
-			var data = {svg: Canvas.toSVG()};
-			Dialog.open("#debugDialog", data);
-			//var ifr = $("#iframeSvg")[0];
-			//ifr.contentDocument.body.innerHTML = data.svg;
-			var data = Store.save(Canvas.getItems());
-			$("#saveText").val(JSON.stringify(data,null, "\t"));
-			Store.load(data);
-	
+			// nop. for Canvas
 		} else if (item.getDialog) {
 			Canvas.select(item);
 			Canvas.refresh();
