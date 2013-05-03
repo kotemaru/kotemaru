@@ -10,6 +10,7 @@
 - cable
 --o unfix point bug
 -- bound out float point
+-- delet point
 
 - UI
 -- img 整理
