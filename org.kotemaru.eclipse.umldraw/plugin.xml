@@ -13,5 +13,7 @@
             id="org.kotemaru.eclipse.umldraw.editors.BrowserEditor">
       </editor>
    </extension>
-
+	<extension point="org.eclipse.core.runtime.preferences">
+		<initializer class="org.kotemaru.eclipse.umldraw.PrefInit"/>
+	</extension>
 </plugin>

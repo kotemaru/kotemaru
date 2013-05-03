@@ -16,12 +16,17 @@ function CableAction(){this.initialize.apply(this, arguments)};
 	
 	var lineRouteDefault = "N";
 	
+	$(function(){
+		lineRouteDefault = Eclipse.getPreferences("lineRouteDefault");
+	});
+	
 	_class.dialogSave = function() {
 		var $di = $("#cableDialog");
 		var isDef = $di.find("input[name='routeDefault']").attr("checked");
 		if (isDef) {
 			lineRouteDefault =
 				$di.find("*[data-path='lineRoute']").attr("data-value");
+			Eclipse.setPreferences("lineRouteDefault", lineRouteDefault);
 		}
 	}
 	

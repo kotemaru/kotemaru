@@ -3,7 +3,13 @@
 	width: 100px;
 }
 </style>
-		
+<script>
+$(function(){
+	$("#cableDialog").live("opened",function(){
+		$(this).find("input[name='routeDefault']").attr("checked",null);
+	});
+});
+</script>
 
 <div id="cableDialog" class="Dialog">
 	<h3>

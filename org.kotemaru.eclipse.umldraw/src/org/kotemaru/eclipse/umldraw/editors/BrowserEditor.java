@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.StatusTextEvent;
@@ -20,6 +21,8 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.EditorPart;
+import org.kotemaru.eclipse.umldraw.Activator;
+import org.kotemaru.eclipse.umldraw.PrefInit;
 
 
 public class BrowserEditor extends TextEditor {
@@ -69,12 +72,15 @@ public class BrowserEditor extends TextEditor {
 				onLoad(params);
 			} else if ("change".equals(method)) {
 				onChange(params);
+			} else if ("syncPreferences".equals(method)) {
+				onSyncPreferences(params);
 			}
 		}
+
 	}
 
 	private void onLoad(String[] params) {
-		browser.execute("Eclipse.startup()");
+		startup();
 		
 		IFileEditorInput input = (IFileEditorInput)getEditorInput();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();  
@@ -85,12 +91,29 @@ public class BrowserEditor extends TextEditor {
 		String url = "file:///"+file.getAbsolutePath().replaceAll("[\\\\]","/");
 		browser.execute("Eclipse.setContentUrl('"+url+"')");
 	}
+	private void startup() {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		String json = "";
+		for (int i=0; i<PrefInit.KEYS.length; i++) {
+			String key = PrefInit.KEYS[i];
+			json += key+":'"+store.getString(key)+"',";
+		}
+		
+		browser.execute("Eclipse.startup({"+json+"})");
+	}
 	
+	private void onSyncPreferences(String[] params) {
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		for (int i=0; i<PrefInit.KEYS.length; i++) {
+			String key = PrefInit.KEYS[i];
+			String val = (String) browser.evaluate("return Eclipse.getPreferences('"+key+"')");
+			store.setValue(key, val);
+		}
+	}
 	private void onChange(String[] params) {
 		changeHistoryCount = Integer.valueOf(params[1]);
 		firePropertyChange(EditorPart.PROP_DIRTY); 
 	}
-	
 
 	@Override
 	public void doSave(IProgressMonitor monitor) {

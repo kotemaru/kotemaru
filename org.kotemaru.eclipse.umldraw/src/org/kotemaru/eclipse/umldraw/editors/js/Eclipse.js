@@ -42,8 +42,22 @@ Eclipse.log = function(msg){
 	window.status = null;
 };
 
-Eclipse.startup = function() {
+Eclipse.startup = function(pref) {
 	alert("Abstract function Eclipse.startup() not implemented.");
 };
+
+Eclipse.preferences = {
+	directionsBalloon: "true",
+	lineRouteDefault: "N"
+};
+Eclipse.getPreferences = function(key) {
+	return Eclipse.preferences[key];
+};
+Eclipse.setPreferences = function(key, val) {
+	Eclipse.preferences[key] = val;
+	window.status = "syncPreferences";
+};
+
+
 
 //EOF
