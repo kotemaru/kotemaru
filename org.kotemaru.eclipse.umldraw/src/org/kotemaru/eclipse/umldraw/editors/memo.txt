@@ -1,6 +1,8 @@
 
 -group再考
 --Save&store
+-- SelectionGroup保存バグ
+
 
 - 自動登録
 -- Dialog
@@ -27,7 +29,12 @@
 -- バルーン不要
 
 
+- SVG
+-- 点線
+-- Font位置調整
+
 - IE
+-- 点線
 
 - firefox
 -- extendsがうまく行ってない。
