@@ -60,7 +60,9 @@ Eclipse.setPreferences = function(key, val) {
 	Eclipse.preferences[key] = val;
 	Eclipse.fireEvent("syncPreferences");
 };
-
+Eclipse.syncPreferences = function() {
+	Eclipse.fireEvent("syncPreferences");
+}
 
 
 //EOF

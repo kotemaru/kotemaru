@@ -28,6 +28,8 @@
 --o cableのデフォルト
 -- バルーン不要
 
+- 保存
+-- fixed point 変更通知
 
 - SVG
 --o 点線
@@ -35,7 +37,7 @@
 --? boundsおかしい
 
 - IE
--- 点線
+--o 点線
 
 - firefox
 -- extendsがうまく行ってない。
