@@ -9,7 +9,7 @@ function Font(){this.initialize.apply(this, arguments)};
 		this.acender = size;
 		for (var k in opts) this[k] = opts[k];
 	}
-	var FAMILY = "'arial',sans-serif";
+	var FAMILY = "arial,sans-serif";
 	
 	_class.S = new _class(10, FAMILY);
 	_class.M = new _class(12, FAMILY);

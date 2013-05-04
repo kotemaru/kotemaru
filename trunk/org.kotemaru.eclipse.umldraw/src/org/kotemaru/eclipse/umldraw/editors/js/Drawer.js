@@ -166,12 +166,14 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		var patt = null;
 		if (parts[0] == "dotted") {
 			patt = [4,4];
+			
 			if (dc.setLineDash) {
 				dc.setLineDash(patt);
 			} else if (dc.mozDash) {
 				dc.mozDash = patt;
-			} else {
-				dc.strokeStyle = "#888888";
+			} else { // for IE9
+				//dc.strokeStyle = "#888888";
+				dc.strokeStyle = dc.createPattern($("#meshImg")[0], 'repeat');
 			}
 		}
 		
@@ -215,8 +217,8 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.stroke();
 		
 		
-		setLineStyle(dc, style);
 		dc.strokeStyle = "black";
+		setLineStyle(dc, style);
 		dc.beginPath();
 
 		dc.moveTo(lines[0].x1, lines[0].y1);
