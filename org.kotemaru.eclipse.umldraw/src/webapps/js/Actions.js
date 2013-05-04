@@ -7,7 +7,7 @@ function Actions(){this.initialize.apply(this, arguments)};
 	$(function(){
 		function config() {
 			Actions.resetAction(true, 200);
-			Dialog.open("#configDialog");
+			Dialog.open("#configDialog", Eclipse.preferences);
 		}
 		function undo() {
 			EditBuffer.undo();
