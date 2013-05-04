@@ -32,7 +32,7 @@
 - SVG
 --o 点線
 -- Font位置調整
--- boundsおかしい
+--? boundsおかしい
 
 - IE
 -- 点線
