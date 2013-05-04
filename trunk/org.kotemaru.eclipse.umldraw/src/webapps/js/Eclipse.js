@@ -50,11 +50,11 @@ Eclipse.startup = function(pref) {
 };
 
 Eclipse.preferences = {
-	directionsBalloon: "true",
+	directionsBalloon: true,
 	lineRouteDefault: "N"
 };
 Eclipse.getPreferences = function(key) {
-	return Eclipse.preferences[key];
+	return ""+Eclipse.preferences[key];
 };
 Eclipse.setPreferences = function(key, val) {
 	Eclipse.preferences[key] = val;
