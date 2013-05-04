@@ -167,6 +167,30 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 			+"/>"
 		);
 	}
+	_class.prototype.drawLinesS = function(lines, style) {
+		var styleAttr = getLineStyle(style);
+		
+		var centers = [];
+		for (var i=0; i<lines.length; i++) {
+			centers.push(Util.getCenter(lines[i]));
+		}
+		
+		var points = "";
+		points += "M "+lines[0].x1+" "+lines[0].y1;
+		points += "L "+centers[0].x+" "+centers[0].y;
+		for (var i=0; i<lines.length-1; i++) {
+			points += "Q "+lines[i].x2+" "+lines[i].y2
+					+" "+centers[i+1].x+" "+centers[i+1].y;
+		}
+		var i = lines.length-1;
+		points += "L "+lines[i].x2+" "+lines[i].y2;
+		
+		this.add("<path fill='white' stroke='black'" 
+			+" d='"+points+"'"
+			+ styleAttr
+			+"/>"
+		);
+	}
 	
 	
 	_class.prototype.drawLine = function(x1,y1,x2,y2, style) {
