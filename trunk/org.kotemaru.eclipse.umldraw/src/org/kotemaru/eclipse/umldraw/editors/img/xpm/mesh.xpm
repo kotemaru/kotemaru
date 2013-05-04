@@ -1,0 +1,9 @@
+/* XPM */
+static char * mesh_xpm[] = {
+"4 4 2 1",
+" 	c black",
+".	s None	c None",
+"  ..",
+"  ..",
+"..  ",
+"..  "};
