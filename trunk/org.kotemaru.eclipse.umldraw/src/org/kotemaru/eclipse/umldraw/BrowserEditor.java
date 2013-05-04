@@ -1,4 +1,4 @@
-package org.kotemaru.eclipse.umldraw.editors;
+package org.kotemaru.eclipse.umldraw;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -55,7 +55,7 @@ public class BrowserEditor extends TextEditor {
 			browser.setJavascriptEnabled(true);			
 			browser.addStatusTextListener(new MyStatusTextListener());
 			
-			URL aboutURL = this.getClass().getResource("editor.html");
+			URL aboutURL = this.getClass().getResource("/webapps/editor.html");
 			URL url = FileLocator.resolve(aboutURL);
 			browser.setUrl(url.toString());
 		} catch (Exception e) {

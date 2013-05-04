@@ -9,7 +9,7 @@
             extensions="udr"
             icon="icons/udr.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
-            class="org.kotemaru.eclipse.umldraw.editors.BrowserEditor"
+            class="org.kotemaru.eclipse.umldraw.BrowserEditor"
             id="org.kotemaru.eclipse.umldraw.editors.BrowserEditor">
       </editor>
    </extension>
