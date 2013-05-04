@@ -6,14 +6,23 @@ function Actions(){this.initialize.apply(this, arguments)};
 	var ACTIONS = {};
 	$(function(){
 		function config() {
+			Actions.resetAction(true, 200);
 			Dialog.open("#configDialog");
-			setTimeout(function(){
-				Actions.resetAction(true);
-			},200);
 		}
+		function undo() {
+			EditBuffer.undo();
+			Actions.resetAction(true, 200);
+		}
+		function redo() {
+			EditBuffer.redo();
+			Actions.resetAction(true, 200);
+		}
+		
 		registerAction("cursor", new Action(null));
 		registerAction("config", {selectMe:config});
 		registerAction("remove", new RemoveAction(null));
+		registerAction("undo", {selectMe:undo});
+		registerAction("redo", {selectMe:redo});
 	})
 	function registerAction(name, action) {
 		if (ACTIONS[name]) {
@@ -35,20 +44,21 @@ function Actions(){this.initialize.apply(this, arguments)};
 	}
 	_class.setAction = function(idx) {
 		currentIdx = idx;
-		ACTIONS[currentIdx].selectMe();
 		
-		setTimeout(function(){
-			var $btns = $(".Action");
-			var $btn = $(".Action[data-value='"+idx+"']");
-			$btns.removeClass("Selected");
-			$btns.removeClass("Locked");
-			$btn.addClass("Selected");
-			if (isLock) $btn.addClass("Locked");
-		},100);
+		var $btns = $(".Action");
+		var $btn = $(".Action[data-value='"+idx+"']");
+		$btns.removeClass("Selected");
+		$btns.removeClass("Locked");
+		$btn.addClass("Selected");
+		if (isLock) $btn.addClass("Locked");
+		
+		ACTIONS[currentIdx].selectMe();
 	}
-	_class.resetAction = function(isForce) {
+	_class.resetAction = function(isForce, delay) {
 		if (!isLock || isForce) {
-			_class.setAction("cursor");
+			setTimeout(function(){
+				_class.setAction("cursor");
+			},(delay?delay:10));
 		}
 	}
 

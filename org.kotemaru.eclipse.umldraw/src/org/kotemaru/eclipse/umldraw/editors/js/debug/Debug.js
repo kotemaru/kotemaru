@@ -46,21 +46,11 @@ function Debug(){this.initialize.apply(this, arguments)};
 		Actions.resetAction(true);
 		*/
 	}
-	function undo() {
-		EditBuffer.undo();
-		Actions.resetAction(true);
-	}
-	function redo() {
-		EditBuffer.redo();
-		Actions.resetAction(true);
-	}
-	
+
 	$(function(){
 		Actions.registerAction("load", {selectMe:load});
 		Actions.registerAction("save", {selectMe:save});
 		Actions.registerAction("print", {selectMe:print});
-		Actions.registerAction("undo", {selectMe:undo});
-		Actions.registerAction("redo", {selectMe:redo});
 	});
 	
 	

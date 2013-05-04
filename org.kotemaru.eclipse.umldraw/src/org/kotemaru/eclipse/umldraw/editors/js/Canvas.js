@@ -30,7 +30,13 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		selectItem = null;
 		selectGroup.clear();
 	}
-	_class.addItem = function(item) {return items.addItem(item);}
+	_class.addItem = function(item) {
+		if (item.isSelectGroup) {
+			Eclipse.log("ignore Canvas.add(SelectGroup)");
+			return;
+		}
+		return items.addItem(item);
+	}
 	_class.delItem = function(item) {
 		item.remove();
 		return items.delItem(item);

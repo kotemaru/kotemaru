@@ -18,6 +18,10 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		selectGroup.getItems().each(function(item){
 			Canvas.delItem(item);
 		});
+		Canvas.clearSelect();
+		Canvas.getSelectGroup().clear();
+		Canvas.refresh();
+
 	}
 	_class.copy = function() {
 		var selectGroup = Canvas.getSelectGroup();
