@@ -164,12 +164,15 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		
 		var parts = style.split("-");
 		var patt = null;
-		if (parts[0] == "dotted") patt = [4,4];
-
-		if (dc.setLineDash) {
-			dc.setLineDash(patt);
-		} else {
-			dc.mozDash = patt;
+		if (parts[0] == "dotted") {
+			patt = [4,4];
+			if (dc.setLineDash) {
+				dc.setLineDash(patt);
+			} else if (dc.mozDash) {
+				dc.mozDash = patt;
+			} else {
+				dc.strokeStyle = "#888888";
+			}
 		}
 		
 		dc.lineWidth = 2;

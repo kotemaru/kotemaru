@@ -19,9 +19,14 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 			+" viewBox='"+space(b.x1, b.y1, b.w, b.h)+"'>\n";
 
 		var data = Store.save(Canvas.getItems());
+		var json = JSON.stringify(data,null,"\t");
+		json = json.replace(/\]\]>/,"]]&gt;");
+		//json = json.replace(/[&]/,"&amp;").replace(/</,"&lt;").replace(/>/,"&gt;");
 		
 		return header
-			+ "<metadata id='umldraw-data'>"+JSON.stringify(data,null,"\t")+"</metadata>"
+			+ "<metadata id='umldraw-data'><![CDATA["
+				+json
+			+ "]]></metadata>"
 			+ this.result.join("\n")
 		;
 	}
@@ -51,6 +56,8 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.prototype.drawText = function(font, str, xx, yy) {
+		if (str == "") return;
+		
 		var isUnderLine = (font.decoration == "underline");
 		var lines = str.split("\n");
 		yy += 2 + font.acender;
@@ -59,7 +66,7 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	 			+" font-size='"+font.size+"px'"
 	  			+" font-family='"+font.family+"'"
 	 			//+" dominant-baseline='text-before-edge'" +
-	 			+" >"+lines[i]+"</text>");
+	 			+" >"+esc(lines[i])+"</text>");
 	 		if (isUnderLine) {
 				var m = this.dc.measureText(lines[i]);
 				this.drawHLine(xx, yy, m.width, 0.5);
@@ -69,17 +76,21 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.prototype.drawTextLine = function(font, str, xx, yy) {
+		if (str == "") return;
 		yy += 2 + font.acender;
  		this.add("<text stroke='white' stroke-width='2' x='"+xx+"' y='"+yy+"'"
  			+" font-size='"+font.size+"px'"
   			+" font-family='"+font.family+"'"
  			//+" dominant-baseline='text-before-edge'"
- 			+" >"+str+"</text>");
+ 			+" >"+esc(str)+"</text>");
  		this.add("<text x='"+xx+"' y='"+yy+"'"
  			+" font-size='"+font.size+"px'"
   			+" font-family='"+font.family+"'"
  			//+" dominant-baseline='text-before-edge"
- 			+" >"+str+"</text>");
+ 			+" >"+esc(str)+"</text>");
+	}
+	function esc(str) {
+		return str.replace(/[&]/,"&amp;").replace(/</,"&lt;").replace(/>/,"&gt;");
 	}
 	
 	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
@@ -143,26 +154,42 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 		// no print.
 	}
 	
-	_class.prototype.drawLines = function(lines) {
+	_class.prototype.drawLines = function(lines, style) {
+		var styleAttr = getLineStyle(style);
 		var points = "";
 		points += lines[0].x1+" "+lines[0].y1;
 		for (var i=0; i<lines.length; i++) {
 			points += " "+lines[i].x2+" "+lines[i].y2;
 		}
 		this.add("<polyline fill='white' stroke='black'" 
-			+" stroke-width='"+2+"'"
 			+" points='"+points+"'"
+			+ styleAttr
 			+"/>"
 		);
 	}
 	
 	
-	_class.prototype.drawLine = function(x1,y1,x2,y2) {
+	_class.prototype.drawLine = function(x1,y1,x2,y2, style) {
 		this.add("<polyline fill='white' stroke='black'" 
-			+" stroke-width='"+2+"'"
+			+ getLineStyle(style)
 			+" points='"+space(x1,y1,x2,y2)+"'"
 			+"/>"
 		);
+	}
+	function getLineStyle(style) {
+		var attr="";
+		if (style == null) style = "normal-2";
+		
+		var parts = style.split("-");
+		var patt = null;
+		if (parts[0] == "dotted") {
+			attr+= " stroke-dasharray='4 4'";
+		}
+
+		var lw = parts.length>=2?parts[1]:2;
+		attr+= " stroke-width='"+lw+"'";
+		
+		return attr;
 	}
 	
 	var NONE     = "none";

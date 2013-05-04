@@ -40,6 +40,9 @@ Eclipse.log = function(msg){
 	//if (console) console.log(msg);
 	window.status = "log "+msg;
 	window.status = null;
+	if (window.console) {
+		window.console.log(msg);
+	}
 };
 
 Eclipse.startup = function(pref) {

@@ -8,6 +8,15 @@ function Store(){this.initialize.apply(this, arguments)};
 	_class.prototype.initialize = function() {}
 
 	_class.save = function(itemsObj) {
+		Canvas.clearSelect();
+		Canvas.getSelectGroup().clear();
+		Canvas.refresh();
+		return save(itemsObj);
+	}
+	_class.copy = function(itemsObj) {
+		return save(itemsObj);
+	}
+	function save(itemsObj) {
 		coorRef.reset();
 		itemRef.reset();
 		var items = itemsObj.getItems(); //Note:速度優先。 
@@ -37,9 +46,6 @@ function Store(){this.initialize.apply(this, arguments)};
 		Canvas.refresh();
 	}
 
-	_class.copy = function(itemsObj) {
-		return _class.save(itemsObj);
-	}
 	
 	_class.paste = function(data, ex,ey) {
 		coorRef.reset();
@@ -52,13 +58,16 @@ function Store(){this.initialize.apply(this, arguments)};
 		var selectGroup;
 		for (var i in itemRef.objs) {
 			var item = itemRef.objs[i];
-			if (item instanceof SelectGroup) selectGroup = item;
-			Canvas.addItem(item);
+			if (item.isSelectGroup) {
+				selectGroup = item;
+			} else {
+				Canvas.addItem(item);
+			}
 		}
 		if (selectGroup) {
 			selectGroup.xy(ex,ey);
 			selectGroup.clear();
-			Canvas.delItem(selectGroup);
+			//Canvas.delItem(selectGroup);
 		}
 	}
 	

@@ -1,7 +1,7 @@
 
 -group再考
 --Save&store
--- SelectionGroup保存バグ
+--o SelectionGroup保存バグ
 
 
 - 自動登録
@@ -20,18 +20,19 @@
 --o eclipseのアイコン
 -- canvasのバルーン
 -- バルーンの英語
--- Actionボタンの回復調整
+--o Actionボタンの回復調整
 
 
 - config
 -- 印刷
--- cableのデフォルト
+--o cableのデフォルト
 -- バルーン不要
 
 
 - SVG
--- 点線
+--o 点線
 -- Font位置調整
+-- boundsおかしい
 
 - IE
 -- 点線

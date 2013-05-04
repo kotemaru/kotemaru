@@ -28,7 +28,9 @@ function Item(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.setGroup = function(group) {
 		if (group) {
-			if (this.group)	throw "Duplicate group";
+			if (this.group)	{
+				Eclipse.log("Duplecate group");
+			}
 			if (this.coor.origin() == null) {
 				var xx=this.x(),yy=this.y();
 				this.coor.setOrigin(group);
