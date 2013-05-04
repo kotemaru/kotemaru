@@ -54,15 +54,15 @@ function Drawer(){this.initialize.apply(this, arguments)};
 
 		dc.fillStyle = "black";
 		dc.font = font.name;
-		dc.textBaseline = "top";
+		dc.textBaseline = "alphabetic";
 		
 		var h = font.height;
 		var lines = str.split("\n");
 		for (var i=0; i<lines.length; i++) {
-			dc.fillText(lines[i], xx, yy);
+			dc.fillText(lines[i], xx, yy+font.acender);
 			if (isUnderLine) {
 				var m = dc.measureText(lines[i]);
-				this.drawHLine(xx, yy+h*0.8, m.width);
+				this.drawHLine(xx, yy+font.acender, m.width);
 			}
 			yy += h;
 		}
@@ -73,9 +73,9 @@ function Drawer(){this.initialize.apply(this, arguments)};
 		dc.lineWidth = 2;
 		dc.fillStyle = "black";
 		dc.font = font;
-		dc.textBaseline = "top";
-		dc.strokeText(str, xx, yy);
-		dc.fillText(str, xx, yy);
+		dc.textBaseline = "alphabetic";
+		dc.strokeText(str, xx, yy+font.acender);
+		dc.fillText(str, xx, yy+font.acender);
 	}
 	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
 		yy = Math.floor(yy)+0.5;

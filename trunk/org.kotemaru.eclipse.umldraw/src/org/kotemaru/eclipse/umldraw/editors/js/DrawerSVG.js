@@ -60,7 +60,7 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 		
 		var isUnderLine = (font.decoration == "underline");
 		var lines = str.split("\n");
-		yy += 2 + font.acender;
+		yy += font.acender;
 		for (var i=0; i<lines.length; i++) {
 	 		this.add("<text x='"+xx+"' y='"+yy+"'"
 	 			+" font-size='"+font.size+"px'"
@@ -77,7 +77,7 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.drawTextLine = function(font, str, xx, yy) {
 		if (str == "") return;
-		yy += 2 + font.acender;
+		yy += font.acender;
  		this.add("<text stroke='white' stroke-width='2' x='"+xx+"' y='"+yy+"'"
  			+" font-size='"+font.size+"px'"
   			+" font-family='"+font.family+"'"
@@ -90,7 +90,7 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
  			+" >"+esc(str)+"</text>");
 	}
 	function esc(str) {
-		return str.replace(/[&]/,"&amp;").replace(/</,"&lt;").replace(/>/,"&gt;");
+		return str.replace(/[&]/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 	}
 	
 	_class.prototype.drawHLine = function(xx,yy,ww, lw) {
