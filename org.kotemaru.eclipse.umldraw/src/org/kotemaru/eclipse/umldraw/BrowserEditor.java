@@ -2,7 +2,6 @@ package org.kotemaru.eclipse.umldraw;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -23,8 +22,7 @@ import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.EditorPart;
-import org.kotemaru.eclipse.umldraw.Activator;
-import org.kotemaru.eclipse.umldraw.PrefInit;
+
 
 
 public class BrowserEditor extends TextEditor {
@@ -96,9 +94,13 @@ public class BrowserEditor extends TextEditor {
 	private void startup() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		String json = "";
-		for (int i=0; i<PrefInit.KEYS.length; i++) {
-			String key = PrefInit.KEYS[i];
-			json += key+":'"+store.getString(key)+"',";
+		for (int i=0; i<Preference.ITEMS.length; i++) {
+			String key = Preference.ITEMS[i].key;
+			if (Preference.ITEMS[i].type == String.class) {
+				json += key+":'"+store.getString(key)+"',";
+			} else {
+				json += key+":"+store.getString(key)+",";
+			}
 		}
 		
 		browser.execute("Eclipse.startup({"+json+"})");
@@ -106,8 +108,8 @@ public class BrowserEditor extends TextEditor {
 	
 	private void onSyncPreferences(String[] params) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
-		for (int i=0; i<PrefInit.KEYS.length; i++) {
-			String key = PrefInit.KEYS[i];
+		for (int i=0; i<Preference.ITEMS.length; i++) {
+			String key = Preference.ITEMS[i].key;
 			String val = (String) browser.evaluate("return Eclipse.getPreferences('"+key+"')");
 			store.setValue(key, val);
 		}

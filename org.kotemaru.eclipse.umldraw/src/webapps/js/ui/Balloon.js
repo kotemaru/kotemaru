@@ -4,6 +4,8 @@ function Balloon(){this.initialize.apply(this, arguments)};
 (function(_class){
 
 	_class.popupBalloon = function($button, alt) {
+		if (!Eclipse.preferences.directionsBalloon) return;
+		
 		//var alt = $button.attr(attr);
 		var $balloon = $("#balloon");
 		$balloon.offset({top:0,left:0}).css("display","inline-block").html(alt);
@@ -17,6 +19,7 @@ function Balloon(){this.initialize.apply(this, arguments)};
 		$balloon.offset(offset);
 	}
 	_class.showBalloon = function(offset, alt) {
+		if (!Eclipse.preferences.directionsBalloon) return;
 		var $balloon = $("#balloon");
 		$balloon.offset({top:0,left:0}).css("display","inline-block").html(alt);
 		$balloon.offset(offset);
