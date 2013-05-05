@@ -118,8 +118,12 @@ function Util(){this.initialize.apply(this, arguments)};
 	
 	_class.include = function(sel, url) {
 		$.get(url,null,function(data){
-			$(sel).append(data);
-		});
+			try {
+				$(sel).append(data);
+			} catch (e) {
+				Eclipse.log("include-fail:"+url+":"+e);
+			}
+		},"html");
 	}
 	
 	_class.browserLanguage = function(defo) {

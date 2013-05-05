@@ -17,6 +17,7 @@
 <script src="js/Lang.js"></script>
 <script src="js/Eclipse.js"></script>
 <script src="js/Version.js"></script>
+<script src="js/Editor.js"></script>
 
 <script src="js/resource/Font.js"></script>
 <script src="js/resource/Color.js"></script>
@@ -68,61 +69,24 @@
 
 <script>
 $(function(){
-	function include(sel, url) {
-		$.get(url,null,function(data){
-			try {
-				$(sel).append(data);
-			} catch (e) {
-				Eclipse.log("include-fail:"+url+":"+e);
-			}
-		},"html");
-	}
+	Util.include("#menus","html/menu/CableMenu.html");
+	Util.include("#menus","html/menu/CanvasMenu.html");
+	Util.include("#menus","html/menu/ItemMenu.html");
+	Util.include("#menus","html/menu/SelectGroupMenu.html");
 	
-	include("#menus","html/menu/CableMenu.html");
-	include("#menus","html/menu/CanvasMenu.html");
-	include("#menus","html/menu/ItemMenu.html");
-	include("#menus","html/menu/SelectGroupMenu.html");
-	
-	include("#dialogs","html/dialog/CanvasDialog.html");
-	include("#dialogs","html/dialog/ConfigDialog.html");
-	include("#dialogs","html/dialog/CableDialog.html");
-	include("#dialogs","html/dialog/ClassDialog.html");
-	include("#dialogs","html/dialog/ObjectDialog.html");
-	include("#dialogs","html/dialog/NoteDialog.html");
-	include("#dialogs","html/dialog/DiskDialog.html");
-	include("#dialogs","html/dialog/DebugDialog.html");
-	include("#dialogs","html/dialog/SvgDialog.html");
+	Util.include("#dialogs","html/dialog/CanvasDialog.html");
+	Util.include("#dialogs","html/dialog/ConfigDialog.html");
+	Util.include("#dialogs","html/dialog/CableDialog.html");
+	Util.include("#dialogs","html/dialog/ClassDialog.html");
+	Util.include("#dialogs","html/dialog/ObjectDialog.html");
+	Util.include("#dialogs","html/dialog/NoteDialog.html");
+	Util.include("#dialogs","html/dialog/DiskDialog.html");
+	Util.include("#dialogs","html/dialog/DebugDialog.html");
+	Util.include("#dialogs","html/dialog/SvgDialog.html");
 });
 </script>
 
-<script>
 
-
-$(function(){
-	Eclipse.fireEvent("load");
-	Eclipse.fireEvent("");
-	Actions.resetAction(true);
-});
-Eclipse.setContentUrl = function(url) {
-	$.ajax({type:"GET", url:url, cache:false,
-		success: function(xmlDoc){
-			var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
-			Store.load(JSON.parse(data));
-			EditBuffer.init();
-		},
-		error: function(xreq,state,err){alert(err);},
-		dataType: "xml"
-	});
-};
-Eclipse.getContent = function() {
-	return Canvas.toSVG();
-};
-Eclipse.startup = function(pref) {
-	Eclipse.preferences = pref;
-	Debug.disable();
-};
-
-</script>
 
 </head>
 <body>
