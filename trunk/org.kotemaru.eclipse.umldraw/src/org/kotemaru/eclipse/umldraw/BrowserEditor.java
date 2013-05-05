@@ -167,7 +167,7 @@ public class BrowserEditor extends TextEditor {
 	}
 	
 	private void log(String msg) {
-		System.out.println(msg); // TODO:ちゃんとログ。
+		System.out.println(msg); // TODO:
 	}
 
 }

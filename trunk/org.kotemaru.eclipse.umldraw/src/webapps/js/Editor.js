@@ -21,9 +21,13 @@ function Editor(){this.initialize.apply(this, arguments)};
 	Eclipse.setContentUrl = function(url) {
 		$.ajax({type:"GET", url:url, cache:false,
 			success: function(xmlDoc){
-				var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
-				Store.load(JSON.parse(data));
-				EditBuffer.init();
+				try {
+					var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
+					Store.load(JSON.parse(data));
+					EditBuffer.init();
+				} catch (e) {
+					alert("Bad data: "+e);
+				}
 			},
 			error: function(xreq,state,err){alert(err);},
 			dataType: "xml"
