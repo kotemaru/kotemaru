@@ -4,7 +4,7 @@ function Disk(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	Item.extend(_class, _super);
 	_class.properties = Lang.copy(_super.properties, {
-		name : {type: "string", value:"EgEgEg"},
+		name : {type: "string", value:""},
 	});
 	
 	/**
