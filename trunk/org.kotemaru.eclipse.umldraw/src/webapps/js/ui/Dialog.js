@@ -31,7 +31,7 @@ function Dialog(){this.initialize.apply(this, arguments)};
 			var path = $input.attr("data-path");
 			targetItem[path] = getValue($input);
 		});
-		$dialog.trigger("saved");
+		$dialog.trigger("saved", [targetItem]);
 		_class.close();
 	}
 	

@@ -61,6 +61,7 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 				handle.unfixed();
 			}
 		}
+		EditBuffer.backup();
 	}
 	
 })(MenuManager);

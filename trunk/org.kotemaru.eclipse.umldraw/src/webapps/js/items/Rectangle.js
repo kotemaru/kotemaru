@@ -34,6 +34,7 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 	_class.prototype.remove = function() {
 		this.isRemove = true;
 		this.coorDiag.isRemove = true;
+		EditBuffer.notice();
 	}
 
 	_class.prototype.getHandle = function(xx,yy) {
@@ -56,9 +57,11 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 	}
 	
 	_class.prototype.setW = function(v) {
+		EditBuffer.notice();
 		this._w = v;
 	}
 	_class.prototype.setH = function(v) {
+		EditBuffer.notice();
 		this._h = v;
 	}
 	
@@ -67,6 +70,7 @@ function Rectangle(){this.initialize.apply(this, arguments)};
 		// nop
 	}
 	_class.prototype.dragMove = function(tx,ty, ev) {
+		EditBuffer.notice();
 		this.xy(tx,ty);
 	}
 	_class.prototype.dragEnd = function(tx,ty, ev) {

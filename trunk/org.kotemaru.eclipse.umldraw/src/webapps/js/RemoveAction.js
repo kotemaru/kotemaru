@@ -20,7 +20,6 @@ function RemoveAction(){this.initialize.apply(this, arguments)};
 			item.remove();
 			Canvas.delItem(item);
 			Canvas.refresh();
-			EditBuffer.backup();
 			Actions.resetAction();
 		}
 	}

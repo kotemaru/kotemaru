@@ -35,11 +35,13 @@ function Canvas(){this.initialize.apply(this, arguments)};
 			Eclipse.log("ignore Canvas.add(SelectGroup)");
 			return;
 		}
-		return items.addItem(item);
+		items.addItem(item);
+		EditBuffer.notice();
 	}
 	_class.delItem = function(item) {
 		item.remove();
-		return items.delItem(item);
+		items.delItem(item);
+		EditBuffer.notice();
 	}
 	_class.getItem = function(ex,ey, ignore) {
 		var item = items.getMarkerItem(ex,ey, ignore);
@@ -124,6 +126,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		if (attrs) _class.properties = attrs;
 		$(canvas).attr("width", _class.properties.width);
 		$(canvas).attr("height", _class.properties.height);
+		EditBuffer.notice();
 	}
 	_class.getProperties = function(attrs) {
 		return _class.properties;
@@ -157,6 +160,7 @@ function Canvas(){this.initialize.apply(this, arguments)};
 		if(ev.btn == 1) {
 			action.onMouseUp(ev);
 		}
+		EditBuffer.backup();
 	}
 	function onDblClick(ev) {
 		ev = formalEvent(ev);
