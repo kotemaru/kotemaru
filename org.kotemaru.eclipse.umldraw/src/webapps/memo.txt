@@ -1,4 +1,7 @@
 
+- チューニング
+-- 何かのキャッシュ
+
 -group再考
 --Save&store
 --o SelectionGroup保存バグ
@@ -29,9 +32,9 @@
 --o バルーン不要
 
 - 保存
--- fixed point 変更通知
--- paste,cut
--- add point
+--o fixed point 変更通知
+--o paste,cut
+--o add point
 
 - SVG
 --o 点線
