@@ -47,7 +47,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		if (data) curData = data;
 		undoBuff.push(curData);
 		redoBuff.length = 0;
-		curData = Store.save(Canvas.getItems());
+		curData = Store.copy(Canvas.getItems());
 		Eclipse.fireEvent("change,"+undoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;

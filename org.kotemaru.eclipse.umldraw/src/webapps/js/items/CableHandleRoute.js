@@ -23,7 +23,7 @@ function CableHandleRoute(){this.initialize.apply(this, arguments)};
 	_class.prototype.dragEnd = function(xx,yy) {
 		var item = Canvas.getItem(xx,yy, this.cable);
 		if (item && this.cable != item) {
-			this.setPoint(item,xx,yy, this.pointNo);
+			this.cable.setPoint(item,xx,yy, this.pointNo);
 		}
 		//this.coor.origin().xy(xx,yy); // 非センター
 	}
