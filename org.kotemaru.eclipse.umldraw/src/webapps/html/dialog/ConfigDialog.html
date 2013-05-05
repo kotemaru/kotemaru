@@ -3,6 +3,9 @@
 	width: 400px;
 	height: auto;	
 }
+#configDialog input[type=text] {
+	width: 200px;
+}
 
 </style>
 
@@ -14,6 +17,8 @@
 	<div>
 		<input type="checkbox" data-path="directionsBalloon" />
 			Enable directions balloon.<br/>
+		<br/>
+		Font familly: <input type=text data-path="fontFamily" />
 
 		<div class="DialogButtons">
 			<button onclick="Dialog.close()">Cancel</button>

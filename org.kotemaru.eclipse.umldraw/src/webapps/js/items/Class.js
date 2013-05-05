@@ -47,7 +47,7 @@ function Class(){this.initialize.apply(this, arguments)};
 			dr.drawText(Font.S, sType, xx, yy);
 			yy += size1.h;
 			
-			dr.drawText(Font.M, name, x1+2, yy);
+			dr.drawText(Font.M, name, x1+w1/2-size2.w/2, yy);
 
 			//以下したから
 

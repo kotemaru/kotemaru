@@ -140,9 +140,9 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.drawPoly = function(points) {
 		var pointsStr = "";
-		pointsStr += points[0].x+" "+points[0].y;
+		pointsStr += pt(points[0].x)+" "+pt(points[0].y);
 		for (var i=0; i<points.length; i++) {
-			pointsStr += " "+points[i].x+" "+points[i].y;
+			pointsStr += " "+pt(points[i].x)+" "+pt(points[i].y);
 		}
 		this.add("<polyline fill='white' stroke='black'" 
 			+" stroke-width='"+1+"'"
@@ -157,9 +157,9 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 	_class.prototype.drawLines = function(lines, style) {
 		var styleAttr = getLineStyle(style);
 		var points = "";
-		points += lines[0].x1+" "+lines[0].y1;
+		points += pt(lines[0].x1)+" "+pt(lines[0].y1);
 		for (var i=0; i<lines.length; i++) {
-			points += " "+lines[i].x2+" "+lines[i].y2;
+			points += " "+pt(lines[i].x2)+" "+pt(lines[i].y2);
 		}
 		this.add("<polyline fill='white' stroke='black'" 
 			+" points='"+points+"'"
@@ -285,6 +285,9 @@ function DrawerSVG(){this.initialize.apply(this, arguments)};
 			str += Math.floor(arguments[i]*100)/100;
 		}
 		return str;
+	}
+	function pt(v) {
+		return Math.floor(v)+0.5;
 	}
 
 })(DrawerSVG);

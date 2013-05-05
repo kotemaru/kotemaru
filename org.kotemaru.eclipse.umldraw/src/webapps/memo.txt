@@ -18,7 +18,8 @@
 --o delet point
 
 - UI
--- img 整理
+-- 新規メニュー
+--o img 整理
 --- Disk icon 
 --o eclipseのアイコン
 -- canvasのバルーン
