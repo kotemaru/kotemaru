@@ -1,5 +1,6 @@
 - bug
 -- point どろっぷ
+-- add point select 消える
 
 - チューニング
 -- 何かのキャッシュ
