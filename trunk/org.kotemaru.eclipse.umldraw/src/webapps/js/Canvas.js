@@ -32,7 +32,9 @@ function Canvas(){this.initialize.apply(this, arguments)};
 	}
 	_class.addItem = function(item) {
 		if (item.isSelectGroup) {
-			Eclipse.log("ignore Canvas.add(SelectGroup)");
+			Eclipse.log("SelectGroup replace.");
+			selectGroup.clear();
+			selectGroup = item;
 			return;
 		}
 		items.addItem(item);
