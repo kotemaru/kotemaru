@@ -4,6 +4,7 @@ function Item(){this.initialize.apply(this, arguments)};
 (function(_class, _super){
 	_class.prototype = new _super();
 	_class.prototype.isDrawable=true;
+	_class.prototype.isCanvasItem=true;
 	_class.properties = {
 		coor : {type:"Point", value:new Coor(0,0)},
 		group : {type:"Group", value:null}
@@ -25,6 +26,7 @@ function Item(){this.initialize.apply(this, arguments)};
 	_class.prototype.remove = function() {
 		this.isRemove = true;
 		this.coor.isRemove = true;
+		EditBuffer.notice();
 	}
 	_class.prototype.setGroup = function(group) {
 		if (group) {
@@ -47,12 +49,6 @@ function Item(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.getMenu = function() {
 		return "#itemMenu";
-	}
-	_class.prototype.doMenuItem = function($menuItem,xx,yy) {
-		var cmd = $menuItem.attr("data-value");
-		if (cmd == "properties") {
-			Dialog.open(this.getDialog(), this);
-		}
 	}
 
 	_class.prototype.getHandle = function(xx,yy) {

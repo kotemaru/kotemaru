@@ -85,6 +85,9 @@ div,span {
 	border: 2px inset #f0f0f0 !important;
 	padding: 0px !important;
 }
+.ActionGroup .Disabled {
+	opacity: 0.25;
+}
 
 
 .ActionGroupHeader {

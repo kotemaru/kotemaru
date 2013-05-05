@@ -46,6 +46,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 			for (var i=0; i<this.points.length; i++) {
 				this.points[i].handle = null;
 			}
+			EditBuffer.notice();
 		}
 	}
 	_class.prototype.delPoint = function(no) {
@@ -53,6 +54,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 		for (var i=0; i<this.points.length; i++) {
 			this.points[i].handle = null;
 		}
+		EditBuffer.notice();
 	}
 	
 	_class.prototype.setStartPoint = function(item,ex,ey) {
@@ -90,6 +92,7 @@ function Cable(){this.initialize.apply(this, arguments)};
 			coor.setOrigin(null);
 			coor.setOrigin2(null);
 		}
+		EditBuffer.notice();
 	}
 	_class.prototype.onPoint = function(tx,ty) {
 		return this.onPointIndex(tx,ty)>=0;
@@ -243,25 +246,6 @@ function Cable(){this.initialize.apply(this, arguments)};
 	}
 	_class.prototype.getDialog = function() {
 		return "#cableDialog";
-	}
-	_class.prototype.doMenuItem = function($menuItem,xx,yy) {
-		var cmd = $menuItem.attr("data-value");
-		if (cmd == "addPoint") {
-			var coor = new Coor({
-				origin:this.startPoint, 
-				origin2:this.endPoint,
-			});
-			coor.xy(xx,yy);
-			this.addPoint(coor);
-		} else if (cmd == "fixPoint") {
-			var handle = Canvas.getHandle(xx,yy);
-			if (handle && handle.fixed) {
-				handle.fixed(xx,yy);
-			}
-
-		} else if (cmd == "properties") {
-			Dialog.open(this.getDialog(), this);
-		}
 	}
 	
 })(Cable,Item);

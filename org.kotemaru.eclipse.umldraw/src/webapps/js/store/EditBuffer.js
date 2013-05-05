@@ -21,7 +21,6 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		Canvas.clearSelect();
 		Canvas.getSelectGroup().clear();
 		Canvas.refresh();
-
 	}
 	_class.copy = function() {
 		var selectGroup = Canvas.getSelectGroup();
@@ -37,12 +36,21 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		redoBuff.length = 0;
 	}
 
+	var isChange = false;
+	_class.notice = function() {
+		isChange = true;
+		return _class;
+	}
 	_class.backup = function(data) {
+		if (!isChange) return;
+		
 		if (data) curData = data;
 		undoBuff.push(curData);
 		redoBuff.length = 0;
 		curData = Store.save(Canvas.getItems());
 		Eclipse.fireEvent("change,"+undoBuff.length);
+		Debug.change(undoBuff.length);
+		isChange = false;
 	}
 	_class.undo = function() {
 		if (undoBuff.length == 0) return;
@@ -50,6 +58,8 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		curData = undoBuff.pop();
 		Store.load(curData);
 		Eclipse.fireEvent("change,"+undoBuff.length);
+		Debug.change(undoBuff.length);
+		isChange = false;
 	}
 	_class.redo = function() {
 		if (redoBuff.length == 0) return;
@@ -57,7 +67,19 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		curData = redoBuff.pop();
 		Store.load(curData);
 		Eclipse.fireEvent("change,"+undoBuff.length);
+		Debug.change(undoBuff.length);
+		isChange = false;
 	}
+	
+	
+	$(function(){
+		$(".Dialog").live("saved",function(ev, targetItem){
+			if (targetItem.isCanvasItem) {
+				EditBuffer.notice().backup();
+			}
+		});
+	})
+	
 	
 })(EditBuffer);
 

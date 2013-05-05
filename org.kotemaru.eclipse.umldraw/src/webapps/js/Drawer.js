@@ -175,6 +175,10 @@ function Drawer(){this.initialize.apply(this, arguments)};
 				//dc.strokeStyle = "#888888";
 				dc.strokeStyle = dc.createPattern($("#meshImg")[0], 'repeat');
 			}
+		} else {
+			if (dc.setLineDash) dc.setLineDash(null);
+			dc.mozDash = "";
+			dc.strokeStyle = "black";
 		}
 		
 		dc.lineWidth = 2;

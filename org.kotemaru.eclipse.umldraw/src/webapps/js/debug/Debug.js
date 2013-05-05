@@ -8,26 +8,34 @@ function Debug(){this.initialize.apply(this, arguments)};
 	_class.disable = function() {
 		$("#debugActionGroup").hide();
 	}
+
+	var saveCount=0;
+	var currentCount=0;
+	_class.change = function(count) {
+		currentCount=count;
+		var $btn = $("span.Action[data-value='save']");
+		if (saveCount == currentCount) {
+			$btn.addClass("Disabled");
+		} else {
+			$btn.removeClass("Disabled");
+		}
+	}
+	
 	function save() {
 		var data = Canvas.toSVG();
-		
 		$.ajax({
 			"url" : "/webdav/test.udr",
 			"data" : data,
 			"type" : "PUT",
 			"cache" : false,
-			"success" : function(){alert("OK");},
-			"error" : function(e){alert(e);},
+			"success" : function(){},
+			"error" : function(xhr,st,e){alert(e);},
 			"contentType" : "application/octet-stream"
 		});
 		Actions.resetAction(true);
-/*
-		Dialog.open("#debugDialog", data);
-		var data = Store.save(Canvas.getItems());
-		$("#saveText").val(JSON.stringify(data,null, "\t"));
-		Store.load(data);
-		Actions.resetAction(true);
-*/
+		
+		saveCount = currentCount;
+		$("span.Action[data-value='save']").addClass("Disabled");
 	}
 	function load() {
 		Eclipse.setContentUrl("/webdav/test.udr");
@@ -37,14 +45,6 @@ function Debug(){this.initialize.apply(this, arguments)};
 		var win = window.open("","SVG");
 		win.document.body.innerHTML = Canvas.toSVG();
 		Actions.resetAction(true);
-		
-		/*
-		Dialog.open("#svgDialog", data);
-		var data = {svg: Canvas.toSVG()};
-		var ifr = $("#iframeSvg")[0];
-		ifr.contentDocument.body.innerHTML = data.svg;
-		Actions.resetAction(true);
-		*/
 	}
 
 	$(function(){

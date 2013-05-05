@@ -34,11 +34,13 @@ function CableHandleRoute(){this.initialize.apply(this, arguments)};
 	
 	_class.prototype.remove = function() {
 		this.cable.delPoint(this.pointNo);
+		EditBuffer.notice();
 	}
 	_class.prototype.fixed = function() {
 		var coor = this.cable.getPoint(this.pointNo);
 		coor.setOrigin(null);
 		coor.setOrigin2(null);
+		EditBuffer.notice();
 	}
 	_class.prototype.unfixed = function() {
 		var coor = this.cable.getPoint(this.pointNo);
@@ -46,6 +48,7 @@ function CableHandleRoute(){this.initialize.apply(this, arguments)};
 		coor.setOrigin(this.cable.startPoint);
 		coor.setOrigin2(this.cable.endPoint);
 		coor.xy(xx,yy);
+		EditBuffer.notice();
 	}
 	
 })(CableHandleRoute, Handle);
