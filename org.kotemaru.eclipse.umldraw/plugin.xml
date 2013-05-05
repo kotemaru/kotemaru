@@ -16,4 +16,13 @@
 	<extension point="org.eclipse.core.runtime.preferences">
 		<initializer class="org.kotemaru.eclipse.umldraw.Preference"/>
 	</extension>
+ <extension
+       point="org.eclipse.ui.newWizards">
+    <wizard
+          class="org.kotemaru.eclipse.umldraw.NewWizard"
+          icon="icons/udr.png"
+          id="org.kotemaru.eclipse.umldraw.NewWizaed"
+          name="UML Draw">
+    </wizard>
+ </extension>
 </plugin>

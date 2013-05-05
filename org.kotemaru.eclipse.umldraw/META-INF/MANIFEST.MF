@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: umldraw
 Bundle-SymbolicName: org.kotemaru.eclipse.umldraw;singleton:=true
-Bundle-Version: 1.0.0.qualifier
+Bundle-Version: 0.0.1
 Bundle-Activator: org.kotemaru.eclipse.umldraw.Activator
 Bundle-Vendor: kotemaru.org
 Require-Bundle: org.eclipse.ui,
@@ -13,3 +13,19 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.resources;bundle-version="3.7.100"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ActivationPolicy: lazy
+Export-Package: org.kotemaru.eclipse.umldraw,
+ webapps,
+ webapps.css,
+ webapps.html.dialog,
+ webapps.html.menu,
+ webapps.img,
+ webapps.img.association,
+ webapps.img.led,
+ webapps.img.xpm,
+ webapps.jq,
+ webapps.js,
+ webapps.js.debug,
+ webapps.js.items,
+ webapps.js.resource,
+ webapps.js.store,
+ webapps.js.ui
