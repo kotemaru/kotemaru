@@ -71,16 +71,6 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		isChange = false;
 	}
 	
-	
-	$(function(){
-		$(".Dialog").live("saved",function(ev, targetItem){
-			if (targetItem.isCanvasItem) {
-				EditBuffer.notice().backup();
-			}
-		});
-	})
-	
-	
 })(EditBuffer);
 
 
