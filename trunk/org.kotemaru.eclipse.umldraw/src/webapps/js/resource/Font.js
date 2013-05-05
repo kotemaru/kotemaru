@@ -9,15 +9,23 @@ function Font(){this.initialize.apply(this, arguments)};
 		this.acender = size;
 		for (var k in opts) this[k] = opts[k];
 	}
-	var FAMILY = "arial,sans-serif";
 	
-	_class.S = new _class(10, FAMILY);
-	_class.M = new _class(12, FAMILY);
-	_class.L = new _class(14, FAMILY);
-	_class.LL = new _class(18, FAMILY);
-	_class.BIG = new _class(24, FAMILY);
 	
-	_class.MU = new _class(12, FAMILY, {decoration:"underline"});
-		
+	function init(family) {
+		_class.S = new _class(10, family);
+		_class.M = new _class(12, family);
+		_class.L = new _class(14, family);
+		_class.LL = new _class(18, family);
+		_class.BIG = new _class(24, family);
+		_class.MU = new _class(12, family, {decoration:"underline"});
+	}
+
+	$(function(){
+		init(Eclipse.preferences.fontFamily);
+		$("#configDialog").live("saved",function(){
+			init(Eclipse.preferences.fontFamily);
+		});
+	});
+
 })(Font);
 	

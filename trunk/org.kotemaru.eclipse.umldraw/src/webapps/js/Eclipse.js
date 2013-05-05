@@ -49,10 +49,8 @@ Eclipse.startup = function(pref) {
 	alert("Abstract function Eclipse.startup() not implemented.");
 };
 
-Eclipse.preferences = {
-	directionsBalloon: true,
-	lineRouteDefault: "N"
-};
+Eclipse.preferences = {};
+
 Eclipse.getPreferences = function(key) {
 	return ""+Eclipse.preferences[key];
 };

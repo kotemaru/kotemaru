@@ -13,6 +13,11 @@ function Editor(){this.initialize.apply(this, arguments)};
 		});
 	});
 	
+	Eclipse.preferences = { // for DDEBUG
+		directionsBalloon: true,
+		lineRouteDefault: "N",
+		fontFamily: "arial,sans-serif"
+	};	
 	Eclipse.setContentUrl = function(url) {
 		$.ajax({type:"GET", url:url, cache:false,
 			success: function(xmlDoc){
