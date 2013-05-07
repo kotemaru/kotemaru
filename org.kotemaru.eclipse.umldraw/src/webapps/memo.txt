@@ -21,9 +21,9 @@
 --o delet point
 
 - UI
--- 新規メニュー
+--o 新規メニュー
 --o img 整理
---- Disk icon 
+---o Disk icon 
 --o eclipseのアイコン
 -- canvasのバルーン
 -- バルーンの英語

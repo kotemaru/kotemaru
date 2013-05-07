@@ -9,6 +9,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -20,27 +21,45 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.editors.text.TextEditor;
 import org.eclipse.ui.part.EditorPart;
+import org.eclipse.ui.texteditor.ITextEditorActionConstants;
 
 public class BrowserEditor extends TextEditor {
 
 	private static final String ENCODING = "utf-8";
 
 	private Browser browser;
-	private Clipboard clipboard;
+	private Clipboard clipboard = null;
 	private int changeHistoryCount = 0;
 	private int savedHistoryCount = 0;
 
+	static class JsAction extends Action {
+		private BrowserEditor editor;
+		private String script;
+		public JsAction(BrowserEditor editor, String script, boolean enable) {
+			this.editor = editor;
+			this.script = script;
+			this.setEnabled(enable);
+		}
+		public void run() {
+			editor.browser.execute(script);
+		}
+	}
+	private JsAction printAction = new JsAction(this, "Eclipse.print()", true);
+	private JsAction undoAction = new JsAction(this, "Eclipse.undo()", true);
+	private JsAction redoAction = new JsAction(this, "Eclipse.redo()", true);
+	private JsAction configAction = new JsAction(this, "Eclipse.config()", true);
+	
 	public BrowserEditor() {
 		super();
-
-		Display display = new Display();
-		clipboard = new Clipboard(display);
+		//Display display = new Display();
+		//clipboard = new Clipboard(display);
 	}
 
 	@Override
@@ -49,8 +68,20 @@ public class BrowserEditor extends TextEditor {
 		setSite(site);
 		setInput(input);
 		setPartName(input.getName());
+		
 	}
 
+	public void setActions(IActionBars bars) {
+		setAction(ITextEditorActionConstants.PRINT, printAction);
+		setAction(ITextEditorActionConstants.UNDO, undoAction);
+		setAction(ITextEditorActionConstants.REDO, redoAction);
+		
+		String pkg = getClass().getPackage().getName();
+	    bars.setGlobalActionHandler("undo", undoAction);
+	    bars.setGlobalActionHandler("redo", redoAction);
+	    bars.setGlobalActionHandler(pkg+".configAction", configAction);
+	}
+	
 	@Override
 	public void createPartControl(Composite parent) {
 		try {
@@ -171,7 +202,7 @@ public class BrowserEditor extends TextEditor {
 
 	@Override
 	public void dispose() {
-		browser.dispose();
+		if (browser != null) browser.dispose();
 		super.dispose();
 	}
 
