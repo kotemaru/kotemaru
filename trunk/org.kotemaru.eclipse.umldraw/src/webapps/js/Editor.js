@@ -40,6 +40,21 @@ function Editor(){this.initialize.apply(this, arguments)};
 		Eclipse.preferences = pref;
 		Debug.disable();
 	};
+	Eclipse.print = function() {
+		//var win = window.open("","SVG");
+		//win.document.body.innerHTML = Canvas.toSVG();
+		window.print();
+		Actions.resetAction(true);
+	};
+	Eclipse.undo = function() {
+		EditBuffer.undo();
+	};
+	Eclipse.redo = function() {
+		EditBuffer.redo();
+	};
+	Eclipse.config = function() {
+		Dialog.open("#configDialog", Eclipse.preferences);
+	};
 	
 })(Editor);
 

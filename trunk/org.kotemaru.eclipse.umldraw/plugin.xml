@@ -8,7 +8,7 @@
             name="UML-Draw"
             extensions="udr"
             icon="icons/udr.png"
-            contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
+            contributorClass="org.kotemaru.eclipse.umldraw.ActionContributor"
             class="org.kotemaru.eclipse.umldraw.BrowserEditor"
             id="org.kotemaru.eclipse.umldraw.editors.BrowserEditor">
       </editor>
@@ -25,4 +25,32 @@
           name="UML Draw">
     </wizard>
  </extension>
+ 
+	<extension point="org.eclipse.ui.actionSets">
+		<actionSet label="UML Draw" visible="true"
+				id="org.kotemaru.eclipse.umldraw.ActionSet">
+		    <action label=""
+				icon="icons/config.png"
+				toolbarPath="umldraw"
+				tooltip="Preference UML Draw"
+				retarget="true"
+				id="org.kotemaru.eclipse.umldraw.configAction"
+			></action>
+		    <action label=""
+				icon="icons/redo.png"
+				toolbarPath="umldraw"
+				tooltip="REDO"
+				retarget="true"
+				id="redo"
+			></action>
+		    <action label=""
+				icon="icons/undo.png"
+				toolbarPath="umldraw"
+				tooltip="UNDO"
+				retarget="true"
+				id="undo"
+			></action>
+		</actionSet>
+	</extension>
+
 </plugin>

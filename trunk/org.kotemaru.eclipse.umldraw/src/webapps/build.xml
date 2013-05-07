@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="make2" name="umldraw">
-	<property name="project.root" value="../../../../../.."/>
+	<property name="project.root" value="../.."/>
 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 	  <classpath>
@@ -23,10 +23,10 @@
 	
     <target name="make2">
     	<antcall target="makeListFile">
-    		<param name="includes" value="**/*.html"/>
-    		<param name="file" value="htmls.txt"/>
-    		<param name="prefix" value="include('"/>
-        	<param name="suffix" value="');"/>
+    		<param name="includes" value="**/*.js"/>
+    		<param name="file" value="html.txt"/>
+    		<param name="prefix" value="&lt;script src='"/>
+        	<param name="suffix" value="'/>"/>
     	</antcall>
     </target>
 	

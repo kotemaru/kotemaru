@@ -44,6 +44,7 @@ function Debug(){this.initialize.apply(this, arguments)};
 	function print() {
 		var win = window.open("","SVG");
 		win.document.body.innerHTML = Canvas.toSVG();
+		win.print();
 		Actions.resetAction(true);
 	}
 
