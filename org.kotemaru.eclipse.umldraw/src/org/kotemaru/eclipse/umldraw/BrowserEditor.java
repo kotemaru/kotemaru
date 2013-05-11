@@ -143,21 +143,23 @@ public class BrowserEditor extends TextEditor {
 			IFileEditorInput input = (IFileEditorInput)getEditorInput();
 			InputStream in = input.getFile().getContents();
 			try {
-				browser.execute("Eclipse.openContentBase64()");
+				browser.execute("Eclipse.openContent()");
 				Reader r = new InputStreamReader(in,ENCODING);
 				char[] buff = new char[4096];
 				int n;
 				while ((n=r.read(buff))>=0) {
 					byte[] plain = new String(buff,0,n).getBytes(ENCODING);
 					String base64 = EncodingUtils.encodeBase64(plain);
-					browser.execute("Eclipse.addContentBase64('"+base64+"')");
+					browser.execute("Eclipse.addContent('"+base64+"')");
 				}
+				browser.execute("Eclipse.closeContent()");
+			} catch (Exception e) {
+				browser.execute("Eclipse.failContent('"+e+"')");
+				throw e;
 			} finally {
-				browser.execute("Eclipse.closeContentBase64()");
 				in.close();
 			}
 		} catch (Exception e) {
-			browser.execute("Eclipse.failContentBase64('"+e+"')");
 			e.printStackTrace();
 			throw new RuntimeException(e);
 		}

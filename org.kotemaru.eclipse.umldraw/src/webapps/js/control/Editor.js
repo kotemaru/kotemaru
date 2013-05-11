@@ -11,6 +11,10 @@ function Editor(){this.initialize.apply(this, arguments)};
 				EditBuffer.notice().backup();
 			}
 		});
+		
+		$("#printer").live("click",function(){
+			$(this).hide();
+		})
 	});
 	
 	Eclipse.preferences = { // for DDEBUG
@@ -18,21 +22,6 @@ function Editor(){this.initialize.apply(this, arguments)};
 		lineRouteDefault: "N",
 		fontFamily: "arial,sans-serif"
 	};	
-	Eclipse.setContentUrl = function(url) {
-		$.ajax({type:"GET", url:url, cache:false,
-			success: function(xmlDoc){
-				try {
-					var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
-					Store.load(JSON.parse(data));
-					EditBuffer.init();
-				} catch (e) {
-					alert("Bad data: "+e);
-				}
-			},
-			error: function(xreq,state,err){alert("content loader:"+url+"\n"+err);},
-			dataType: "xml"
-		});
-	};
 	Eclipse.getContent = function() {
 		return Canvas.toSVG();
 	};
@@ -41,19 +30,13 @@ function Editor(){this.initialize.apply(this, arguments)};
 		Debug.disable();
 	};
 	Eclipse.print = function() {
-		setTimeout(function(){
-		$("#borderLayoutMain").hide();
-		$("#borderLayoutLeft").hide();
-		
 		Eclipse.log("printer");
 		var $print = $("#printer");
 		$print[0].innerHTML = (Canvas.toSVG());
 		$print.show();
-		//$print.width(100);
-		//$print.height(100);
-			window.print();	
-		},10);
+		window.print();	
 	};
+	
 	Eclipse.undo = function() {
 		EditBuffer.undo();
 	};
@@ -64,25 +47,12 @@ function Editor(){this.initialize.apply(this, arguments)};
 		Dialog.open("#configDialog", Eclipse.preferences);
 	};
 	
-	var contents =[];
-	Eclipse.openContentBase64 = function() {
-		contents.length = 0;
-	};
-	Eclipse.addContentBase64 = function(base64) {
-		contents.push(Base64.decode(base64));
-	};
-	Eclipse.closeContentBase64 = function() {
-		var xml = contents.join();
-		contents.length = 0;
+	Eclipse.setContent = function(content) {
 		var xmlParser = new DOMParser();
- 		var xmlDoc = xmlParser.parseFromString(xml,"text/xml");
+ 		var xmlDoc = xmlParser.parseFromString(content,"text/xml");
 		var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
 		Store.load(JSON.parse(data));
 		EditBuffer.init();
-	};
-	Eclipse.failContentBase64 = function(msg) {
-		alert(msg);
-		contents.length = 0;
 	};
 	
 })(Editor);
