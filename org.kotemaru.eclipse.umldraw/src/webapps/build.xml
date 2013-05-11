@@ -7,27 +7,68 @@
 		classname="org.kotemaru.ant.task.JsTask"
 		classpath="${lib}/jstask.jar;${lib}/js.jar"
 	/>
-	<target name="make" depends="make.jsloaders" >
+	<target name="make" depends="make.cssloaders,make.jsloaders,make.htmlloaders" >
 		<copy file="editor.html.template" tofile="editor.html" 
 			filtering="true" overwrite="yes" encoding="utf-8">
 			<filterset>
+				<filter token="cssloaders" value="${cssloaders}" />
 				<filter token="jsloaders" value="${jsloaders}" />
+				<filter token="htmlloaders" value="${htmlloaders}" />
 			</filterset>
 		</copy>
-
 	</target>
 
+	<property name="make.lodaer.js"><![CDATA[
+	function makeLoaders(fmt, priority) {
+		if (priority == null) priority = ["*"];
+
+		// Priority numbering.
+		var PRI = {};
+		for (var i=0;i<priority.length;i++) {
+			PRI[priority[i]] = i;
+		}
+		
+		// make file name list.
+		var names = [];
+		var ite = fileset.iterator();
+		while (ite.hasNext()) {
+			var reg = new RegExp(prefix);
+			var fname = (""+ite.next()).replace(reg,"");
+			var pri = PRI[fname.match(/[^/]*$/)];
+			if (pri == null) pri = PRI["*"];
+			names.push({pri:pri, fname:fname});
+		}
+		
+		// sort by priority.
+		names.sort(function(a,b){
+			if (a.pri != b.pri) return a.pri-b.pri;
+			return a.fname>b.fname?1:-1;
+		});
+		
+		// make loader string.
+		var loaders = "";
+		for (var i=0;i<names.length;i++) {
+			//task.log(names[i].pri+":"+names[i].fname);
+			loaders += fmt.replace("${fname}",names[i].fname);
+		}
+		return loaders;
+	}
+	]]></property>
+	
+	
 	<target name="make.jsloaders">
 		<js>
 			<fileset dir="js" includes="**/*.js" />
 			<param name="prefix" value="^${basedir}/" />
 			
 			<![CDATA[
+			eval(""+task.project.getProperty("make.lodaer.js"));
+			
 			var PRIORITY = [
 				"Lang.js",
-				"Coor.js",	"CoorDiag.js", 
 				"Font.js", "Color.js",
 
+				"Coor.js",	"CoorDiag.js", 
 				"Elem.js", "Item.js",
 				"Items.js",	"Handle.js",
 				"Rectangle.js",
@@ -37,33 +78,44 @@
 				"*",
 				"Editor.js"
 			];
-			var PRI = {};
-			for (var i=0;i<PRIORITY.length;i++) {
-				PRI[PRIORITY[i]] = i;
-			}
-			
-			var names = [];
-			var ite = fileset.iterator();
-			while (ite.hasNext()) {
-				var reg = new RegExp(prefix);
-				var fname = (""+ite.next()).replace(reg,"");
-				var pri = PRI[fname.match(/[^/]*$/)];
-				if (pri == null) pri = PRI["*"];
-				names.push({pri:pri, fname:fname});
-			}
-			names.sort(function(a,b){
-				if (a.pri != b.pri) return a.pri-b.pri;
-				return a.fname>b.fname?1:-1;
-			});
-			var jsloaders = "";
-			for (var i=0;i<names.length;i++) {
-				task.log(names[i].pri+":"+names[i].fname);
-				jsloaders += "<script src='"+names[i].fname+"'></script>\n";
-			}
-			task.project.setProperty("jsloaders",jsloaders);
+			var fmt = "<script src='${fname}'></script>\n";
+			var loaders = makeLoaders(fmt,PRIORITY);
+			task.project.setProperty("jsloaders",loaders);
 			]]>
 		</js>
 		<echo>${jsloaders}</echo>
+	</target>	
+	
+	<target name="make.cssloaders">
+		<js>
+			<fileset dir="css" includes="**/*.css" />
+			<param name="prefix" value="^${basedir}/" />
+			
+			<![CDATA[
+			eval(""+task.project.getProperty("make.lodaer.js"));
+			
+			var fmt = "<link rel='stylesheet' href='${fname}' type='text/css'/>\n";
+			var loaders = makeLoaders(fmt); 
+			task.project.setProperty("cssloaders",loaders);
+			]]>
+		</js>
+		<echo>${cssloaders}</echo>
+	</target>	
+	
+	<target name="make.htmlloaders">
+		<js>
+			<fileset dir="html" includes="**/*.html" />
+			<param name="prefix" value="^${basedir}/" />
+			
+			<![CDATA[
+			eval(""+task.project.getProperty("make.lodaer.js"));
+
+			var fmt = "Util.include('${fname}');\n";
+			var loaders = makeLoaders(fmt);
+			task.project.setProperty("htmlloaders",loaders);
+			]]>
+		</js>
+		<echo>${htmlloaders}</echo>
 	</target>	
 
 </project>

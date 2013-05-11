@@ -66,3 +66,21 @@ div.Disabled:hover {
 	width: 32px;
 }
 
+
+.Menu {
+	position: absolute;
+	background: #e0e0e0;
+	border: 1px solid gray;
+	font-size: 12px;
+	cursor: pointer;
+}
+.MenuHeader {
+	background: #f8f8f8;
+	font-weight: bold;
+	color: white;
+	text-align: center;
+	background: #808080;
+}
+.MenuItem:hover {
+	background: #f8f8f8;
+}

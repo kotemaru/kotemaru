@@ -4,33 +4,15 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<link rel="stylesheet" href="css/BorderLayout.css" type="text/css" media="all">
-<link rel="stylesheet" href="css/editor.css" type="text/css" media="all">
-<link rel="stylesheet" href="css/Dialog.css" type="text/css" media="all">
-<link rel="stylesheet" href="css/PopupMenu.css" type="text/css" media="all">
-<link rel="stylesheet" href="css/Selector.css" type="text/css" media="all">
-<link rel="stylesheet" href="css/Balloon.css" type="text/css" media="all">
-
+@cssloaders@
 
 <script src="jq/jquery-1.8.2.js"></script>
+
 @jsloaders@
 
 <script>
 $(function(){
-	Util.include("#menus","html/menu/CableMenu.html");
-	Util.include("#menus","html/menu/CanvasMenu.html");
-	Util.include("#menus","html/menu/ItemMenu.html");
-	Util.include("#menus","html/menu/SelectGroupMenu.html");
-	
-	Util.include("#dialogs","html/dialog/CanvasDialog.html");
-	Util.include("#dialogs","html/dialog/ConfigDialog.html");
-	Util.include("#dialogs","html/dialog/CableDialog.html");
-	Util.include("#dialogs","html/dialog/ClassDialog.html");
-	Util.include("#dialogs","html/dialog/ObjectDialog.html");
-	Util.include("#dialogs","html/dialog/NoteDialog.html");
-	Util.include("#dialogs","html/dialog/DiskDialog.html");
-	Util.include("#dialogs","html/dialog/DebugDialog.html");
-	Util.include("#dialogs","html/dialog/SvgDialog.html");
+@htmlloaders@
 });
 </script>
 

@@ -116,9 +116,14 @@ function Util(){this.initialize.apply(this, arguments)};
 		dc.strokeRect(x1-0.5, y1-0.5, (x2-x1)+1, (y2-y1)+1);
 	}
 	
-	_class.include = function(sel, url) {
+	_class.include = function(url, sel) {
 		$.get(url,null,function(data){
 			try {
+				if (sel == null) {
+					sel = document.body;
+					if (url.match(/Menu.html$/)) sel = "#menus";
+					if (url.match(/Dialog.html$/)) sel = "#dialogs";
+				}
 				$(sel).append(data);
 			} catch (e) {
 				Eclipse.log("include-fail:"+url+":"+e);
