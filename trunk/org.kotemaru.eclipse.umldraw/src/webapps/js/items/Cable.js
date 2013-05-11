@@ -16,7 +16,9 @@ function Cable(){this.initialize.apply(this, arguments)};
 		endPoint   : {type: "Point", value:null},
 	});
 
-	Actions.registerAction(_class.name, new CableAction(_class));
+	$(function(){
+		Actions.registerAction(_class.name, new CableAction(_class));
+	});
 	
 	/**
 	 * コンストラクタ。

@@ -1,53 +1,69 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="make2" name="umldraw">
+<project basedir="." default="make" name="umldraw">
 	<property name="project.root" value="../.."/>
+	<property name="lib" value="${project.root}/lib"/>
 
-	<taskdef resource="net/sf/antcontrib/antcontrib.properties">
-	  <classpath>
-	    <pathelement location="${project.root}/lib/ant-contrib-1.0b3.jar"/>
-	  </classpath>
-	</taskdef>
-	
-	<property name="version" value="0.0.1"/>
-	
-    <target name="make">
-    	<fileset id="" dir=".">
-    	    <include name="**/*." />
-    	</fileset>
+	<taskdef name="js"
+		classname="org.kotemaru.ant.task.JsTask"
+		classpath="${lib}/jstask.jar;${lib}/js.jar"
+	/>
+	<target name="make" depends="make.jsloaders" >
+		<copy file="editor.html.template" tofile="editor.html" 
+			filtering="true" overwrite="yes" encoding="utf-8">
+			<filterset>
+				<filter token="jsloaders" value="${jsloaders}" />
+			</filterset>
+		</copy>
 
-    	<pathconvert property="files" refid="myfileset" pathsep=";" dirsep="/" >
-    		<map from="${basedir}/" to="" />
-    	</pathconvert>
-    	<echo file="htmls.txt">${files}</echo>
 	</target>
-	
-    <target name="make2">
-    	<antcall target="makeListFile">
-    		<param name="includes" value="**/*.js"/>
-    		<param name="file" value="html.txt"/>
-    		<param name="prefix" value="&lt;script src='"/>
-        	<param name="suffix" value="'/>"/>
-    	</antcall>
-    </target>
-	
-    <target name="makeListFile">
- 	 	<fileset id="fileset" dir=".">
-     	    <include name="${includes}" />
-    	</fileset>
 
-    	<pathconvert property="files" refid="fileset" pathsep=";" dirsep="/" >
-    		<map from="${basedir}/" to="" />
-    	</pathconvert>
-    	
-    	<echo file="${file}"></echo>
-    	<foreach target="addLine" param="name" inheritall="true"
-	   		list="${files}" delimiter=";"
-    	>
-	   </foreach>
-	</target>
-    <target name="addLine">
-			<echo append="true" file="${file}">${prefix}${name}${suffix}
-</echo>
-	</target>
+	<target name="make.jsloaders">
+		<js>
+			<fileset dir="js" includes="**/*.js" />
+			<param name="prefix" value="^${basedir}/" />
+			
+			<![CDATA[
+			var PRIORITY = [
+				"Lang.js",
+				"Coor.js",	"CoorDiag.js", 
+				"Font.js", "Color.js",
+
+				"Elem.js", "Item.js",
+				"Items.js",	"Handle.js",
+				"Rectangle.js",
+				"Group.js",	"SelectGroup.js",
+			
+				"Action.js",
+				"*",
+				"Editor.js"
+			];
+			var PRI = {};
+			for (var i=0;i<PRIORITY.length;i++) {
+				PRI[PRIORITY[i]] = i;
+			}
+			
+			var names = [];
+			var ite = fileset.iterator();
+			while (ite.hasNext()) {
+				var reg = new RegExp(prefix);
+				var fname = (""+ite.next()).replace(reg,"");
+				var pri = PRI[fname.match(/[^/]*$/)];
+				if (pri == null) pri = PRI["*"];
+				names.push({pri:pri, fname:fname});
+			}
+			names.sort(function(a,b){
+				if (a.pri != b.pri) return a.pri-b.pri;
+				return a.fname>b.fname?1:-1;
+			});
+			var jsloaders = "";
+			for (var i=0;i<names.length;i++) {
+				task.log(names[i].pri+":"+names[i].fname);
+				jsloaders += "<script src='"+names[i].fname+"'></script>\n";
+			}
+			task.project.setProperty("jsloaders",jsloaders);
+			]]>
+		</js>
+		<echo>${jsloaders}</echo>
+	</target>	
 
 </project>

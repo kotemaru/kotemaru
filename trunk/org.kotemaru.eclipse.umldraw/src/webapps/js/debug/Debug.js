@@ -30,7 +30,7 @@ function Debug(){this.initialize.apply(this, arguments)};
 			"cache" : false,
 			"success" : function(){},
 			"error" : function(xhr,st,e){alert(e);},
-			"contentType" : "application/octet-stream"
+			"contentType" : "text/plain; charset=utf8"
 		});
 		Actions.resetAction(true);
 		
@@ -38,7 +38,14 @@ function Debug(){this.initialize.apply(this, arguments)};
 		$("span.Action[data-value='save']").addClass("Disabled");
 	}
 	function load() {
-		Eclipse.setContentUrl("/webdav/test.udr");
+		$.ajax({
+			"url" : "/webdav/test.udr",
+			"type" : "GET",
+			"cache" : false,
+			"success" : function(data){Eclipse.setContent(data);},
+			"error" : function(xhr,st,e){alert(e);},
+			"contentType" : "text/plain; charset=utf8"
+		});
 		Actions.resetAction(true);
 	}
 	function print() {
