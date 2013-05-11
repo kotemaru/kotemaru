@@ -29,7 +29,7 @@ function Editor(){this.initialize.apply(this, arguments)};
 					alert("Bad data: "+e);
 				}
 			},
-			error: function(xreq,state,err){alert(err);},
+			error: function(xreq,state,err){alert("content loader:"+url+"\n"+err);},
 			dataType: "xml"
 		});
 	};
@@ -41,10 +41,18 @@ function Editor(){this.initialize.apply(this, arguments)};
 		Debug.disable();
 	};
 	Eclipse.print = function() {
-		//var win = window.open("","SVG");
-		//win.document.body.innerHTML = Canvas.toSVG();
-		window.print();
-		Actions.resetAction(true);
+		setTimeout(function(){
+		$("#borderLayoutMain").hide();
+		$("#borderLayoutLeft").hide();
+		
+		Eclipse.log("printer");
+		var $print = $("#printer");
+		$print[0].innerHTML = (Canvas.toSVG());
+		$print.show();
+		//$print.width(100);
+		//$print.height(100);
+			window.print();	
+		},10);
 	};
 	Eclipse.undo = function() {
 		EditBuffer.undo();
@@ -54,6 +62,27 @@ function Editor(){this.initialize.apply(this, arguments)};
 	};
 	Eclipse.config = function() {
 		Dialog.open("#configDialog", Eclipse.preferences);
+	};
+	
+	var contents =[];
+	Eclipse.openContentBase64 = function() {
+		contents.length = 0;
+	};
+	Eclipse.addContentBase64 = function(base64) {
+		contents.push(Base64.decode(base64));
+	};
+	Eclipse.closeContentBase64 = function() {
+		var xml = contents.join();
+		contents.length = 0;
+		var xmlParser = new DOMParser();
+ 		var xmlDoc = xmlParser.parseFromString(xml,"text/xml");
+		var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
+		Store.load(JSON.parse(data));
+		EditBuffer.init();
+	};
+	Eclipse.failContentBase64 = function(msg) {
+		alert(msg);
+		contents.length = 0;
 	};
 	
 })(Editor);
