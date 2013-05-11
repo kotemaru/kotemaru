@@ -2,6 +2,10 @@ package org.kotemaru.eclipse.umldraw;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 
 import org.eclipse.core.resources.IFile;
@@ -9,6 +13,7 @@ import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.equinox.security.storage.EncodingUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.preference.IPersistentPreferenceStore;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -116,7 +121,7 @@ public class BrowserEditor extends TextEditor {
 		}
 
 	}
-
+/*
 	private void onLoad(String[] params) {
 		startup();
 
@@ -126,10 +131,38 @@ public class BrowserEditor extends TextEditor {
 		String path = input.getFile().getFullPath().toString().replaceFirst("^/", "");
 		File file = new File(workspaceDirectory, path);
 
-		String url = "file:///" + file.getAbsolutePath().replaceAll("[\\\\]", "/");
+		String url = "file://" + file.getAbsolutePath().replaceAll("[\\\\]", "/");
 		browser.execute("Eclipse.setContentUrl('" + url + "')");
 	}
-
+*/
+	
+	private void onLoad(String[] params) {
+		startup();
+		
+		try {
+			IFileEditorInput input = (IFileEditorInput)getEditorInput();
+			InputStream in = input.getFile().getContents();
+			try {
+				browser.execute("Eclipse.openContentBase64()");
+				Reader r = new InputStreamReader(in,ENCODING);
+				char[] buff = new char[4096];
+				int n;
+				while ((n=r.read(buff))>=0) {
+					byte[] plain = new String(buff,0,n).getBytes(ENCODING);
+					String base64 = EncodingUtils.encodeBase64(plain);
+					browser.execute("Eclipse.addContentBase64('"+base64+"')");
+				}
+			} finally {
+				browser.execute("Eclipse.closeContentBase64()");
+				in.close();
+			}
+		} catch (Exception e) {
+			browser.execute("Eclipse.failContentBase64('"+e+"')");
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+  
 	private void startup() {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		String json = "";

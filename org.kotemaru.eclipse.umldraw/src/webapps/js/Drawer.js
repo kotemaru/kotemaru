@@ -177,7 +177,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 			}
 		} else {
 			if (dc.setLineDash) dc.setLineDash(null);
-			dc.mozDash = "";
+			dc.mozDash = [];
 			dc.strokeStyle = "black";
 		}
 		

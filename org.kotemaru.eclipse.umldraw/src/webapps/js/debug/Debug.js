@@ -42,9 +42,7 @@ function Debug(){this.initialize.apply(this, arguments)};
 		Actions.resetAction(true);
 	}
 	function print() {
-		var win = window.open("","SVG");
-		win.document.body.innerHTML = Canvas.toSVG();
-		win.print();
+		Eclipse.print();
 		Actions.resetAction(true);
 	}
 

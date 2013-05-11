@@ -52,5 +52,16 @@
 			></action>
 		</actionSet>
 	</extension>
+ 
+ 
+	<extension point="org.eclipse.equinox.http.registry.resources">
+		<resource alias="/" base-name="/webContent" />
+	</extension>
+	<extension point="org.eclipse.equinox.http.registry.servlets">
+		<servlet alias="/rob"
+	class="rob.MyHTTPServlet">
+	  </servlet>
+	  
+	</extension>
 
 </plugin>

@@ -17,7 +17,16 @@ div,span {
 #menus {
 	position: absolute;
 }
-
+#printer {
+	display: none;
+	position: absolute;
+	left:0;
+	top:0;
+	background: red;
+	width: auto;
+	height: auto;
+	z-index: 100;
+}
 .Menu {
 	position: absolute;
 	background: #e0e0e0;
