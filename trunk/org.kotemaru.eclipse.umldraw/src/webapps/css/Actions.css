@@ -1,0 +1,62 @@
+.ActionGroup {
+	background: #f0f0e0;
+	clear:both;
+	overflow:hidden;
+	margin: 2px 0px;
+}
+.ActionGroup > span{
+	float: left;
+}
+.ActionGroup > hr{
+	padding: 0px;
+	margin: 2px;
+	margin-top: 4px;
+	clear: both;
+}
+.ActionGroup .Action {
+	display: inline-block;
+	width: 36px;
+	height: 20px;
+	padding: 1px;
+	margin: 2px;
+	border: 1px outset #f0f0f0;
+	background: #f0f0f0;
+	cursor: pointer;
+	text-align: center;
+}
+
+.ActionGroup .Small {
+	width: 20px;
+	height: 20px;
+}
+.ActionGroup .Action>img {
+	vertical-align: middle;
+}
+
+.ActionGroup .Selected {
+	border: 1px inset #f0f0f0;
+}
+.ActionGroup .Locked {
+	border: 2px inset #f0f0f0 !important;
+	padding: 0px !important;
+}
+.ActionGroup .Disabled {
+	opacity: 0.25;
+}
+
+
+.ActionGroupHeader {
+	font-size: 10px;
+	font-weight: bold;
+	height: 12px;
+	background: #f0d080;
+	overflow:hidden;
+	padding-top: 1px;
+	border-bottom: 1px solid  #a0a040;
+}
+.ActionGroupHeader > img.OpenClose {
+	float: right;
+	padding: 2px;
+	cursor: pointer;
+}
+
