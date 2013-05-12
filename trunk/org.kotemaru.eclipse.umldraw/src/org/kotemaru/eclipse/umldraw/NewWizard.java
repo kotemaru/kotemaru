@@ -25,26 +25,6 @@ public class NewWizard extends BasicNewResourceWizard {
 
 	private NewWizardPage mainPage;
 	
-	static class NewWizardPage extends WizardNewFileCreationPage {
-		private static final String INIT_DATA =
-		"<?xml version='1.0' encoding='utf-8' ?>" +
-		"<svg xml:space='preserve' width='1' height='1' xmlns='http://www.w3.org/2000/svg'>" +
-		"<metadata id='umldraw-data'>{}</metadata>" +
-		"</svg>";
-
-		public NewWizardPage(String pageName, IStructuredSelection selection) {
-			super(pageName, selection);
-		}
-		
-		protected InputStream getInitialContents() {
-			try {
-				return new ByteArrayInputStream(INIT_DATA.getBytes("utf-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-	}
 
 	public NewWizard() {
 		super();
@@ -72,14 +52,6 @@ public class NewWizard extends BasicNewResourceWizard {
 	}
 
 	/* (non-Javadoc)
-	 * Method declared on BasicNewResourceWizard.
-	 */
-	// protected void initializeDefaultPageImageDescriptor() {
-	//   ImageDescriptor desc = IDEWorkbenchPlugin.getIDEImageDescriptor("wizban/newfile_wiz.png");//$NON-NLS-1$
-	//  setDefaultPageImageDescriptor(desc);
-	//}
-
-	/* (non-Javadoc)
 	 * Method declared on IWizard.
 	 */
 	public boolean performFinish() {
@@ -105,4 +77,27 @@ public class NewWizard extends BasicNewResourceWizard {
 
 		return true;
 	}
+	
+	
+	static class NewWizardPage extends WizardNewFileCreationPage {
+		private static final String INIT_DATA =
+		"<?xml version='1.0' encoding='utf-8' ?>" +
+		"<svg xml:space='preserve' width='1' height='1' xmlns='http://www.w3.org/2000/svg'>" +
+		"<metadata id='umldraw-data'>{}</metadata>" +
+		"</svg>";
+
+		public NewWizardPage(String pageName, IStructuredSelection selection) {
+			super(pageName, selection);
+		}
+		
+		protected InputStream getInitialContents() {
+			try {
+				return new ByteArrayInputStream(INIT_DATA.getBytes("utf-8"));
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+	}
+
 }

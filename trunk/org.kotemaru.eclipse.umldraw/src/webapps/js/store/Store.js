@@ -5,15 +5,19 @@ function Store(){this.initialize.apply(this, arguments)};
 	var coorRef = new Referer();	
 	var itemRef = new Referer();	
 	
+	var isExportMode = false;
+	
 	_class.prototype.initialize = function() {}
 
 	_class.save = function(itemsObj) {
 		Canvas.clearSelect();
 		Canvas.getSelectGroup().clear();
 		Canvas.refresh();
+		isExportMode = false;
 		return save(itemsObj);
 	}
-	_class.copy = function(itemsObj) {
+	_class.copy = function(itemsObj, exportMode) {
+		isExportMode = exportMode;
 		return save(itemsObj);
 	}
 	function save(itemsObj) {
@@ -84,8 +88,16 @@ function Store(){this.initialize.apply(this, arguments)};
 			return {coorRef: toJsonWrap(coorRef,coor).id};
 		} else if (obj.isGroup) {
 			return {groupRef: toJsonWrap(itemRef,obj).id};
-		} else {
+		} else if (!isExportMode) {
 			return {itemRef: toJsonWrap(itemRef,obj).id};
+		} else { // exportMode
+			if (getSelectGroup(obj)) {
+				return {itemRef: toJsonWrap(itemRef,obj).id};
+			} else {
+				var xy = {x:obj.x(), y:obj.y()};
+				var coor = new Coor(xy);
+				return {coorRef: toJsonWrap(coorRef,coor).id};
+			}
 		}
 	}
 	function toJsonWrap(refer, obj) {
@@ -96,6 +108,16 @@ function Store(){this.initialize.apply(this, arguments)};
 		}
 		return json;
 	}
+	function getSelectGroup(obj) {
+		if (obj.group == null) return null;
+		var g = obj.group;
+		while (g.group != null) {
+			g = g.group;
+		}
+		if (g.isSelectGroup) return g;
+		return null;
+	}
+	
 	
 	function toJson(obj) {
 		var attrs = getAttibutes(obj._class);

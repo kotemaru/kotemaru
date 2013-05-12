@@ -193,6 +193,8 @@ function Canvas(){this.initialize.apply(this, arguments)};
 			ev.offsetX = ev.originalEvent.layerX;
 			ev.offsetY = ev.originalEvent.layerY;
 		}
+		window.event = ev.originalEvent; // for Firefox
+
 		return ev;
 	}
 	

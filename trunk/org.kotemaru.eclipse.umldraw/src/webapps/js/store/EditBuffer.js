@@ -4,17 +4,25 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 (function(_class){
 	
 	var copyBuff = null;
+	var copyBuffForExport = null;
 	var undoBuff = [];
 	var redoBuff = [];
-	var curData = null; // todo初期データ。
+	var curData = null;
 	
 	_class.getCopyBuffer = function() {
 		return copyBuff;
 	}
+	_class.getCopyBufferForExport = function() {
+		return copyBuffForExport;
+	}
+	
+	_class.setCopyBuffer = function(data) {
+		copyBuff = data;
+	}
 	
 	_class.cut = function() {
+		_class.copy();
 		var selectGroup = Canvas.getSelectGroup();
-		copyBuff = Store.copy(selectGroup.getItems());
 		selectGroup.getItems().each(function(item){
 			Canvas.delItem(item);
 		});
@@ -25,8 +33,11 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 	_class.copy = function() {
 		var selectGroup = Canvas.getSelectGroup();
 		copyBuff = Store.copy(selectGroup.getItems());
+		copyBuffForExport = Store.copy(selectGroup.getItems(),true);
+		Eclipse.fireEvent("copyClipboard");
 	}
 	_class.paste = function(xx,yy) {
+		Eclipse.fireEvent("pasteClipboard");
 		Store.paste(copyBuff, xx,yy);
 	}
 	
@@ -48,7 +59,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		undoBuff.push(curData);
 		redoBuff.length = 0;
 		curData = Store.copy(Canvas.getItems());
-		Eclipse.fireEvent("change,"+undoBuff.length);
+		Eclipse.fireEvent("change,"+undoBuff.length+","+redoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;
 	}
@@ -57,7 +68,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		redoBuff.push(curData);
 		curData = undoBuff.pop();
 		Store.load(curData);
-		Eclipse.fireEvent("change,"+undoBuff.length);
+		Eclipse.fireEvent("change,"+undoBuff.length+","+redoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;
 	}
@@ -66,7 +77,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		undoBuff.push(curData);
 		curData = redoBuff.pop();
 		Store.load(curData);
-		Eclipse.fireEvent("change,"+undoBuff.length);
+		Eclipse.fireEvent("change,"+undoBuff.length+","+redoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;
 	}

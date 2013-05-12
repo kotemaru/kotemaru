@@ -6,14 +6,10 @@ import org.eclipse.ui.texteditor.BasicTextEditorActionContributor;
 
 
 public class ActionContributor extends BasicTextEditorActionContributor {
-	public ActionContributor() {
-	}
-	
 	@Override
 	public void setActiveEditor(IEditorPart part) {
 		IActionBars bars = getActionBars();
-		((BrowserEditor) part).setActions(bars);
+		((BrowserEditor) part).doActivate(bars);
 		super.setActiveEditor(part);
 	}
-
 }

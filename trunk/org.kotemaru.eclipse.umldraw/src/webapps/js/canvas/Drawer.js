@@ -169,7 +169,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 			
 			if (dc.setLineDash) {
 				dc.setLineDash(patt);
-			} else if (dc.mozDash) {
+			} else if ($.browser.mozilla) {
 				dc.mozDash = patt;
 			} else { // for IE9
 				//dc.strokeStyle = "#888888";
@@ -177,7 +177,7 @@ function Drawer(){this.initialize.apply(this, arguments)};
 			}
 		} else {
 			if (dc.setLineDash) dc.setLineDash(null);
-			dc.mozDash = [];
+			dc.mozDash = null;
 			dc.strokeStyle = "black";
 		}
 		
