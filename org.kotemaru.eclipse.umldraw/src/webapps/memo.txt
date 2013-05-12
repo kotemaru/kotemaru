@@ -1,6 +1,8 @@
 - bug
 --o point どろっぷ
 --o add point select 消える
+-- ※選択しただけで更新扱い
+
 
 - チューニング
 -- 何かのキャッシュ
@@ -11,9 +13,9 @@
 
 
 - 自動登録
--- Dialog
--- Menu
--- item
+--o Dialog
+--o Menu
+--o item
 
 - cable
 --o unfix point bug
@@ -31,7 +33,7 @@
 -- コピーバッファ
 
 - config
--- 印刷
+--o 印刷
 --o cableのデフォルト
 --o バルーン不要
 

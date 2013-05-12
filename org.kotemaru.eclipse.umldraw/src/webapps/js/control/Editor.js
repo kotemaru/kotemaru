@@ -55,6 +55,19 @@ function Editor(){this.initialize.apply(this, arguments)};
 		EditBuffer.init();
 	};
 	
+	Eclipse.getClipboard = function() {
+		var data = EditBuffer.getCopyBufferForExport();
+		return JSON.stringify(data);
+	};
+	
+	Eclipse.setClipboard = function(base64) {
+		var json = Base64.decode(base64);
+		Eclipse.log(json);
+		var data = JSON.parse(json);
+		data.isExternal = true;
+		EditBuffer.setCopyBuffer(data);
+	};
+	
 })(Editor);
 
 

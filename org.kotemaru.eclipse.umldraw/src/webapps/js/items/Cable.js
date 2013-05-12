@@ -138,57 +138,12 @@ function Cable(){this.initialize.apply(this, arguments)};
 			dr.drawArrow(endType, 
 					lines[i].x1, lines[i].y1, lines[i].x2, lines[i].y2);
 
-			drawText(dr, lines[0], 0);
-			drawText(dr, lines[Math.floor(lines.length/2)], 1);
-			drawText(dr, lines[i], 2);
+			CableUtil.drawText(dr, lines[0], 0, this);
+			CableUtil.drawText(dr, lines[Math.floor(lines.length/2)], 1, this);
+			CableUtil.drawText(dr, lines[i], 2, this);
 		}
 		return this;
 	}
-	
-	
-	
-	_class.prototype.drawText = function(dr, line, mode) {
-		with (this) {
-			var x1 = line.x1;
-			var y1 = line.y1;
-			var x2 = line.x2;
-			var y2 = line.y2;
-			var x3 = x1 + (x2 - x1)/2;
-			var y3 = y1 + (y2 - y1)/2;
-	
-			var size1 = dr.textSize(Font.M, startText);
-			var size2 = dr.textSize(Font.M, endText);
-			var size3 = dr.textSize(Font.M, centerText);
-			var w1 = size1.w;
-			var w2 = size2.w;
-			var w3 = size3.w;
-	
-			var PADDING = 8;
-			if (x1 < x2) {
-				x1 = x1 + PADDING;
-				x2 = x2 - w2 - PADDING;
-			} else {
-				x1 = x1 - w1 - PADDING;
-				x2 = x2 + PADDING;
-			}
-			if (y1 < y2) {
-				y2 = y2 - size1.h;
-			} else {
-				y1 = y1 - size1.h;
-			}
-			x3 = x3 - w3/2;
-			y3 = y3 - size1.h/2;
-
-			if (mode == 0) {
-				dr.drawTextLine(Font.M, startText,  x1, y1);
-			} else if (mode == 1) {
-				dr.drawTextLine(Font.M, centerText, x3, y3);
-			} else {
-				dr.drawTextLine(Font.M, endText,    x2, y2);
-			}
-		}
-	}
-	
 	
 	_class.prototype.getHandle = function(xx,yy) {
 		with (this) {
