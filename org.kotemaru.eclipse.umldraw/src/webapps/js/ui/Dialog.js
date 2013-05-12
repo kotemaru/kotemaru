@@ -9,9 +9,11 @@ function Dialog(){this.initialize.apply(this, arguments)};
 		current = name;
 		targetItem = item;
 		
-		var $win = $(".DialogPanel").show();
 		$(".Dialog").hide();
 		var $di  = $(name).show();
+		if ($di.length == 0) return;
+		
+		var $win = $(".DialogPanel").show();
 		$di.offset({left:($win.width()/2-$di.width()/2), top:($win.height()/2-$di.height()/2)});
 		restoreDialog($di);
 		$di.trigger("opened");

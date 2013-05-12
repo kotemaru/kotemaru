@@ -1,11 +1,10 @@
 
 
-function Strings(){this.initialize.apply(this, arguments)};
+function Strings_ja(){this.initialize.apply(this, arguments)};
 (function(_class){
 
 	var common1 = "<br/>(ダブルクリックでロックします。)";
 	var common2 = "<br/>このボタンを選択後に作成したい場所をクリックして下さい。" + common1;
-	var common3 = "<br/>Please click a canvas after choice in this."
 	
 	var map = {
 		"Action.undo": "UNDO",
@@ -33,4 +32,4 @@ function Strings(){this.initialize.apply(this, arguments)};
 	}
 	
 
-})(Strings);
+})(Strings_ja);
