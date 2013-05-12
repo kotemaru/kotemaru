@@ -1,0 +1,30 @@
+Subject: RaspberryPiとはなんぞや
+Content-type: markdown/text
+Tags: android
+Date: 2013/05/12
+Public: yes
+
+今、一緒に仕事をしている人から RaspberryPi なる物が有ることを聞いた。
+
+大雑把に言うと前に紹介したスティック型アンドロイドの普通の Linux 版。
+
+<img src="/2013/05/12/Raspberry_Pi.jpg"/>
+
+- [RaspberryPiサイト](http://jp.rs-online.com/web/generalDisplay.html?id=raspberrypi)
+
+スペックは ARM11/700MHz、Mem/512M で中華Androidよりは一段下だが なんとお値段 3000円。
+
+学習用なのでOS等全てオープンになっていて玩具としては最適だし、
+なんと言っても不良品の不安が無い。
+
+こちらの方が詳しくレビューしてくれていてフルHDの動画再生も行けるらしい。
+
+- [136 【レビュー】Raspberry Piを購入してRaspbmを導入してみました｡](http://almostdead.s373.xrea.com/blog/?p=887)
+
+アマゾンでも売ってるんだが何で直販より高いんだろ？
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=kotemaru-22&o=9&p=8&l=as1&asins=B00AJEFHKK&ref=tf_til&fc1=DDDDAA&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFDD&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=kotemaru-22&o=9&p=8&l=as1&asins=B00AJEWNNE&ref=tf_til&fc1=DDDDAA&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFDD&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
+
+<iframe src="http://rcm-jp.amazon.co.jp/e/cm?t=kotemaru-22&o=9&p=8&l=as1&asins=4844333747&ref=tf_til&fc1=DDDDAA&IS2=1&lt1=_blank&m=amazon&lc1=0000FF&bc1=000000&bg1=FFFFDD&f=ifr" style="width:120px;height:240px;" scrolling="no" marginwidth="0" marginheight="0" frameborder="0"></iframe>
