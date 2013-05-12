@@ -1,5 +1,18 @@
+/**
+ * Eclipseとのインターフェース
+ */
 function Eclipse(){};
 (function(){
+	Eclipse.preferences = {};
+
+	/**
+	 * Eclipseから初期化。
+	 * - onloadのタイミングで呼ばれる。
+	 * @param pref preferencesパラメータ
+	 */
+	Eclipse.startup = function(pref) {
+		alert("Abstract function Eclipse.startup() not implemented.");
+	};
 	/**
 	 * EclipseからBrowserに対してデータを設定する。
 	 * - onloadのタイミングで呼ばれる。
@@ -19,6 +32,20 @@ function Eclipse(){};
 		alert("Abstract function Eclipse.getContent() not implemented.");
 	};
 	
+	
+	Eclipse.print = function() {
+		alert("Abstract function Eclipse.print() not implemented.");
+	};
+	Eclipse.undo = function() {
+		alert("Abstract function Eclipse.undo() not implemented.");
+	};
+	Eclipse.redo = function() {
+		alert("Abstract function Eclipse.redo() not implemented.");
+	};
+	Eclipse.config = function() {
+		alert("Abstract function Eclipse.config() not implemented.");
+	};
+	
 	/**
 	 * BrowserからEclipseに対してイベントを通知する。
 	 * - 現在の所、load と change のみ。
@@ -29,14 +56,12 @@ function Eclipse(){};
 		window.status = null;
 	};
 	
-	//window.onload = function() {
-	//	Eclipse.fireEvent("load");
-	//};
 	window.onerror = function(err){
 		window.status = "error "+err+"\n"+err.stack;
 		window.status = null;
 		throw err;
 	};
+	
 	Eclipse.log = function(msg){
 		//if (console) console.log(msg);
 		window.status = "log "+msg;
@@ -45,12 +70,6 @@ function Eclipse(){};
 			window.console.log(msg);
 		}
 	};
-	
-	Eclipse.startup = function(pref) {
-		alert("Abstract function Eclipse.startup() not implemented.");
-	};
-	
-	Eclipse.preferences = {};
 	
 	Eclipse.getPreferences = function(key) {
 		return ""+Eclipse.preferences[key];
@@ -79,18 +98,6 @@ function Eclipse(){};
 		contents.length = 0;
 	};
 	
-	Eclipse.print = function() {
-		alert("Abstract function Eclipse.print() not implemented.");
-	};
-	Eclipse.undo = function() {
-		alert("Abstract function Eclipse.undo() not implemented.");
-	};
-	Eclipse.redo = function() {
-		alert("Abstract function Eclipse.redo() not implemented.");
-	};
-	Eclipse.config = function() {
-		alert("Abstract function Eclipse.config() not implemented.");
-	};
 
 })(Eclipse);
 
