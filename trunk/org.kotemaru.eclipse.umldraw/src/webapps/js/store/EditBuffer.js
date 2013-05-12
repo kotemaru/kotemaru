@@ -8,7 +8,8 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 	var undoBuff = [];
 	var redoBuff = [];
 	var curData = null;
-	
+	var isChange = false;
+
 	_class.getCopyBuffer = function() {
 		return copyBuff;
 	}
@@ -47,9 +48,12 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		redoBuff.length = 0;
 	}
 
-	var isChange = false;
 	_class.notice = function() {
 		isChange = true;
+		return _class;
+	}
+	_class.noticeCancel = function() {
+		isChange = false;
 		return _class;
 	}
 	_class.backup = function(data) {

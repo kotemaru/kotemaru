@@ -28,9 +28,9 @@
 ---o Disk icon 
 --o eclipseのアイコン
 -- canvasのバルーン
--- バルーンの英語
+--o バルーンの英語
 --o Actionボタンの回復調整
--- コピーバッファ
+--o コピーバッファ
 
 - config
 --o 印刷
@@ -54,5 +54,6 @@
 -- extendsがうまく行ってない。
 
 - リファクタ
--- 全体
--- Cable
+--o 全体
+--o Cable
+--image

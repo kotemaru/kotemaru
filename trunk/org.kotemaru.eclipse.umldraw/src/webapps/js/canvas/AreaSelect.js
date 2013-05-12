@@ -29,6 +29,7 @@ function AreaSelect(){this.initialize.apply(this, arguments)};
 	}
 	_class.dragEnd = function(evx,evy) {
 		if (isDrag) {
+			EditBuffer.backup();
 			var f = Util.formalRect(x1,y1,x2,y2);
 			var selectGroup = Canvas.getSelectGroup();
 			selectGroup.clear();
@@ -39,6 +40,7 @@ function AreaSelect(){this.initialize.apply(this, arguments)};
 			});
 			selectGroup.fixed();
 			if (selectGroup.isValid()) Canvas.select(selectGroup);
+			EditBuffer.noticeCancel();
 		}
 		
 		isVisible = false;
