@@ -11,8 +11,9 @@ function Editor(){this.initialize.apply(this, arguments)};
 				EditBuffer.notice().backup();
 			}
 		});
-		
+		$("#meshImg").hide();
 		$("#printer").live("click",function(){
+			$(".BorderLayoutFrame").show();
 			$(this).hide();
 		})
 	});
@@ -33,8 +34,11 @@ function Editor(){this.initialize.apply(this, arguments)};
 		Eclipse.log("printer");
 		var $print = $("#printer");
 		$print[0].innerHTML = (Canvas.toSVG());
+		$(".BorderLayoutFrame").hide();
 		$print.show();
 		window.print();	
+		$(".BorderLayoutFrame").show();
+		$print.hide();
 	};
 	
 	Eclipse.undo = function() {
