@@ -1,14 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <project basedir="." default="make" name="umldraw">
-	<property name="project.root" value="../.."/>
-	<property name="lib" value="${project.root}/lib"/>
+	<property name="project.root" value="${basedir}"/>
+	<property name="lib" value="${basedir}/lib"/>
+	<property name="webapps" value="${basedir}/src/webapps"/>
+	<property name="build.webapps" value="${basedir}/build/classes/webapps"/>
 
 	<taskdef name="js"
 		classname="org.kotemaru.ant.task.JsTask"
 		classpath="${lib}/jstask.jar;${lib}/js.jar"
 	/>
+	
 	<target name="make" depends="make.cssloaders,make.jsloaders,make.htmlloaders" >
-		<copy file="editor.html.template" tofile="editor.html" 
+		<copy file="${webapps}/editor.html.template" 
+			tofile="${build.webapps}/editor.html" 
 			filtering="true" overwrite="yes" encoding="utf-8">
 			<filterset>
 				<filter token="cssloaders" value="${cssloaders}" />
@@ -16,6 +20,11 @@
 				<filter token="htmlloaders" value="${htmlloaders}" />
 			</filterset>
 		</copy>
+		<!--
+		<copy file="${build.webapps}/editor.html" 
+			tofile="${webapps}/editor.html" >
+		</copy>
+		-->
 	</target>
 
 	<property name="make.lodaer.js"><![CDATA[
@@ -58,8 +67,8 @@
 	
 	<target name="make.jsloaders">
 		<js>
-			<fileset dir="js" includes="**/*.js" />
-			<param name="prefix" value="^${basedir}/" />
+			<fileset dir="${webapps}/js" includes="**/*.js" />
+			<param name="prefix" value="^${webapps}/" />
 			
 			<![CDATA[
 			eval(""+task.project.getProperty("make.lodaer.js"));
@@ -88,8 +97,8 @@
 	
 	<target name="make.cssloaders">
 		<js>
-			<fileset dir="css" includes="**/*.css" />
-			<param name="prefix" value="^${basedir}/" />
+			<fileset dir="${webapps}/css" includes="**/*.css" />
+			<param name="prefix" value="^${webapps}/" />
 			
 			<![CDATA[
 			eval(""+task.project.getProperty("make.lodaer.js"));
@@ -104,8 +113,8 @@
 	
 	<target name="make.htmlloaders">
 		<js>
-			<fileset dir="html" includes="**/*.html" />
-			<param name="prefix" value="^${basedir}/" />
+			<fileset dir="${webapps}/html" includes="**/*.html" />
+			<param name="prefix" value="^${webapps}/" />
 			
 			<![CDATA[
 			eval(""+task.project.getProperty("make.lodaer.js"));
