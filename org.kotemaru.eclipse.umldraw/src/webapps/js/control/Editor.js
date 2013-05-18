@@ -12,11 +12,9 @@ function Editor(){this.initialize.apply(this, arguments)};
 			}
 		});
 		$("#meshImg").hide();
-		$("#printer").live("click",function(){
-			$(".BorderLayoutFrame").show();
-			$(this).hide();
-		})
+		window.onafterprint = onAfterPrint; // for IE9
 	});
+	
 	
 	Eclipse.preferences = { // for DDEBUG
 		directionsBalloon: true,
@@ -37,9 +35,14 @@ function Editor(){this.initialize.apply(this, arguments)};
 		$(".BorderLayoutFrame").hide();
 		$print.show();
 		window.print();	
-		$(".BorderLayoutFrame").show();
-		$print.hide();
+		setTimeout(function(){
+			onAfterPrint(); // for FF,Chrome
+		}, 1000);
 	};
+	function onAfterPrint() {
+		$(".BorderLayoutFrame").show();
+		$("#printer").hide();
+	}
 	
 	Eclipse.undo = function() {
 		EditBuffer.undo();
@@ -52,11 +55,17 @@ function Editor(){this.initialize.apply(this, arguments)};
 	};
 	
 	Eclipse.setContent = function(content) {
-		var xmlParser = new DOMParser();
- 		var xmlDoc = xmlParser.parseFromString(content,"text/xml");
-		var data = xmlDoc.getElementById("umldraw-data").childNodes[0].nodeValue;
-		Store.load(JSON.parse(data));
-		EditBuffer.init();
+		try {
+			var xmlParser = new DOMParser();
+			var xmlDoc = xmlParser.parseFromString(content,"text/xml");
+			var data = xmlDoc.getElementById("umldraw-data");
+			if (data == null) throw "Contents is not UML Draw data.";
+			var xmlData = data.childNodes[0].nodeValue;
+			Store.load(JSON.parse(xmlData));
+			EditBuffer.init();
+		} catch (e) {
+			alert(Strings.get("err.FailedLoading")+": "+e);
+		}
 	};
 	
 	Eclipse.getClipboard = function() {

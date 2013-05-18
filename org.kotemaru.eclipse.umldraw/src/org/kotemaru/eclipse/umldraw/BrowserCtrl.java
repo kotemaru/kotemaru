@@ -241,7 +241,9 @@ public class BrowserCtrl implements StatusTextListener {
 	}
 
 	public void dispose() {
-		if (browser != null) browser.close();
+		if (browser != null && !browser.isDisposed()) {
+			browser.close();
+		}
 	}
 
 	public boolean isDirty() {

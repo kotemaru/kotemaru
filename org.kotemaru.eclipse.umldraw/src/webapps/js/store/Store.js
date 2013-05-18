@@ -48,7 +48,6 @@ function Store(){this.initialize.apply(this, arguments)};
 			Canvas.addItem(itemRef.objs[i]);
 		}
 		Canvas.refresh();
-		EditBuffer.noticeCancel();
 	}
 
 	

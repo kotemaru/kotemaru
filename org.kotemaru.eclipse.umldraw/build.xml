@@ -30,7 +30,8 @@
 	<property name="make.lodaer.js"><![CDATA[
 	function makeLoaders(fmt, priority) {
 		if (priority == null) priority = ["*"];
-
+		prefix = prefix.replace(/\\/g,"/");
+		
 		// Priority numbering.
 		var PRI = {};
 		for (var i=0;i<priority.length;i++) {
@@ -42,7 +43,7 @@
 		var ite = fileset.iterator();
 		while (ite.hasNext()) {
 			var reg = new RegExp(prefix);
-			var fname = (""+ite.next()).replace(reg,"");
+			var fname = (""+ite.next()).replace(/\\/g,"/").replace(reg,"");
 			var pri = PRI[fname.match(/[^/]*$/)];
 			if (pri == null) pri = PRI["*"];
 			names.push({pri:pri, fname:fname});

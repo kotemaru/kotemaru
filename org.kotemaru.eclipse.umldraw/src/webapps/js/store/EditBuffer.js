@@ -46,6 +46,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		curData = Store.save(Canvas.getItems());
 		undoBuff.length = 0;
 		redoBuff.length = 0;
+		isChange = false;
 	}
 
 	_class.notice = function() {
