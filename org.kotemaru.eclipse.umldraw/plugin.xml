@@ -29,6 +29,7 @@
 	<extension point="org.eclipse.ui.actionSets">
 		<actionSet label="UML Draw" visible="true"
 				id="org.kotemaru.eclipse.umldraw.ActionSet">
+<!--
 		    <action label=""
 				icon="icons/config.png"
 				toolbarPath="umldraw"
@@ -36,6 +37,7 @@
 				retarget="true"
 				id="org.kotemaru.eclipse.umldraw.configAction"
 			></action>
+-->
 		    <action label=""
 				icon="icons/redo.png"
 				toolbarPath="umldraw"

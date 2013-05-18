@@ -107,7 +107,11 @@ public class BrowserCtrl implements StatusTextListener {
 				onLoad(params);
 				isReady = true;
 			} else if ("change".equals(method)) {
-				onChange(params);
+				onChange(params, false);
+			} else if ("undo".equals(method)) {
+				onChange(params, true);
+			} else if ("redo".equals(method)) {
+				onChange(params, true);
 			} else if ("syncPreferences".equals(method)) {
 				onSyncPreferences(params);
 			} else if ("copyClipboard".equals(method)) {
@@ -176,11 +180,16 @@ public class BrowserCtrl implements StatusTextListener {
 		}
 	}
 
-	private void onChange(String[] params) {
+	private void onChange(String[] params, boolean isUndoRedo) {
 		undoHistoryCount = Integer.valueOf(params[1]);
 		redoHistoryCount = Integer.valueOf(params[2]);
 		undoAction.setEnabled(undoHistoryCount>0);
 		redoAction.setEnabled(redoHistoryCount>0);
+		if (!isUndoRedo && redoHistoryCount == 0 
+				&& savedHistoryCount>=undoHistoryCount) {
+			savedHistoryCount = -1;
+		}
+		
 		editor.updateDirty();
 	}
 	

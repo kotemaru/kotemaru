@@ -7,6 +7,8 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 	}
 	
 	var ENABLE = {
+		undo: function(){return EditBuffer.hasUndo();},
+		redo: function(){return EditBuffer.hasRedo();},
 		cut: function(){return Canvas.hasSelectGroup();},
 		copy: function(){return Canvas.hasSelectGroup();},
 		paste: function(){return EditBuffer.getCopyBuffer() != null;},
@@ -30,7 +32,11 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 	
 	_class.doMenuItem = function(item, $menuItem,xx,yy) {
 		var cmd = $menuItem.attr("data-value");
-		if (cmd == "cut") {
+		if (cmd == "undo") {
+			EditBuffer.undo();
+		} else if (cmd == "redo") {
+			EditBuffer.redo();
+		} else if (cmd == "cut") {
 			EditBuffer.cut();
 		} else if (cmd == "copy") {
 			EditBuffer.copy();
@@ -40,6 +46,8 @@ function MenuManager(){this.initialize.apply(this, arguments)};
 			Dialog.open(item.getDialog(), item);
 		} else if (cmd == "canvas-properties") {
 			Dialog.open(Canvas.getDialog(), Canvas.properties);
+		} else if (cmd == "config") {
+			Eclipse.config();
 
 		// Cables
 		} else if (cmd == "addPoint") {

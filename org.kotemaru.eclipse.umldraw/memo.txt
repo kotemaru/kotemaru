@@ -2,7 +2,7 @@
 --o point どろっぷ
 --o add point select 消える
 --o ※選択しただけで更新扱い
--- save point undo redor
+--o save point undo redor
 
 - チューニング
 -- 何かのキャッシュ
