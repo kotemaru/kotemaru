@@ -12,7 +12,7 @@
 	
 	<target name="make" depends="make.cssloaders,make.jsloaders,make.htmlloaders" >
 		<copy file="${webapps}/editor.html.template" 
-			tofile="${build.webapps}/editor.html" 
+			tofile="${webapps}/editor.html" 
 			filtering="true" overwrite="yes" encoding="utf-8">
 			<filterset>
 				<filter token="cssloaders" value="${cssloaders}" />
@@ -20,11 +20,6 @@
 				<filter token="htmlloaders" value="${htmlloaders}" />
 			</filterset>
 		</copy>
-		<!--
-		<copy file="${build.webapps}/editor.html" 
-			tofile="${webapps}/editor.html" >
-		</copy>
-		-->
 	</target>
 
 	<property name="make.lodaer.js"><![CDATA[

@@ -26,8 +26,12 @@ Export-Package: org.kotemaru.eclipse.umldraw,
  webapps.img.xpm,
  webapps.jq,
  webapps.js,
+ webapps.js.base,
+ webapps.js.canvas,
+ webapps.js.control,
  webapps.js.debug,
  webapps.js.items,
  webapps.js.resource,
  webapps.js.store,
- webapps.js.ui
+ webapps.js.ui,
+ webapps.js.util
