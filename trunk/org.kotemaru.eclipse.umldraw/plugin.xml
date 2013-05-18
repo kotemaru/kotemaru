@@ -38,14 +38,14 @@
 				id="org.kotemaru.eclipse.umldraw.configAction"
 			></action>
 -->
-		    <action label=""
+		    <action label="redo"
 				icon="icons/redo.png"
 				toolbarPath="umldraw"
 				tooltip="REDO"
 				retarget="true"
 				id="redo"
 			></action>
-		    <action label=""
+		    <action label="undo"
 				icon="icons/undo.png"
 				toolbarPath="umldraw"
 				tooltip="UNDO"

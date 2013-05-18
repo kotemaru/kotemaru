@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=EmulateIE9">
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8">
+<link rel='stylesheet' href='css/Actions.css' type='text/css'/>
+<link rel='stylesheet' href='css/Balloon.css' type='text/css'/>
+<link rel='stylesheet' href='css/BorderLayout.css' type='text/css'/>
+<link rel='stylesheet' href='css/Dialog.css' type='text/css'/>
+<link rel='stylesheet' href='css/PopupMenu.css' type='text/css'/>
+<link rel='stylesheet' href='css/Selector.css' type='text/css'/>
+<link rel='stylesheet' href='css/editor.css' type='text/css'/>
+
+
+<script src="jq/jquery-1.8.2.js"></script>
+
+<script src='js/util/Lang.js'></script>
+<script src='js/resource/Font.js'></script>
+<script src='js/resource/Color.js'></script>
+<script src='js/base/Coor.js'></script>
+<script src='js/base/CoorDiag.js'></script>
+<script src='js/base/Elem.js'></script>
+<script src='js/base/Item.js'></script>
+<script src='js/base/Items.js'></script>
+<script src='js/canvas/Handle.js'></script>
+<script src='js/base/Rectangle.js'></script>
+<script src='js/items/Group.js'></script>
+<script src='js/canvas/SelectGroup.js'></script>
+<script src='js/control/Action.js'></script>
+<script src='js/Eclipse.js'></script>
+<script src='js/base/Point.js'></script>
+<script src='js/canvas/AreaSelect.js'></script>
+<script src='js/canvas/Canvas.js'></script>
+<script src='js/canvas/Drawer.js'></script>
+<script src='js/control/Actions.js'></script>
+<script src='js/control/MenuManager.js'></script>
+<script src='js/control/RemoveAction.js'></script>
+<script src='js/control/Version.js'></script>
+<script src='js/debug/Debug.js'></script>
+<script src='js/items/Cable.js'></script>
+<script src='js/items/CableAction.js'></script>
+<script src='js/items/CableHandle.js'></script>
+<script src='js/items/CableHandleRoute.js'></script>
+<script src='js/items/CableUtil.js'></script>
+<script src='js/items/Class.js'></script>
+<script src='js/items/Disk.js'></script>
+<script src='js/items/Marker.js'></script>
+<script src='js/items/Note.js'></script>
+<script src='js/items/Object.js'></script>
+<script src='js/resource/Strings.js'></script>
+<script src='js/resource/Strings_ja.js'></script>
+<script src='js/store/DrawerSVG.js'></script>
+<script src='js/store/EditBuffer.js'></script>
+<script src='js/store/Referer.js'></script>
+<script src='js/store/Store.js'></script>
+<script src='js/ui/Balloon.js'></script>
+<script src='js/ui/Dialog.js'></script>
+<script src='js/ui/PopupMenu.js'></script>
+<script src='js/ui/Selector.js'></script>
+<script src='js/util/Base64.js'></script>
+<script src='js/util/Util.js'></script>
+<script src='js/control/Editor.js'></script>
+
+
+<script>
+$(function(){
+Util.include('html/dialog/AboutDialog.html');
+Util.include('html/dialog/CableDialog.html');
+Util.include('html/dialog/CanvasDialog.html');
+Util.include('html/dialog/ClassDialog.html');
+Util.include('html/dialog/ConfigDialog.html');
+Util.include('html/dialog/DebugDialog.html');
+Util.include('html/dialog/DiskDialog.html');
+Util.include('html/dialog/NoteDialog.html');
+Util.include('html/dialog/ObjectDialog.html');
+Util.include('html/dialog/SvgDialog.html');
+Util.include('html/menu/CableMenu.html');
+Util.include('html/menu/CanvasMenu.html');
+Util.include('html/menu/ItemMenu.html');
+Util.include('html/menu/SelectGroupMenu.html');
+
+});
+</script>
+
+
+
+</head>
+<body>
+	<div id="borderLayoutMain" class="BorderLayoutFrame">
+		<div id="borderLayoutMainInner">
+			<canvas id="canvas"></canvas>
+		</div>
+	</div>
+
+	<div id="borderLayoutLeft" class="BorderLayoutFrame">
+		<div id="debugActionGroup">
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Debug</div>
+			<div class="ActionGroup" >
+				<div></div>
+				<span class="Action Small" data-value="load"><img src="img/led/folder.png"/></span>
+				<span class="Action Small" data-value="save"><img src="img/led/save.png"/></span>
+				<span class="Action Small" data-value="print"><img src="img/led/printer.png"/></span>
+				<span class="Action Small" data-value="undo"><img src="img/led/undo.png"/></span>
+				<span class="Action Small" data-value="redo"><img src="img/led/redo.png"/></span>
+				<span class="Action Small" data-value="config"><img src="img/config.png"/></span>
+			</div>
+		</div>
+		
+		<div>
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">-</div>
+			<div class="ActionGroup" id="systemActionGroup">
+				<div></div>
+				<span class="Action Small" data-value="cursor"><img src="img/cursor.png"/></span>
+				<span class="Action Small" data-value="remove"><img src="img/led/cross.png"/></span>
+			</div>
+		</div>
+	
+		<div>
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Class</div>
+			<div class="ActionGroup" id="classActionGroup">
+				<span class="Action" data-value="Class"><img src="img/Class.png"/></span>
+				<span class="Action" data-value="Object"><img src="img/Object.png"/></span>
+	
+				<span>
+					<span class="Action" data-value="Cable"
+					><img id="cableImg" src="img/association/0.png"/></span
+					><span class="PulldownButton" id="association" data-value="0" 
+								data-img="#cableImg" data-opts="{corrent:{x:-40, y:0}}"
+						><img id="cablePulldownMark" src="img/pulldown-mark.png" />
+						<div class="PulldownMenu" id="popupMenu-association">
+							<div class="MenuItem" data-value="0"><img src="img/association/0.png" /></div>
+							<div class="MenuItem" data-value="1"><img src="img/association/1.png" /></div>
+							<div class="MenuItem" data-value="2"><img src="img/association/2.png" /></div>
+							<div class="MenuItem" data-value="3"><img src="img/association/3.png" /></div>
+							<div class="MenuItem" data-value="4"><img src="img/association/4.png" /></div>
+							<div class="MenuItem" data-value="5"><img src="img/association/5.png" /></div>
+							<div class="MenuItem" data-value="6"><img src="img/association/6.png" /></div>
+						</div>
+					</span>
+				</span>
+			</div>
+		</div>
+		
+		
+		<div>
+			<div class="ActionGroupHeader"><img class="OpenClose" src="img/pullup.png">Other</div>
+			<div class="ActionGroup" id="otherActionGroup">
+				<span class="Action" data-value="Note"><img src="img/Note.png"/></span>
+				<span class="Action" data-value="Disk"><img src="img/Disk.png"/></span>
+				<span class="Action" data-value="Marker"><img src="img/Marker.png" id="markerImg"/></span>
+			</div>
+		</div>
+	</div>
+<!--
+	<div id="borderLayoutRight" class="BorderLayoutFrame">
+		Right
+	</div>
+
+	<div id="borderLayoutHeader"  class="BorderLayoutFrame">
+		Header
+	</div>
+
+	<div id="borderLayoutFooter"  class="BorderLayoutFrame">
+		Footer
+	</div>
+-->
+	<div id="menus">
+	</div>
+	
+	<div id="dialogs" class="DialogPanel" >
+		<div class="DialogMask" > </div>
+		<!-- Include -->
+	</div>
+	<div id="balloon">
+	</div>
+	<div>
+		<img id="meshImg" src="img/mesh.png"/>
+	</div>
+	<div id="printer">
+	</div>
+	
+</body>
+</html>
+
