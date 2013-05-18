@@ -20,7 +20,7 @@
 	//width: 900px;
 	height: auto;
 	border-radius: 10px;
-	overflow:hidden;
+	overflow: visible;
 	box-shadow: 4px 4px 8px;
 	font-size: 14px;
 }
@@ -31,7 +31,7 @@
 	height: auto;
 	width: auto;
 	padding: 8px;
-	overflow-y: hidden;
+	overflow-y: visible;
 }
 
 .Dialog > h3 {

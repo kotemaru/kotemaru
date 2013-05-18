@@ -24,6 +24,8 @@ function Strings(){this.initialize.apply(this, arguments)};
 			+"<br/>The marker is not printed."
 			+"<br/>It controls the course of the cable."
 			,
+			
+		"err.FailedLoading": "Failed loading",
 	};
 	
 	_class.get = function(name) {
@@ -39,4 +41,4 @@ function Strings(){this.initialize.apply(this, arguments)};
 	});
 
 })(Strings);
-
+var Strings_en = Strings;

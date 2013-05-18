@@ -24,11 +24,13 @@ function Strings_ja(){this.initialize.apply(this, arguments)};
 			+"<br/>マーカーは印刷されません。"
 			+"<br/>ケーブルの経路を制御する為に存在します。"
 			,
+			
+		"err.FailedLoading": "読込に失敗しました。",
 	};
 	
 	_class.get = function(name) {
 		if (map[name]) return map[name];
-		return name;
+		return Strings_en.get(name);
 	}
 	
 

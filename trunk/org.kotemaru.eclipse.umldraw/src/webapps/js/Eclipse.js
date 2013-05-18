@@ -59,6 +59,7 @@ function Eclipse(){};
 	window.onerror = function(err){
 		window.status = "error "+err+"\n"+err.stack;
 		window.status = null;
+		alert(""+err);
 		throw err;
 	};
 	
