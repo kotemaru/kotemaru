@@ -73,7 +73,7 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		redoBuff.push(curData);
 		curData = undoBuff.pop();
 		Store.load(curData);
-		Eclipse.fireEvent("change,"+undoBuff.length+","+redoBuff.length);
+		Eclipse.fireEvent("undo,"+undoBuff.length+","+redoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;
 	}
@@ -82,11 +82,17 @@ function EditBuffer(){this.initialize.apply(this, arguments)};
 		undoBuff.push(curData);
 		curData = redoBuff.pop();
 		Store.load(curData);
-		Eclipse.fireEvent("change,"+undoBuff.length+","+redoBuff.length);
+		Eclipse.fireEvent("redo,"+undoBuff.length+","+redoBuff.length);
 		Debug.change(undoBuff.length);
 		isChange = false;
 	}
-	
+	_class.hasUndo = function() {
+		return undoBuff.length > 0;
+	}
+	_class.hasRedo = function() {
+		return redoBuff.length > 0;
+	}
+
 })(EditBuffer);
 
 
