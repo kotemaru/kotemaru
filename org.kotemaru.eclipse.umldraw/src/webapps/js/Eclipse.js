@@ -91,7 +91,7 @@ function Eclipse(){};
 		contents.push(Base64.decode(base64));
 	};
 	Eclipse.closeContent = function() {
-		Eclipse.setContent(contents.join());
+		Eclipse.setContent(contents.join(""));
 		contents.length = 0;
 	};
 	Eclipse.failContent = function(msg) {

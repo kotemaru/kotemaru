@@ -55,6 +55,7 @@ function Editor(){this.initialize.apply(this, arguments)};
 	};
 	
 	Eclipse.setContent = function(content) {
+		Eclipse.log(content);
 		try {
 			var xmlParser = new DOMParser();
 			var xmlDoc = xmlParser.parseFromString(content,"text/xml");
