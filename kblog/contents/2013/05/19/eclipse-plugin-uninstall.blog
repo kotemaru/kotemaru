@@ -1,0 +1,36 @@
+Subject: Eclipse4.2のPluginのuninstallではまったのでメモ
+Content-type: markdown/text
+Tags: eclipse
+Date: 2013/05/19
+Public: yes 
+
+Eclipse-4.2ではプラグインのアンインストールが完全に行われない。
+
+通常の手順でアンインストールを行うと一見削除されたように見えるのだが
+実際は無効にしただけで削除していない。
+
+この状態でプラグインを再インストールすると実際のインストールは行わず有効に戻すだけとなる。
+
+これで何が問題になるかと言うと自分でプラグイン開発をしている場合、
+修正を行って再インストールをしても修正が反映されない。
+開発環境で実行すると正常に動作するのでかなり混乱する。
+
+Eclipseのプラグイン開発は初めてやったので訳が分からず１日潰れてしまった。(;_;)
+
+解決方法のメモ：
+
+ 1. %ECLIPSE_HOME%\plugins\ から 自前のプラグイン.jar のファイルを削除。
+ 2. %ECLIPSE_HOME%\artifacts.xml から自前のプラグインの `<artifact>` タグを探して削除。
+ 3. eclipse -clean
+
+で完全に削除できる。
+
+因みに 2. をやらないと再インストールでこんな感じのエラーとなる。
+
+	An error occurred during the org.eclipse.equinox.internal.p2.engine.phases.CheckTrust
+	phase. session context 	was:(profile=epp.package.jee, 
+	phase=org.eclipse.equinox.internal.p2.engine.phases.CheckTrust, operand=, action=). 
+	Error reading signed content. 
+	The file "%ECLIPSE_HOME%\plugins\自前のプラグイン.jar" does not exist
+
+Eclipseのプラグイン開発は敷居高過ぎ。
