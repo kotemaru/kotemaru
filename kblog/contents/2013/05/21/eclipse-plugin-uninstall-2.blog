@@ -1,0 +1,20 @@
+Subject: Eclipse4.2のPluginのuninstallではまったのでメモ(2)
+Content-type: markdown/text
+Tags: eclipse
+Date: 2013/05/21
+Public: yes 
+
+追記。
+
+プラグインのアンインストールで残っちゃうのはEclipse-3.7でも同じだった。
+
+Linuxの場合は 
+`~/.eclipse/org.eclipse.platform_{バージョン番号}/plugins/`
+配下にインストールされてるのでややこしい。
+
+Eclipse plugin はバージョン番号に `qualifier`
+を付けると日付に置き換えてくれる機能があって
+これを使えばアンインストールしなくても更新されるって事らしい。
+
+初期状態で付いてたのを意味が分からなかったんで削除してた orz
+ 
