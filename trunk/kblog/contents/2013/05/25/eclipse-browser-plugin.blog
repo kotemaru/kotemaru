@@ -1,0 +1,257 @@
+Subject: EclipseのPluginをSWT Browserで作る
+Content-type: markdown/text
+Tags: eclipse,javascript
+Date: 2013/05/25
+Public: yes
+
+Eclipse の Plugin を作ろうと思ったのだが調べてみると敷居が高い高い。
+
+テンプレのプロジェクトは用意されているがいきなりこんな画面が現れて ぼーぜん とすることになる。
+ちなみに下部のタブは其々違う設定画面が現れる。
+
+<img width="600px" src="/2013/05/25/browser-plugin-3.png" />
+
+<br/>
+
+Plugin開発の
+[チュートリアル](http://kompiro.org/nagoya-seminar/html/)
+も有ることは有るが目次を見ただけで気が遠くなる。<br/>
+しかも、この先には膨大な javadoc が待っている。
+
+正直諦めそうになったのだが以前、
+Eclipse内のライブラリからブラウザを起動してみた事を思い出して
+内部ブラウザでPluginを作れないかと考えた。
+
+で、ググったら出て来ましたよ、本家IBMのサイトが。
+
+ - [Eclipse コンポーネント用に Web ユーザー・インターフェースを実装する](http://www.ibm.com/developerworks/jp/opensource/library/os-eclipse-webui/index.html)
+
+ブラウザの起動方法と最低限の通信方法の説明だけですが本家が可能性として有りだと言ってます。
+
+　　　　　　　　　　...
+
+そして、設定画面＆Javadocと格闘しつつでっち上げたのがこれです。
+
+<img width="600px" src="/2013/05/25/browser-plugin-1.png" />
+
+<br/><br/>
+HTMLのソースはこれだけです。<br/>
+Eclipse.* は eclipse 側から呼んで貰うためのJavaScriptです。
+
+	<html>
+	<head>
+	
+	<script src="./jquery-1.8.2.js"></script>
+	
+	<script>
+	var Eclipse = {};
+	Eclipse.setContent = function(content) {
+		var data = JSON.parse(content);
+		var form = document.parson;
+		form.name.value = data.name;
+		form.addr.value = data.addr;
+		form.email.value = data.email;
+	};
+	Eclipse.getContent = function() {
+		var data = {};
+		var form = document.parson;
+		data.name  = form.name.value  ;
+		data.addr  = form.addr.value  ;
+		data.email = form.email.value ;
+		return JSON.stringify(data);
+	};
+	Eclipse.fireEvent = function(type) {
+		window.status = type;
+		window.status = null;
+	};
+	
+	window.onload = function() {
+		Eclipse.fireEvent("load");
+	}
+	window.onerror = function(err) {
+		Eclipse.fireEvent("log,"+err);
+	}
+	$(function(){
+		$("input").bind("change",function() {
+			Eclipse.fireEvent("change");
+		});
+	});
+	</script>
+	
+	</head>
+	<body>
+		<h1>Browser plugin sample</h1>
+	
+		<form name="parson">
+			<table>
+				<tr><td>Name:</td><td><input name="name" /></td></tr>
+				<tr><td>Addr:</td><td><input name="addr" /></td></tr>
+				<tr><td>E-Mail:</td><td><input name="email" /></td></tr>
+			</table>
+		</form>
+	</body>
+	</html>
+
+<br/><br/>
+保存した後にテキストエディタで見るとJSON形式でちゃんと保存されている事がわかります。
+
+<img width="600px" src="/2013/05/25/browser-plugin-2.png" />
+
+
+<br/><br/>
+Plugin側で作成したソースコードは１本だけです。<br/>
+継承すべき TextEditor クラスを探すのは苦労しましたがその先はすんなり行きました。
+
+<style>
+.JavaSource{
+	height: 300px;
+	overflow: scroll;
+}
+</style>
+
+<pre class="JavaSource">
+package org.kotemaru.eclipse.browserpluginsample.editors;
+
+import 省略;
+
+public class BrowserEditor extends TextEditor {
+
+	private static final String ENCODING = "utf-8";
+	
+	private Browser browser;
+	private boolean isDirty = false;
+	
+	public BrowserEditor() {
+		super();
+	}
+	
+	@Override
+	public void init(IEditorSite site, IEditorInput input)
+			throws PartInitException {
+        setSite(site);
+        setInput(input);
+        setPartName(input.getName());
+	}
+
+
+	@Override
+	public void createPartControl(Composite parent) {
+		try {
+			browser = new Browser(parent, SWT.NONE);
+			browser.setJavascriptEnabled(true);			
+			browser.addStatusTextListener(new MyStatusTextListener());
+			
+			URL aboutURL = this.getClass().getResource("/webapps/editor.html");
+			URL url = FileLocator.resolve(aboutURL);
+			browser.setUrl(url.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private class MyStatusTextListener implements StatusTextListener {
+		@Override
+		public void changed(StatusTextEvent ev) {
+			log("status="+ev.text);
+			String[] params = ev.text.split(",");
+			String method = params[0];
+			if ("load".equals(method)) {
+				onLoad(params);
+			} else if ("change".equals(method)) {
+				onChange(params);
+			} else if ("log".equals(method)) {
+				log(ev.text);
+			}
+		}
+	}
+	
+	private void onLoad(String[] params) {
+		StringBuilder sbuf = new StringBuilder();
+		try {
+			IFileEditorInput input = (IFileEditorInput)getEditorInput();
+			InputStream in = input.getFile().getContents();
+			try {
+				Reader reader = new InputStreamReader(in, ENCODING);
+				int n;
+				char[] buff = new char[1024];
+				while ((n=reader.read(buff))>=0) {
+					sbuf.append(buff,0,n);
+				}
+			} finally {
+				in.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+		String data = sbuf.toString();
+		data = data.replaceAll("'", "\\'").replaceAll("\n", "\\n");
+		
+		browser.execute("Eclipse.setContent('"+data+"')");
+	}
+	
+	private void onChange(String[] params) {
+		setDirty(true);
+	}
+	
+
+	@Override
+	public void doSave(IProgressMonitor monitor) {
+		String content = (String) browser.evaluate("return Eclipse.getContent();");
+		try {
+			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+			file.setContents(
+				new ByteArrayInputStream(content.getBytes(ENCODING)),
+				true,  // keep saving, even if IFile is out of sync with the Workspace
+				false, // dont keep history
+				monitor); // progress monitor
+			setDirty(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
+	}
+
+	public void setDirty(boolean b) {
+		isDirty = b;
+		firePropertyChange(EditorPart.PROP_DIRTY); 
+	}
+
+	@Override
+	public boolean isDirty() {
+		return isDirty;
+	}
+
+
+	@Override
+	public void dispose() {
+		browser.dispose();
+		super.dispose();
+	}
+
+	@Override
+	public void setFocus() {
+	}
+	@Override
+	public boolean isSaveAsAllowed() {
+		return false;
+	}
+	@Override
+	public void doSaveAs() {
+		// Unsupported
+	}
+	
+	private void log(String msg) {
+		System.out.println(msg); // TODO:ちゃんとログ。
+	}
+
+}
+</pre>
+<br/><br/>
+本格的なPluginを作るにはまだ色々必要ですが JavaScript
+でEclipse plugin開発ができる事が分かりました。
+
+このサンプルのSVNリポジトリは以下にあります。
+
+  - [http://kotemaru.googlecode.com/svn/trunk/BrowserPluginSample](http://kotemaru.googlecode.com/svn/trunk/BrowserPluginSample)
