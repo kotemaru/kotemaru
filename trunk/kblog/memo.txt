@@ -1,4 +1,15 @@
 
+- Android listview auto loading
+- Android listview footer 
+05-27 02:26:57.253: E/AndroidRuntime(2518): java.lang.ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to jp.moconavi.android.ui.view.MailListAdapter
+
+                View footerView = activity.getLayoutInflater().inflate(R.layout.list_footer, null);
+                listView.addFooterView(footerView);
+                listView.setAdapter(listView.getAdapter());
+                //listView.invalidateViews();
+
+
+
 x javaのCalanderのtimeリセット方法
 - 部ログのスパム対策。
 x String[] の動的生成。

@@ -1,0 +1,35 @@
+Subject: ListViewのFooterでちょいとはまったのでメモ
+Content-type: markdown/text
+Tags: android
+Date: 2013/06/01
+Public: no 
+
+
+Android で ListView にカスタムの Adapter と Footer
+を併用しようとすると例外が出る。忘れそうなのでメモ。
+
+
+普通にこんな感じの事をして一覧に footer を付ける。
+
+	View footerView = activity.getLayoutInflater().inflate(R.layout.list_footer, null);
+	listView.addFooterView(footerView);
+	listView.setAdapter(new MyAdapter());
+
+この後、adapter を取り出すと例外になる。
+
+	MyAdapter adapter = (MyAdapter) listView.getAdapter();
+
+　　　　　　↓
+
+	java.lang.ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to MyAdapter
+
+理由は ListView.setAdapter() の JavaDoc に書いてある通り、
+Header/Footerを使うと Adapter がラップされるから。<br/>
+＃なので Header/Footer は setAdapter() に前に無いと効かない。
+
+後付でHeader/Footerが必要になった場合は有りがちな状況に思える。<br/>
+とりあえずの回避方法はこれ。
+
+	MyAdapter adapter = (MyAdapter) ((WrapperListAdapter)listView.getAdapter()).getWrappedAdapter();
+
+とりだした adapter は普通に操作して問題無い。
