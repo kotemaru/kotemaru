@@ -1,0 +1,41 @@
+Subject: UbuntuでMouse over Active windowの設定
+Content-type: markdown/text
+Tags: ubuntu,linux
+Date: 2013/06/08
+Public: yes
+
+Ubuntu ではマウスクリックでウインドウが一番上に来てアクティブ化する。
+
+Windows から入った人は当り前と感じるかも知れないが昔の X Window 
+ではマウスカーソルが乗っているだけでそのウインドウがアクティブになるのが普通だった。
+しかもアクティブ・ウインドウが一番上にはならない。
+
+したがって一部でもウインドウが見えていればそのウインドウに入力ができる。
+
+マウス・オーバー・アクティブ・ウインドウと言うんだけど慣れるとウインドウ間のコピペ
+等が非常にやりやすくなる。
+
+言葉では分かりづらいと思うが以下の画面の状態のままコンソールにコマンド入力ができる。
+ブラウザからコンソールに複数コピペする場合に一々ブラウザが裏に行かないので非常に楽になる。
+
+<img width="640" src="/2013/06/08/mouse-active-window.png"/>
+
+
+で、ubuntu でこの状態にする方法が以外に面倒臭かったので忘れないようにメモ
+
+  - 元ネタ:[How do I set focus follows mouse?](http://askubuntu.com/questions/64605/how-do-i-set-focus-follows-mouse)
+
+このサイトの情報を元にUbuntu 13.04でclassic-gnomeモード場合はこうする。
+
+	$ gsettings set org.gnome.desktop.wm.preferences focus-mode sloppy
+	$ gsettings set org.gnome.desktop.wm.preferences auto-raise false
+	$ gsettings set org.gnome.desktop.wm.preferences raise-on-click false
+
+その他の条件は元ネタサイトを参照してください。
+
+ubuntuの人は一度試してみて下さい。戻れなくなります。
+
+Window7でも一応できる様ですが、多分下のウインドウの操作は出来ないでしょう。
+
+  - Win7:[すぐに忘れる脳みそのためのメモ](http://jutememo.blogspot.jp/2011/11/windows-7.html)
+

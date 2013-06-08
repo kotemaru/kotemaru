@@ -2,7 +2,7 @@ Subject: ListViewのFooterでちょいとはまったのでメモ
 Content-type: markdown/text
 Tags: android
 Date: 2013/06/01
-Public: no 
+Public: yes
 
 
 Android で ListView にカスタムの Adapter と Footer
@@ -25,7 +25,7 @@ Android で ListView にカスタムの Adapter と Footer
 
 理由は ListView.setAdapter() の JavaDoc に書いてある通り、
 Header/Footerを使うと Adapter がラップされるから。<br/>
-＃なので Header/Footer は setAdapter() に前に無いと効かない。
+＃addFooter() が setAdapter() に前に必要なのはこのため。
 
 後付でHeader/Footerが必要になった場合は有りがちな状況に思える。<br/>
 とりあえずの回避方法はこれ。
