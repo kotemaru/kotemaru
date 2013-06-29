@@ -187,6 +187,7 @@ table.KTable td {
 	font-size: 80%;
 	margin-top: 0.5em;
 	margin-left: 2em;
+	overflow: auto;
 }
 .ContentBody blockquote {
 	background: #f8f8f8;
