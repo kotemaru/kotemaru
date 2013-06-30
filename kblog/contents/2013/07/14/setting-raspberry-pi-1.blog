@@ -1,0 +1,160 @@
+Subject: RaspberryPiの設定(1)
+Content-type: markdown/text
+Tags: RaspberryPi
+Date: 2013/07/14
+Public: no
+
+[RaspberryPiを購入してみた](/2013/07/07/getting-raspberry-pi.html)の続き。
+
+とりあずOSを入れただけなので色々設定したメモです。
+
+#### 固定IPの設定
+
+DHCPは不便なので固定IPを振ります。
+
+	$ sudo vi /etc/network/interfaces   #以下の修正を入れる
+	#iface eth0 inet dhcp
+	iface eth0 inet static
+	address 192.168.0.xxx
+	netmask 255.255.255.0
+	gateway 192.168.0.1
+
+
+#### パーティションの切り直し
+
+img ファイルは2Gの状態なのでSDカードサイズの16Gまで使えるようにします。<br/>
+単純に最大まで使うだけならば raspi-config コマンドの expand_rootfs から行えます。
+
+しかし、書込回数に上限のあるSDカードで /var
+がルートパーティションに有るのは嫌なので手動で
+/var 専用のパーティションを切る事にしました。
+
+  - ルートパーティションを10Gに拡張
+
+<pre>
+$ sudo fdisk /dev/mmcblk0
+
+Command (m for help): p
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/mmcblk0p2          <font color="red">122880</font>     XXXXXXX     XXXXXXX   83  Linux
+
+Command (m for help): d
+Partition number (1-4): 2
+Partition 2 is deleted
+
+Command (m for help): n
+Partition type:
+   p   primary (1 primary, 0 extended, 3 free)
+   e   extended
+Select (default p): p
+Partition number (1-4, default 2): 2
+First sector (2048-xxxxxxx, default 2048): <font color="red">122880</font>   <font color="$aaffaa">←元と同じStart</font>
+Last sector, +sectors or +size{K,M,G} (8192-xxxxxxx, default xxxxxxx): +10G
+Using default value 10485760
+
+Command (m for help): p
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/mmcblk0p2          122880    <font color="#ffaa00">21094399</font>    10485760   83  Linux
+
+Command (m for help): w
+
+$ sudo reboot
+</pre>
+
+  - ルートパーテションのファイルシステムを再構築します。
+
+<pre>
+$ sudo resize2fs /dev/mmcblk0p2
+$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+rootfs          10321208 1462516   8421024  15% /
+/dev/root       10321208 1462516   8421024  15% /
+devtmpfs          216132       0    216132   0% /dev
+tmpfs              44880     232     44648   1% /run
+tmpfs               5120       0      5120   0% /run/lock
+tmpfs              89740       0     89740   0% /run/shm
+/dev/mmcblk0p1     57288   18960     38328  34% /boot
+</pre>
+
+<br/>
+
+- 拡張領域に/var用の1Gのパーティションを切ります。
+
+<pre>
+$ sudo fdisk /dev/mmcblk0
+Command (m for help): p
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/mmcblk0p2          122880    <font color="#ffaa00">21094399</font>    10485760   83  Linux
+
+Command (m for help): n
+Partition type:
+   p   primary (2 primary, 0 extended, 2 free)
+   e   extended
+Select (default p): e
+Partition number (1-4, default 3): 
+Using default value 3
+First sector (2048-30881791, default 2048): <font color="#ffaa00">21094<font color="red">400</font></font>    <font color="red">←End+1</font>
+Last sector, +sectors or +size{K,M,G} (21094400-30881791, default 30881791):
+Using default value 30881791
+
+Command (m for help): p
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/mmcblk0p2          122880    21094399    10485760   83  Linux
+/dev/mmcblk0p3        21094400    30881791     4893696    5  Extended
+
+Command (m for help): n
+Partition type:
+   p   primary (2 primary, 1 extended, 1 free)
+   l   logical (numbered from 5)
+Select (default p): l
+Adding logical partition 5
+First sector (21096448-30881791, default 21096448): 
+Using default value 21096448
+Last sector, +sectors or +size{K,M,G} (21096448-30881791, default 30881791): +1G
+
+Command (m for help): p
+        Device Boot      Start         End      Blocks   Id  System
+/dev/mmcblk0p1            8192      122879       57344    c  W95 FAT32 (LBA)
+/dev/mmcblk0p2          122880    21094399    10485760   83  Linux
+/dev/mmcblk0p3        21094400    30881791     4893696    5  Extended
+/dev/mmcblk0p5        21096448    23193599     1048576   83  Linux
+
+Command (m for help): w
+
+$ sudo reboot
+</pre>
+
+  - 作成したパーティションに現在の /var の内容をコピーして次回からマウントされるようにします。
+
+<pre>
+$ sudo mkfs -t ext4 /dev/mmcblk0p5
+$ sudo mount /dev/mmcblk0p5 /mnt
+$ sudo apt-get install rsync    <font color="$aaffaa">#デフォルトでは入ってませんでした</font>
+$ sudo rsync -av /var/ /mnt
+$ sudo vi /etc/fstab  <font color="$aaffaa">#以下の一行追加</font>
+/dev/mmcblk0p5  /var            ext4    defaults,noatime  0       1
+$ sudo reboot
+</pre>
+
+<pre>
+$ df
+Filesystem     1K-blocks    Used Available Use% Mounted on
+   :
+/dev/mmcblk0p5   1032088  675428    304232  69% /var
+</pre>
+
+<br/>
+
+拡張領域に余裕を残してあるのはこの /var に書き込め無くなったら
+別のパーティションを切って引っ越す作戦です。
+
+RAMディスクを使う作戦も有るのですが
+/var 全部はカバーできないしメモリが減るのでこの方法でしばらく試して見ようと思います。
+
+<br/><br/>
+
+これでやっと落ちついて作業ができます。

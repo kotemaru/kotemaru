@@ -1,0 +1,110 @@
+Subject: RaspberryPiをDNSにする
+Content-type: markdown/text
+Tags: RaspberryPi
+Date: 2013/07/14
+Public: no
+
+
+前から自宅LAN用のDNSが欲しかったんだが24時間稼働というハードルが以外に高く
+実現できないでいた。
+
+RaspberryPiさんにうってつけの仕事である。
+
+デフォルトでは入っていないようなのでインストール。
+
+	$ sudo apt-get install bind
+
+しかし、この後困った。/etc/named.conf が無いのだ。
+
+色々ググってやっと分かった。Debian系は /etc/bind/ なのね。<br/>
+しかも named.conf が幾つかに分割されていて独自のお作法が有る様子...
+
+良く分かんないけど適当にやったら動いたからメモっとく。
+
+/etc/bind/named.conf.options:
+
+	acl localnet {
+	        192.168.0.0/24;
+	        127.0.0.1;
+	};
+	
+	options {
+	        directory "/var/cache/bind";
+	        allow-query { localnet; };
+	        allow-transfer { none; };
+	        forwarders { 192.168.0.1; };      # 家のルータはNS持ってるので
+	        forward only;
+	
+	        dnssec-validation auto;
+	        auth-nxdomain no;    # conform to RFC1035
+	        listen-on-v6 { any; };         
+	};
+
+/etc/bind/named.conf.local:
+
+	zone "myhome.jp" {
+	        type master;
+	        file "/etc/bind/myhome.jp.zone";
+	};
+	
+	zone "0.168.192.in-addr.arpa" {
+	        type master;
+	        file "/etc/bind/myhome.jp.rev";
+	};
+
+/etc/bind/myhome.jp.zone:
+
+	$TTL    86400
+	@       IN      SOA     ns.myhome.jp. root.myhome.jp. (
+	                        2013063001      ; Serial
+	                        3600            ; Refresh
+	                        900             ; Retry
+	                        604800          ; Expire
+	                        86400 ) ; Negative Cache TTL
+	;
+	@       IN      NS      ns.myhome.jp.   ; this host
+	@       IN      A       127.0.0.1
+	@       IN      AAAA    ::1
+	ns      IN      A       192.168.0.7     ; this host
+	rpi     IN      A       192.168.0.7     ; this host
+	router  IN      A       192.168.0.1     ; 
+  
+/etc/bind/myhome.jp.rev:
+
+	$TTL    86400
+	@       IN      SOA     ns.myhome.jp. root.myhome.jp. (
+	                        2013063001      ; Serial
+	                        3600            ; Refresh
+	                        900             ; Retry
+	                        604800          ; Expire
+	                        3600 )  ; Negative Cache TTL
+	;
+	@       IN      NS      ns.myhome.jp.
+	7       IN      PTR     rpi.myhome.jp.
+	1       IN      PTR     router.myhome.jp.
+
+で bind 再起動。
+
+	$ sudo service bind9 restart
+
+参照側PCでDNSを設定して確認する。
+
+	$ sudo vi /etc/resolve.conf
+	domain myhome.jp
+	nameserver      192.168.0.7
+	$ nslookup rpi
+	Server:         192.168.0.7
+	Address:        192.168.0.7#53
+	
+	Name:   rpi.myhome.jp
+	Address: 192.168.0.7
+	
+	$ nslookup 192.168.0.7
+	Server:         192.168.0.7
+	Address:        192.168.0.7#53
+	
+	7.0.168.192.in-addr.arpa        name = rpi.myhome.jp.
+
+問題無さげ。地味に嬉しい。
+
+	
