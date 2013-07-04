@@ -1,4 +1,14 @@
 
+- RP
+-- joystick usb
+-- xmms2
+-- 
+sudo apt-get install input-utils
+sudo apt-get install joystick
+sudo apt-get install flite
+sudo apt-get install kakasi
+
+
 - Android listview auto loading
 - Android listview footer 
 05-27 02:26:57.253: E/AndroidRuntime(2518): java.lang.ClassCastException: android.widget.HeaderViewListAdapter cannot be cast to jp.moconavi.android.ui.view.MailListAdapter

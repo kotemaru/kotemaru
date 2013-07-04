@@ -1,8 +1,8 @@
 Subject: RaspberryPiを購入してみた
 Content-type: markdown/text
-Tags: RaspberryPi
-Date: 2013/07/07
-Public: no
+Tags: RaspberryPi,Linux
+Date: 2013/07/04
+Public: yes 
 
 気になっていたRaspberry-Piを買ってみた。
 
@@ -57,6 +57,20 @@ LANケーブルを差して置けば DHCP で sshd が起動するので ssh で
 	$ ssh pi@192.168.0.x
 	Password: raspberry
 
-ログインできればセットアップ終了です。<br/>
+ログインできればセットアップ終了です。
+
+#### 動画再生
+
+動画プレーヤーが最初からOSに入っているのでYoutubeから落してきたmp4を再生してみます。
+
+	$ omxplayer PentaAsibuto.mp4
+
+<img src="/2013/07/07/raspberry-pi-3.jpg"/>
+
+Full-HD(1920x1080p/30fps) の動画ファイルをモニタの都合で 1280x720p 再生しています。<br/>
+この時のCPU使用率は15%程度で、コマ落ち等全くありませんでした。
+
+
+とりあえず準備が整いました。<br/>
 大変なのはここからですが...
 
