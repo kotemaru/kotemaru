@@ -133,7 +133,7 @@ public class BlogTask extends Task  {
 					category = new Category(tags[i].trim());
 					tagMap.put(key, category);
 				}
-				category.add(blog);
+				if (blog.isPublish()) category.add(blog);
 				if (isUpdate) category.setUpdate(true);
 			}
 		}
