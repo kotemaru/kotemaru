@@ -1,0 +1,124 @@
+Subject: RaspberryPiのUSB接続を認識する
+Content-type: markdown/text
+Tags: RaspberryPi,Linux
+Date: 2013/07/21
+Public: no
+
+RaspberryPi で USB JoyStick の抜き差しに応じてアプリの起動／終了をしたかったのでその調査メモ。
+
+Linux では USB 制御は udev と言う仕掛けを使うらしい。
+
+/etc/udev/rules/ に目的のデバイスの *.rules ファイルを記述すればOK。<br/>
+rules ファイルは先頭が数字になっているので多分その順番で処理されるものと思われる。<br/>
+rules の書き方は man udev でマニュアルが見れるが正直分かり辛い。
+
+とりあえずサンプルをググりながら手持ちのJoyStickを認識する設定を書いてみた。
+
+##### ルールファイル
+
+/etc/udev/rules/10-joystick-test.rules:
+
+<pre>
+ACTION=="add",\
+        SUBSYSTEMS=="usb", \
+        ATTRS{idVendor}=="0d9d", \
+        ATTRS{idProduct}=="3011", \
+        KERNEL=="js*", \
+        RUN:="/tmp/test1.sh start", \
+        OPTIONS+="last_rule"
+
+ACTION=="remove",\
+        SUBSYSTEMS=="usb", \
+        ENV{ID_VENDOR_ID}=="0d9d", \
+        ENV{ID_MODEL_ID}=="3011", \
+        KERNEL=="js*", \
+        RUN:="/tmp/test1.sh stop", \
+        OPTIONS+="last_rule"
+</pre>
+
+  - １つの定義は１行で記述する。改行は「\」でエスケープできる。
+  - 比較演算子が条件、代入演算子が処理と考えれば良い。
+  - ACTION: "add"が接続、"remove"が切断。
+  - SUBSYSTEMS: USB の場合は固定。
+  - ATTRS: udevadm info コマンドで取れる属性値。
+  - ENV: udevadm monitor コマンドで取れる環境変数値。
+  - KERNEL: /dev/ 以下の名前と思えば良い。*はワイルドカード。
+  - RUN: 実行スクリプト
+  - OPTIONS: 多分無くても良い。サンプルに書いてあったのでそのまま。
+  - add と remove で ATTRS と ENV の違いが有ることに注意。
+
+<br/>
+
+##### udevadm info コマンド
+
+以下のコマンドでデバイスの情報を色々表示してくれる。
+
+	$ sudo udevadm info -a -p $(udevadm info -q path -n /dev/input/js0) 
+
+但し、2013年6月時点のOSでは表示後ハングアップしてしまう。<br/>
+Vendor/Productは dmesg でも見れるので無理に使う必要は無い。
+
+##### udevadm monitor コマンド
+
+起動して置いて USB を抜き差しすると接続ログとデバイス情報が吐き出される。
+
+	$ udevadm monitor
+	monitor will print the received events for:
+	UDEV - the event which udev sends out after rule processing
+	KERNEL - the kernel uevent
+	
+	UDEV  [258008.515110] add      /devices/platform/bcm2708_usb/usb1/1-1/1-1.2/1-1.2.1/1-1.2.1:1.0/input/input18/js0 (input)
+	ACTION=add
+	DEVLINKS=/dev/input/by-id/usb-HuiJia_4Axes_16Key_GamePad-joystick /dev/input/by-path/platform-bcm2708_usb-usb-0:1.2.1:1.0-joystick
+	DEVNAME=/dev/input/js0
+	DEVPATH=/devices/platform/bcm2708_usb/usb1/1-1/1-1.2/1-1.2.1/1-1.2.1:1.0/input/input18/js0
+	ID_BUS=usb
+	ID_INPUT=1
+	ID_INPUT_JOYSTICK=1
+	ID_MODEL=4Axes_16Key_GamePad
+	ID_MODEL_ENC=4Axes\x2016Key\x20GamePad
+	ID_MODEL_ID=3011
+	ID_PATH=platform-bcm2708_usb-usb-0:1.2.1:1.0
+	ID_PATH_TAG=platform-bcm2708_usb-usb-0_1_2_1_1_0
+	ID_REVISION=4b24
+	ID_SERIAL=HuiJia_4Axes_16Key_GamePad
+	ID_TYPE=hid
+	ID_USB_DRIVER=usbhid
+	ID_USB_INTERFACES=:030000:
+	ID_USB_INTERFACE_NUM=00
+	ID_VENDOR=HuiJia
+	ID_VENDOR_ENC=HuiJia\x20
+	ID_VENDOR_ID=0d9d
+	MAJOR=13
+	MINOR=0
+	SEQNUM=1031
+	SUBSYSTEM=input
+	TAGS=:udev-acl:
+	UDEV_LOG=3
+	USEC_INITIALIZED=258008048772
+
+<br/>
+
+
+##### 実行スクリプト
+
+/tmp/test1.sh:
+
+	#!/bin/bash
+	echo `date` $0 $1 $DEVNAME >> /tmp/test.log
+
+  - 環境変数 DEVNAME はデバイス名が入っている。
+  - その他に設定される環境変数は env を書いて置けばわかる。
+
+##### 実行結果
+
+/tmp/test.log:
+
+	Sun Jul 7 18:46:35 JST 2013 /tmp/test1.sh start /dev/input/js0
+	Sun Jul 7 18:46:38 JST 2013 /tmp/test1.sh stop /dev/input/js0
+
+ちゃんと呼ばれている。
+
+
+
+
