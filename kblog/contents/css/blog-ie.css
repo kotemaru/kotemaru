@@ -1,0 +1,14 @@
+html,body {
+	background: #a0c0ff;
+	text-align: center;
+}
+
+#outFrame {
+	width: 960px;
+	max-width: 960px;
+	text-align: justify;
+}
+
+.ContentBody pre,xmp {
+	overflow: scroll;
+}
