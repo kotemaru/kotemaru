@@ -4,7 +4,7 @@ Tags: RaspberryPi,Linux
 Date: 2013/07/21
 Public: no
 
-RaspberryPi で USB JoyStick の抜き差しに応じてアプリの起動／終了をしたかったのでその調査メモ。
+RaspberryPi で USB デバイスの抜き差しに応じてアプリの起動／終了をしたかったのでその調査メモ。
 
 Linux では USB 制御は udev と言う仕掛けを使うらしい。
 

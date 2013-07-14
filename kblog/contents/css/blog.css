@@ -236,11 +236,15 @@ table.KTable td {
 }
 .CommentHead {
 	margin-top: 0.6em;
+	margin-bottom: 0.3em;
 	font: bold 10px monospace,sans-serif;
 }
 .CommentBody {
 	font-size: 14px;
 	margin: 0;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 .CommentFormTitle {
 	font: bold 14px monospace,sans-serif;
