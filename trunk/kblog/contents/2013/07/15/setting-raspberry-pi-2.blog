@@ -1,14 +1,14 @@
 Subject: RaspberryPiをDNSにする
 Content-type: markdown/text
 Tags: RaspberryPi,Linux
-Date: 2013/07/14
-Public: no
+Date: 2013/07/15
+Public: yes
 
 
-前から自宅LAN用のDNSが欲しかったんだが24時間稼働というハードルが以外に高く
+前から自宅LAN用のDNSが欲しかったんだけど24時間稼働というハードルが以外に高く
 実現できないでいた。
 
-RaspberryPiさんにうってつけの仕事である。
+RaspberryPiにちょうど良いのでDNSにしてみた。
 
 デフォルトでは入っていないようなのでインストール。
 
