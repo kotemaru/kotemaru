@@ -2,7 +2,7 @@ Subject: RaspberryPiのUSB接続を認識する
 Content-type: markdown/text
 Tags: RaspberryPi,Linux
 Date: 2013/07/21
-Public: no
+Public: yes
 
 RaspberryPi で USB デバイスの抜き差しに応じてアプリの起動／終了をしたかったのでその調査メモ。
 
@@ -108,17 +108,18 @@ Vendor/Productは dmesg でも見れるので無理に使う必要は無い。
 	echo `date` $0 $1 $DEVNAME >> /tmp/test.log
 
   - 環境変数 DEVNAME はデバイス名が入っている。
-  - その他に設定される環境変数は env を書いて置けばわかる。
+  - その他に設定される環境変数はスクリプト内で env を実行すれば分かる。
 
 ##### 実行結果
 
 /tmp/test.log:
 
-	Sun Jul 7 18:46:35 JST 2013 /tmp/test1.sh start /dev/input/js0
-	Sun Jul 7 18:46:38 JST 2013 /tmp/test1.sh stop /dev/input/js0
+	Sun Jul 21 18:46:35 JST 2013 /tmp/test1.sh start /dev/input/js0
+	Sun Jul 21 18:46:38 JST 2013 /tmp/test1.sh stop /dev/input/js0
 
 ちゃんと呼ばれている。
 
+後は JoyStick の操作を読み取って任意の処理を行うスクリプトを起動させれば良い。
 
-
+RaspberryPiはshutdownボタンとか無いのが以外に不便なのだがこれで実現できる。
 
