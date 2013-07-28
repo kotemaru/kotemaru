@@ -1,0 +1,424 @@
+Subject: AndroidのPush通知(GCM)のサンプルを書いてみた
+Content-type: markdown/text
+Tags: Android,GAE
+Date: 2013/07/28
+Public: no
+
+Android でも Push メッセージが使えると言うので試して見ようと思ったら
+Googleのサンプルが分り辛くて結局自分でサンプルを書いてしまった。
+
+### Push通知の仕組み
+
+Androidはサーバ側から端末側へ通信を始める方法は無いので Push 通知できません。
+
+Googleが取った解決方法は端末側からGoogleの専用サーバへの TCP
+セッションの繋ぎっぱなしです。
+
+Push通知したいアプリは Google のサーバを経由してメッセージを送信します。
+
+大まかな仕組みはこんな感じです。
+
+<img src="/2013/07/28/android-push-2.png" />
+
+  - (1) アプリ起動後、GCMサーバから **端末ID** を取得します。
+  - (2) **ユーザID** と **端末ID** のペアをアプリサーバに送信してDBに保存します。
+  - (3) 目的の **ユーザ** に向けた **メッセージ** をアプリサーバに送信します。
+  - (4) アプリサーバは **ユーザID** から **端末ID** を引いてGCMサーバにメッセージを転送します。
+  - (5) GCMサーバは繋ぎっぱなしのセッションに **メッセージ** を送信します。
+
+前提条件の注意点。
+
+  - 端末は Google アカウントが登録されている必要があります。
+  - ポート 5228、5229、5230 を使用するのでファイヤウォール等で開いている必要が有ります。
+
+公式な文書は以下にあります。
+
+  - [GCM Architectural Overview](http://developer.android.com/google/gcm/gcm.html)
+  - [日本語訳](http://www.techdoctranslator.com/android/guide/google/gcm/gcm)
+
+<p/>
+
+### 準備
+
+#### サーバ側
+
+[Googleアプリの管理コンソール](https://code.google.com/apis/console/)にログインして
+「Google Cloud Messaging for Android」サービスを有効にします。
+
+GCMを利用するに当って必要な情報が幾つかあります。
+いずれも [Googleアプリの管理コンソール](https://code.google.com/apis/console/) から取得できます。
+
+  - API_KEY : アプリケーション・サーバがGCMサーバに接続する時の認証キーです。<br/>
+「APIAccess」の「create new server key」で生成できます。
+  - SENDER_ID : 端末アプリがGCMサーバに接続する時のアプリのIDです。<br/>
+管理コンソールでは Product Number となっています。
+
+管理コンソールに不慣れな方はこちらのサイトが詳しいです。
+
+  - [-> Androidアプリでプッシュ通知を利用する](http://freestyle.nvo.jp/archives/1218)
+
+<p/>
+
+#### クライアント側
+
+eclipse から Android SDK Manager を起動して
+Extras の 「GoogleCloudMessaging for Android Library」
+をインストールします。 
+
+${android.sdk}/extras/google/ 配下に必要な jar とデモが入っています。
+
+<p/>
+
+### サンプル
+
+<font color="red">注意</font>：
+このサンプルは機能の理解を目的としている為、必要最小限の機能に絞ってあります。
+Googleの作法から外れている場合も有りますのでこのまま使用しないで下さい。
+
+#### サーバ側
+
+サーバに必要なクラスはServlet 1つだけです。
+
+  - 先に取得した API_KEY が必要になります。(ソースを書き換えて下さい。)
+  - GCMサーバへの送信は com.google.android.gcm.server.Sender
+クラスを利用すれば非常に簡単です。
+  - 必要な jar ファイルは以下です。
+    - ${android.sdk}/extras/google/gcm/gcm-server/dist/gcm-server.jar
+    - ${android.sdk}/extras/google/gcm/gcm-server/lib/*.jar
+
+
+##### GCMServerSampleServlet.java:
+
+	package org.kotemaru.sample.gcm.server;
+	
+	import java.io.IOException;
+	import java.util.HashMap;
+	import java.util.Map;
+	
+	import javax.servlet.http.HttpServlet;
+	import javax.servlet.http.HttpServletRequest;
+	import javax.servlet.http.HttpServletResponse;
+	
+	import com.google.android.gcm.server.Message;
+	import com.google.android.gcm.server.Result;
+	import com.google.android.gcm.server.Sender;
+	
+	
+	/**
+	 * GCMのサーバ・サンプル・サーブレット
+	 * - API
+	 * -- ?action=register&userId={ユーザID}&regId={端末ＩＤ}
+	 * -- ?action=unregister&userId={ユーザID}
+	 * -- ?action=send&userId={ユーザID}&mes={送信メッセージ}
+	 * 
+	 * 注：いろいろ端折ってます。Googleのサンプルも参照してください。
+	 * @author @kotemaru.org
+	 */
+	
+	public class GCMServerSampleServlet extends HttpServlet {
+		
+		/**
+		 * https://code.google.com/apis/console/ で生成したAPIキー。
+		 */
+		private static final String API_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+		private static final int RETRY_COUNT = 5;
+	
+		/**
+		 * ユーザIDからRegistrationIdを引くテーブル。
+		 * -本来はストレージに保存すべき情報。
+		 * -key=ユーザID: サービスの管理するＩＤ。
+		 * -value=RegistrationId: AndroidがGCMから取得した端末ＩＤ。
+		 */
+		static Map<String,String> deviceMap = new HashMap<String,String>();
+		
+		public void doGet(HttpServletRequest req, HttpServletResponse res) 
+				throws IOException {
+			
+			System.out.println("=> "+req.getQueryString());
+			
+			String action         = req.getParameter("action");
+			String registrationId = req.getParameter("regId");
+			String userId         = req.getParameter("userId");
+			String msg            = req.getParameter("msg");
+	
+			if ("register".equals(action)) {
+				// 端末登録、Androidから呼ばれる。
+				deviceMap.put(userId, registrationId);
+				
+			} else if ("unregister".equals(action)) {
+				// 端末登録解除、Androidから呼ばれる。
+				deviceMap.remove(userId);
+				
+			} else if ("send".equals(action)) {
+				// メッセージ送信。任意の送信アプリから呼ばれる。
+	
+				registrationId = deviceMap.get(userId);
+				Sender sender = new Sender(API_KEY);
+				Message message = new Message.Builder().addData("msg", msg).build();
+				Result result = sender.send(message, registrationId, RETRY_COUNT);
+				
+				res.setContentType("text/plain");
+				res.getWriter().println("Result="+result);
+			} else if ("sendAll".equals(action)) {
+				// TODO: 省略。googleのサンプル参照。
+			} else {
+				res.setStatus(500);
+			}
+		}
+	}
+
+<br/>
+
+#### クライアント側
+
+サーバに必要なクラスは MainActivity と GCMBaseIntentServiceの実装クラスの２つです。
+
+  - 先に取得した SENDER_ID が必要になります。(ソースを書き換えて下さい。)
+  - アプリサーバへの送信は通常の HttpClient で行います。<br/>
+    (URLはソースを書き換えて下さい。)
+  - 受け取ったPush通知はログとトーストに出力しています。
+  - AndroidManifest はサンプルからパッケージ名を変更しただけです。
+  - 必要な jar ファイルは以下です。
+    - ${android.sdk}/extras/google/gcm/gcm-client/dist/gcm-client.jar
+
+##### MainActivity.java:
+
+	package org.kotemaru.sample.gcm.client;
+	
+	import android.app.Activity;
+	import android.os.Bundle;
+	
+	import com.google.android.gcm.GCMRegistrar;
+	
+	/**
+	 * クライアントアプリ本体。
+	 * @author @kotemaru.org
+	 */
+	public class MainActivity extends Activity {
+		/**
+		 * https://code.google.com/apis/console/のProject Number。
+		 */
+		public static final String SENDER_ID = "nnnnnnnnnnn";
+	
+		/**
+		 * アプリサーバーのURL。
+		 */
+		public static final String SERVER_URL = "http://192.168.0.3:8888/gcmserversample";
+		/**
+		 * アプリのユーザID。本来はログイン中のユーザとかになるはず。
+		 */
+		public static final String USER_ID = "TarouYamada";
+		
+		
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+			
+			final String regId = GCMRegistrar.getRegistrationId(this);
+			if (regId.equals("")) {
+				// GCMへ端末登録。登録後、GCMIntentService.onRegistered()が呼ばれる。
+				GCMRegistrar.register(this, SENDER_ID);
+			} else {
+				// 登録済みの場合、ここではアプリに登録しなおしているが
+				// Googleのサンプルでは unregister して register しなおしている。
+				String uri = SERVER_URL+"?action=register"
+						+"&userId="+USER_ID
+						+"&regId="+regId;
+				Util.doGetAsync(uri);
+			}
+		}
+	
+	    @Override
+	    protected void onDestroy() {
+	        GCMRegistrar.onDestroy(this);
+	        super.onDestroy();
+	    }
+	
+	}
+
+##### GCMIntentService.java:
+
+	package org.kotemaru.sample.gcm.client;
+	
+	import static org.kotemaru.sample.gcm.client.MainActivity.*;
+	
+	import android.content.Context;
+	import android.content.Intent;
+	import android.os.Handler;
+	import android.util.Log;
+	import android.widget.Toast;
+	
+	import com.google.android.gcm.GCMBaseIntentService;
+	import com.google.android.gcm.GCMRegistrar;
+	
+	/**
+	 * Push通知受け取りサービス。
+	 * @author @kotemaru.org
+	 */
+	public class GCMIntentService extends GCMBaseIntentService {
+	
+		private static final String TAG = "GCMIntentService";
+	
+		private Handler toaster;
+	
+		public GCMIntentService() {
+			super(SENDER_ID);
+		}
+	
+		@Override
+		public void onCreate() {
+			super.onCreate();
+			toaster = new Handler();
+		}
+	
+		@Override
+		protected void onRegistered(Context context, String registrationId) {
+			Log.i(TAG, "onRegistered: regId = " + registrationId);
+			// GCMから発行された端末IDをアプリサーバに登録する。
+			String uri = SERVER_URL + "?action=register"
+					+ "&userId=" + USER_ID
+					+ "&regId=" + registrationId;
+			Util.doGet(uri);
+		}
+	
+		@Override
+		protected void onMessage(Context context, Intent intent) {
+			// アプリサーバから送信されたPushメッセージの受信。
+			// Message.data が Intent.extra になるらしい。
+			CharSequence msg = intent.getCharSequenceExtra("msg");
+			Log.i(TAG, "onMessage: msg = " + msg);
+			toast("Push message: " + msg);
+		}
+	
+		
+		
+		@Override
+		protected void onUnregistered(Context context, String registrationId) {
+			Log.i(TAG, "onUnregistered: regId = " + registrationId);
+			if (GCMRegistrar.isRegisteredOnServer(context)) {
+				String uri = SERVER_URL + "?action=unregister"
+						+ "&userId=" + USER_ID;
+				Util.doGet(uri);
+			} else {
+				Log.i(TAG, "onUnregistered: ignore");
+			}
+		}
+	
+		@Override
+		protected void onDeletedMessages(Context context, int total) {
+			Log.i(TAG, "onDeletedMessages total="+total);
+			toast("onDeletedMessages: " + total);
+		}
+	
+		@Override
+		public void onError(Context context, String errorId) {
+			Log.i(TAG, "onError: " + errorId);
+			toast("onError: " + errorId);
+		}
+	
+		@Override
+		protected boolean onRecoverableError(Context context, String errorId) {
+			Log.i(TAG, "onRecoverableError: " + errorId);
+			toast("onRecoverableError: " + errorId);
+			return super.onRecoverableError(context, errorId);
+		}
+	
+		
+		private void toast(final String msg) {
+			toaster.post(new Runnable() {
+				@Override
+				public void run() {
+					Toast.makeText(GCMIntentService.this, msg, Toast.LENGTH_LONG).show();
+				}
+			});
+		}
+	
+	}
+
+##### AndroidManifest.xml:
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	    package="org.kotemaru.sample.gcm.client"
+	    android:versionCode="1"
+	    android:versionName="1.0" >
+	
+	    <uses-sdk
+	        android:minSdkVersion="8"
+	        android:targetSdkVersion="17" />
+	        
+	    <uses-permission android:name="android.permission.INTERNET" />
+	    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	    <uses-permission android:name="android.permission.WAKE_LOCK" />
+	    <permission
+	        android:name="org.kotemaru.sample.gcm.client.permission.C2D_MESSAGE"
+	        android:protectionLevel="signature" />
+	    <uses-permission
+	        android:name="org.kotemaru.sample.gcm.client.permission.C2D_MESSAGE" />
+	 
+	    <uses-permission
+	        android:name="com.google.android.c2dm.permission.RECEIVE" />
+	     
+	    <application
+	        android:allowBackup="true"
+	        android:icon="@drawable/ic_launcher"
+	        android:label="@string/app_name"
+	        android:theme="@style/AppTheme" >
+	        <activity
+	            android:name="org.kotemaru.sample.gcm.client.MainActivity"
+	            android:label="@string/app_name" >
+	            <intent-filter>
+	                <action android:name="android.intent.action.MAIN" />
+	
+	                <category android:name="android.intent.category.LAUNCHER" />
+	            </intent-filter>
+	        </activity>
+	        
+	        <receiver
+	            android:name="com.google.android.gcm.GCMBroadcastReceiver"
+	            android:permission="com.google.android.c2dm.permission.SEND" >
+	            <intent-filter>
+	                <!-- Receives the actual messages. -->
+	                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+	                <!-- Receives the registration id. -->
+	                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+	                <category android:name="org.kotemaru.sample.gcm.client" />
+	            </intent-filter>
+	        </receiver>
+	        <service android:name=".GCMIntentService" />
+	        
+	    </application>
+	
+	</manifest>
+
+
+### 実行結果
+
+サーバを起動してからクライアントを起動します。
+
+  - 注：端末にはGoogleのユーザ登録が必要です。
+していない場合は AUTHENTICATION_FAILED が発生します。
+エミュレータでは Google と付いているイメージでないと登録出来ないようです。
+    - [-> エミュレータ上でGoogleアカウントを設定するには](http://akabanessa.blog73.fc2.com/blog-entry-132.html)
+
+PCから以下の URI をブラウザで開きます。
+
+	http://アプリサーバ/gcmserversample?acrion=send&userId=ユーザID&msg=Hello%20Android!
+
+Androidでトーストが無事表示されました。
+
+　　<img src="/2013/07/28/android-push-1.png" />
+
+### 所感
+
+何億台あるか分からない Android が同時に接続しても大丈夫なサーバを用意できるのはさすが 
+Google と言った所でしょうか。
+
+最初はデモのソースに余計な物が多くて訳が分からんかったのですが整理したら割とシンプルになりました。
+
+スリープ時の挙動とか電池の消費具合とかまだ色々しらべる必要が有りそうだけど
+できる事の幅が広がるので何か面白い使い道を考えたい所。
+
+
+終り。
