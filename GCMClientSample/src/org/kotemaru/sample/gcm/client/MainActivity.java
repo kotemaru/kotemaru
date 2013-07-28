@@ -13,7 +13,7 @@ public class MainActivity extends Activity {
 	/**
 	 * https://code.google.com/apis/console/のProject Number。
 	 */
-	public static final String SENDER_ID = "291492803504";
+	public static final String SENDER_ID = "nnnnnnnnnnn";
 
 	/**
 	 * アプリサーバーのURL。
