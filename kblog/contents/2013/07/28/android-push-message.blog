@@ -1,20 +1,18 @@
 Subject: AndroidのPush通知(GCM)のサンプルを書いてみた
 Content-type: markdown/text
 Tags: Android,GAE
-Date: 2013/07/28
-Public: no
+Date: 2013/07/29
+Public: yes 
 
 Android でも Push メッセージが使えると言うので試して見ようと思ったら
-Googleのサンプルが分り辛くて結局自分でサンプルを書いてしまった。
+Google のサンプルが分り辛くて結局自分でサンプルを書いてしまった。
 
 ### Push通知の仕組み
 
-Androidはサーバ側から端末側へ通信を始める方法は無いので Push 通知できません。
-
+Androidはサーバ側から端末側へ通信を始める方法は無いので Push 通知できません。<br/>
 Googleが取った解決方法は端末側からGoogleの専用サーバへの TCP
-セッションの繋ぎっぱなしです。
-
-Push通知したいアプリは Google のサーバを経由してメッセージを送信します。
+セッションの繋ぎっぱなしです。<br/>
+Push通知したいアプリは Google のサーバを経由してメッセージを送信します。<br/>
 
 大まかな仕組みはこんな感じです。
 
@@ -73,7 +71,7 @@ ${android.sdk}/extras/google/ 配下に必要な jar とデモが入っていま
 
 <font color="red">注意</font>：
 このサンプルは機能の理解を目的としている為、必要最小限の機能に絞ってあります。
-Googleの作法から外れている場合も有りますのでこのまま使用しないで下さい。
+Googleの作法から外れている場合も有りますので公式文書も読んで下さい。
 
 #### サーバ側
 
@@ -410,6 +408,31 @@ Androidでトーストが無事表示されました。
 
 　　<img src="/2013/07/28/android-push-1.png" />
 
+
+### ダウンロード
+
+このサンプルの eclipse プロジェクトは SVN から落せます。
+
+##### クライアント:
+
+  - [http://kotemaru.googlecode.com/svn/trunk/GCMClientSample](http://kotemaru.googlecode.com/svn/trunk/GCMClientSample)
+
+##### サーバ:
+
+  - [http://kotemaru.googlecode.com/svn/trunk/GCMServerSample](http://kotemaru.googlecode.com/svn/trunk/GCMServerSample)
+
+サーバはGAE用の環境です。
+
+コンパイル前に以下の手順が必要です。
+
+  1. プロジェクトのメニューから「プロパティ」->「Google」->「App Engine」
+     で App Engine の設定。
+  2. lib/*.jar を war/WEB-INF/lib/ にコピー。
+  3. プロジェクトのメニューから「実行」->「実行の構成」で GAE の引数
+     に -a 0.0.0.0 を追加。
+
+
+
 ### 所感
 
 何億台あるか分からない Android が同時に接続しても大丈夫なサーバを用意できるのはさすが 
@@ -419,6 +442,7 @@ Google と言った所でしょうか。
 
 スリープ時の挙動とか電池の消費具合とかまだ色々しらべる必要が有りそうだけど
 できる事の幅が広がるので何か面白い使い道を考えたい所。
+
 
 
 終り。
