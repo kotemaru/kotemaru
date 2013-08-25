@@ -8,7 +8,7 @@ RaspberryPi で USB デバイスの抜き差しに応じてアプリの起動／
 
 Linux では USB 制御は udev と言う仕掛けを使うらしい。
 
-/etc/udev/rules/ に目的のデバイスの *.rules ファイルを記述すればOK。<br/>
+/etc/udev/rules.d/ に目的のデバイスの *.rules ファイルを記述すればOK。<br/>
 rules ファイルは先頭が数字になっているので多分その順番で処理されるものと思われる。<br/>
 rules の書き方は man udev でマニュアルが見れるが正直分かり辛い。
 
@@ -122,4 +122,4 @@ Vendor/Productは dmesg でも見れるので無理に使う必要は無い。
 後は JoyStick の操作を読み取って任意の処理を行うスクリプトを起動させれば良い。
 
 RaspberryPiはshutdownボタンとか無いのが以外に不便なのだがこれで実現できる。
-
+-> [RaspberryPiでJoypadからコマンド入力](/2013/08/25/raspberry-pi-joypad-command.html)
