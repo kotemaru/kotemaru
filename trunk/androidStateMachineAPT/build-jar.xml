@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="jar" basedir=".">
+	<property name="bin" value="${basedir}/bin"/>
+   	<property name="src" value="${basedir}/src"/>
+	<property name="gen" value="${basedir}/gen"/>
+	<property name="classes" value="${basedir}/bin/classes"/>
+
+	<target name="jar" depends="state-machine-apt.jar,state-machine-rt.jar" />
+	
+	<target name="state-machine-apt.jar">
+		<jar jarfile="${bin}/state-machine-apt.jar" >
+			<fileset dir="${gen}" >
+				<include name="META-INF/**"/>
+			</fileset>
+			<fileset dir="${classes}" >
+				<include name="**/statemachine/annotation/**"/>
+				<include name="**/statemachine/apt/**"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="state-machine-rt.jar">
+		<jar jarfile="${bin}/state-machine-rt.jar" >
+			<fileset dir="${classes}" >
+				<include name="**/statemachine/annotation/**"/>
+				<include name="**/statemachine/State*.*"/>
+			</fileset>
+		</jar>
+	</target>
+
+</project>
