@@ -1,0 +1,58 @@
+//  Generated stub.
+#*
+定義済変数
+${packageName}      : このクラスのパッケージ名
+${className}        : このクラスのクラス名
+${masterClassDecl}  : アノテーションの定義された元クラスの TypeDeclaration
+${annotation}       : 元クラスに定義されたアノテーション
+${helper}           : ユーザ定義の補助クラスインスタンス
+*#
+
+package ${packageName};
+import org.kotemaru.android.statemachine.*;
+
+public class ${className} extends StateMachineDriver
+{
+
+	public static class _state {
+#set( $count = 1 )
+#foreach( $method in $masterClassDecl.methods )
+	#set($mh = ${helper.getStateHelper($method)})
+	#if( $mh.isState() )
+		public static final int ${method.simpleName} = ${count};
+		#set( $count = $count+1 )
+	#end
+#end
+	}
+
+	
+	private ${masterClassDecl.simpleName} machine;
+
+	public ${className}( ${masterClassDecl.simpleName} machine ) {
+		this.machine = machine;
+	}
+	
+
+## 元クラスのメソッド一覧を取得
+#foreach( $method in $masterClassDecl.methods )
+	## メソッド用の補助インスタンスを取得
+	#set($mh = ${helper.getStateHelper($method)})
+
+## フィールドの @State アノテーションをチェック
+#if( $mh.isState() )
+	public ${method.returnType} ${method.simpleName}(${mh.params}) {
+		StateTask task = new StateTask(_state.${method.simpleName}, "${method.simpleName}", ${mh.getOptions()}){
+			private static final long serialVersionUID = 1L;
+			@Override public void run() {
+				machine.${method.simpleName}(${mh.arguments});
+			}
+		};
+		super._addTask(task);
+	}
+#end
+
+#end
+
+
+
+}

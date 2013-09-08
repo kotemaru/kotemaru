@@ -1,0 +1,8 @@
+<factorypath>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/apt-helper-1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/commons-collections-3.2.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/commons-lang-2.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/commons-logging-1.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/tools.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/StateMachineLib/libs/velocity-1.7.jar" enabled="true" runInBatchMode="false"/>
+</factorypath>
