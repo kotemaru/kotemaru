@@ -1,0 +1,21 @@
+Subject: Nexus7を外部モニタ化 (3)
+Content-type: markdown/text
+Tags: android
+Date: 2013/09/08
+Public: yes
+
+[前の記事](/2013/06/29/nexus7-sub-monitor.html)で
+野良ビルドがインストールできなかった件は単純に署名してなかったから。
+オレオレ証明で署名したら実機にインストールできたよ。
+
+野良ビルドって無署名の事だと思い込んでた。orz
+
+野良ビルドのAPKはこちらに置いておきます。
+
+  - [Download androidVNC-n7.apk](http://code.google.com/p/kotemaru/downloads/detail?name=androidVNC-n7.apk&can=2&q=#makechanges)
+
+当然ながら無保証、無責任です。各位、自己責任でお使い下さい。
+
+Nexus7でしか確認してませんが、4.1以降のOSなら動作すると思います。
+
+
