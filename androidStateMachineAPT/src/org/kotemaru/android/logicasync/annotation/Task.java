@@ -1,4 +1,4 @@
-package org.kotemaru.android.statemachine.annotation;
+package org.kotemaru.android.logicasync.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
