@@ -1,4 +1,4 @@
-package org.kotemaru.android.statemachine;
+package org.kotemaru.android.logicasync;
 
 import java.io.Serializable;
 import java.util.LinkedList;

@@ -1,8 +1,8 @@
-package org.kotemaru.android.statemachine.apt;
+package org.kotemaru.android.logicasync.apt;
 
 import java.util.Collection;
 
-import org.kotemaru.android.statemachine.annotation.*;
+import org.kotemaru.android.logicasync.annotation.*;
 import org.kotemaru.apthelper.AptUtil;
 
 import com.sun.mirror.declaration.ExecutableDeclaration;

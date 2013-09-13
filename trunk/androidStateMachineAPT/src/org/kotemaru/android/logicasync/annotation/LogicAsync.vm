@@ -9,7 +9,7 @@ ${helper}           : ユーザ定義の補助クラスインスタンス
 *#
 
 package ${packageName};
-import org.kotemaru.android.statemachine.*;
+import org.kotemaru.android.logicasync.*;
 
 public class ${className}
 {
