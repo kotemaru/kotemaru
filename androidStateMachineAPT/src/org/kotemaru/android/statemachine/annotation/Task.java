@@ -7,6 +7,6 @@ import java.lang.annotation.ElementType;
 
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
-public @interface State {
+public @interface Task {
 	String[] value() default "";
 }
