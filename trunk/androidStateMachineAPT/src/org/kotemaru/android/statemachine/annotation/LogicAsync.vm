@@ -11,27 +11,19 @@ ${helper}           : ユーザ定義の補助クラスインスタンス
 package ${packageName};
 import org.kotemaru.android.statemachine.*;
 
-public class ${className} extends StateMachineDriver
+public class ${className}
 {
-
-	public static class _state {
-#set( $count = 1 )
-#foreach( $method in $masterClassDecl.methods )
-	#set($mh = ${helper.getStateHelper($method)})
-	#if( $mh.isState() )
-		public static final int ${method.simpleName} = ${count};
-		#set( $count = $count+1 )
-	#end
-#end
-	}
-
+	private static final long serialVersionUID = 1L;
 	
-	private ${masterClassDecl.simpleName} machine;
+	private final TaskThread thread = new TaskThread();
+	private final ${masterClassDecl.simpleName} origin;
 
-	public ${className}( ${masterClassDecl.simpleName} machine ) {
-		this.machine = machine;
+	public ${className}( ${masterClassDecl.simpleName} origin ) {
+		this.origin = origin;
 	}
-	
+	public final void close() {
+		thread.stop();
+	}
 
 ## 元クラスのメソッド一覧を取得
 #foreach( $method in $masterClassDecl.methods )
@@ -39,15 +31,25 @@ public class ${className} extends StateMachineDriver
 	#set($mh = ${helper.getStateHelper($method)})
 
 ## フィールドの @State アノテーションをチェック
-#if( $mh.isState() )
+#if( $mh.isTask() )
 	public ${method.returnType} ${method.simpleName}(${mh.params}) {
-		StateTask task = new StateTask(_state.${method.simpleName}, "${method.simpleName}", ${mh.getOptions()}){
+		Task task = new Task(${mh.getOptions()}, "${method.simpleName}", ${mh.arguments}){
 			private static final long serialVersionUID = 1L;
 			@Override public void run() {
-				machine.${method.simpleName}(${mh.arguments});
+				origin.${method.simpleName}(${mh.arguments});
 			}
 		};
-		super._addTask(task);
+	#if( $mh.hasOption("UI") )
+		task.setThreadType(Task.UI);
+	#end
+	#if( $mh.hasOption("parallel") )
+		task.setThreadType(Task.PARALLEL);
+		TaskThread subThread = new TaskThread();
+		subThread.addTask(task);
+		subThread.autoStop();
+	#else
+		thread.addTask(task);
+	#end
 	}
 #end
 

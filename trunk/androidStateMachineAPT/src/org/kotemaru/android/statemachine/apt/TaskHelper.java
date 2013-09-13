@@ -12,24 +12,38 @@ import com.sun.mirror.declaration.ParameterDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 
 
-public class StateHelper {
+public class TaskHelper {
 	private MethodDeclaration decl;
-	private State state;
-	private StateMachine stateMachine;
+	private Task task;
+	private Logic logic;
 
-	public StateHelper(TypeDeclaration classDecl, MethodDeclaration decl) {
+	public TaskHelper(TypeDeclaration classDecl, MethodDeclaration decl) {
 		this.decl = decl;
-		this.state = decl.getAnnotation(State.class);
-		this.stateMachine = classDecl.getAnnotation(StateMachine.class);
+		this.task = decl.getAnnotation(Task.class);
+		this.logic = classDecl.getAnnotation(Logic.class);
 	}
 
-	public boolean isState() {
-		return state != null;
+	public boolean isTask() {
+		return task != null;
 	}
-	
+	public boolean isParallelTask() {
+		return hasOption("parallel");
+	}
+	public boolean isUITask() {
+		return hasOption("UI");
+	}
+	public boolean hasOption(String key) {
+		if (task == null) return false;
+		String[] options = task.value();
+		for (int i=0; i<options.length; i++) {
+			if ("UI".equals(options[i])) return true;
+		}
+		return false;
+	}
+
 	public String getOptions() {
-		if (state == null) return null;
-		String[] options = state.value();
+		if (task == null) return null;
+		String[] options = task.value();
 		if (options == null) return null;
 		StringBuilder sbuf = new StringBuilder("new String[]{");
 		for (int i=0; i<options.length; i++) {

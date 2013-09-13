@@ -8,15 +8,15 @@ import com.sun.mirror.declaration.MethodDeclaration;
 import com.sun.mirror.declaration.TypeDeclaration;
 
 
-public class StateMachineHelper extends AptUtil {
+public class LogicHelper extends AptUtil {
 	TypeDeclaration classDecl;
 
-	public StateMachineHelper(TypeDeclaration classDecl) {
+	public LogicHelper(TypeDeclaration classDecl) {
 		this.classDecl = classDecl;
 	}
 
-	public StateHelper getStateHelper(MethodDeclaration decl) {
-		return new StateHelper(classDecl, decl);
+	public TaskHelper getStateHelper(MethodDeclaration decl) {
+		return new TaskHelper(classDecl, decl);
 	}
 }
 
