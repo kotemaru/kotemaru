@@ -28,6 +28,12 @@ public class MainActivity extends Activity implements UIAction {
 			}
 		});
 	}
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		logic.async.close();
+	}
+	
 
 	@Override
 	public void updateView(String html) {
