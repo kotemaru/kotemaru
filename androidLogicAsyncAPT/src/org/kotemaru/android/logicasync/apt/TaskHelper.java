@@ -26,17 +26,11 @@ public class TaskHelper {
 	public boolean isTask() {
 		return task != null;
 	}
-	public boolean isParallelTask() {
-		return hasOption("parallel");
-	}
-	public boolean isUITask() {
-		return hasOption("UI");
-	}
 	public boolean hasOption(String key) {
 		if (task == null) return false;
 		String[] options = task.value();
 		for (int i=0; i<options.length; i++) {
-			if ("UI".equals(options[i])) return true;
+			if (key.equals(options[i])) return true;
 		}
 		return false;
 	}
@@ -67,8 +61,13 @@ public class TaskHelper {
 		sbuf.setLength(sbuf.length()-1);
 		return sbuf.toString();
 	}
+	public String getArguments(boolean hasCamma) {
+		String args = AptUtil.getArguments(decl);
+		if (hasCamma && !args.isEmpty()) args = ", " + args;
+		return args;
+	}
 	public String getArguments() {
-		return AptUtil.getArguments(decl);
+		return getArguments(false);
 	}
 
 	

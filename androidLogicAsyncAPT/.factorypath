@@ -1,8 +1,8 @@
 <factorypath>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/apt-helper-1.0.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/commons-collections-3.2.1.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/commons-lang-2.4.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/commons-logging-1.1.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/tools.jar" enabled="true" runInBatchMode="false"/>
-    <factorypathentry kind="WKSPJAR" id="/androidStateMachineAPT/libs/velocity-1.7.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/apt-helper-1.0.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/commons-collections-3.2.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/commons-lang-2.4.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/commons-logging-1.1.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/tools.jar" enabled="true" runInBatchMode="false"/>
+    <factorypathentry kind="WKSPJAR" id="/androidLogicAsyncAPT/libs/velocity-1.7.jar" enabled="true" runInBatchMode="false"/>
 </factorypath>
