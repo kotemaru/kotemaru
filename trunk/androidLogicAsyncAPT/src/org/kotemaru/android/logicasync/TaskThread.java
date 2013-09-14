@@ -3,7 +3,9 @@ package org.kotemaru.android.logicasync;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+import android.annotation.TargetApi;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.util.Log;
 
 public class TaskThread implements Serializable {
@@ -15,8 +17,13 @@ public class TaskThread implements Serializable {
 	private boolean isAlive = true;
 
 
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	public TaskThread() {
-		driver.execute();
+		if(Build.VERSION.SDK_INT >= 11){
+			driver.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		} else {
+			driver.execute();
+		}
 	}
 	public synchronized void stop() {
 		queue.clear();
