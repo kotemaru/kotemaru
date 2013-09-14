@@ -9,11 +9,16 @@ ${helper}           : ユーザ定義の補助クラスインスタンス
 *#
 
 package ${packageName};
-import org.kotemaru.android.logicasync.*;
+import org.kotemaru.android.logicasync.TaskThread;
+import org.kotemaru.android.logicasync.Task;
 
-public class ${className}
+import android.util.Log;
+
+
+public class ${className} implements java.io.Serializable
 {
 	private static final long serialVersionUID = 1L;
+	private static final String TAG = "LogicAsync";
 	
 	private final TaskThread thread = new TaskThread();
 	private final ${masterClassDecl.simpleName} origin;
@@ -33,23 +38,28 @@ public class ${className}
 ## フィールドの @State アノテーションをチェック
 #if( $mh.isTask() )
 	public ${method.returnType} ${method.simpleName}(${mh.params}) {
-		Task task = new Task(${mh.getOptions()}, "${method.simpleName}", ${mh.arguments}){
+		Task task = new Task(){
 			private static final long serialVersionUID = 1L;
 			@Override public void run() {
 				origin.${method.simpleName}(${mh.arguments});
 			}
 		};
-	#if( $mh.hasOption("UI") )
+		if (Log.isLoggable(TAG, Log.DEBUG)) {
+			task.setMethod("${method.simpleName}");
+			task.setArguments(${mh.arguments});
+		}
+				
+#if( $mh.hasOption("UI") )
 		task.setThreadType(Task.UI);
-	#end
-	#if( $mh.hasOption("parallel") )
+#end
+#if( $mh.hasOption("parallel") )
 		task.setThreadType(Task.PARALLEL);
 		TaskThread subThread = new TaskThread();
 		subThread.addTask(task);
 		subThread.autoStop();
-	#else
+#else
 		thread.addTask(task);
-	#end
+#end
 	}
 #end
 

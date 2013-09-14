@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="test" basedir=".">
+
+	<property name="bin" value="${basedir}/bin"/>
+   	<property name="src" value="${basedir}/src"/>
+	<property name="gen" value="${basedir}/gen"/>
+	<property name="lib" value="${basedir}/libs"/>
+	<property name="classes" value="${basedir}/bin/classes"/>
+
+	<property name="test" value="${basedir}/test"/>
+	<property name="test.src" value="${test}/src"/>
+	<property name="test.classes" value="${test}/classes"/>
+	<property name="test.apt_gen" value="${test}/apt_gen"/>
+	
+	<property name="target.jar" value="${bin}/logicasync-apt.jar"/>
+	
+	<path id="apt-path">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${target.jar}" />
+	</path>
+
+	<path id="test.apt-path">
+		<fileset dir="${lib}">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement location="${src}" />
+		<pathelement location="${classes}" />
+	</path>
+	
+	<target name="test">
+		<delete dir="${test.apt_gen}" />
+		<mkdir dir="${test.apt_gen}" />
+		<delete dir="${test.classes}" />
+		<mkdir dir="${test.classes}" />
+		<apt 
+			srcdir="${test.src}"
+			preprocessdir="${test.apt_gen}" 
+			destdir="${test.classes}" 
+			debug="on" 
+			encoding="utf-8" 
+			compile="true" 
+			factorypathref="test.apt-path"
+			classpathref="test.apt-path"
+		>
+		</apt>
+
+		<!-- java classpathref="test-path" classname="test.master.TestMain"></java -->
+			
+	</target>
+
+</project>

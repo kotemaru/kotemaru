@@ -12,13 +12,9 @@ public abstract class Task implements Runnable, Serializable {
 
 	private String method;
 	private Object[] arguments;
-	private String[] options;
 	private int threadType = NORMAL;
 	
-	public Task(String[] options, String method, Object... args) {
-		this.setOptions(options);
-		this.setMethod(method);
-		this.setArguments(args);
+	public Task() {
 	}
 	
 	public String getMethod() {
@@ -30,14 +26,8 @@ public abstract class Task implements Runnable, Serializable {
 	public Object[] getArguments() {
 		return arguments;
 	}
-	public void setArguments(Object[] arguments) {
+	public void setArguments(Object... arguments) {
 		this.arguments = arguments;
-	}
-	public String[] getOptions() {
-		return options;
-	}
-	public void setOptions(String[] options) {
-		this.options = options;
 	}
 	public int getThreadType() {
 		return threadType;
