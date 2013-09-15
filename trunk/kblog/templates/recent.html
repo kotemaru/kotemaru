@@ -10,7 +10,7 @@
 
 <ul>
 #foreach($blog in $blogs)
-    #if( $velocityCount > 10 )
+    #if( $velocityCount > 100 )
         #break
     #end
 	<li class="BlogItem" ><a target="_top" href="${root-path}/${blog.contentPath}">${blog.subject}</a></li>

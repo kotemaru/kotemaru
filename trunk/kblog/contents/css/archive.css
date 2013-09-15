@@ -16,4 +16,5 @@ li {
 }
 li.BlogItem {
 	list-style-image: url(../img/li-mark-2.png);
+	margin-bottom: 4px;
 }

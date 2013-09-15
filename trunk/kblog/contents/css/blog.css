@@ -152,7 +152,10 @@ h6 {
 	border: 1px solid gray;
 	width: 150px;
 }
-
+#side .CategoryTag {
+	font-size: 10px;
+	font-weight: normal;
+}
 blockquote.tr_bq {
 	background: #F0F0FF;
 	border: 1px solid #A0A0FF;

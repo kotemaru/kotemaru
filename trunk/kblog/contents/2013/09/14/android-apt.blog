@@ -1,0 +1,250 @@
+Subject: Androidの非同期処理を簡単にする実験
+Content-type: markdown/text
+Tags: android
+Date: 2013/09/14
+Public: yes
+
+Androidでは通信等の時間のかかる処理はUIスレッドでは無く別スレッドで行えと言われる。<br/>
+しかし、通信結果を別スレッドから画面に反映すると UIスレッドで実行しろと怒られる。
+
+どないせいっちゅーねん!  (ノ｀Д)ノ彡 ┻━┻∴
+<br/><br/>
+
+対策として AsyncTask が用意されているが使い方は結構めんどくさい。
+
+なんとか非同期処理を簡単にする方法は無いかと思いアノテーションと
+AsyncTask を組み合わせる方法で試してみた。
+
+テスト実装してみたアプリは入力されたURLをWebから取得してテキスト表示するだけの単純な物。
+
+こんな感じ。
+
+<img width="500" src="/2013/09/14/android-apt-2.png" />
+
+
+### ソースコード
+
+##### MainActivity.java:
+
+  - Activity はいたって普通。
+
+<p/>
+
+	package org.kotemaru.android.logicasync.sample;
+	
+	import android.os.Bundle;
+	import android.app.Activity;
+	import android.app.AlertDialog;
+	import android.view.View;
+	import android.view.View.OnClickListener;
+	import android.widget.Button;
+	import android.widget.EditText;
+	import android.widget.TextView;
+	
+	public class MainActivity extends Activity implements UIAction {
+		
+		private MyLogic logic = new MyLogic(this);
+	
+		@Override
+		protected void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			setContentView(R.layout.activity_main);
+	
+			final EditText textUrl = (EditText)findViewById(R.id.text_url);
+			Button btnGo = (Button)findViewById(R.id.btn_go);
+			btnGo.setOnClickListener(new OnClickListener() {
+				@Override	public void onClick(View btn) {
+					String url = textUrl.getText().toString();
+					logic.async.doGetHtml(url);  // <=Webへ通信を非同期実行
+				}
+			});
+		}
+		@Override
+		protected void onDestroy() {
+			super.onDestroy();
+			logic.async.close();
+		}
+	
+		@Override
+		public void updateView(String html) {
+			TextView  textHtml = (TextView)findViewById(R.id.text_html);
+			textHtml.setText(html);
+		}
+	
+		@Override
+		public void errorDialog(String message) {
+			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+			dialog.setTitle("Error!");
+			dialog.setMessage(message);
+			dialog.show();
+	    }
+	}
+
+<br/>
+
+##### UIAction.java:
+
+  - ロジックとActivityを明確に分離したかったのでインターフェース化。
+
+<p/>
+
+	package org.kotemaru.android.logicasync.sample;
+	public interface UIAction {
+		void updateView(String html);
+		void errorDialog(String message);
+	}
+
+<br/>
+
+##### MyLogic.java:
+
+  - アノテーションを使うロジック部分。
+  - @Task() の指定されたメソッドが非同期実行用。
+    - MyLogicAsync.java にスタブが自動生成される。
+  - @Task("UI") は UIスレッドで実行される事を意味する。
+
+<p/>
+
+	package org.kotemaru.android.logicasync.sample;
+	
+	import java.io.Serializable;
+	import org.apache.http.client.methods.HttpGet;
+	import org.apache.http.impl.client.BasicResponseHandler;
+	import org.apache.http.impl.client.DefaultHttpClient;
+	import org.kotemaru.android.logicasync.annotation.Logic;
+	import org.kotemaru.android.logicasync.annotation.Task;
+	
+	@Logic
+	public class MyLogic implements Serializable {
+		private static final long serialVersionUID = 1L;
+	
+		public MyLogicAsync async = new MyLogicAsync(this);
+		private UIAction uiAction;
+	
+		public MyLogic(UIAction uiAction) {
+			this.uiAction = uiAction;
+		}
+		
+		@Task
+		public void doGetHtml(String url) {
+			// HTTPリクエストを行う処理。
+			DefaultHttpClient httpClient = new DefaultHttpClient();
+			HttpGet request = new HttpGet(url);
+			try {
+				String html = httpClient.execute(request, new BasicResponseHandler());
+				async.doGetHtmlFinish(html); // <= 結果反映の非同期実行。このメソッド終了後実行される。
+			} catch (Exception e) {
+				async.doGetHtmlError(e); // <= エラー表示の非同期実行。このメソッド終了後実行される。
+			} finally {
+				httpClient.getConnectionManager().shutdown();
+			}
+		}
+	
+		@Task("UI")
+		public void doGetHtmlFinish(String html) {
+			// 通信結果反映処理。
+			uiAction.updateView(html);
+		}
+	
+		@Task("UI")
+		public void doGetHtmlError(Exception e) {
+			uiAction.errorDialog(e.getMessage());
+		}
+	}
+
+<br/>
+
+##### MyLogicAsync.java:
+
+  - アノテーション プロセッサによって自動生成されたソース。
+  - MyLogicクラスのメソッドを非同期実行する。
+
+<p/>
+
+<pre style="height:230px;">
+//  Generated stub.
+package org.kotemaru.android.logicasync.sample;
+import org.kotemaru.android.logicasync.TaskThread;
+import org.kotemaru.android.logicasync.Task;
+
+import android.util.Log;
+
+public class MyLogicAsync implements java.io.Serializable
+{
+	private static final long serialVersionUID = 1L;
+	private static final String TAG = "LogicAsync";
+	
+	private final TaskThread thread = new TaskThread();
+	private final MyLogic origin;
+
+	public MyLogicAsync( MyLogic origin ) {
+		this.origin = origin;
+	}
+	public final void close() {
+		thread.stop();
+	}
+	
+	public void doGetHtml(final java.lang.String url) {
+		Task task = new Task(){
+			private static final long serialVersionUID = 1L;
+			@Override public void run() {
+				origin.doGetHtml(url);
+			}
+		};
+		thread.addTask(task);
+	}
+	
+	public void doGetHtmlError(final java.lang.Exception e) {
+		Task task = new Task(){
+			private static final long serialVersionUID = 1L;
+			@Override public void run() {
+				origin.doGetHtmlError(e);
+			}
+		};
+		task.setThreadType(Task.UI);
+		thread.addTask(task);
+	}
+	
+	public void doGetHtmlFinish(final java.lang.String html) {
+		Task task = new Task(){
+			private static final long serialVersionUID = 1L;
+			@Override public void run() {
+				origin.doGetHtmlFinish(html);
+			}
+		};
+		task.setThreadType(Task.UI);
+		thread.addTask(task);
+	}
+}
+</pre>
+
+<p/>
+
+#### まとめ
+
+かなりすっきり記述できている気がする。
+
+メリット：
+
+  - Javaの言語仕様から逸脱していないので eclipse の「宣言を開く」等でソースが追える。
+  - ロジックとビューの分離がしやすい。
+
+デメリット：
+
+  - アノテーション プロセッサの設定がちょっとめんどくさい。
+
+
+あと、リトライ処理ぐらい有れば充分、軽量フレームワークとして使えそう。
+
+### ダウンロード
+
+eclipseのプロジェクトです。
+
+  - サンプル
+    - [https://kotemaru.googlecode.com/svn/trunk/androidLogicAsyncSample](https://kotemaru.googlecode.com/svn/trunk/androidLogicAsyncSample)
+  - アノテーション定義
+    - [https://kotemaru.googlecode.com/svn/trunk/androidLogicAsyncAPT](https://kotemaru.googlecode.com/svn/trunk/androidLogicAsyncAPT)
+
+サンプルのコンパイル時に NullPointerException となるときは eclipse を再起動して下さい。
+
+
