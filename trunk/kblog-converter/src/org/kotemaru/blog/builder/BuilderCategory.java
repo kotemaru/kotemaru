@@ -30,12 +30,14 @@ public class BuilderCategory extends BuilderTopPage {
 			
 			vctx.put(Blog.Subject, tag);
 			vctx.put("sub-title", "【カテゴリ: "+tag+"】");
+			vctx.put("categoryTag", "【"+tag+"】");
 			
 			String path = "category/"+Tool.encode(tag)+"/";
 			vctx.put("content-path", path);
 			if (category.isUpdate()) {
 				BlogTask.sortDate(category);
 				buildIndexPages(ctx, vctx, path, category);
+				BuilderRecent.build(ctx, path, category);
 			}
 		}
 		return true;
