@@ -11,6 +11,7 @@ public class BuilderTopPage implements Builder {
 	public boolean build(BlogContext ctx) throws IOException {
 		VelocityContext vctx = VelocityUtil.getVelocityContext(ctx, null);
 		vctx.put(Blog.Subject, "トップ");
+		vctx.put("categoryTag", "");
 		buildIndexPages(ctx, vctx, "", ctx.getBlogs());
 		return true;
 	}
