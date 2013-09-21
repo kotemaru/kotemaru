@@ -40,16 +40,46 @@ public class TaskThread implements Serializable {
 	}
 
 	public synchronized Task next() {
-		while (queue.isEmpty()) {
-			if (! isAlive) return null;
-			try {this.wait(3000);}catch(Exception e){}
+		Task task;
+		while ((task=takeCurrentTask()) == null) {
+			task = queue.peekFirst();
+			if (task == null) { // empty
+				if (! isAlive) return null;
+				try {this.wait(3000);}catch(Exception e){}
+			} else {
+				long waitTime = task.getExecuteTime() - System.currentTimeMillis();
+				if (waitTime > 0) {
+					try {this.wait(waitTime);}catch(Exception e){}
+				}
+			}
 		}
-		if (! isAlive) return null;
-		return queue.poll();
+		return task;
+	}
+	private Task takeCurrentTask() {
+		long curTime = System.currentTimeMillis();
+		for (int i=0; i<queue.size(); i++) {
+			if (curTime > queue.get(i).getExecuteTime()) {
+				return queue.remove(i);
+			}
+		}
+		return null;
 	}
 	
+	
 	public synchronized void addTask(Task task) {
-		queue.add(task);
+		long execTime = task.getExecuteTime();
+		int idx = -1;
+		for (int i=0; i<queue.size(); i++) {
+			if (execTime > queue.get(i).getExecuteTime()) {
+				idx = i;
+				break;
+			}
+		}
+		if (idx >= 0) {
+			queue.add(idx, task);
+		} else {
+			queue.add(task);
+		}
 		this.notifyAll();
 	}
 
@@ -88,15 +118,44 @@ public class TaskThread implements Serializable {
 		}
 		
 		private void doRunTask(Task task) {
-			try {
-				if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG,"run:"+task.toString());
-				task.run();
-				if (Log.isLoggable(TAG, Log.DEBUG)) Log.d(TAG,"done:"+task.toString());
-			} catch (Throwable t) {
-				Log.e(TAG,"fail:"+task.toString(), t);
+			debugLog("run",task);
+			do {
+				try {
+					task.run();
+					debugLog("done",task);
+				} catch (RetryException ex) {
+					if (retryTask(task, ex)) {
+						continue;
+					}
+				} catch (Throwable t) {
+					Log.e(TAG,"fail:"+task.toString(), t);
+				}
+			} while (false);
+		}
+		private boolean retryTask(Task task, RetryException ex) {
+			if (task.getRetryCount() >= ex.getRetryCount()) {
+				Log.e(TAG,"fail:retry over:"+task.toString(), ex);
+				return false;
+			}
+			task.setRetryCount(task.getRetryCount()+1);
+
+			if (ex.getDelay() > 0) {
+				debugLog("retry-delay",task);
+				task.setExecuteTime(System.currentTimeMillis()+ex.getDelay());
+				parent.addTask(task);
+				return false;
+			} else {
+				debugLog("retry",task);
+				return true;
 			}
 		}
 
+		
+		private void debugLog(String state, Task task) {
+			if (!Log.isLoggable(TAG, Log.DEBUG)) return;
+			Log.d(TAG,state+":"+task.toString());
+		}
+			
 	}
 
 

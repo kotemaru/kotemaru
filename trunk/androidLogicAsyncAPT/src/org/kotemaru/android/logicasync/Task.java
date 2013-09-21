@@ -13,6 +13,8 @@ public abstract class Task implements Runnable, Serializable {
 	private String method;
 	private Object[] arguments;
 	private int threadType = NORMAL;
+	private int retryCount = 0;
+	private long executeTime = -1;
 	
 	public Task() {
 	}
@@ -23,12 +25,14 @@ public abstract class Task implements Runnable, Serializable {
 	public void setMethod(String method) {
 		this.method = method;
 	}
+	
 	public Object[] getArguments() {
 		return arguments;
 	}
 	public void setArguments(Object... arguments) {
 		this.arguments = arguments;
 	}
+	
 	public int getThreadType() {
 		return threadType;
 	}
@@ -36,9 +40,22 @@ public abstract class Task implements Runnable, Serializable {
 		this.threadType = threadType;
 	}
 	
+	public int getRetryCount() {
+		return retryCount;
+	}
+	public void setRetryCount(int retryCount) {
+		this.retryCount = retryCount;
+	}
+
+	public long getExecuteTime() {
+		return executeTime;
+	}
+	public void setExecuteTime(long executeTime) {
+		this.executeTime = executeTime;
+	}
+	
 	public String toString() {
 		return "Task["+method+"("+arguments+")]";
 	}
-	
 	
 }
