@@ -1,0 +1,48 @@
+Subject: AndroidのソフトキーボードはonKey()を呼ばない。
+Content-type: markdown/text
+Tags: android
+Date: 2013/09/23
+Public: yes
+
+Android で端末アプリを作ろうとしてえらいはまった。
+
+キーボード入力を普通に OnKeyListener.onKey()
+で拾うプログラムを書いてエミュレータで動作確認後に
+実機で動かしてみたら全然動かない。<br/>
+キーを押しても何も反応しないのだが何故かリターンキーは拾える。
+
+理由がさっぱり分からず数時間を費して OnKeyListener クラスの説明文に気が付いた。
+
+> ##### View.OnKeyListener
+> ##### Class Overview
+> Interface definition for a callback to be invoked when a hardware key event is dispatched to this view. The callback will be invoked before the key event is given to the view. This is only useful for hardware keyboards; a software input method has no obligation to trigger this listener.
+
+orz...<br/>
+英語読めないってだめね、完全にスルーしてたよ。<br/>
+なんでこんな仕様なのかは後で分かったが...
+
+しかし、個別のキー入力が拾えないと端末アプリにならないので対策を調べてみた。<br/>
+結論から言うとソフトキーボードを自前で実装すればOKよ、と言うことらしい。<br/>
+
+ソフトキーボードなんてどうやって実装するかと言うとSDKにちゃんとサンプルが用意されてた。
+
+  - android-sdk/samples/android-17/SofKeyboard
+
+具体的にはXMLでキーボードの配列を書いて Keybord クラスにリスースIDを渡してわれば終り。<br/>
+以外に簡単だった。
+
+	KeyboardView keyboardView = new KeyboardView(context, null);
+	keyboard = new Keyboard(context, R.xml.keymap); // -> res/xml/keymap.xml
+	keyboardView.setKeyboard(keyboard);
+	// keyboardViewを適当に配置。
+
+せっかくなので自分好みのキーマップを作ってみた。(US配列風)
+
+<img width="500px" src="/2013/09/23/android-us101-key.png"/>
+
+あ、ESC忘れた...
+
+これ作って気が付いたのだが Ctrl キーとかは標準のソフトキーボードではサポートされないので
+端末アプリで使う場合には結局自前で実装せざる得なかった訳だ。
+理屈は分かったけどもう少し分かり易いようにしておいて欲しいよ。
+
