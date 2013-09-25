@@ -1,6 +1,6 @@
 Subject: Nexus7を外部モニタ化
 Content-type: markdown/text
-Tags: android
+Tags: android,nexus7
 Date: 2013/06/23
 Public: yes
 
@@ -48,4 +48,5 @@ PC側ではこんな解像度は設定できません。<br>
 となってしまい、いまいちです。
 
 Nexus7に依存する問題なので今後、各アプリが対応するかは不明な感じです。
+=> 自力対応しました[Nexus7を外部モニタ化 (2)](/2013/06/29/nexus7-sub-monitor.html)
 
