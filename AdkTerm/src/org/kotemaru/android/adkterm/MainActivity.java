@@ -1,31 +1,15 @@
 package org.kotemaru.android.adkterm;
 
-import android.inputmethodservice.Keyboard;
-import android.inputmethodservice.KeyboardView;
-import android.inputmethodservice.KeyboardView.OnKeyboardActionListener;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.text.Editable;
-import android.text.InputType;
-import android.text.Layout;
-import android.text.SpannableStringBuilder;
-import android.text.method.BaseKeyListener;
-import android.text.method.KeyListener;
-import android.text.method.MetaKeyKeyListener;
-import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
-import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
-import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
@@ -37,7 +21,8 @@ public class MainActivity extends Activity {
 	private UsbReceiver usbReceiver;
 
 	private ScrollView consoleScroll;
-	private TextView console;
+	private ConsoleView console;
+	private ConsoleData consoleData;
 	private US101KeyboardView keyboardView;
 
 	@Override
@@ -49,8 +34,12 @@ public class MainActivity extends Activity {
 		usbReceiver = UsbReceiver.init(this, ACTION_USB_PERMISSION, usbDriver);
 
 		consoleScroll = (ScrollView) findViewById(R.id.consoleScroll);
-		console = (TextView) findViewById(R.id.console);
-		console.setMaxLines(300);
+		console = (ConsoleView) findViewById(R.id.console);
+		consoleData = new ConsoleData(80,300);
+		console.setConsoleData(consoleData);
+		//console.setMaxLines(300);
+		//console = new ConsoleView(this);
+		//consoleScroll.addView(console);
 
 		LinearLayout layout = (LinearLayout) findViewById(R.id.top_layout);
 		keyboardView = new US101KeyboardView(this);
@@ -60,6 +49,41 @@ public class MainActivity extends Activity {
 			}
 		});
 		layout.addView(keyboardView);
+		consoleData.append("AdkTerm ver-0.1\n");
+	}
+	
+	private static final int MENU_ID_SOFTKB = (Menu.FIRST + 1);
+	private static final int MENU_ID_PORTRAIT = (Menu.FIRST + 2);
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuItem item1 = menu.add(Menu.NONE, MENU_ID_SOFTKB, Menu.NONE, "Soft Keybord");
+		MenuItem item2 = menu.add(Menu.NONE, MENU_ID_PORTRAIT, Menu.NONE, "Portrait");
+
+		item1.setCheckable(true);
+		item2.setCheckable(true);
+		item2.setChecked(getRequestedOrientation()==ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		default:
+			return super.onOptionsItemSelected(item);
+		case MENU_ID_SOFTKB:
+			item.setChecked(!item.isChecked());
+			return true;
+		case MENU_ID_PORTRAIT:
+			item.setChecked(!item.isChecked());
+			if (item.isChecked()) {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			} else {
+				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			}
+			return true;
+		}
 	}
 
 	@Override
@@ -82,14 +106,10 @@ public class MainActivity extends Activity {
 	}
 
 	public void writeDisplay(String text) {
-		if (text.charAt(0) == BS) {
-			CharSequence edit = console.getText();
-			if (edit != null && edit.length() > 0) {
-				console.setText(edit.subSequence(0, edit.length() - 1));
-			}
-		} else {
-			console.append(text);
-		}
+		console.append(text);
+	}
+
+	public void viewBottom() {
 		consoleScroll.scrollTo(0, console.getBottom());
 	}
 
@@ -104,12 +124,23 @@ public class MainActivity extends Activity {
 				dialog.dismiss();
 			}
 		});
-		dialog.setNegativeButton("Disconnect", new DialogInterface.OnClickListener() {
+		/*
+		dialog.setNeutralButton("Disconnect", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				usbReceiver.close();
 				console.setText("Disconnect.\n");
 				dialog.dismiss();
+			}
+		});*/
+		dialog.setNegativeButton("Restart", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.dismiss();
+				Activity self = MainActivity.this;
+				Intent intent = self.getIntent();
+				self.finish();
+				self.startActivity(intent);
 			}
 		});
 		dialog.show();

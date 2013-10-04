@@ -12,17 +12,25 @@
 
     <ScrollView
         android:id="@+id/consoleScroll"
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:fastScrollEnabled="true" >
-
+<!--
         <TextView
             android:id="@+id/console"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:typeface="monospace"
             android:text="AdkTerm Ver-0.1\n" />
+-->
+        <org.kotemaru.android.adkterm.ConsoleView
+            android:id="@+id/console"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:typeface="monospace"
+            android:text="AdkTerm Ver-0.1\n" />
+
     </ScrollView>
 
 </LinearLayout>
