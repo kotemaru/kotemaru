@@ -78,10 +78,10 @@
             		android:isModifier="true" android:isSticky="true"
             		android:keyEdgeFlags="left"/>
         <Key android:codes="9" android:keyLabel="Tab" />
-        <Key android:codes="-3" android:keyIcon="@drawable/sym_keyboard_done" />
+        <Key android:codes="27" android:keyLabel="Esc" />
          
         <Key android:codes="32" android:keyIcon="@drawable/sym_keyboard_space" 
-                android:keyWidth="40%p" android:isRepeatable="true"/>
+                android:keyWidth="42%p" android:isRepeatable="true"/>
         <Key android:codes="96,126" android:keyLabel="~ `" />
         <Key android:codes="92,124" android:keyLabel="| \\" />
         
