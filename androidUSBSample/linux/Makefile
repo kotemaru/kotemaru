@@ -1,13 +1,13 @@
 
 # for linux
-#PREFIX=/usr
-#USB=usb-1.0
+PREFIX=/usr
+USB=usb-1.0
 
 # for FreeBSD
-PREFIX=/usr/local
-USB=usb
+#PREFIX=/usr/local
+#USB=usb
 
-#DEBUG=-DDEBUG -g
+DEBUG=-DDEBUG -g
 CFLAGS=-o -I$(PREFIX)/include -I$(PREFIX)/include/lib$(USB) $(DEBUG)
 LDFLAGS=-L$(PREFIX)/lib
 
