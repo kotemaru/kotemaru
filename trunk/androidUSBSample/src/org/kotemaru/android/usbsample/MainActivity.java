@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -29,8 +31,8 @@ public class MainActivity extends Activity {
 		editText1 = (EditText) findViewById(R.id.editText1);
 		editText2 = (EditText) findViewById(R.id.editText2);
 		
-		Button btn = (Button) findViewById(R.id.button1);
-		btn.setOnClickListener(new OnClickListener(){
+		Button sendBtn = (Button) findViewById(R.id.sendBtn);
+		sendBtn.setOnClickListener(new OnClickListener(){
 			@Override public void onClick(View v) {
 				String msg = editText1.getText().toString();
 				try {
@@ -38,8 +40,14 @@ public class MainActivity extends Activity {
 					String rmsg = usbDriver.receive();
 					editText2.setText(rmsg);
 				} catch (IOException e) {
-					editText2.setText(e.getMessage());
+					errorDialog(e.getMessage());
 				}
+			}
+		});
+		Button resetBtn = (Button) findViewById(R.id.resetBtn);
+		resetBtn.setOnClickListener(new OnClickListener(){
+			@Override public void onClick(View v) {
+				restart();
 			}
 		});
 	}
@@ -61,6 +69,19 @@ public class MainActivity extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		usbReceiver.destroy();
+	}
+	
+	protected void restart() {
+		Intent intent = this.getIntent();
+		this.finish();
+		this.startActivity(intent);
+	}
+	
+	public void errorDialog(String message) {
+		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+		dialog.setTitle("Error!");
+		dialog.setMessage(message);
+		dialog.show();
 	}
 
 }

@@ -14,29 +14,38 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="38dp"
-        android:layout_marginTop="26dp"
+        android:layout_marginLeft="34dp"
+        android:layout_marginTop="34dp"
         android:ems="10" >
 
         <requestFocus />
     </EditText>
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/editText1"
-        android:layout_below="@+id/editText1"
-        android:layout_marginTop="18dp"
-        android:text="Send" />
 
     <EditText
         android:id="@+id/editText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/editText1"
-        android:layout_below="@+id/button1"
-        android:layout_marginTop="25dp"
+        android:layout_below="@+id/editText1"
+        android:layout_marginTop="105dp"
         android:ems="10" />
+
+    <Button
+        android:id="@+id/resetBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/editText2"
+        android:layout_below="@+id/editText1"
+        android:layout_marginTop="35dp"
+        android:text="Reset" />
+
+    <Button
+        android:id="@+id/sendBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/resetBtn"
+        android:layout_alignBottom="@+id/resetBtn"
+        android:layout_alignRight="@+id/editText2"
+        android:text="Send" />
 
 </RelativeLayout>
