@@ -11,6 +11,7 @@ Android USB connection sample.
 #include <unistd.h>
 #include <stdio.h>
 #include <signal.h>
+#include <string.h>
 
 #include "AOA/AOA.h"
 
@@ -33,7 +34,8 @@ void signal_callback_handler(int signum)
 }
 
 static void error(char *msg, int rc) {
-	fprintf(stderr,"Error(%d,%d): %s\n",rc,errno,msg);
+	fprintf(stderr,"Error(%d,%s): %s\n",rc,strerror(errno),msg);
+    	acc.disconnect();
 	exit(0);
 }
 
@@ -44,10 +46,13 @@ int main(int argc, char *argv[])
 
 	unsigned char buff[1024];
 
+	acc.connect(100);
 	// Echo back.
 	while (1) {
-		int len = acc.read(buff, sizeof(buff), 1000);
+		int len = acc.read(buff, sizeof(buff), 1000000);
 		if (len < 0) error("acc.read",len);
+		buff[len+1] = '\0';
+		printf("USB>%s\n", buff);
 		for (int i=0; i<len; i++) buff[i] = buff[i] - 0x20;
 		acc.write(buff, len, 1000);
 	}
