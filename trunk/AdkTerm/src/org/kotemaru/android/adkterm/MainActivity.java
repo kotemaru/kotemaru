@@ -20,9 +20,8 @@ public class MainActivity extends Activity {
 	private UsbDriver usbDriver;
 	private UsbReceiver usbReceiver;
 
-	private ScrollView consoleScroll;
 	private ConsoleView console;
-	private ConsoleData consoleData;
+	private ConsoleLog consoleLog;
 	private US101KeyboardView keyboardView;
 
 	@Override
@@ -33,10 +32,9 @@ public class MainActivity extends Activity {
 		usbDriver = new UsbDriver(this);
 		usbReceiver = UsbReceiver.init(this, ACTION_USB_PERMISSION, usbDriver);
 
-		consoleScroll = (ScrollView) findViewById(R.id.consoleScroll);
 		console = (ConsoleView) findViewById(R.id.console);
-		consoleData = new ConsoleData(80,300);
-		console.setConsoleData(consoleData);
+		consoleLog = new ConsoleLog(300);
+		console.setConsoleLog(consoleLog);
 		//console.setMaxLines(300);
 		//console = new ConsoleView(this);
 		//consoleScroll.addView(console);
@@ -49,7 +47,7 @@ public class MainActivity extends Activity {
 			}
 		});
 		layout.addView(keyboardView);
-		consoleData.append("AdkTerm ver-0.1\n");
+		console.append("AdkTerm ver-0.1\n");
 	}
 	
 	private static final int MENU_ID_SOFTKB = (Menu.FIRST + 1);
@@ -107,10 +105,6 @@ public class MainActivity extends Activity {
 
 	public void writeDisplay(String text) {
 		console.append(text);
-	}
-
-	public void viewBottom() {
-		consoleScroll.scrollTo(0, console.getBottom());
 	}
 
 	public void errorDialog(String message) {

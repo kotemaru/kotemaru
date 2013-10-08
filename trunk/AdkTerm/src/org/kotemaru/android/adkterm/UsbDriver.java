@@ -94,11 +94,6 @@ public class UsbDriver implements UsbReceiver.Driver {
 	@Task("UI")
 	public void doWriteDisplay(String text) {
 		activity.writeDisplay(text);
-		async.doViewBottom();
-	}
-	@Task("UI")
-	public void doViewBottom() {
-		activity.viewBottom();
 	}
 	@Task("UI")
 	public void doError(Exception e) {
