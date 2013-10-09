@@ -6,8 +6,11 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnKeyListener;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
@@ -17,7 +20,8 @@ public class MainActivity extends Activity {
 
 	public static final char BS = (char) 8;
 
-	private UsbDriver usbDriver;
+	//private UsbDriver usbDriver;
+	private TelnetDriver usbDriver;
 	private UsbReceiver usbReceiver;
 
 	private ConsoleView console;
@@ -29,16 +33,27 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		usbDriver = new UsbDriver(this);
+		//usbDriver = new UsbDriver(this);
+		usbDriver = new TelnetDriver(this);
 		usbReceiver = UsbReceiver.init(this, ACTION_USB_PERMISSION, usbDriver);
 
 		console = (ConsoleView) findViewById(R.id.console);
 		consoleLog = new ConsoleLog(300);
 		console.setConsoleLog(consoleLog);
+		console.setActivity(this);
 		//console.setMaxLines(300);
 		//console = new ConsoleView(this);
 		//consoleScroll.addView(console);
-
+		console.setFocusable(true);
+		console.setOnKeyListener(new OnKeyListener(){
+			@Override public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (event.getAction() == KeyEvent.ACTION_DOWN) {
+					usbDriver.async.doOnKey((char)event.getUnicodeChar());
+				}
+				return true;
+			}
+		});
+		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.top_layout);
 		keyboardView = new US101KeyboardView(this);
 		keyboardView.setOnKeyboardActionListener(new US101KeyboardView.OnKeyboardListener(keyboardView) {
@@ -47,43 +62,39 @@ public class MainActivity extends Activity {
 			}
 		});
 		layout.addView(keyboardView);
-		console.append("AdkTerm ver-0.1\n");
+		//console.append("AdkTerm ver-0.1\n");
+
 	}
 	
-	private static final int MENU_ID_SOFTKB = (Menu.FIRST + 1);
-	private static final int MENU_ID_PORTRAIT = (Menu.FIRST + 2);
+	private static final int MENU_ID_PREF = (Menu.FIRST + 1);
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuItem item1 = menu.add(Menu.NONE, MENU_ID_SOFTKB, Menu.NONE, "Soft Keybord");
-		MenuItem item2 = menu.add(Menu.NONE, MENU_ID_PORTRAIT, Menu.NONE, "Portrait");
-
-		item1.setCheckable(true);
-		item2.setCheckable(true);
-		item2.setChecked(getRequestedOrientation()==ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-		
+		menu.add(Menu.NONE, MENU_ID_PREF, Menu.NONE, "Preference");
 		return super.onCreateOptionsMenu(menu);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		default:
-			return super.onOptionsItemSelected(item);
-		case MENU_ID_SOFTKB:
-			item.setChecked(!item.isChecked());
-			return true;
-		case MENU_ID_PORTRAIT:
-			item.setChecked(!item.isChecked());
-			if (item.isChecked()) {
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-			} else {
-				setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-			}
+		int menuId = item.getItemId();
+		if (menuId == MENU_ID_PREF) {
+			Intent intent = new Intent(this, PrefActivity.class);
+			startActivityForResult(intent, MENU_ID_PREF);
 			return true;
 		}
+		return super.onOptionsItemSelected(item);
 	}
-
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == MENU_ID_PREF) {
+			if (resultCode == RESULT_OK) {
+				showDialog("Preference changed.", 
+						"Restart is necessary for reflection of the new preference.");
+			}
+		}
+	}
+	
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -106,10 +117,13 @@ public class MainActivity extends Activity {
 	public void writeDisplay(String text) {
 		console.append(text);
 	}
-
+	
 	public void errorDialog(String message) {
+		showDialog("Error!", message);
+	}
+	public void showDialog(String title, String message) {
 		AlertDialog.Builder dialog = new AlertDialog.Builder(this);
-		dialog.setTitle("Error!");
+		dialog.setTitle(title);
 		dialog.setMessage(message);
 
 		dialog.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
@@ -118,15 +132,6 @@ public class MainActivity extends Activity {
 				dialog.dismiss();
 			}
 		});
-		/*
-		dialog.setNeutralButton("Disconnect", new DialogInterface.OnClickListener() {
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				usbReceiver.close();
-				console.setText("Disconnect.\n");
-				dialog.dismiss();
-			}
-		});*/
 		dialog.setNegativeButton("Restart", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -138,6 +143,10 @@ public class MainActivity extends Activity {
 			}
 		});
 		dialog.show();
+	}
+
+	public void input(String text) {
+		usbDriver.async.send(text);
 	}
 
 }

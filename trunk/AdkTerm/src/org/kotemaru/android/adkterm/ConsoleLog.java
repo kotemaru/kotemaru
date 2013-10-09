@@ -1,98 +1,112 @@
 package org.kotemaru.android.adkterm;
 
 public class ConsoleLog  {
+	private static final char SPC = ' ';
+
+	private StringBuilder[] vram;
+	
+	private int logSize;
+	private int scrollRowTop;
+	private int scrollRowBottom;
+	private int viewRowTop;
+	private int viewRowBottom;
+	private int viewColumnTop = 0;
+	private int viewColumnBottom;
+	private int offset = 0;
+	
 	public ConsoleLog(int size) {
-		
+		this.logSize = size;
+		this.vram = new StringBuilder[logSize];
 	}
-/*
-	private LinkedList<StringBuilder> lines = new LinkedList<StringBuilder>();
-	private EscSeqParser escSeqParser = new EscSeqParser();
-
-	private int maxLineSize = 300;
-	private int colmunSize = 80;
-	private int viewColumnSize;
-	private int viewLineSize;
-	private int cursorX = 0;
-	private int cursorY = 0;
-	private int textColor = Color.BLACK;
 	
-	
-	
-	public ConsoleData(int colmunSize, int maxLineSize) {
-		this.colmunSize = colmunSize;
-		this.maxLineSize = maxLineSize;
-		this.setCursorX(0);
-		this.setCursorY(maxLineSize-1);
-		
-		for (int i=0;i<maxLineSize; i++) {
-			StringBuilder line = new StringBuilder(colmunSize+4);
-			lines.add(line);
-		}
-		initEscSeqMap();
-	}
-	public void setViewSize(int w, int h) {
-		viewColumnSize = w;
-		viewLineSize = h;
-	}
+	public void init(int columnSize, int rowSize) {
+		viewColumnBottom = columnSize;
+		viewRowTop = logSize - rowSize;
+		viewRowBottom = logSize;
+		setScrollArea(viewRowTop, viewRowBottom);
 
-	public int getMaxLineSize() {
-		return maxLineSize;
-	}
-	public int getColmunSize() {
-		return colmunSize;
-	}
-	public LinkedList<StringBuilder> getLines() {
-		return lines;
-	}
-
-	public void append(CharSequence text) {
-		StringBuilder line = lines.getLast();
-		for (int i=0; i<text.length(); i++) {
-			char ch = text.charAt(i);
-			int len = line.length();
-			
-			if (escSeqParser.isAlive()) {
-				if (escSeqParser.post(ch)) {
-					doEscSeq(escSeqParser);
-				}
-			} else if (ch < 0x20) {
-				if (ch == LF) {
-					line = lineFeed();
-				} else if (ch == BS && len>0) {
-					line.setLength(len-1);
-				} else if (ch == TAB) {
-					line.append("        "); //TODO:tab stop.
-				} else if (ch == ESC) {
-					escSeqParser.post(ch);
-				}
-			} else {
-				if (len >= colmunSize) line = lineFeed();
-				line.append(ch);
+		for (int i = 0; i < vram.length; i++) {
+			vram[i] = new StringBuilder(columnSize + 4);
+			for (int x = 0; x < columnSize; x++) {
+				vram[i].append(SPC);
 			}
 		}
-		cursorX = line.length();
 	}
-
-
-	private StringBuilder lineFeed() {
-		StringBuilder line = lines.removeFirst();
-		lines.addLast(line);
-		line.setLength(0);
-		return line;
+	public void setOffset(int off) {
+		offset = off;
+		if (viewRowTop + offset < 0) {
+			offset = logSize - viewRowTop;
+		} else if (offset > 0) {
+			offset = 0;
+		}
+	}
+	public int getOffset() {
+		return offset;
+	}
+	public void moveOffset(int delta) {
+		setOffset(offset + delta);
+	}
+	public StringBuilder getViewRow(int y) {
+		return vram[viewRowTop+offset+y];
 	}
 	
-	public int getCursorX() {
-		return cursorX;
+	public StringBuilder getRow(int y) {
+		return vram[viewRowTop+y];
 	}
-	public void setCursorX(int cursorX) {
-		this.cursorX = cursorX;
+
+	public void setScrollArea(int pt, int pb) {
+		scrollRowTop = pt;
+		scrollRowBottom = Math.min(pb+1, viewRowBottom);
 	}
-	public int getCursorY() {
+	
+	public boolean isFullScrollArea() {
+		return viewRowTop == scrollRowTop
+				&& viewRowBottom == scrollRowBottom;
+	}
+	
+	public void clear(int lno, int start, int end) {
+		clear(getRow(lno), start, end);
+	}
+	
+	public void clear(StringBuilder row, int start, int end) {
+		for (int x = start; x < end; x++) {
+			row.setCharAt(x, SPC);
+		}
+	}
+
+	public void scrollUp() {
+		int top = isFullScrollArea() ? 0 : scrollRowTop;
+		
+		StringBuilder raw = vram[top];
+		for (int i = top+1; i < scrollRowBottom; i++) {
+			vram[i - 1] = vram[i];
+		}
+		vram[scrollRowBottom-1] = raw;
+		clear(raw, viewColumnTop, viewColumnBottom);
+	}
+
+	public void scrollDown() {
+		StringBuilder raw = vram[scrollRowBottom-1];
+		for (int i = scrollRowBottom-2; i >= scrollRowTop; i--) {
+			vram[i + 1] = vram[i];
+		}
+		vram[scrollRowTop] = raw;
+		clear(raw, viewColumnTop, viewColumnBottom);
+	}
+
+	public int autoScroll(int cursorY) {
+		int lno = viewRowTop + cursorY;
+				
+		if (lno < scrollRowTop)	{
+			scrollDown();
+			return  scrollRowTop - viewRowTop;
+		}
+		if (lno >= scrollRowBottom) {
+			scrollUp();
+			return  scrollRowBottom - viewRowTop -1;
+		}
+		
 		return cursorY;
 	}
-	public void setCursorY(int cursorY) {
-		if (cursorX < 0) cursorX = 0;
-		this.cursorY = cursorY;
-	}
-*/
+
 }

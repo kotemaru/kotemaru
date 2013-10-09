@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <ListPreference
+        android:defaultValue="Landscape"
+        android:entries="@array/direction_list"
+        android:entryValues="@array/direction_list"
+        android:key="orientation"
+        android:title="Orientation" />
+
+    <CheckBoxPreference
+        android:defaultValue="true"
+        android:key="keybord"
+        android:selectable="true"
+        android:title="Keybord" />
+
+    <EditTextPreference
+        android:defaultValue="12"
+        android:dialogTitle="Font size (dp)"
+        android:key="fontsize"
+        android:inputType="number"
+        android:maxLength="2"
+        android:title="Font size" />
+    <EditTextPreference
+        android:defaultValue="300"
+        android:key="logsize"
+        android:inputType="number"
+        android:maxLength="3"
+        android:title="Log size" android:dialogTitle="Log size (lines)"/>
+
+</PreferenceScreen>
