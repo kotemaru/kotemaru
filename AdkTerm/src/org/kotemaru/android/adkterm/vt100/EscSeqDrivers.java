@@ -100,16 +100,16 @@ public class EscSeqDrivers {
 	// ESC [ Pl ; Pc H //		カーソルをPl行Pc桁へ移動
 	public EscSeqDriver esc_H = new EscSeqDriver() {
 		public void exec(EscSeqParser parser) {
-			console.setCursorX(p1(parser,1));
-			console.setCursorY(p2(parser,1));
+			console.setCursorX(p2(parser,1)-1);
+			console.setCursorY(p1(parser,1)-1);
 		}
 	};
 	
 	// ESC [ Pl ; Pc f	//		カーソルをPl行Pc桁へ移動
 	public EscSeqDriver esc_f = new EscSeqDriver() {
 		public void exec(EscSeqParser parser) {
-			console.setCursorX(p1(parser,1));
-			console.setCursorY(p2(parser,1));
+			console.setCursorX(p2(parser,1)-1);
+			console.setCursorY(p1(parser,1)-1);
 		}
 	};
 	
@@ -194,9 +194,9 @@ public class EscSeqDrivers {
 			if (type == 5) {
 				console.input(ESC+"[0n");
 			} else if (type == 6) {
-				int x = console.getCursorX();
-				int y = console.getCursorY();
-				console.input(ESC+"["+x+";"+y+"R");
+				int x = console.getCursorX()+1;
+				int y = console.getCursorY()+1;
+				console.input(ESC+"["+y+";"+x+"R");
 			}
 		}
 	};	
@@ -206,9 +206,9 @@ public class EscSeqDrivers {
 	// ESC [ Pt ; Pb r // スクロール範囲をPt行からPb行に設定
 	public EscSeqDriver esc_r = new EscSeqDriver() {
 		public void exec(EscSeqParser parser) {
-			int pt = p1(parser, 0);
-			int pb = p2(parser, 1);
-			console.setScrollArea(pt, pb);
+			int pt = p1(parser, 1);
+			int pb = p2(parser, 9999);
+			console.setScrollArea(pt-1, pb-1);
 		}
 	};	
 
@@ -217,11 +217,23 @@ public class EscSeqDrivers {
 	// ESC [ 2 ; Ps y	// テスト診断を行う
 
 
+	/**
+	 * 第一パラメータ取得。
+	 * @param parser
+	 * @param defo
+	 * @return
+	 */
 	private int p1(EscSeqParser parser, int defo) {
 		int[] params = parser.getParams();
 		if (params.length>=1) return params[0];
 		return defo;
 	}
+	/**
+	 * 第二パラメータ取得
+	 * @param parser
+	 * @param defo
+	 * @return
+	 */
 	private int p2(EscSeqParser parser, int defo) {
 		int[] params = parser.getParams();
 		if (params.length>=2) return params[1];

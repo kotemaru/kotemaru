@@ -1,53 +1,50 @@
 package org.kotemaru.android.adkterm;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.Socket;
 
 import org.kotemaru.android.logicasync.annotation.Logic;
 import org.kotemaru.android.logicasync.annotation.Task;
 
-import android.content.Context;
 import android.hardware.usb.UsbAccessory;
-import android.hardware.usb.UsbManager;
-import android.os.ParcelFileDescriptor;
-import android.util.Log;
+import org.apache.commons.net.telnet.TelnetClient;
 
 @Logic
-public class UsbDriver implements UsbReceiver.Driver {	
-	private static final String TAG = "UsbDriver";
+public class TelnetDriver implements UsbReceiver.Driver {
+	private static final String TAG = "TelnetDriver";
+
 	
-	private static final boolean TEST_MODE = true;
+	private static final String host = "192.168.0.2";
+	private static final int port = 23;
 	
 	private MainActivity activity;
-	private UsbManager usbManager;
 	
-	private ParcelFileDescriptor fileDescriptor;
+	private TelnetClient fileDescriptor;
 	protected InputStream usbIn;
 	protected OutputStream usbOut;
 
-	public UsbDriverAsync async = new UsbDriverAsync(this);
+	public TelnetDriverAsync async = new TelnetDriverAsync(this);
 
-	public UsbDriver(MainActivity activity) {
+	public TelnetDriver(MainActivity activity) {
 		this.activity = activity;
-		this.usbManager =  (UsbManager) activity.getSystemService(Context.USB_SERVICE);
+		async.connect();
 	}
 	
 	@Override
 	public void openAccessory(UsbAccessory accessory) {
-		fileDescriptor = usbManager.openAccessory(accessory);
-
-		if(fileDescriptor != null){
-			FileDescriptor fd = fileDescriptor.getFileDescriptor();
-			usbIn = new FileInputStream(fd);
-			usbOut = new FileOutputStream(fd);
-			activity.writeDisplay("<openAccessory>\n");
+		try{
+			fileDescriptor = new TelnetClient();
+			fileDescriptor.connect(host,port);
+			usbIn = fileDescriptor.getInputStream();
+			usbOut = fileDescriptor.getOutputStream();
+			
 			async.doTransterUsbIn();
-		}else{
-			Log.d(TAG, "accessory open fail");
+		}catch(IOException e){
+			activity.errorDialog(e.toString());
+		}finally{
+			fileDescriptor = null;
 		}
 	}
 
@@ -55,23 +52,27 @@ public class UsbDriver implements UsbReceiver.Driver {
 	public void closeAccessory(UsbAccessory accessory) {
 		try{
 			if(fileDescriptor != null){
-				fileDescriptor.close();
+				fileDescriptor.disconnect();
 			}
-			activity.writeDisplay("\n<closeAccessory>\n");
 		}catch(IOException e){
 		}finally{
 			fileDescriptor = null;
 		}
 	}
 	
+	
+	@Task
+	public void connect() {
+		openAccessory(null);
+	}
+
+	
 	@Task
 	public void doOnKey(char ch) {
 		try {
-			if (TEST_MODE) {
-				async.doWriteDisplay(Character.toString(ch));
-			} else {
-				send(Character.toString(ch));
-			}
+			byte[] buff = Character.toString(ch).getBytes("UTF8");
+			usbOut.write(buff);
+			usbOut.flush();
 		} catch (Exception e) {
 			async.doError(e);
 		}

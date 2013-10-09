@@ -10,6 +10,9 @@ import android.graphics.PixelXorXfermode;
 import android.graphics.Typeface;
 import android.graphics.Xfermode;
 import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.GestureDetector.SimpleOnGestureListener;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class ConsoleView extends View {
@@ -25,21 +28,23 @@ public class ConsoleView extends View {
 	private int lineHeight;
 	private int rowSize;
 	private int columnSize;
-	private StringBuilder[] vram;
 	private int cursorX = 0;
 	private int cursorY = 0;
 	private EscSeqParser escSeqParser = new EscSeqParser(this);
-	private int scrollRowTop;
-	private int scrollRowBottom;
-
+	private MainActivity activity;
+	private ConsoleLog consoleLog;
+    private GestureDetector gestureDetector; 
+    
 	public ConsoleView(Context context) {
 		super(context);
 	}
 
 	public ConsoleView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+        gestureDetector = new GestureDetector(context, gestureListener); 
 		paint.setTypeface(Typeface.MONOSPACE);
 		paint.setTextSize(14);
+		paint.setAntiAlias(true);
 	}
 
 	@Override
@@ -49,17 +54,11 @@ public class ConsoleView extends View {
 		charWidth = (int) widths[0];
 		lineHeight = (int) ((-paint.ascent() + paint.descent()) * 1.2);
 
-		columnSize = w / charWidth;
-		rowSize = h / lineHeight;
-
-		vram = new StringBuilder[rowSize];
-		for (int i = 0; i < vram.length; i++) {
-			vram[i] = new StringBuilder(columnSize + 4);
-			for (int x = 0; x < columnSize; x++) {
-				vram[i].append(SPC);
-			}
-		}
-
+		columnSize = (int) Math.floor(w / charWidth);
+		rowSize =  (int) Math.floor(h / lineHeight);
+		setScrollArea(0, rowSize);
+		
+		consoleLog.init(columnSize, rowSize);
 	}
 
 	@Override
@@ -68,27 +67,42 @@ public class ConsoleView extends View {
 
 		float accent = paint.ascent();
 
-		for (int lno = 0; lno < vram.length; lno++) {
-			StringBuilder row = vram[lno];
+		for (int lno = 0; lno < rowSize; lno++) {
+			StringBuilder row = consoleLog.getViewRow(lno);
 			canvas.drawText(row, 0, row.length(), 0,
 					(int) (lineHeight * lno - accent), paint);
 		}
 
-		Xfermode mode = paint.getXfermode();
-		// paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-		paint.setXfermode(new PixelXorXfermode(Color.WHITE));
-		float x1 = getCursorX() * charWidth;
-		float y1 = getCursorY() * lineHeight;
-		float x2 = x1 + charWidth;
-		float y2 = y1 + lineHeight * 0.85F;
-		canvas.drawRect(x1, y1, x2, y2, paint);
-		paint.setXfermode(mode);
+		if (consoleLog.getOffset() == 0) {
+			Xfermode mode = paint.getXfermode();
+			// paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
+			paint.setXfermode(new PixelXorXfermode(Color.WHITE));
+			float x1 = getCursorX() * charWidth;
+			float y1 = getCursorY() * lineHeight;
+			float x2 = x1 + charWidth;
+			float y2 = y1 + lineHeight * 0.85F;
+			canvas.drawRect(x1, y1, x2, y2, paint);
+			paint.setXfermode(mode);
+		}
 	}
 
-	
-	
-	
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		gestureDetector.onTouchEvent(event);
+		return true;//super.onTouchEvent(event);
+	}
+
+	private SimpleOnGestureListener gestureListener = new SimpleOnGestureListener() {
+		@Override
+		public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
+			consoleLog.moveOffset((int)(distanceY/lineHeight));
+			invalidate();
+			return true;
+		}
+	};
+
 	public void append(CharSequence text) {
+		consoleLog.setOffset(0);
 		for (int i = 0; i < text.length(); i++) {
 			char ch = text.charAt(i);
 			if (escSeqParser.isAlive()) {
@@ -105,9 +119,9 @@ public class ConsoleView extends View {
 	}
 
 	private void putChar(char ch) {
-		StringBuilder row = vram[cursorY];
+		StringBuilder row = consoleLog.getRow(cursorY);
 		row.setCharAt(cursorX++, ch);
-		if (cursorX > columnSize) {
+		if (cursorX >= columnSize) {
 			cursorX = 0;
 			lineFeed();
 		}
@@ -122,7 +136,8 @@ public class ConsoleView extends View {
 	}
 
 	private boolean tab() {
-		append("        "); // TODO
+		int cnt = 8 - (cursorX % 8); // TODO: tab size.
+		for (int i=0; i<cnt; i++) putChar(SPC);
 		return true;
 	}
 
@@ -134,63 +149,33 @@ public class ConsoleView extends View {
 	private boolean backSpace() {
 		--cursorX;
 		if (cursorX < 0) {
-			cursorX = columnSize;
+			cursorX = columnSize-1;
 			setCursorY(cursorY - 1);
 		}
-		StringBuilder row = vram[cursorY];
-		row.setCharAt(cursorX, SPC);
+		//StringBuilder row = vram[cursorY];
+		//row.setCharAt(cursorX, SPC);
 		return true;
 	}
 
 	private boolean lineFeed() {
-		cursorY++;
-		if (cursorY > rowSize) {
-			scrollUp();
-			cursorY--;
-		}
+		setCursorY(cursorY+1);
 		return true;
 	}
 
-	private void scrollUp() {
-		StringBuilder bottom = vram[0];
-		for (int i = 1; i < vram.length; i++) {
-			vram[i - 1] = vram[i];
-		}
-		vram[vram.length] = bottom;
-		clear(bottom, 0, columnSize);
-	}
 
-	private void scrollDown() {
-		StringBuilder top = vram[vram.length];
-		for (int i = vram.length - 1; i >= 0; i--) {
-			vram[i + 1] = vram[i];
-		}
-		vram[0] = top;
-		clear(top, 0, columnSize);
-	}
-
-	private void clear(StringBuilder row, int start, int end) {
-		for (int x = start; x < end; x++) {
-			row.setCharAt(x, SPC);
-		}
-	}
-
-	
 	public void clearLine(int mode) {
-		StringBuilder row = vram[cursorY];
-		if (mode == 0) clear(row, cursorX, columnSize);
-		if (mode == 1) clear(row, 0, cursorX);
-		if (mode == 2) clear(row, 0, columnSize);
+		if (mode == 0) consoleLog.clear(cursorY, cursorX, columnSize);
+		if (mode == 1) consoleLog.clear(cursorY, 0, cursorX);
+		if (mode == 2) consoleLog.clear(cursorY, 0, columnSize);
 	}
 	public void clearScreen(int mode) {
-		for (int i = 0; i < vram.length; i++) {
-			StringBuilder row = vram[i];
+		for (int i = 0; i < rowSize; i++) {
 			if (i < cursorY) {
-				if (mode == 1 || mode == 2) clear(row, 0, columnSize);
+				if (mode == 1 || mode == 2) consoleLog.clear(i, 0, columnSize);
 			} else if (i == cursorY) {
 				clearLine(mode);
 			} else if (i>cursorY) {
-				if (mode == 0 || mode == 2) clear(row, 0, columnSize);
+				if (mode == 0 || mode == 2) consoleLog.clear(i, 0, columnSize);
 			}
 		}
 	}
@@ -201,10 +186,8 @@ public class ConsoleView extends View {
 	}
 
 	public void setCursorX(int x) {
-		if (x < 0)
-			x = 0;
-		if (x > columnSize)
-			x = columnSize;
+		if (x < 0)	x = 0;
+		if (x >= columnSize) x = columnSize-1;
 		this.cursorX = x;
 	}
 
@@ -213,25 +196,32 @@ public class ConsoleView extends View {
 	}
 
 	public void setCursorY(int y) {
-		if (y < 0)
-			y = 0;
-		if (y > rowSize)
-			y = rowSize;
-		this.cursorY = y;
+		this.cursorY = consoleLog.autoScroll(y);
 	}
 
-	public void input(String string) {
-		// TODO:
+	public void input(String text) {
+		activity.input(text);
 	}
 
 	public void setScrollArea(int pt, int pb) {
-		scrollRowTop = pt;
-		scrollRowBottom = pb;
+		consoleLog.setScrollArea(pt,pb);
 	}
 
-	public void setConsoleLog(ConsoleLog consoleData) {
-		// TODO Auto-generated method stub
-		
+
+	public MainActivity getActivity() {
+		return activity;
+	}
+
+	public void setActivity(MainActivity activity) {
+		this.activity = activity;
+	}
+
+	public ConsoleLog getConsoleLog() {
+		return consoleLog;
+	}
+
+	public void setConsoleLog(ConsoleLog consoleLog) {
+		this.consoleLog = consoleLog;
 	}
 
 }
