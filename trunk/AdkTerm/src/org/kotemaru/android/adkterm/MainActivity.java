@@ -25,25 +25,35 @@ public class MainActivity extends Activity {
 	private UsbReceiver usbReceiver;
 
 	private ConsoleView console;
-	private ConsoleLog consoleLog;
 	private US101KeyboardView keyboardView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Config.init(this);
+		setupOrientation();
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
+		
 		//usbDriver = new UsbDriver(this);
 		usbDriver = new TelnetDriver(this);
 		usbReceiver = UsbReceiver.init(this, ACTION_USB_PERMISSION, usbDriver);
 
+		setupConsole();
+		setupSoftKeybord();
+	}
+	
+	private void setupOrientation() {
+		// Require android:screenOrientation="behind"
+		if (Config.V_PORTRAIT.equals(Config.getOrientation())) {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		} else {
+			setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+		}
+	}
+	private void setupConsole() {
 		console = (ConsoleView) findViewById(R.id.console);
-		consoleLog = new ConsoleLog(300);
-		console.setConsoleLog(consoleLog);
 		console.setActivity(this);
-		//console.setMaxLines(300);
-		//console = new ConsoleView(this);
-		//consoleScroll.addView(console);
 		console.setFocusable(true);
 		console.setOnKeyListener(new OnKeyListener(){
 			@Override public boolean onKey(View v, int keyCode, KeyEvent event) {
@@ -53,6 +63,10 @@ public class MainActivity extends Activity {
 				return true;
 			}
 		});
+	}
+	
+	private void setupSoftKeybord() {
+		if (!Config.getKeybord()) return;
 		
 		LinearLayout layout = (LinearLayout) findViewById(R.id.top_layout);
 		keyboardView = new US101KeyboardView(this);
@@ -62,9 +76,9 @@ public class MainActivity extends Activity {
 			}
 		});
 		layout.addView(keyboardView);
-		//console.append("AdkTerm ver-0.1\n");
-
 	}
+	
+	
 	
 	private static final int MENU_ID_PREF = (Menu.FIRST + 1);
 

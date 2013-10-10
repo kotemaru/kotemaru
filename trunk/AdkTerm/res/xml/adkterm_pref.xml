@@ -15,8 +15,8 @@
         android:title="Keybord" />
 
     <EditTextPreference
-        android:defaultValue="12"
-        android:dialogTitle="Font size (dp)"
+        android:defaultValue="16"
+        android:dialogTitle="Font size (px)"
         android:key="fontsize"
         android:inputType="number"
         android:maxLength="2"

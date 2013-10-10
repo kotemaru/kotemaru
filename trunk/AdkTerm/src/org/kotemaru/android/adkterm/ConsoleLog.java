@@ -23,7 +23,7 @@ public class ConsoleLog  {
 		viewColumnBottom = columnSize;
 		viewRowTop = logSize - rowSize;
 		viewRowBottom = logSize;
-		setScrollArea(viewRowTop, viewRowBottom);
+		setScrollArea(0, rowSize);
 
 		for (int i = 0; i < vram.length; i++) {
 			vram[i] = new StringBuilder(columnSize + 4);
@@ -55,8 +55,8 @@ public class ConsoleLog  {
 	}
 
 	public void setScrollArea(int pt, int pb) {
-		scrollRowTop = pt;
-		scrollRowBottom = Math.min(pb+1, viewRowBottom);
+		scrollRowTop = viewRowTop + pt;
+		scrollRowBottom = Math.min(viewRowTop+pb+1, viewRowBottom);
 	}
 	
 	public boolean isFullScrollArea() {

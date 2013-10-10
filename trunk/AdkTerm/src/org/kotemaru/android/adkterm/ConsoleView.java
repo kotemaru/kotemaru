@@ -10,6 +10,7 @@ import android.graphics.PixelXorXfermode;
 import android.graphics.Typeface;
 import android.graphics.Xfermode;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.GestureDetector;
 import android.view.GestureDetector.SimpleOnGestureListener;
 import android.view.MotionEvent;
@@ -37,14 +38,21 @@ public class ConsoleView extends View {
     
 	public ConsoleView(Context context) {
 		super(context);
+		init(context);
 	}
 
 	public ConsoleView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-        gestureDetector = new GestureDetector(context, gestureListener); 
+		init(context);
+	}
+
+	private void init(Context context) {
+		Config.init(context);
+		gestureDetector = new GestureDetector(context, gestureListener); 
 		paint.setTypeface(Typeface.MONOSPACE);
-		paint.setTextSize(14);
+		paint.setTextSize((float)Config.getFontsize());
 		paint.setAntiAlias(true);
+		consoleLog = new ConsoleLog(Config.getLogsize());
 	}
 
 	@Override
@@ -95,7 +103,7 @@ public class ConsoleView extends View {
 	private SimpleOnGestureListener gestureListener = new SimpleOnGestureListener() {
 		@Override
 		public boolean onScroll(MotionEvent event1, MotionEvent event2, float distanceX, float distanceY) {
-			consoleLog.moveOffset((int)(distanceY/lineHeight));
+			consoleLog.moveOffset((int)(4*distanceY/lineHeight));
 			invalidate();
 			return true;
 		}
@@ -214,14 +222,6 @@ public class ConsoleView extends View {
 
 	public void setActivity(MainActivity activity) {
 		this.activity = activity;
-	}
-
-	public ConsoleLog getConsoleLog() {
-		return consoleLog;
-	}
-
-	public void setConsoleLog(ConsoleLog consoleLog) {
-		this.consoleLog = consoleLog;
 	}
 
 }
