@@ -1,0 +1,13 @@
+Subject: WindowsUpdateしたらNexus7認識しなくなった
+Content-type: markdown/text
+Tags: Nexus7,日記
+Date: 2013/10/10
+Public: yes
+
+今日の Windows update の直後から Windows7 が Nexus7 を認識しなくなった。<br/>
+ドライバは認識しているのだがエクスプローラとか Eclipse とかのアプリが反応しない。
+
+俺の環境だけ？
+
+とりあえず Linux で開発はできるから困らないけど、修正 update 来ないと面倒くさいなぁ。
+
