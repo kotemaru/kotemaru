@@ -38,7 +38,10 @@ public class BuilderSinglePage implements Builder {
 		vctx.put("next-blog", blogs[0]);
 		vctx.put("prev-blog", blogs[2]);
 		vctx.put("content-path", blog.getContentPath());
+		vctx.put("categoryTag", "");
+		vctx.put("recent-path", "");
 		
+
 		File outFile = new File(ctx.getDocumentRoot(), blog.getContentPath());
 		VelocityUtil.write(ctx, "content.html", vctx, outFile);
 		return true;

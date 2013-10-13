@@ -12,6 +12,7 @@ public class BuilderTopPage implements Builder {
 		VelocityContext vctx = VelocityUtil.getVelocityContext(ctx, null);
 		vctx.put(Blog.Subject, "トップ");
 		vctx.put("categoryTag", "");
+		vctx.put("recent-path", "");
 		buildIndexPages(ctx, vctx, "", ctx.getBlogs());
 		return true;
 	}
