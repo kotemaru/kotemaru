@@ -34,6 +34,7 @@ public class BuilderCategory extends BuilderTopPage {
 			
 			String path = "category/"+Tool.encode(tag)+"/";
 			vctx.put("content-path", path);
+			vctx.put("recent-path", path);
 			if (category.isUpdate()) {
 				BlogTask.sortDate(category);
 				buildIndexPages(ctx, vctx, path, category);
