@@ -1,0 +1,62 @@
+
+#set ($packagePath = "${packageName.replace('.','/')}")
+#set ($className = "${masterClassDecl.simpleName}")
+
+var ${className} = {};
+
+${className}.__makeUrl = function(mname, args) {
+	var url = "/classes/${packagePath}/${className}."+mname+"?";
+	for (var i=0; i<arguments.length; i++) {
+		url += (i==0 ? '?' : '&');
+		if (type arguments[i] == "object") {
+			url += "a"+i+"="+encodeURI(JSON.stringify(arguments[i]));
+		} else {
+			url += "a"+i+"="+encodeURI(arguments[i]);
+		}
+	}
+	return url;
+};
+
+${className}.__call = function(mname, args) {
+	var url = ${className}.__makeUrl(mname, args);
+	var xreq = new XMLHttpRequest();
+	xreq.open("GET", url, false);
+	xreq.send();
+	if (xreq.status/100 != 2) throw xreq.responseText;
+	var res = eval("("+xreq.responseText+")");
+	if (res.error) RPJS.errorHandler(res.error);
+	return res.result;
+};
+
+${className}.__callAsync = function(mname, args) {
+	var callback = args.shift();
+	var url = ${className}.__makeUrl(mname, args);
+	var xreq = new XMLHttpRequest();
+	xreq.open("GET", url, true);
+	xreq.onreadystatechange = function (ev) {
+		if (xreq.readyState == 4) {
+			if(xreq.status == 200) {
+				setTimeout(function(){
+				 try{
+					var res = eval("("+xreq.responseText+")");
+					if (res.error) RPJS.errorHandler(res.error,callback);
+					callback.send(res.result);
+ 				 }catch(err){callback._throw(err);}
+				},10);
+			} else {
+				callback._throw(err);
+			}
+		}
+	}
+	xreq.send();
+};
+
+
+#foreach( $method in $masterClassDecl.methods )
+	${className}.${method.name} = function(${helper.getArguments($method)}){
+		return ${className}.__call("${method.name}", arguments);
+	}
+	${className}.${method.name}Async = function(_callback, ${helper.getArguments($method)}){
+		return ${className}.__callASync("${method.name}", arguments);
+	}
+#end
