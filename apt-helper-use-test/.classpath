@@ -7,6 +7,6 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/apt-sample-1.0.jar"/>
+	<classpathentry kind="lib" path="lib/apt-sample-1.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
