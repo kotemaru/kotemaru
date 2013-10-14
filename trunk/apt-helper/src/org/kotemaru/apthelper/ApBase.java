@@ -4,12 +4,16 @@ package org.kotemaru.apthelper;
 //import java.util.Arrays;
 import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
+import java.util.Set;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-import com.sun.mirror.apt.Messager;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
+import javax.tools.JavaFileObject;
 
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
@@ -17,29 +21,21 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.app.Velocity;
 import org.kotemaru.util.IOUtil;
 
-public abstract class ApBase implements AnnotationProcessor {
-	protected AnnotationProcessorEnvironment environment;
+public abstract class ApBase extends AbstractProcessor  {
+	protected ProcessingEnvironment environment;
 
-	public ApBase(AnnotationProcessorEnvironment env) {
+	public ApBase() {
+	}
+	
+	@Override
+	public void init(ProcessingEnvironment env) {
 		this.environment = env;
 	}
-
-	public AnnotationProcessorEnvironment getEnvironment() {
+	public ProcessingEnvironment getEnvironment() {
 		return environment;
 	}
 
-	@Override
-	public void process() {
-		for (TypeDeclaration classDecl : environment.getTypeDeclarations())  {
-			try {
-				processClass(classDecl);
-			} catch (Throwable t)  {
-				error(t);
-			}
-		}
-	}
-
-	protected abstract boolean processClass(TypeDeclaration classDecl) throws Exception;
+	protected abstract boolean processClass(TypeElement classDecl) throws Exception;
 
 
 	protected VelocityContext initVelocity() {
@@ -60,7 +56,8 @@ public abstract class ApBase implements AnnotationProcessor {
 
 		Template template = Velocity.getTemplate(templ);
 		Filer filer = environment.getFiler();
-		PrintWriter writer = filer.createSourceFile(pkgName+'.'+clsName);
+		JavaFileObject file = filer.createSourceFile(pkgName+'.'+clsName);
+		PrintWriter writer = new PrintWriter(file.openWriter());
 		template.merge(context, writer);
 		writer.close();
 	}
@@ -72,24 +69,25 @@ public abstract class ApBase implements AnnotationProcessor {
 
 		String template = IOUtil.getResource(baseTempl, templ);
 		Filer filer = environment.getFiler();
-		PrintWriter writer = filer.createSourceFile(pkgName+'.'+clsName);
+		JavaFileObject file = filer.createSourceFile(pkgName+'.'+clsName);
+		PrintWriter writer = new PrintWriter(file.openWriter());
 		Velocity.evaluate(context, writer, templ, template);
 		writer.close();
 	}
 
-	protected Object getHelper(TypeDeclaration classDecl, Class helperCls) throws Exception {
-		Constructor creator = helperCls.getConstructor(TypeDeclaration.class);
+	protected Object getHelper(TypeElement classDecl, Class helperCls) throws Exception {
+		Constructor creator = helperCls.getConstructor(TypeElement.class);
 		Object helper = creator.newInstance(classDecl);
 		return helper;
 	}
 
-	protected String getPackageName(TypeDeclaration classDecl, String path) {
+	protected String getPackageName(TypeElement classDecl, String path) {
 		return AptUtil.getPackageName(classDecl, path);
 	}
 
 	protected void error(Throwable t){
 		Messager messager = environment.getMessager();
-		messager.printError(t.toString());
+		messager.printMessage(Kind.ERROR, t.toString());
 		t.printStackTrace();
 	}
 

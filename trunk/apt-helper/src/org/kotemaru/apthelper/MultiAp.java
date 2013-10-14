@@ -1,34 +1,30 @@
 package org.kotemaru.apthelper;
 
-import java.io.File;
-import java.io.PrintWriter;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
 
-import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.Velocity;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
-import org.kotemaru.apthelper.annotation.ProcessorGenerate;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic.Kind;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-import com.sun.mirror.apt.Messager;
-import com.sun.mirror.declaration.TypeDeclaration;
-import com.sun.mirror.declaration.AnnotationTypeDeclaration;
 
-public class MultiAp implements AnnotationProcessor {
+public class MultiAp extends AbstractProcessor {
 	private static final String APT_PATH = "../apt";
 	private static final String AP_SUFFIX = "Ap";
 
-	private Set<AnnotationTypeDeclaration> atds;
+	private Set<TypeElement> atds;
 	private Set<ClassProcessor> cps = new HashSet<ClassProcessor>();
 	private String packageName;
-	private AnnotationProcessorEnvironment env;
+	private ProcessingEnvironment env;
 	
-	public MultiAp(Set<AnnotationTypeDeclaration> atds, 
-			AnnotationProcessorEnvironment env,
+	public MultiAp(Set<TypeElement> atds, 
+			ProcessingEnvironment env,
 			String packageName) {
 		this.env = env;
 		this.atds = atds;
@@ -42,8 +38,8 @@ public class MultiAp implements AnnotationProcessor {
 							ClasspathResourceLoader.class.getName());
 		Velocity.init();
 		
-		for (TypeDeclaration annoDecl : atds) {
-			String type = annoDecl.getQualifiedName();
+		for (TypeElement annoDecl : atds) {
+			String type = annoDecl.getQualifiedName().toString();
 			if (type.startsWith(packageName)) {
 				ClassProcessor cp = createProcessor(type);
 				if (cp != null) {
@@ -62,7 +58,7 @@ public class MultiAp implements AnnotationProcessor {
 					+ simpleName + AP_SUFFIX;
 			Class apCls = Class.forName(apname);
 			Constructor constractor = apCls
-					.getConstructor(AnnotationProcessorEnvironment.class);
+					.getConstructor(ProcessingEnvironment.class);
 			return (ClassProcessor) constractor.newInstance(env);
 		} catch (Exception e) {
 			return null;
@@ -70,24 +66,23 @@ public class MultiAp implements AnnotationProcessor {
 	}	
 
 	@Override
-	public void process() {
-
-		List<TypeDeclaration> list = new ArrayList<TypeDeclaration>();
-		for (TypeDeclaration classDecl : env.getTypeDeclarations())  {
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		boolean res = false;
+		for (TypeElement classDecl : annotations)  {
 			for (ClassProcessor cp : cps) {
 				try {
-					cp.processClass(classDecl);
+					res = res || cp.processClass(classDecl);
 				} catch (Throwable t) {
 					error(t);
 				}
 			}
 		}
+		return res;
 	}
+	
 	protected void error(Throwable t){
 		Messager messager = env.getMessager();
-		messager.printError(t.toString());
+		messager.printMessage(Kind.ERROR, t.toString());
 		t.printStackTrace();
 	}
-
-
 }

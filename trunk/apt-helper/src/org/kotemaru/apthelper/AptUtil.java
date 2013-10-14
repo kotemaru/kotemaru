@@ -10,8 +10,15 @@ import java.util.Collection;
 
 //import org.mozilla.javascript.NativeJavaPackage;
 
-import com.sun.mirror.type.*;
-import com.sun.mirror.declaration.*;
+//import com.sun.mirror.type.*;
+//import com.sun.mirror.declaration.Element*;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
+import javax.lang.model.util.ElementFilter;
 
 import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
@@ -23,7 +30,7 @@ import javax.tools.ToolProvider;
 
 public class AptUtil {
 
-	public AptUtil(TypeDeclaration classDecl) {
+	public AptUtil(TypeElement classDecl) {
 		// nop.
 	}
 	public AptUtil() {
@@ -31,7 +38,7 @@ public class AptUtil {
 	}
 
 
-	public static  boolean isPrivate(Declaration d)  {
+	public static  boolean isPrivate(Element d)  {
 		Collection<Modifier> mods = d.getModifiers();
 		for (Modifier mod : mods)  {
 			if (Modifier.PRIVATE.equals(mod))  {
@@ -45,21 +52,21 @@ public class AptUtil {
 		return false;
 	}
 	
-	public static  boolean isPublic(Declaration d)  {
+	public static  boolean isPublic(Element d)  {
 		Collection<Modifier> mods = d.getModifiers();
 		return mods.contains(Modifier.PUBLIC);
 	}
-	public static  boolean isStatic(Declaration d)  {
+	public static  boolean isStatic(Element d)  {
 		Collection<Modifier> mods = d.getModifiers();
 		return mods.contains(Modifier.STATIC);
 	}
 
-	public static  boolean isAbstract(Declaration d)  {
+	public static  boolean isAbstract(Element d)  {
 		Collection<Modifier> mods = d.getModifiers();
 		return mods.contains(Modifier.ABSTRACT);
 	}
 
-	public static String getModifiers(Declaration d, Modifier ignore) {
+	public static String getModifiers(Element d, Modifier ignore) {
 		Collection<Modifier> mods = d.getModifiers();
 		if (mods.size() == 0) return "";
 		StringBuffer sbuf = new StringBuffer(mods.size()*20);
@@ -70,13 +77,20 @@ public class AptUtil {
 		sbuf.setLength(sbuf.length()-1);
 		return sbuf.toString();
 	}
+	
+	public static List<VariableElement> getFields(TypeElement classDecl) {
+		return ElementFilter.fieldsIn(classDecl.getEnclosedElements());
+	}
+	public static List<ExecutableElement> getMethods(TypeElement classDecl) {
+		return ElementFilter.methodsIn(classDecl.getEnclosedElements());
+	}
 
-	public static String getParams(ExecutableDeclaration d) {
-		Collection<ParameterDeclaration> params = d.getParameters();
+	public static String getParams(ExecutableElement d) {
+		Collection<? extends VariableElement> params = d.getParameters();
 		if (params.size() == 0) return "";
 		StringBuffer sbuf = new StringBuffer(params.size()*20);
-		for (ParameterDeclaration param : params)  {
-			sbuf.append(param.getType());
+		for (VariableElement param : params)  {
+			sbuf.append(param.asType());
 			sbuf.append(' ');
 			sbuf.append(param.getSimpleName());
 			sbuf.append(',');
@@ -84,11 +98,11 @@ public class AptUtil {
 		sbuf.setLength(sbuf.length()-1);
 		return sbuf.toString();
 	}
-	public static String getArguments(ExecutableDeclaration d) {
-		Collection<ParameterDeclaration> params = d.getParameters();
+	public static String getArguments(ExecutableElement d) {
+		Collection<? extends VariableElement> params = d.getParameters();
 		if (params.size() == 0) return "";
 		StringBuffer sbuf = new StringBuffer(params.size()*20);
-		for (ParameterDeclaration param : params)  {
+		for (VariableElement param : params)  {
 			sbuf.append(param.getSimpleName());
 			sbuf.append(',');
 		}
@@ -96,12 +110,12 @@ public class AptUtil {
 		return sbuf.toString();
 	}
 
-	public static String getThrows(ExecutableDeclaration d) {
-		Collection<ReferenceType> params = d.getThrownTypes();
+	public static String getThrows(ExecutableElement d) {
+		Collection<? extends TypeMirror> params = d.getThrownTypes();
 		if (params.size() == 0) return "";
 		StringBuffer sbuf = new StringBuffer(params.size()*20);
 		sbuf.append("throws ");
-		for (ReferenceType param : params)  {
+		for (TypeMirror param : params)  {
 			sbuf.append(param.toString());
 			sbuf.append(',');
 		}
@@ -112,9 +126,16 @@ public class AptUtil {
 	public static String getCaptalName( String name ) {
 		return name.substring(0,1).toUpperCase() + name.substring(1);
 	}
+	
+	public static String getPackageName(TypeElement classDecl) {
+		String fullName = classDecl.getQualifiedName().toString();
+		int pos = fullName.lastIndexOf('.');
+		if (pos == -1) return null;
+		return fullName.substring(0, pos);
+	}
 
-	public static String getPackageName(TypeDeclaration classDecl, String path) {
-		String orgPkg = classDecl.getPackage().getQualifiedName();
+	public static String getPackageName(TypeElement classDecl, String path) {
+		String orgPkg = getPackageName(classDecl);
 		if (path.equals(".")) return orgPkg;
 		if (path.startsWith("/")) {
 			return path.replace('/', '.').substring(1);

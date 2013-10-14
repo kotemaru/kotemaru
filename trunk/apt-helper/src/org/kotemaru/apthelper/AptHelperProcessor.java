@@ -1,58 +1,81 @@
 package org.kotemaru.apthelper;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-//import java.util.Arrays;
+import java.util.Set;
 import java.util.List;
-
 
 import org.apache.velocity.VelocityContext;
 import org.kotemaru.apthelper.annotation.ProcessorGenerate;
 
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-import com.sun.mirror.apt.Messager;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.RoundEnvironment;
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.element.Element;
+import javax.lang.model.element.TypeElement;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import javax.lang.model.SourceVersion;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes("org.kotemaru.apthelper.annotation.ProcessorGenerate")
 public class AptHelperProcessor extends ApBase {
 	private static final String APT_PATH = "../apt";
 	private static final String AP_SUFFIX = "Ap";
-	private static final String FACTORY_NAME = "ApFactory";
+	private static final String FACTORY_NAME = "ApProcessor";
 	private static final String PROCESSOR_VM = "processor.vm";
 	private static final String FACTORY_VM = "factory.vm";
-	private static final String SERVICE_FILE =
-		"META-INF/services/com.sun.mirror.apt.AnnotationProcessorFactory";
+	private static final String SERVICE_FILE = "META-INF/services/javax.annotation.processing.Processor";
+	private static final String ANNO_NAME = ProcessorGenerate.class
+			.getCanonicalName();
 
-
-	public AptHelperProcessor(AnnotationProcessorEnvironment env) {
-		super(env);
+	public AptHelperProcessor() {
 	}
 
-
 	@Override
-	public void process() {
-		List<TypeDeclaration> list = new ArrayList<TypeDeclaration>();
-		for (TypeDeclaration classDecl : environment.getTypeDeclarations())  {
+	public boolean process(Set<? extends TypeElement> annotations,
+			RoundEnvironment roundEnv) {
+
+		TypeElement annotation = null;
+		for (TypeElement anno : annotations) {
+			if (ANNO_NAME.equals(anno.getQualifiedName().toString())) {
+				annotation = anno;
+			}
+		}
+		if (annotation == null) return false;
+
+		Set<? extends Element> classes = 
+				roundEnv.getElementsAnnotatedWith(annotation);
+
+		List<TypeElement> list = new ArrayList<TypeElement>();
+		boolean res = false;
+		for (Element elem : classes) {
 			try {
-				boolean isProcess = processClass(classDecl);
-				if (isProcess) list.add(classDecl);
-			} catch (Throwable t)  {
+				if (elem instanceof TypeElement) {
+					TypeElement classDecl = (TypeElement) elem;
+					boolean isProcess = processClass(classDecl);
+					if (isProcess) list.add(classDecl);
+					res = res || isProcess;
+				}
+			} catch (Throwable t) {
 				error(t);
 			}
 		}
-
 		try {
-			generateFactory(list);
+			//generateFactory(list);
 			generateService(list);
-		} catch (Throwable t)  {
+		} catch (Throwable t) {
 			error(t);
 		}
-
+		return res;
 	}
-	protected boolean processClass(TypeDeclaration classDecl) throws Exception {
-		ProcessorGenerate pgAnno = classDecl.getAnnotation(ProcessorGenerate.class);
-		if(pgAnno == null) return false;
+
+	@Override
+	protected boolean processClass(TypeElement classDecl) throws Exception {
+		ProcessorGenerate pgAnno = classDecl
+				.getAnnotation(ProcessorGenerate.class);
+		if (pgAnno == null) return false;
 
 		VelocityContext context = initVelocity();
 		context.put("masterClassDecl", classDecl);
@@ -64,43 +87,42 @@ public class AptHelperProcessor extends ApBase {
 		String templ = getResourceName(PROCESSOR_VM);
 
 		applyTemplate(context, pkgName, clsName, templ);
-		//applyTemplate(context, pkgName, clsName, this.getClass(), PROCESSOR_VM);
+		// applyTemplate(context, pkgName, clsName, this.getClass(),
+		// PROCESSOR_VM);
 		return true;
 	}
 
-	protected boolean generateFactory(List<TypeDeclaration> list) throws Exception {
-		if(list.size() == 0) return false;
-		TypeDeclaration classDecl = list.get(0);
+	protected boolean generateFactory(List<TypeElement> list) throws Exception {
+		if (list.size() == 0) return false;
+		TypeElement classDecl = list.get(0);
 
 		VelocityContext context = initVelocity();
 		context.put("masterClassDecls", list);
-		context.put("annotationPackageName",
-			classDecl.getPackage().getQualifiedName());
+		context.put("annotationPackageName", AptUtil.getPackageName(classDecl));
 
 		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
 		String templ = getResourceName(FACTORY_VM);
 
-		applyTemplate(context,pkgName, FACTORY_NAME, templ);
-		//applyTemplate(context, pkgName, FACTORY_NAME, this.getClass(), FACTORY_VM);
+		applyTemplate(context, pkgName, FACTORY_NAME, templ);
+		// applyTemplate(context, pkgName, FACTORY_NAME, this.getClass(),
+		// FACTORY_VM);
 		return true;
 	}
-	
-	protected boolean generateService(List<TypeDeclaration> list) throws Exception {
-		if(list.size() == 0) return false;
-		TypeDeclaration classDecl = list.get(0);
 
-		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
-		String factoryName = pkgName+"."+FACTORY_NAME;
+	protected boolean generateService(List<TypeElement> list) throws Exception {
+		if (list.size() == 0) return false;
 
 		Filer filer = environment.getFiler();
-		PrintWriter writer = filer.createTextFile(
-			Filer.Location.SOURCE_TREE, // eclipseのバグ？apt_genからMETA-INFがclassesにコピーされない。
-			//Filer.Location.CLASS_TREE,
-			"", 
-			new File(SERVICE_FILE),
-			"utf-8"
-		);
-		writer.write(factoryName);
+		FileObject file = filer.createResource(StandardLocation.SOURCE_OUTPUT,
+				"", SERVICE_FILE, (Element[]) null);
+		PrintWriter writer = new PrintWriter(file.openWriter());
+
+		for (TypeElement classDecl : list) {
+			String pkgName = getPackageName(classDecl, APT_PATH);
+			String clsName = classDecl.getSimpleName() + AP_SUFFIX;
+			writer.println(pkgName+"."+clsName);
+		}
+		
 		writer.close();
 		return true;
 	}
@@ -108,7 +130,7 @@ public class AptHelperProcessor extends ApBase {
 	protected String getResourceName(String name) {
 		if (name.startsWith("/")) return name;
 		String pkg = this.getClass().getPackage().getName().replace('.', '/');
-		return pkg +'/'+name;
+		return pkg + '/' + name;
 	}
 
 }
