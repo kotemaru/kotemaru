@@ -3,20 +3,28 @@ package ${packageName};
 import org.apache.velocity.VelocityContext;
 import java.lang.annotation.Annotation;
 
-import com.sun.mirror.apt.AnnotationProcessor;
-import com.sun.mirror.apt.AnnotationProcessorEnvironment;
-import com.sun.mirror.apt.Filer;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.ProcessingEnvironment;
+import javax.annotation.processing.Filer;
+import javax.annotation.processing.Messager;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.TypeElement;
+
+import javax.annotation.processing.SupportedAnnotationTypes;
+import javax.annotation.processing.SupportedSourceVersion;
+import javax.lang.model.SourceVersion;
+
 import org.kotemaru.apthelper.*;
 import org.kotemaru.apthelper.annotation.*;
 
+@SupportedSourceVersion(SourceVersion.RELEASE_6)
+@SupportedAnnotationTypes("${masterClassDecl.qualifiedName}")
 public class ${className} extends ClassProcessorBase
 {
-	public ${className}(AnnotationProcessorEnvironment env) {
-		super(env);
+	public ${className}() {
 	}
 
-	public boolean processClass(TypeDeclaration classDecl) throws Exception {
+	public boolean processClass(TypeElement classDecl) throws Exception {
 		Annotation anno = classDecl.getAnnotation(${masterClassDecl.qualifiedName}.class);
 		if(anno == null) return false;
 
@@ -50,7 +58,7 @@ public class ${className} extends ClassProcessorBase
 		if (name.length() == 0) {
 			name = "${masterClassDecl.simpleName}.vm";
 		}
-		String pkg = "${masterClassDecl.getPackage().getQualifiedName()}";
+		String pkg = "${helper.getPackageName($masterClassDecl)}";
 		return pkg.replace('.', '/') +'/'+name;
 	}
 

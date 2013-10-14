@@ -1,7 +1,7 @@
 package org.kotemaru.apthelper;
 
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.lang.model.element.TypeElement;
 
 public interface ClassProcessor {
-	boolean processClass(TypeDeclaration classDecl) throws Exception;
+	boolean processClass(TypeElement classDecl) throws Exception;
 }

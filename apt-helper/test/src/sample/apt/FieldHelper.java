@@ -3,8 +3,8 @@ package sample.apt;
 import sample.annotation.Attrs;
 import sample.annotation.AutoBean;
 
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.TypeElement;
 
 
 public class FieldHelper {
@@ -12,7 +12,7 @@ public class FieldHelper {
 	private Attrs attrs;
 	private AutoBean autoBean;
 
-	public FieldHelper(TypeDeclaration classDecl, FieldDeclaration decl) {
+	public FieldHelper(TypeElement classDecl, VariableElement decl) {
 		//this.decl = decl;
 		this.attrs = decl.getAnnotation(Attrs.class);
 		this.autoBean = classDecl.getAnnotation(AutoBean.class);

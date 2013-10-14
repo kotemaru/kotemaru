@@ -2,14 +2,13 @@ package sample.apt;
 
 import org.kotemaru.apthelper.AptUtil;
 
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.TypeElement;
 
 public class JavaScriptStubHelper extends AptUtil {
-	TypeDeclaration classDecl;
+	TypeElement classDecl;
 
-	public JavaScriptStubHelper(TypeDeclaration classDecl) {
+	public JavaScriptStubHelper(TypeElement classDecl) {
 		this.classDecl = classDecl;
 	}
 
