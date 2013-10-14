@@ -8,9 +8,8 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/apt-helper-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/tools.jar"/>
 	<classpathentry kind="lib" path="lib/velocity-1.7.jar"/>
+	<classpathentry kind="lib" path="lib/apt-helper-1.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

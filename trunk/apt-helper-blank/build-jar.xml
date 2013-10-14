@@ -3,7 +3,7 @@
 <project default="jar" basedir=".">
 	<import file="build.xml"/>
 	
-	<property name="target.jar" value="${basedir}/apt-sample-1.0.jar"/>
+	<property name="target.jar" value="${basedir}/apt-sample-1.1.jar"/>
 	<property name="src" value="${basedir}/src"/>
 	<property name="classes" value="${basedir}/classes"/>
 	<property name="lib" value="${basedir}/lib"/>
@@ -22,6 +22,7 @@
 
 	<target name="apt">
 		<mkdir dir="${classes}"/>
+		<!--
 		<apt 
 			srcdir="${src}"
 			preprocessdir="${apt_gen}" 
@@ -33,6 +34,19 @@
 			classpathref="apt-path"
 		>
 		</apt>
+		-->
+		<property name="apt-cp" refid="apt-path"/>
+		<javac 
+			srcdir="${src}"
+			destdir="${classes}" 
+			debug="on" 
+			encoding="utf-8" 
+			classpathref="apt-path"
+		> 
+	     <compilerarg line="-processorpath ${apt-cp}"/>
+	     <compilerarg line="-s ${apt_gen}"/>
+		</javac>
+
 	</target>
 
 	<target name="jar" depends="apt,build">

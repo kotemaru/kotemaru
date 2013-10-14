@@ -2,18 +2,18 @@ package sample.apt;
 
 import org.kotemaru.apthelper.AptUtil;
 
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.TypeElement;
 
 
 public class AutoBeanHelper extends AptUtil {
-	TypeDeclaration classDecl;
+	TypeElement classDecl;
 
-	public AutoBeanHelper(TypeDeclaration classDecl) {
+	public AutoBeanHelper(TypeElement classDecl) {
 		this.classDecl = classDecl;
 	}
 
-	public FieldHelper getFieldHelper(FieldDeclaration decl) {
+	public FieldHelper getFieldHelper(VariableElement decl) {
 		return new FieldHelper(classDecl, decl);
 	}
 }
