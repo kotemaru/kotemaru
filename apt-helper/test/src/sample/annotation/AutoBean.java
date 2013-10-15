@@ -11,7 +11,12 @@ import sample.apt.AutoBeanHelper;
 
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
-@ProcessorGenerate(template="AutoBean.vm",path="../autobean",suffix="Bean",helper=AutoBeanHelper.class)
+@ProcessorGenerate(
+		template="AutoBean.vm",
+		path="../autobean",
+		suffix="Bean",helper=AutoBeanHelper.class,
+		options={"aaa","bbb"}
+)
 
 public @interface AutoBean {
 	boolean setter() default true;

@@ -62,9 +62,6 @@
 			classpathref="apt-path"
 		> 
 	     <compilerarg line="-processorpath ${apt-cp}"/>
-			<!--
-		 <compilerarg line="-processor org.kotemaru.apthelper.AptHelperProcessor"/>
--->
 	     <compilerarg line="-s ${test.apt_gen}"/>
 		</javac>
 	</target>

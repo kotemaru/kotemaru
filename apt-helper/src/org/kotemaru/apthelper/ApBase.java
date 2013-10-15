@@ -90,5 +90,10 @@ public abstract class ApBase extends AbstractProcessor  {
 		messager.printMessage(Kind.ERROR, t.toString());
 		t.printStackTrace();
 	}
+	protected void log(String msg){
+		Messager messager = environment.getMessager();
+		messager.printMessage(Kind.ERROR, msg);
+		System.out.println(msg);
+	}
 
 }

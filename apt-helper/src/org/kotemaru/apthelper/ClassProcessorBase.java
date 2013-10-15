@@ -1,10 +1,10 @@
 package org.kotemaru.apthelper;
 
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.lang.annotation.Annotation;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -22,7 +22,9 @@ import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.app.Velocity;
+import org.kotemaru.apthelper.annotation.ProcessorGenerate;
 import org.kotemaru.util.IOUtil;
+
 
 public abstract class ClassProcessorBase extends AbstractProcessor {
 	protected ProcessingEnvironment environment;
@@ -52,6 +54,7 @@ public abstract class ClassProcessorBase extends AbstractProcessor {
 	public boolean process(Set<? extends TypeElement> annotations,
 			RoundEnvironment roundEnv) {
 
+		log(annotations.toString());
 		boolean res = false;
 		for (TypeElement anno : annotations) {
 			Set<? extends Element> classes = roundEnv.getElementsAnnotatedWith(anno);
@@ -69,8 +72,45 @@ public abstract class ClassProcessorBase extends AbstractProcessor {
 		}
 		return res;
 	}
-	protected abstract boolean processClass(TypeElement classDecl)
+	public abstract boolean processClass(TypeElement classDecl)
 			throws Exception;
+	
+	public boolean processClass(TypeElement classDecl, Class annoClass) throws Exception {
+		Annotation anno = classDecl.getAnnotation(annoClass);
+		if(anno == null) return false;
+
+		ProcessorGenerate pgAnno = 
+				(ProcessorGenerate) annoClass.getAnnotation(ProcessorGenerate.class);
+
+		VelocityContext context = initVelocity();
+		context.put("masterClassDecl", classDecl);
+		context.put("annotation", anno);
+		context.put("environment", environment);
+
+		Object helper   = getHelper(classDecl, pgAnno.helper());
+		context.put("helper", helper);
+
+		String pkgName = getPackageName(classDecl, pgAnno.path());
+		String clsName = classDecl.getSimpleName() + pgAnno.suffix();
+		String templ = getResourceName(pgAnno, annoClass);
+
+		if (pgAnno.isResource()) {
+			applyTemplateText(context, pkgName, clsName, templ);
+		} else {
+			applyTemplate(context, pkgName, clsName, templ);
+		}
+		return true;
+	}
+
+	private String getResourceName(ProcessorGenerate pgAnno, Class annoClass) {
+		String name = pgAnno.template();
+		if (name.startsWith("/")) return name;
+		if (name.length() == 0) {
+			name = annoClass.getSimpleName()+".vm";
+		}
+		String pkg = annoClass.getPackage().getName();
+		return pkg.replace('.', '/') +'/'+name;
+	}
 
 
 	public void applyTemplate(VelocityContext context,
@@ -135,9 +175,18 @@ public abstract class ClassProcessorBase extends AbstractProcessor {
 	
 	
 	protected Object getHelper(TypeElement classDecl, Class helperCls) throws Exception {
-		Constructor creator = helperCls.getConstructor(TypeElement.class);
-		Object helper = creator.newInstance(classDecl);
-		return helper;
+		try {
+			Constructor creator = helperCls.getConstructor(TypeElement.class, ProcessingEnvironment.class);
+			return creator.newInstance(classDecl, environment);
+		} catch (NoSuchMethodException e) {}
+		
+		try {
+			Constructor creator = helperCls.getConstructor(TypeElement.class);
+			return creator.newInstance(classDecl);
+		} catch (NoSuchMethodException e) {}
+		
+		Constructor creator = helperCls.getConstructor();
+		return creator.newInstance();
 	}
 
 	protected String getPackageName(TypeElement classDecl, String path) {
@@ -146,8 +195,14 @@ public abstract class ClassProcessorBase extends AbstractProcessor {
 
 	protected void error(Throwable t){
 		Messager messager = environment.getMessager();
-		messager.printMessage(Kind.ERROR, t.toString());
-		t.printStackTrace();
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		t.printStackTrace(pw);
+		messager.printMessage(Kind.ERROR, sw.toString());
+	}
+	protected void log(String msg){
+		Messager messager = environment.getMessager();
+		messager.printMessage(Kind.NOTE, msg);
 	}
 
 }

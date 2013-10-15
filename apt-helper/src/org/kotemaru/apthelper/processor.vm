@@ -1,5 +1,6 @@
 package ${packageName};
 
+import java.util.*;
 import org.apache.velocity.VelocityContext;
 import java.lang.annotation.Annotation;
 
@@ -23,7 +24,26 @@ public class ${className} extends ClassProcessorBase
 {
 	public ${className}() {
 	}
-
+	
+	@Override
+	public boolean processClass(TypeElement classDecl) throws Exception {
+		Class<?> annoClass = ${masterClassDecl.qualifiedName}.class;
+		return processClass(classDecl, annoClass);
+	}
+	
+	private final static Set<String> OPTIONS = new HashSet<String>();
+	static {
+#foreach ($opt in $annotation.options())
+		OPTIONS.add("${opt}");
+#end
+	};
+	@Override
+	public Set<String> getSupportedOptions() {
+		return OPTIONS;
+	}
+	
+	
+/*
 	public boolean processClass(TypeElement classDecl) throws Exception {
 		Annotation anno = classDecl.getAnnotation(${masterClassDecl.qualifiedName}.class);
 		if(anno == null) return false;
@@ -35,6 +55,7 @@ public class ${className} extends ClassProcessorBase
 		//VelocityContext context = new VelocityContext();
 		context.put("masterClassDecl", classDecl);
 		context.put("annotation", anno);
+		context.put("environment", environment);
 
 		Object helper   = getHelper(classDecl, pgAnno.helper());
 		context.put("helper", helper);
@@ -61,6 +82,5 @@ public class ${className} extends ClassProcessorBase
 		String pkg = "${helper.getPackageName($masterClassDecl)}";
 		return pkg.replace('.', '/') +'/'+name;
 	}
-
-
+*/
 }
