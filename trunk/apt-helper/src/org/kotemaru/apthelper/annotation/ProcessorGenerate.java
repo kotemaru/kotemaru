@@ -15,4 +15,5 @@ public @interface ProcessorGenerate {
 	String suffix() ;
 	Class helper() default AptUtil.class;
 	boolean isResource() default false;
+	String[] options() default {};
 }

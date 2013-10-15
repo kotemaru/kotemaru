@@ -10,6 +10,7 @@ import java.util.Collection;
 
 //import org.mozilla.javascript.NativeJavaPackage;
 
+import javax.annotation.processing.ProcessingEnvironment;
 //import com.sun.mirror.type.*;
 //import com.sun.mirror.declaration.Element*;
 import javax.lang.model.element.Element;
@@ -30,6 +31,9 @@ import javax.tools.ToolProvider;
 
 public class AptUtil {
 
+	public AptUtil(TypeElement classDecl, ProcessingEnvironment env) {
+		// nop.
+	}
 	public AptUtil(TypeElement classDecl) {
 		// nop.
 	}
