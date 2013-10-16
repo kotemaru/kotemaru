@@ -1,0 +1,31 @@
+Subject: Annotation ProcessorのAPI移行ではまった
+Content-type: markdown/text
+Tags: java
+Date: 2013/10/16
+Public: yes
+
+JDK7で自作APT使ったらAPIがJDK8で無くなるから使うなと怒られた。
+
+こんなメッセージが...
+
+      警告: aptツールとツールに関連付けられたAPIは、次回のJDKメジャー・リリースで削除される予定です。
+      これらの機能はjavacおよび標準化された注釈処理APIのjavax.annotation.processingおよび
+      javax.lang.modelによって置き換えられました。
+      ユーザーはjavacの注釈処理機能に移行することをお薦めします。
+      詳細は、javac manページを参照してください。
+
+
+使っていたのは com.sun.mirror のパッケージで移行が必要なのは知っていたんだけど
+どうせパッケージ名の変更ぐらいだろと思って放置していた。
+
+ところがいざ蓋を開けてみると API 全然変わっちゃってるやん。<br/>
+Factoryとか有ったのに無いし、データ構造もアクセスメソッド名も変わってるし...
+
+何とか移行の為のヒントのページを発見。
+
+  - [Getting Started with the Annotation Processing Tool, apt](http://docs.oracle.com/javase/7/docs/technotes/guides/apt/GettingStarted.html)
+
+これ見ながら大改造して移行した。
+
+まあ、自作のAPTなんて使ってる人ほとんどいないと思うけど移行はお早めに。
+
