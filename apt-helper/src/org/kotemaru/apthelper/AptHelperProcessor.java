@@ -1,7 +1,6 @@
 package org.kotemaru.apthelper;
 
 import java.io.PrintWriter;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.List;
 
@@ -18,97 +17,66 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import javax.lang.model.SourceVersion;
 
+
+/**
+ * 注釈 ProcessorGenerate の処理クラス。
+ * <br>- processor.vm に ProcessorGenerate の設定を適用して注釈処理クラスのソースを生成する。
+ * <br>- 生成した注釈処理クラスの名前を META-INF/services/javax.annotation.processing.Processor に一覧出力する。
+ * @author kotemaru.org
+ */
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
 @SupportedAnnotationTypes("org.kotemaru.apthelper.annotation.ProcessorGenerate")
 public class AptHelperProcessor extends ApBase {
 	private static final String APT_PATH = "../apt";
 	private static final String AP_SUFFIX = "Ap";
-	private static final String FACTORY_NAME = "ApProcessor";
 	private static final String PROCESSOR_VM = "processor.vm";
-	private static final String FACTORY_VM = "factory.vm";
 	private static final String SERVICE_FILE = "META-INF/services/javax.annotation.processing.Processor";
-	private static final String ANNO_NAME = ProcessorGenerate.class
-			.getCanonicalName();
 
 	public AptHelperProcessor() {
 	}
 
 	@Override
-	public boolean process(Set<? extends TypeElement> annotations,
-			RoundEnvironment roundEnv) {
-
-		TypeElement annotation = null;
-		for (TypeElement anno : annotations) {
-			if (ANNO_NAME.equals(anno.getQualifiedName().toString())) {
-				annotation = anno;
-			}
-		}
-		if (annotation == null) return false;
-
-		Set<? extends Element> classes = 
-				roundEnv.getElementsAnnotatedWith(annotation);
-
-		List<TypeElement> list = new ArrayList<TypeElement>();
-		boolean res = false;
-		for (Element elem : classes) {
-			try {
-				if (elem instanceof TypeElement) {
-					TypeElement classDecl = (TypeElement) elem;
-					boolean isProcess = processClass(classDecl);
-					if (isProcess) list.add(classDecl);
-					res = res || isProcess;
-				}
-			} catch (Throwable t) {
-				error(t);
-			}
-		}
+	public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+		List<TypeElement> list = processClasses(annotations, roundEnv);
 		try {
-			//generateFactory(list);
 			generateService(list);
 		} catch (Throwable t) {
 			error(t);
 		}
-		return res;
+		return true;
 	}
 
+	/**
+	 * processor.vm に ProcessorGenerate の設定を適用して注釈処理クラスのソースを生成する。
+	 * <br>- 注釈処理クラス名は注釈クラス名+"Ap"
+	 * <br>- パッケージは注釈クラスから相対で "../apt" となる。
+	 */
 	@Override
 	protected boolean processClass(TypeElement classDecl) throws Exception {
-		ProcessorGenerate pgAnno = classDecl
-				.getAnnotation(ProcessorGenerate.class);
+		ProcessorGenerate pgAnno = classDecl.getAnnotation(ProcessorGenerate.class);
 		if (pgAnno == null) return false;
 
-		VelocityContext context = initVelocity();
+		VelocityContext context = new VelocityContext();
 		context.put("masterClassDecl", classDecl);
 		context.put("annotation", pgAnno);
 		context.put("helper", new AptUtil(classDecl));
 
-		String pkgName = getPackageName(classDecl, APT_PATH);
+		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
 		String clsName = classDecl.getSimpleName() + AP_SUFFIX;
 		String templ = getResourceName(PROCESSOR_VM);
 
 		applyTemplate(context, pkgName, clsName, templ);
-		// applyTemplate(context, pkgName, clsName, this.getClass(),
-		// PROCESSOR_VM);
 		return true;
 	}
 
-	protected boolean generateFactory(List<TypeElement> list) throws Exception {
-		if (list.size() == 0) return false;
-		TypeElement classDecl = list.get(0);
-
-		VelocityContext context = initVelocity();
-		context.put("masterClassDecls", list);
-		context.put("annotationPackageName", AptUtil.getPackageName(classDecl));
-
-		String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
-		String templ = getResourceName(FACTORY_VM);
-
-		applyTemplate(context, pkgName, FACTORY_NAME, templ);
-		// applyTemplate(context, pkgName, FACTORY_NAME, this.getClass(),
-		// FACTORY_VM);
-		return true;
-	}
-
+	/**
+	 * 生成した注釈処理クラスの一覧生成。
+	 * <br>- 出力先は META-INF/services/javax.annotation.processing.Processor
+	 * <br>- javac はこれを見て注釈処理クラスを判定する。
+	 * @param list
+	 * @return
+	 * @throws Exception
+	 */
 	protected boolean generateService(List<TypeElement> list) throws Exception {
 		if (list.size() == 0) return false;
 
@@ -118,7 +86,7 @@ public class AptHelperProcessor extends ApBase {
 		PrintWriter writer = new PrintWriter(file.openWriter());
 
 		for (TypeElement classDecl : list) {
-			String pkgName = getPackageName(classDecl, APT_PATH);
+			String pkgName = AptUtil.getPackageName(classDecl, APT_PATH);
 			String clsName = classDecl.getSimpleName() + AP_SUFFIX;
 			writer.println(pkgName+"."+clsName);
 		}
