@@ -1,0 +1,343 @@
+Subject: Nexus7でPASMO(Suica)の履歴を読んでみた
+Content-type: markdown/text
+Tags: android,nexus7
+Date: 2013/10/20
+Public: no
+
+
+先日、財布の上にNexus7を置いたら「ポロリ〜ン」って変な音がしたので何かと
+思ったらPASMOに反応していた。
+
+Androidは2.3からFelica等の非接触カードに対応しているらしくNexus7にも付いていたわけだ。<br>
+音を鳴らしたアプリは分からずじまいだが面白そうなので自分でアプリを書いてみた。
+
+#### AndroidManifext.xml
+
+  * NFC の uses-feature と uses-permission を宣言します。
+  * intent-filter でカードを認識したら Activity を起動するようにします。
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	    package="org.kotemaru.android.sample.nfc"
+	    android:versionCode="1"
+	    android:versionName="1.0" >
+	
+	    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
+	    
+	    <uses-feature android:name="android.hardware.nfc" android:required="true" />
+	    <uses-permission android:name="android.permission.NFC" />
+	
+	    <application
+	        android:allowBackup="true"
+	        android:icon="@drawable/ic_launcher"
+	        android:label="@string/app_name"
+	        android:theme="@style/AppTheme" >
+	        <activity
+	            android:name="org.kotemaru.android.sample.nfc.MainActivity"
+	            android:label="@string/app_name" >
+	            <intent-filter>
+	                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+	                <category android:name="android.intent.category.DEFAULT" />
+	            </intent-filter>
+	
+	            <meta-data
+	                android:name="android.nfc.action.TAG_DISCOVERED"
+	                android:resource="@xml/nfc_filter" />
+	        </activity>
+	    </application>
+	</manifest>
+
+#### res/xml/nfc_filter.xml
+
+  * 使いたいカードのパッケージを設定します。
+  * 今回はFelicaだけなので NfcF です。
+
+	<?xml version="1.0" encoding="utf-8"?>
+	<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" >
+	  <tech-list>
+	    <tech>android.nfc.tech.NfcF</tech>
+	  </tech-list>
+	</resources>
+
+#### MainActivity.java
+
+  * IntentからカードIDを取得してbyte配列のFelicaコマンドを送信します。
+  * byte配列のレスポンスが帰るので解析すれば終わりです。
+  * Felicaコマンドの詳細は Sonyの「Felicaカードユーザマニュアル抜粋版」と言うPDFをDLして読んでください。
+    * [Felica技術情報のページ](http://www.sony.co.jp/Products/felica/business/tech-support/index.html)
+     * 普通使うのは Read/Write Without Encryption くらいですが引数の指定の仕方が結構ややこしいです。
+     * ざっくりとした解説は[こちらのページ](http://wiki.osdev.info/?PaSoRi%2FRC-S320#content_1_19)にあります。
+  * PASMO/Suica の仕様は非公開ですが有志で解析された情報があるのでそれを参考にします。
+    * [felicalibのWiki](http://sourceforge.jp/projects/felicalib/wiki/suica)
+     * ここから履歴のサービスコードが 0x090f とわかりました。
+     * 履歴の保存フォーマットもここを参考にしています。
+  * 履歴の保存レコード数は不明ですが私のPASMOでは最新15件しかありませんでした。
+     * 1回の要求で取得できるレコード数は「製品により異なります」とマニュアルに書いてありました。
+    
+    
+<pre>
+package org.kotemaru.android.sample.nfc;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import android.nfc.NfcAdapter;
+import android.nfc.Tag;
+import android.nfc.tech.NfcF;
+import android.os.Bundle;
+import android.app.Activity;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.TextView;
+
+public class MainActivity extends Activity {
+	private static final String TAG = "NFCSample";
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		TextView textView1 = (TextView) this.findViewById(R.id.textView1);
+
+		// カードID取得。Activityはカード認識時起動に設定しているのでここで取れる。
+		byte[] felicaIDm = new byte[]{0};
+		Intent intent = getIntent();
+		Tag tag = (Tag) intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
+		if (tag != null) {
+			felicaIDm = tag.getId();
+		}
+		
+		
+		NfcF nfc = NfcF.get(tag);
+		try {
+			nfc.connect();
+			byte[] req = readWithoutEncryption(felicaIDm, 10);
+			Log.d(TAG, "req:"+toHex(req));
+			// カードにリクエスト送信
+			byte[] res = nfc.transceive(req);
+			Log.d(TAG, "res:"+toHex(res));
+			nfc.close();
+			// 結果を文字列に変換して表示
+			textView1.setText(parse(res));
+		} catch (Exception e) {
+			Log.e(TAG, e.getMessage() , e);
+			textView1.setText(e.toString());
+		}
+	}
+
+	/**
+	 * 履歴読み込みFelicaコマンドの取得。
+	 * - Sonyの「Felicaユーザマニュアル抜粋」の仕様から。
+	 * - サービスコードは http://sourceforge.jp/projects/felicalib/wiki/suica の情報から
+	 * - 取得できる履歴数の上限は「製品により異なります」。
+	 * @param idm カードのID
+	 * @param size 取得する履歴の数
+	 * @return Felicaコマンド
+	 * @throws IOException
+	 */
+	private byte[] readWithoutEncryption(byte[] idm, int size)
+			throws IOException {
+		ByteArrayOutputStream bout = new ByteArrayOutputStream(100);
+
+		bout.write(0);			 // データ長バイトのダミー
+		bout.write(0x06);		 // Felicaコマンド「Read Without Encryption」
+		bout.write(idm);			 // カードID 8byte
+		bout.write(1);			 // サービスコードリストの長さ(以下２バイトがこの数分繰り返す)
+		bout.write(0x0f);		 // 履歴のサービスコード下位バイト
+		bout.write(0x09);		 // 履歴のサービスコード上位バイト
+		bout.write(size);		 // ブロック数
+		for (int i = 0; i &lt; size; i++) {
+			bout.write(0x80);	 // ブロックエレメント上位バイト 「Felicaユーザマニュアル抜粋」の4.3項参照
+			bout.write(i);		 // ブロック番号
+		}
+
+		byte[] msg = bout.toByteArray();
+		msg[0] = (byte) msg.length;
+		return msg;
+	}
+
+	/**
+	 * 履歴Felica応答の解析。
+	 * @param res Felica応答
+	 * @return 文字列表現
+	 * @throws Exception
+	 */
+	private String parse(byte[] res) throws Exception {
+		// res[0] = データ長
+		// res[1] = 0x07
+		// res[2〜9] = カードID
+		// res[10,11] = エラーコード。0=正常。 
+		if (res[10] != 0x00) throw new RuntimeException("Felica error.");
+
+		// res[12] = 応答ブロック数
+		// res[13+n*16] = 履歴データ。16byte/ブロックの繰り返し。
+		int size = res[12];
+		String str = "";
+		for (int i = 0; i &lt; size; i++) {
+			// 個々の履歴の解析。
+			Rireki rireki = Rireki.parse(res, 13 + i * 16);
+			str += rireki.toString() +"\n";
+		}
+		return str;
+	}
+
+	private String toHex(byte[] id) {
+		StringBuilder sbuf = new StringBuilder();
+		for (int i = 0; i &lt; id.length; i++) {
+			String hex = "0" + Integer.toString((int) id[i] & 0x0ff, 16);
+			if (hex.length() > 2)
+				hex = hex.substring(1, 3);
+			sbuf.append(" " + i + ":" + hex);
+		}
+		return sbuf.toString();
+	}
+
+}
+</pre>
+
+#### Rireki.java
+
+  * 履歴のパーザとBeanです。
+  * 駅コードから駅名を引くのは大きなテーブルが必要なので今回はパスです。
+
+<pre style="height:250px;">
+package org.kotemaru.android.sample.nfc;
+
+import android.util.SparseArray;
+
+/**
+ * Pasumo履歴レコード。
+ * - 資料：http://sourceforge.jp/projects/felicalib/wiki/suica
+ */
+public class Rireki {
+	public int termId;
+	public int procId;
+	public int year;
+	public int month;
+	public int day;
+	public String kind;
+	public int remain;
+	public int seqNo;
+	public int reasion;
+
+	public Rireki(){
+	}
+	
+	public static Rireki parse(byte[] res, int off) {
+		Rireki self = new Rireki();
+		self.init(res, off);
+		return self;
+	}
+	
+	private void init(byte[] res, int off) {
+		this.termId = res[off+0]; //0: 端末種
+		this.procId = res[off+1]; //1: 処理
+		//2-3: ??
+		int mixInt = toInt(res, off, 4,5);
+		this.year  = (mixInt >> 9) & 0x07f;
+		this.month = (mixInt >> 5) & 0x00f;
+		this.day   = mixInt & 0x01f;
+		
+		if (isBuppan(this.procId)) {
+			this.kind = "物販";
+		} else if (isBus(this.procId)) {
+			this.kind = "バス";
+		} else {
+			this.kind = res[off+6] < 0x80 ? "JR" : "公営/私鉄" ;
+		}
+		this.remain  = toInt(res, off, 11,10); //10-11: 残高 (little endian)
+		this.seqNo   = toInt(res, off, 12,13,14); //12-14: 連番
+		this.reasion = res[off+15]; //15: リージョン 
+	}
+	
+	private int toInt(byte[] res, int off, int... idx) {
+		int num = 0;
+		for (int i=0; i<idx.length; i++) {
+			num = num << 8;
+			num += ((int)res[off+idx[i]]) & 0x0ff;
+		}
+		return num;
+	}
+	private boolean isBuppan(int procId) {
+		return procId == 70 || procId == 73 || procId == 74 
+				|| procId == 75 || procId == 198 || procId == 203;
+	}
+	private boolean isBus(int procId) {
+		return procId == 13|| procId == 15|| procId ==  31|| procId == 35;
+	}
+
+	public String toString() {
+		String str = seqNo
+				+","+TERM_MAP.get(termId)
+				+","+ PROC_MAP.get(procId)
+				+","+kind
+				+","+year+"/"+month+"/"+day
+				+",残："+remain+"円";
+		return str;
+	}
+	
+	public static final SparseArray<String> TERM_MAP = new SparseArray<String>();
+	public static final SparseArray<String> PROC_MAP = new SparseArray<String>();
+	static {
+		TERM_MAP.put(3 , "精算機");
+		TERM_MAP.put(4 , "携帯型端末");
+		TERM_MAP.put(5 , "車載端末");
+		TERM_MAP.put(7 , "券売機");
+		TERM_MAP.put(8 , "券売機");
+		TERM_MAP.put(9 , "入金機");
+		TERM_MAP.put(18 , "券売機");
+		TERM_MAP.put(20 , "券売機等");
+		TERM_MAP.put(21 , "券売機等");
+		TERM_MAP.put(22 , "改札機");
+		TERM_MAP.put(23 , "簡易改札機");
+		TERM_MAP.put(24 , "窓口端末");
+		TERM_MAP.put(25 , "窓口端末");
+		TERM_MAP.put(26 , "改札端末");
+		TERM_MAP.put(27 , "携帯電話");
+		TERM_MAP.put(28 , "乗継精算機");
+		TERM_MAP.put(29 , "連絡改札機");
+		TERM_MAP.put(31 , "簡易入金機");
+		TERM_MAP.put(70 , "VIEW ALTTE");
+		TERM_MAP.put(72 , "VIEW ALTTE");
+		TERM_MAP.put(199 , "物販端末");
+		TERM_MAP.put(200 , "自販機");
+
+		PROC_MAP.put(1 , "運賃支払(改札出場)");
+		PROC_MAP.put(2 , "チャージ");
+		PROC_MAP.put(3 , "券購(磁気券購入)");
+		PROC_MAP.put(4 , "精算");
+		PROC_MAP.put(5 , "精算 (入場精算)");
+		PROC_MAP.put(6 , "窓出 (改札窓口処理)");
+		PROC_MAP.put(7 , "新規 (新規発行)");
+		PROC_MAP.put(8 , "控除 (窓口控除)");
+		PROC_MAP.put(13 , "バス (PiTaPa系)");
+		PROC_MAP.put(15 , "バス (IruCa系)");
+		PROC_MAP.put(17 , "再発 (再発行処理)");
+		PROC_MAP.put(19 , "支払 (新幹線利用)");
+		PROC_MAP.put(20 , "入A (入場時オートチャージ)");
+		PROC_MAP.put(21 , "出A (出場時オートチャージ)");
+		PROC_MAP.put(31 , "入金 (バスチャージ)");
+		PROC_MAP.put(35 , "券購 (バス路面電車企画券購入)");
+		PROC_MAP.put(70 , "物販");
+		PROC_MAP.put(72 , "特典 (特典チャージ)");
+		PROC_MAP.put(73 , "入金 (レジ入金)");
+		PROC_MAP.put(74 , "物販取消");
+		PROC_MAP.put(75 , "入物 (入場物販)");
+		PROC_MAP.put(198 , "物現 (現金併用物販)");
+		PROC_MAP.put(203 , "入物 (入場現金併用物販)");
+		PROC_MAP.put(132 , "精算 (他社精算)");
+		PROC_MAP.put(133 , "精算 (他社入場精算)");
+	}
+}
+</pre>
+
+### 実行結果
+
+  * 実行前に「無線とネットワーク」の設定で NFC を有効にする必要があります。
+  * とりあえず過去10件分の履歴の表示に成功しました。
+
+<src img="/2013/10/20/android-pasmo-1.png" />
+
+
+
+
+
