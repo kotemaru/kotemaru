@@ -2,7 +2,7 @@ Subject: Nexus7でPASMO(Suica)の履歴を読んでみた
 Content-type: markdown/text
 Tags: android,nexus7
 Date: 2013/10/20
-Public: no
+Public: yes
 
 
 先日、財布の上にNexus7を置いたら「ポロリ〜ン」って変な音がしたので何かと
@@ -13,20 +13,22 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 
 #### AndroidManifext.xml
 
-  * NFC の uses-feature と uses-permission を宣言します。
-  * intent-filter でカードを認識したら Activity を起動するようにします。
+  - NFC の uses-feature と uses-permission を宣言します。
+  - intent-filter でカードを認識したら Activity を起動するようにします。
+
+<p>
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	    package="org.kotemaru.android.sample.nfc"
 	    android:versionCode="1"
 	    android:versionName="1.0" >
-	
+	    
 	    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
 	    
 	    <uses-feature android:name="android.hardware.nfc" android:required="true" />
 	    <uses-permission android:name="android.permission.NFC" />
-	
+	    
 	    <application
 	        android:allowBackup="true"
 	        android:icon="@drawable/ic_launcher"
@@ -39,7 +41,7 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 	                <action android:name="android.nfc.action.TAG_DISCOVERED" />
 	                <category android:name="android.intent.category.DEFAULT" />
 	            </intent-filter>
-	
+	    
 	            <meta-data
 	                android:name="android.nfc.action.TAG_DISCOVERED"
 	                android:resource="@xml/nfc_filter" />
@@ -51,6 +53,9 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 
   * 使いたいカードのパッケージを設定します。
   * 今回はFelicaだけなので NfcF です。
+
+<p>
+
 
 	<?xml version="1.0" encoding="utf-8"?>
 	<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2" >
@@ -65,16 +70,16 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
   * byte配列のレスポンスが帰るので解析すれば終わりです。
   * Felicaコマンドの詳細は Sonyの「Felicaカードユーザマニュアル抜粋版」と言うPDFをDLして読んでください。
     * [Felica技術情報のページ](http://www.sony.co.jp/Products/felica/business/tech-support/index.html)
-     * 普通使うのは Read/Write Without Encryption くらいですが引数の指定の仕方が結構ややこしいです。
-     * ざっくりとした解説は[こちらのページ](http://wiki.osdev.info/?PaSoRi%2FRC-S320#content_1_19)にあります。
+    * 普通使うのは Read/Write Without Encryption くらいですが引数の指定の仕方が結構ややこしいです。
+    * ざっくりとした解説は[こちらのページ](http://wiki.osdev.info/?PaSoRi%2FRC-S320#content_1_19)にあります。
   * PASMO/Suica の仕様は非公開ですが有志で解析された情報があるのでそれを参考にします。
     * [felicalibのWiki](http://sourceforge.jp/projects/felicalib/wiki/suica)
-     * ここから履歴のサービスコードが 0x090f とわかりました。
-     * 履歴の保存フォーマットもここを参考にしています。
+    * ここから履歴のサービスコードが 0x090f とわかりました。
+    * 履歴の保存フォーマットもここを参考にしています。
   * 履歴の保存レコード数は不明ですが私のPASMOでは最新15件しかありませんでした。
-     * 1回の要求で取得できるレコード数は「製品により異なります」とマニュアルに書いてありました。
-    
-    
+    * 1回の要求で取得できるレコード数は「製品により異なります」とマニュアルに書いてありました。
+  * 注意事項：byte配列はリトル/ビッグ　エンディアンが混在しています。仕様を良く確認してください。
+
 <pre>
 package org.kotemaru.android.sample.nfc;
 
@@ -335,9 +340,15 @@ public class Rireki {
   * 実行前に「無線とネットワーク」の設定で NFC を有効にする必要があります。
   * とりあえず過去10件分の履歴の表示に成功しました。
 
-<src img="/2013/10/20/android-pasmo-1.png" />
+<img src="/2013/10/20/android-pasmo-1.png" />
 
+### 雑感
 
+データの解析が面倒でしたが思ったより感単にアクセスできました。<br>
+白カードを購入すれば書き込みも出来るようなので簡易のカード鍵とかは簡単に作れそうです。
 
+このサンプルのSVN：
+
+  - https://kotemaru.googlecode.com/svn/trunk/androidNfcSample
 
 
