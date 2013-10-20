@@ -50,6 +50,7 @@ html,body {
 	float: right;
 	padding-left: 16px;
 	border-left: 1px solid lightgray;
+	line-height: 130%;
 }
 
 #side {
@@ -192,6 +193,7 @@ table.KTable td {
 	margin-left: 16px;
 	width: 615px;
 	overflow: auto;
+	line-height: 110%;
 }
 .ContentBody blockquote {
 	background: #f8f8f8;

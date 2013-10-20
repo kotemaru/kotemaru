@@ -4,12 +4,33 @@ Tags: android,nexus7
 Date: 2013/10/20
 Public: yes
 
-
-先日、財布の上にNexus7を置いたら「ポロリ〜ン」って変な音がしたので何かと
-思ったらPASMOに反応していた。
+先日、財布の上にNexus7を置いたら「ポロリ〜ン」って変な音がしたので何かと思ったら
+PASMO に反応していた。
 
 Androidは2.3からFelica等の非接触カードに対応しているらしくNexus7にも付いていたわけだ。<br>
 音を鳴らしたアプリは分からずじまいだが面白そうなので自分でアプリを書いてみた。
+
+#### PASMO/Suicaの仕様
+
+  * Felica仕様の詳細は Sonyの「Felicaカードユーザマニュアル抜粋版」と言うPDFをDLして読んでください。
+    * [Felica技術情報のページ](http://www.sony.co.jp/Products/felica/business/tech-support/index.html)
+    * APIで使うのはこの中の「2.3 アプリケーション層」のコマンドパケットです。
+    * Pollingまでは終わった状態からAndroidアプリは始まります。
+    * 普通使うのは Read/Write Without Encryption くらいですが引数の指定の仕方が結構ややこしいです。
+    * ざっくりとした解説は[こちらのページ](http://wiki.osdev.info/?PaSoRi%2FRC-S320#content_1_19)にあります。
+  * Felicaの用語
+    * サービスコード:
+      * １枚のカードに複数のサービスを同居させる為にサービスに割り当てられた2byteのコード。
+      * コードの管理者は良く分かりません。Sony?
+    * ブロック:
+      * サービスの扱うデータブロックの事で16byte固定です。
+      * 何ブロック使えるかはサービス毎の割り当てにより決まるようです。
+      * ブロックの中の仕様はサービス毎に仕様が定義されます。
+  * PASMO/Suica の仕様は非公開ですが有志で解析された情報があるのでそれを参考にします。
+    * [felicalibのWiki](http://sourceforge.jp/projects/felicalib/wiki/suica)
+    * ここから履歴のサービスコードが 0x090f とわかりました。
+    * 履歴の保存フォーマットもここを参考にしています。
+
 
 #### AndroidManifext.xml
 
@@ -26,8 +47,8 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 	    
 	    <uses-sdk android:minSdkVersion="14" android:targetSdkVersion="17" />
 	    
-	    <uses-feature android:name="android.hardware.nfc" android:required="true" />
-	    <uses-permission android:name="android.permission.NFC" />
+	    <uses-feature android:name="android.hardware.nfc" android:required="true" />	←追加
+	    <uses-permission android:name="android.permission.NFC" />						←追加
 	    
 	    <application
 	        android:allowBackup="true"
@@ -38,11 +59,11 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 	            android:name="org.kotemaru.android.sample.nfc.MainActivity"
 	            android:label="@string/app_name" >
 	            <intent-filter>
-	                <action android:name="android.nfc.action.TAG_DISCOVERED" />
-	                <category android:name="android.intent.category.DEFAULT" />
+	                <action android:name="android.nfc.action.TAG_DISCOVERED" />			←変更
+	                <category android:name="android.intent.category.DEFAULT" />			←変更
 	            </intent-filter>
 	    
-	            <meta-data
+	            <meta-data		←追加
 	                android:name="android.nfc.action.TAG_DISCOVERED"
 	                android:resource="@xml/nfc_filter" />
 	        </activity>
@@ -68,14 +89,6 @@ Androidは2.3からFelica等の非接触カードに対応しているらしくN
 
   * IntentからカードIDを取得してbyte配列のFelicaコマンドを送信します。
   * byte配列のレスポンスが帰るので解析すれば終わりです。
-  * Felicaコマンドの詳細は Sonyの「Felicaカードユーザマニュアル抜粋版」と言うPDFをDLして読んでください。
-    * [Felica技術情報のページ](http://www.sony.co.jp/Products/felica/business/tech-support/index.html)
-    * 普通使うのは Read/Write Without Encryption くらいですが引数の指定の仕方が結構ややこしいです。
-    * ざっくりとした解説は[こちらのページ](http://wiki.osdev.info/?PaSoRi%2FRC-S320#content_1_19)にあります。
-  * PASMO/Suica の仕様は非公開ですが有志で解析された情報があるのでそれを参考にします。
-    * [felicalibのWiki](http://sourceforge.jp/projects/felicalib/wiki/suica)
-    * ここから履歴のサービスコードが 0x090f とわかりました。
-    * 履歴の保存フォーマットもここを参考にしています。
   * 履歴の保存レコード数は不明ですが私のPASMOでは最新15件しかありませんでした。
     * 1回の要求で取得できるレコード数は「製品により異なります」とマニュアルに書いてありました。
   * 注意事項：byte配列はリトル/ビッグ　エンディアンが混在しています。仕様を良く確認してください。
@@ -145,7 +158,7 @@ public class MainActivity extends Activity {
 
 		bout.write(0);			 // データ長バイトのダミー
 		bout.write(0x06);		 // Felicaコマンド「Read Without Encryption」
-		bout.write(idm);			 // カードID 8byte
+		bout.write(idm);		 // カードID 8byte
 		bout.write(1);			 // サービスコードリストの長さ(以下２バイトがこの数分繰り返す)
 		bout.write(0x0f);		 // 履歴のサービスコード下位バイト
 		bout.write(0x09);		 // 履歴のサービスコード上位バイト
@@ -156,7 +169,7 @@ public class MainActivity extends Activity {
 		}
 
 		byte[] msg = bout.toByteArray();
-		msg[0] = (byte) msg.length;
+		msg[0] = (byte) msg.length; // 先頭１バイトはデータ長
 		return msg;
 	}
 
@@ -247,7 +260,7 @@ public class Rireki {
 		} else if (isBus(this.procId)) {
 			this.kind = "バス";
 		} else {
-			this.kind = res[off+6] < 0x80 ? "JR" : "公営/私鉄" ;
+			this.kind = res[off+6] &lt; 0x80 ? "JR" : "公営/私鉄" ;
 		}
 		this.remain  = toInt(res, off, 11,10); //10-11: 残高 (little endian)
 		this.seqNo   = toInt(res, off, 12,13,14); //12-14: 連番
@@ -256,8 +269,8 @@ public class Rireki {
 	
 	private int toInt(byte[] res, int off, int... idx) {
 		int num = 0;
-		for (int i=0; i<idx.length; i++) {
-			num = num << 8;
+		for (int i=0; i&lt;idx.length; i++) {
+			num = num &lt;&lt; 8;
 			num += ((int)res[off+idx[i]]) & 0x0ff;
 		}
 		return num;
@@ -280,8 +293,8 @@ public class Rireki {
 		return str;
 	}
 	
-	public static final SparseArray<String> TERM_MAP = new SparseArray<String>();
-	public static final SparseArray<String> PROC_MAP = new SparseArray<String>();
+	public static final SparseArray&lt;String> TERM_MAP = new SparseArray&lt;String>();
+	public static final SparseArray&lt;String> PROC_MAP = new SparseArray&lt;String>();
 	static {
 		TERM_MAP.put(3 , "精算機");
 		TERM_MAP.put(4 , "携帯型端末");
@@ -349,6 +362,6 @@ public class Rireki {
 
 このサンプルのSVN：
 
-  - https://kotemaru.googlecode.com/svn/trunk/androidNfcSample
+  - [https://kotemaru.googlecode.com/svn/trunk/androidNfcSample](https://kotemaru.googlecode.com/svn/trunk/androidNfcSample)
 
 
