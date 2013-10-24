@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" standalone="no" ?>
+
+<project default="jar" basedir=".">
+	<property name="bin" value="${basedir}/bin"/>
+   	<property name="src" value="${basedir}/src"/>
+	<property name="gen" value="${basedir}/gen"/>
+	<property name="classes" value="${basedir}/bin/classes"/>
+
+	<target name="jar" depends="logicasync-apt.jar,logicasync-rt.jar" />
+	
+	<target name="logicasync-apt.jar">
+		<jar jarfile="${bin}/logicasync-apt.jar" >
+			<fileset dir="${gen}" >
+				<include name="META-INF/**"/>
+			</fileset>
+			<fileset dir="${classes}" >
+				<include name="**/logicasync/annotation/**"/>
+				<include name="**/logicasync/apt/**"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="logicasync-rt.jar">
+		<jar jarfile="${bin}/logicasync-rt.jar" >
+			<fileset dir="${classes}" >
+				<include name="**/logicasync/annotation/*.class"/>
+				<include name="**/logicasync/*.class"/>
+			</fileset>
+		</jar>
+	</target>
+
+</project>
