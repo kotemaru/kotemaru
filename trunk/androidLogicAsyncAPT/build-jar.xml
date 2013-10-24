@@ -14,8 +14,8 @@
 				<include name="META-INF/**"/>
 			</fileset>
 			<fileset dir="${classes}" >
-				<include name="**/logicasync/annotation/**"/>
-				<include name="**/logicasync/apt/**"/>
+				<include name="org/kotemaru/android/*/annotation/**"/>
+				<include name="org/kotemaru/android/*/apt/**"/>
 			</fileset>
 		</jar>
 	</target>
@@ -23,8 +23,8 @@
 	<target name="logicasync-rt.jar">
 		<jar jarfile="${bin}/logicasync-rt.jar" >
 			<fileset dir="${classes}" >
-				<include name="**/logicasync/annotation/*.class"/>
-				<include name="**/logicasync/*.class"/>
+				<include name="org/kotemaru/android/*/annotation/*.class"/>
+				<include name="org/kotemaru/android/*/*.class"/>
 			</fileset>
 		</jar>
 	</target>

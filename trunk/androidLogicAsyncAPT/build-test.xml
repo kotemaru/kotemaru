@@ -23,11 +23,12 @@
 	</path>
 
 	<path id="test.apt-path">
-		<fileset dir="${lib}">
+		<pathelement location="${src}" />
+		<pathelement location="${gen}" />
+		<pathelement location="${classes}" />
+	   <fileset dir="${lib}">
 			<include name="*.jar" />
 		</fileset>
-		<pathelement location="${src}" />
-		<pathelement location="${classes}" />
 	</path>
 	
 	<target name="test">
@@ -35,6 +36,7 @@
 		<mkdir dir="${test.apt_gen}" />
 		<delete dir="${test.classes}" />
 		<mkdir dir="${test.classes}" />
+		<!-- 
 		<apt 
 			srcdir="${test.src}"
 			preprocessdir="${test.apt_gen}" 
@@ -46,7 +48,21 @@
 			classpathref="test.apt-path"
 		>
 		</apt>
-
+		-->
+		<property name="apt-cp" refid="test.apt-path"/>
+		<javac 
+			srcdir="${test.src}"
+			destdir="${test.classes}" 
+			debug="on" 
+			encoding="utf-8" 
+			classpathref="apt-path"
+			verbose="true"
+		> 
+		  <compilerarg line="-processorpath ${apt-cp}"/>
+	     <compilerarg line="-s ${test.apt_gen}"/>
+	     <compilerarg line="-Aorg.kotemaru.android.reshelper.res=${basedir}/test"/>
+	   </javac>
+		
 		<!-- java classpathref="test-path" classname="test.master.TestMain"></java -->
 			
 	</target>
