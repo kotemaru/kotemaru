@@ -88,10 +88,11 @@ public class Blog extends HashMap<String, Object> {
 		Date date = fmt.parse((String) this.get(Date));
 		setDate(date);
 
-		if (date.getTime() < System.currentTimeMillis()) {
+		//if (date.getTime() < System.currentTimeMillis()) {
 			String _public = ((String) this.get(Public)).toLowerCase();
+			//System.out.println("---->"+_public);
 			setPublish("yes".equals(_public) || "true".equals(_public));
-		}
+		//}
 		return this;
 	}
 

@@ -77,6 +77,7 @@ public class BlogTask extends Task  {
 				Resource resource = (Resource) ite.next();
 				if (resource instanceof FileResource) {
 					File file = ((FileResource) resource).getFile();
+					//System.out.println("=>"+file);
 					Blog blog = Blog.load(context, file);
 					blogs.add(blog);
 				}
@@ -102,6 +103,7 @@ public class BlogTask extends Task  {
 			if (!blog.isPublish()) {
 				ite.remove();
 				File file = new File(context.getDocumentRoot(), blog.getContentPath());
+				System.out.println("Remove:"+file);
 				file.delete();
 				if (beforeBlog != null) beforeBlog.setUpdate(true);
 			}
