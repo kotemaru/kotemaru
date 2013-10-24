@@ -5,19 +5,16 @@ import java.util.Collection;
 import org.kotemaru.android.logicasync.annotation.*;
 import org.kotemaru.apthelper.AptUtil;
 
-import com.sun.mirror.declaration.ExecutableDeclaration;
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.ParameterDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
-
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.VariableElement;
 
 public class TaskHelper {
-	private MethodDeclaration decl;
+	private ExecutableElement decl;
 	private Task task;
 	private Logic logic;
 
-	public TaskHelper(TypeDeclaration classDecl, MethodDeclaration decl) {
+	public TaskHelper(TypeElement classDecl, ExecutableElement decl) {
 		this.decl = decl;
 		this.task = decl.getAnnotation(Task.class);
 		this.logic = classDecl.getAnnotation(Logic.class);
@@ -47,13 +44,13 @@ public class TaskHelper {
 		return sbuf.toString();
 	}
 	public String getParams() {
-		ExecutableDeclaration d = this.decl;
-		Collection<ParameterDeclaration> params = d.getParameters();
+		ExecutableElement d = this.decl;
+		Collection<? extends VariableElement> params = d.getParameters();
 		if (params.size() == 0) return "";
 		StringBuffer sbuf = new StringBuffer(params.size()*20);
-		for (ParameterDeclaration param : params)  {
+		for (VariableElement param : params)  {
 			sbuf.append("final ");
-			sbuf.append(param.getType());
+			sbuf.append(param.asType());
 			sbuf.append(' ');
 			sbuf.append(param.getSimpleName());
 			sbuf.append(',');

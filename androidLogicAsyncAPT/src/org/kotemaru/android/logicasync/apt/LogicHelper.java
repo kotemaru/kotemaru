@@ -1,21 +1,19 @@
 package org.kotemaru.android.logicasync.apt;
 
-import org.kotemaru.android.logicasync.annotation.*;
 import org.kotemaru.apthelper.AptUtil;
 
-import com.sun.mirror.declaration.FieldDeclaration;
-import com.sun.mirror.declaration.MethodDeclaration;
-import com.sun.mirror.declaration.TypeDeclaration;
+import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.ExecutableElement;
 
 
 public class LogicHelper extends AptUtil {
-	TypeDeclaration classDecl;
+	TypeElement classDecl;
 
-	public LogicHelper(TypeDeclaration classDecl) {
+	public LogicHelper(TypeElement classDecl) {
 		this.classDecl = classDecl;
 	}
 
-	public TaskHelper getStateHelper(MethodDeclaration decl) {
+	public TaskHelper getStateHelper(ExecutableElement decl) {
 		return new TaskHelper(classDecl, decl);
 	}
 }
