@@ -39,7 +39,7 @@
         	build="draft"
         >
         	<fileset dir="${contents}">
-        		<include name="**/*.blog"/>
+        		<include name="20??/**/*.blog"/>
         	</fileset>
 		</blog.builder>
     </target>
@@ -53,7 +53,7 @@
         	build="all"
         >
         	<fileset dir="${contents}">
-        		<include name="**/*.blog"/>
+        		<include name="20??/**/*.blog"/>
         	</fileset>
 		</blog.builder>
 		
