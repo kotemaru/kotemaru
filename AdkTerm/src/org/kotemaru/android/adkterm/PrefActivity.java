@@ -13,7 +13,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
-public class PrefActivity extends PreferenceActivity {
+public class PrefActivity extends Activity {
 	private PrefFragment fragment;
 	
 	@Override

@@ -42,7 +42,7 @@ public class TelnetDriver implements UsbReceiver.Driver {
 			
 			async.doTransterUsbIn();
 		}catch(IOException e){
-			activity.errorDialog(e.toString());
+			async.doError(e);
 		}finally{
 			fileDescriptor = null;
 		}
