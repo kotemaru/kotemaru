@@ -6,7 +6,7 @@
     android:keyWidth="8.3%p"
     android:horizontalGap="0px"
     android:verticalGap="0px"
-    android:keyHeight="40dp"
+    android:keyHeight="48dp"
     >
     <Row>
         <Key android:codes="49,33" android:keyLabel="! 1" android:keyEdgeFlags="left" />

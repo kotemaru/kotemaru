@@ -7,6 +7,9 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PixelXorXfermode;
+import android.graphics.PorterDuffColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Typeface;
 import android.graphics.Xfermode;
 import android.util.AttributeSet;
@@ -25,6 +28,7 @@ public class ConsoleView extends View {
 	private static final char SPC = ' ';
 
 	private Paint paint = new Paint();
+	private Paint paintCursor = new Paint();
 	private int charWidth;
 	private int lineHeight;
 	private int rowSize;
@@ -48,11 +52,17 @@ public class ConsoleView extends View {
 
 	private void init(Context context) {
 		Config.init(context);
+		consoleLog = new ConsoleLog(Config.getLogsize());
+
 		gestureDetector = new GestureDetector(context, gestureListener); 
 		paint.setTypeface(Typeface.MONOSPACE);
 		paint.setTextSize((float)Config.getFontsize());
 		paint.setAntiAlias(true);
-		consoleLog = new ConsoleLog(Config.getLogsize());
+		
+		//paintCursor.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
+		//paintCursor.setColor(Color.BLUE);
+		//paintCursor.setXfermode(new PixelXorXfermode(Color.WHITE));
+		paintCursor.setColor(0x80808080);
 	}
 
 	@Override
@@ -82,15 +92,14 @@ public class ConsoleView extends View {
 		}
 
 		if (consoleLog.getOffset() == 0) {
-			Xfermode mode = paint.getXfermode();
 			// paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-			paint.setXfermode(new PixelXorXfermode(Color.WHITE));
+			//paint.setXfermode(new PixelXorXfermode(Color.WHITE));
+			//paint.setColorFilter(new PorterDuffColorFilter(Color.BLACK, PorterDuff.Mode.XOR));
 			float x1 = getCursorX() * charWidth;
 			float y1 = getCursorY() * lineHeight;
 			float x2 = x1 + charWidth;
 			float y2 = y1 + lineHeight * 0.85F;
-			canvas.drawRect(x1, y1, x2, y2, paint);
-			paint.setXfermode(mode);
+			canvas.drawRect(x1, y1, x2, y2, paintCursor);
 		}
 	}
 
