@@ -1,0 +1,94 @@
+Subject: FreeBSDのUSB設定覚書
+Content-type: lovelog/text
+Tags: FreeBSD
+Date: 2010/12/12
+Public: yes
+
+USB-Audio をやろうとして FreeBSD のUSB回りの設定を
+しらべたのでメモっとく。
+
+7.0 から usbd が無くなって devd に変わったみたい。
+devd は usb だけじゃなくデバイス全般を扱う。
+
+まず繋がっているUSBデバイスの一覧は usbconfig で表示。
+<pre># usbconfig
+ugen0.1: <UHCI root HUB Intel> at usbus0, cfg=0 md=HOST spd=FULL (12Mbps) pwr=ON
+ugen1.1: <UHCI root HUB Intel> at usbus1, cfg=0 md=HOST spd=FULL (12Mbps) pwr=ON
+ugen2.1: <EHCI root HUB Intel> at usbus2, cfg=0 md=HOST spd=HIGH (480Mbps) pwr=ON
+ugen3.1: <UHCI root HUB Intel> at usbus3, cfg=0 md=HOST spd=FULL (12Mbps) pwr=ON
+ugen4.1: <UHCI root HUB Intel> at usbus4, cfg=0 md=HOST spd=FULL (12Mbps) pwr=ON
+ugen5.1: <UHCI root HUB Intel> at usbus5, cfg=0 md=HOST spd=FULL (12Mbps) pwr=ON
+ugen6.1: <EHCI root HUB Intel> at usbus6, cfg=0 md=HOST spd=HIGH (480Mbps) pwr=ON
+ugen5.2: <Microsoft(R) Compact Optical Mouse Microsoft> at usbus5, cfg=0 md=HOST spd=LOW (1.5Mbps) pwr=ON
+ugen5.3: <4Axes 16Key GamePad HuiJia> at usbus5, cfg=0 md=HOST spd=LOW (1.5Mbps) pwr=ON
+</pre>
+
+各デバイスの詳細は dump_device_desc を指定する。
+<pre># usbconfig -d 5.3 dump_device_desc
+ugen5.3: <4Axes 16Key GamePad HuiJia> at usbus5, cfg=0 md=HOST spd=LOW (1.5Mbps) pwr=ON
+
+  bLength = 0x0012 
+  bDescriptorType = 0x0001 
+  bcdUSB = 0x0110 
+  bDeviceClass = 0x0000 
+  bDeviceSubClass = 0x0000 
+  bDeviceProtocol = 0x0000 
+  bMaxPacketSize0 = 0x0008 
+  idVendor = 0x0d9d 
+  idProduct = 0x3011 
+  bcdDevice = 0x4b24 
+  iManufacturer = 0x0001  <HuiJia >
+  iProduct = 0x0002  <4Axes 16Key GamePad>
+  iSerialNumber = 0x0000  <no string>
+  bNumConfigurations = 0x0001 
+</pre>
+
+USBデバイスの接続／離脱のイベントは devd.conf に記述する。
+devd.conf は直接触らず /etc/devd/ の下に *.conf として作る。
+
+/etc/devd/my.conf:
+<pre># PS Joystick converter SANWA JY-PSUAD1
+attach 100 {
+       match "vendor"          "0x0d9d";
+       match "product"         "0x3011";
+       action "/hogehoge/start $device-name &";
+};
+detach 100 {
+       match "vendor"          "0x0d9d";
+       match "product"         "0x3011";
+       action "/hogehoge/stop $device-name";
+};
+
+# USB-Audio
+attach 100 {
+        device-name     "pcm0";
+        action "mixer vol 100:100; mixer pcm 100:100;";
+};
+</pre>
+
+attach/detach の意味はそのまま。
+100 は優先度。通常は適当で良い。
+vendor/product は usbconfig で得た idVendor/idProduct の値。
+$device-name は /dev/xxx の xxx に置き換わる。 
+重要： action のコマンドはすぐに終了する必要がある。
+       でないと devd も止まってしまう。
+
+＃ちなみに pcm0 で mixer の設定をしているのはデフォルトが
+＃75:75 で音量が小さいため。75% と言いつつ半分位に聞こえる。
+
+設定後は dved の再起動が必要。
+<pre># /etc/rc.d/devd restart</pre>
+
+PC-Audio は USB-JoyStick から mplayer を操作しようと目論んで
+いるので attach/detach でプレーヤの起動／終了ができる必要が
+あって調べてみたがUSB回りはいろいろ興味深い。
+
+関連記事：
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9851656.html">静音PC、使用感</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9846418.html">静音PC買ってしまいました</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9833001.html">PCオーディオ始めますた</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9884344.html">共立エレのUSB-AUDIOキット</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9896058.html">FreeBSDでPCオーディオ：高音質再生</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9858739.html">FreeBSDでPCオーディオ：リッピング</a>
+
+

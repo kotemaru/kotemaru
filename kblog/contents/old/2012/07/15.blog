@@ -1,0 +1,209 @@
+Subject: Google Mapでカスタムの吹き出し その２
+Content-type: html/text
+Tags: JavaScript
+Date: 2012/07/15
+Public: yes
+
+
+最近 Google Mapでカスタムの吹き出し の記事にアクセスが多い。
+<p/>
+内容が外部サイト紹介だけでは体裁が悪いので自分でもすこし汎用に使えそうな
+コードを書いてみることにした。
+<p/>
+とりあえず 角丸に尻尾(ひげ)付きの有りがちなマンガ風の吹き出しを CSS だけで作ってみた。
+<p/>
+Chrome:
+<p><img border=1 src="/old/img/lovelog/gmap-balloon-chrome.png" /></p>
+
+Firefox:
+<p><img border=1 src="/old/img/lovelog/gmap-balloon-ff.png" /></p>
+
+IE8:一応動いたが角丸はできない。IE7 は未確認。
+<p><img border=1 src="/old/img/lovelog/gmap-balloon-ie8.png" /></p>
+
+× ボタンもテキストにしたが見栄えが良くないのでここだけは画像の方が良さそう。
+<p/>
+
+GMapBalloon-v0.1.js:
+<xmp style="height:250px;">
+function GMapBalloon() {this.initialize.apply(this,arguments);}
+(function(Class){
+	Class.prototype = new google.maps.OverlayView(); // extends
+
+	var OPTS = {
+		tailW: 12, tailH: 12, tailColor: "black",
+		round: 6, padding: 6,
+		border: "1px solid black",
+		background: "white", 
+		closeImg: "close.png", closeSize: 8 
+	};
+
+	Class.prototype.initialize = function(map, $innerElem, opts) {
+		var self = this;
+		this.opts = $.extend(OPTS, opts);
+		
+		$innerElem = $innerElem ? $innerElem : $("<div/>");
+		$innerElem.css({
+			position: "relative",
+			top: "0px", left: "0px"
+		});
+
+		// 外枠
+		var $outerElem = $("<div></div>");
+		$outerElem.css({position: "absolute"});
+
+		// 本体
+		var $body = $("<div></div>");
+		$body.css({
+			position: "relative",
+			background: this.opts.background,
+			padding: this.opts.padding+"px",
+			borderRadius: this.opts.round+"px",
+			border: this.opts.border
+		});
+
+		// 尻尾(ひげ)
+		var $hige = $("<div/>").css({
+			position: "relative", width:0,
+			margin: "-1px auto 0 auto",
+			borderLeft: this.opts.tailH+"px solid "+this.opts.tailColor,
+			borderBottom: this.opts.tailW+"px solid transparent",
+		});
+		var $innerHige = $("<div/>").css({
+			position: "absolute", width:0,
+			marginLeft: -(this.opts.tailH-1)+"px",
+			borderLeft: (this.opts.tailH-3)+"px solid white",
+			borderBottom: (this.opts.tailW-3)+"px solid transparent",
+		});
+
+		// ×ボタン
+		var $close = $("<div>×</div>").css({
+			position: "absolute",
+			top: "1px", right:"4px",
+			cursor: "default",
+			font: "bold 12px fixed", color:"red"
+		});
+		// 画像用
+		//$close.attr({
+		//	"src":   this.opts.closeImg,
+		//	"width": this.opts.closeSize,
+		//	"height":this.opts.closeSize,
+		//});
+		$close.bind("click", function(ev){self.close()});
+
+		
+		$body.append($innerElem);
+		$hige.append($innerHige);
+		$outerElem.append($body);
+		$outerElem.append($hige);
+		$outerElem.append($close);
+		
+		this.outerElem = $outerElem[0];
+		this.innerElem = $innerElem[0];
+		this.close();		
+		
+		this.setMap(map);
+	}
+	
+	// Map から callback.
+	Class.prototype.onAdd = function() {
+		// レイヤーにこのdivを張り込む
+		var panes = this.getPanes();
+		panes.floatPane.appendChild(this.outerElem);
+	}
+	
+	// Map から callback.
+	Class.prototype.draw = function() {
+		if (this.marker == null) return; 
+		// 経度緯度から画面座標系に変換
+		var pos = this.getProjection().fromLatLngToDivPixel(this.marker.getPosition());
+		if (!pos) return;
+
+		var icon = this.marker.getIcon();
+		var iconH = icon ? icon.size().height : 32;
+		var w2 = this.outerElem.offsetWidth/2-this.opts.tailW/2;
+		var h2 = this.outerElem.offsetHeight+iconH;
+		
+		$(this.outerElem).css({
+			visibility: "visible",
+			left: (pos.x-w2)+ "px",
+			top: (pos.y-h2) + "px"
+		});
+	}
+	
+	Class.prototype.open = function(tgtMarker, html) {
+		this.close();
+		this.marker = tgtMarker;
+		if (html) $(this.innerElem).html(html);
+		this.draw();
+	}
+	
+	Class.prototype.close = function() {
+		$(this.outerElem).css({visibility: "hidden"});
+	}
+	Class.prototype.isVisible = function() {
+		return $(this.outerElem).css("visibility") != "hidden";
+	}
+	
+	Class.prototype.addEventListener = function(type, func, cap) {
+		this.innerElem.addEventListener(type, func, cap);
+	}
+	
+})(GMapBalloon);
+</xmp>
+<p/>
+実行サンプル：
+<xmp style="height:250px;">
+<!DOCTYPE html> 
+<html> 
+	<head> 
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<title>GMap test</title> 
+
+	<script src="../jq/jquery-1.7.1.min.js"></script>
+	<script src="http://maps.google.com/maps/api/js?libraries=geometry&amp;sensor=true"></script>
+	<script src="GMapBalloon-v0.1.js"></script>
+
+	<style>
+#mapCanvas {
+	width: 500px;
+	height: 500px;
+	background: black;
+}
+	</style>
+	<script>
+var DEFAULT_CENTER = new google.maps.LatLng(35.681382, 139.766084);
+var OPTIONS = {
+	zoom: 14,
+	center: DEFAULT_CENTER ,
+	scaleControl: true,
+	mapTypeControl: false,
+	mapTypeId: google.maps.MapTypeId.ROADMAP
+};
+$(function(){
+	var $mapCanvas = $("#mapCanvas");
+	var map = new google.maps.Map($mapCanvas[0], OPTIONS);
+	var marker = new google.maps.Marker({  
+		map:map, position:DEFAULT_CENTER, title:"東京駅"
+	});
+	var balloon = new GMapBalloon(map, $("#balloon"));
+
+	google.maps.event.addListener(marker, 'click', function() {  
+		balloon.open(marker);  
+	});
+});
+
+	</script>
+	</head>
+<body>
+	<div id="mapCanvas"></div>
+
+	<div id="balloon"><nobr>東京駅<br>バルーンのテストです。</nobr></div>
+</body>
+</html>
+</xmp>
+
+以上。
+
+

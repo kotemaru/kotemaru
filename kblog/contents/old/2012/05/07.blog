@@ -1,0 +1,56 @@
+Subject: datastore-indexes.xmlでSingle Indexは制御できないのかね？ 
+Content-type: html/text
+Tags: GAE/J
+Date: 2012/05/07
+Public: yes
+
+GAEの課金が大きくなったその対策の一つとして余計な index
+を作らないと言うのが有るのだが
+Single index はデフォルトで作られちゃうので各項目に設定しなければならない。
+<p/>
+Slim3ならアノテーションでやって貰えるけど低レベルAPI
+だとソースの setProperty() を setUnindexedProperty() に変更しないといけない。
+<p/>
+で、これって datastore-indexes.xml で出来ないのかと思って調べたがどうやら
+出来ないらしい。
+<p/>
+つーか、良く考えたら datastore-indexes.xml のちゃんとした仕様って
+読んだこと無いわ orz
+<br/>
+しかも、ググってもなかなか出て来ない。
+結局 SDK の中に DTD を発見。
+<p/>
+
+<xmp><!ELEMENT datastore-indexes (datastore-index)*>
+<!ATTLIST datastore-indexes
+          autoGenerate (true|false) #REQUIRED>
+<!ELEMENT datastore-index (property)*>
+<!ATTLIST datastore-index
+          ancestor CDATA #REQUIRED
+          kind CDATA #REQUIRED>
+<!ELEMENT property (#PCDATA)>
+<!ATTLIST property
+          direction (asc|desc) #REQUIRED
+          name CDATA #REQUIRED>
+</xmp>
+<p/>
+
+これを見る限り Composite index の設定しか無さげ。
+<p/>
+対策検討中にたまたま見付けたのが以下のページ
+<ul>
+<li>Single Property Indexを作らないとComposite Indexも作成されない？<br/>
+http://d.hatena.ne.jp/koherent/20100801/1280643622
+</ul>
+<p/>
+うーん、逃げ道無し。
+
+<p/>
+ちなみに single index 全部無くすとどのくらい効果があるかと言うと
+項目数11個で Write ops が 22 -> 2 になる。
+
+<p><img border=1 src="/old/img/lovelog/DS-index-2.png"  /></p>
+
+実際には全部消せないけどケースバイケースで効果絶大な場合もありそう。
+
+

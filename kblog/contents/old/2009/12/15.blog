@@ -1,0 +1,32 @@
+Subject: 掲示版のデザイン
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2009/12/15
+Public: yes
+
+公開サーバには掲示版の一つも欲しいのだがいざ作ろうとすると以外にデザインで悩む。
+
+だらだら喋るなら 2ch タイプのフラットな構成が良いし、
+Q&Aが多いようだとツリータイプが良い。
+特定のテーマで議論するならスレッドが必要だし検索も欲しいなんて考え出したらまとまらない。
+
+まぁ書き込む人がどのくらいいるのか分からないのに頑張ってもしょうがないので取り合えずシンプルなフラットタイプで行くことにした。
+
+DBのテーブルには基本項目とアンカーとテーマの項目だけ確保しておく。
+
+こんな感じ。
+<pre>
+db.createTable(ARTICLE, {
+	pkey:    "serial PRIMARY KEY",
+	status:  "integer",
+	deleted: "boolean",
+	datetime:"timestamp",
+	anchor:  "integer",
+	theme:   "varchar(32)",
+	username:"varchar(100)",
+	subject: "varchar(100)",
+	comment: "varchar(2000)"
+});
+</pre>
+
+

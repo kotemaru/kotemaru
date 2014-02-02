@@ -1,0 +1,163 @@
+Subject: Eclipse/SWTのBrowserではまった。
+Content-type: html/text
+Tags: eclipse
+Date: 2011/06/11
+Public: yes
+
+<style>
+xmp {
+    white-space: -moz-pre-wrap; /* Mozilla */
+    white-space: -pre-wrap;     /* Opera 4-6 */
+    white-space: -o-pre-wrap;   /* Opera 7 */
+    white-space: pre-wrap;      /* CSS3 */
+    word-wrap: break-word;      /* IE 5.5+ */
+}
+</style>
+
+<font size=2>
+<ul><li>
+関連記事：
+<a href="http://blog.kotemaru.org/2013/05/25/eclipse-browser-plugin.html">
+EclipseのPluginをSWT Browserで作る</a>
+</li></ul>
+</font>
+
+EclipseでGUIを作る場合、どんなのが適当かなーと
+思ってたら SWT からブラウザが起動できるらしいので
+試して見たがえらくはまった。
+<p/>
+SWTから起動したブラウザはイベントをJavaで拾えるので
+ローカルアプリとの連係ができる。<br/>
+通常のブラウザはセキュリティ上の制限が厳しくWebアプリと
+ローカルアプリを連係させるのは難しかったが
+これで簡単にできるかもしれない。
+
+<p/>
+
+SWT の開発環境は以前はデフォルトで入っていたらしいのだが
+最近の版では別途インストールが必要らしい。
+しかもプラットフォーム毎に異なるバイナリが使う必要がある。
+<p/>
+
+以下のURLから使っているEclipseと同じ版の「SWT Binary and Source」
+を落してきてインストールする。
+<ul><li>http://download.eclipse.org/eclipse/downloads/</ul>
+<p/>
+
+FreeBSDの場合は ports の x11-toolkits/swt-devel からインストール
+でるので楽なのだがカテゴリが java/ でも develop/ でも
+無いので探すのに苦労した。
+しかもインストール先が
+/usr/local/share/java/classes/
+なのですごく分かりにくい。
+<p/>
+追記：Linux系の場合は libwebkitgtk-1.0 をインストールするのが楽。
+<p/>
+
+コンパイルは ビルドパス にインストール先の swt-devel.jar を
+追加するだけで通るようになる。
+<p/>
+
+はまったのは実行で何も考えずに実行するとこんなエラーがでる。
+<p/>
+
+<xmp>org.eclipse.swt.SWTError: No more handles [Unknown Mozilla path (MOZILLA_FIVE_HOME not set)]
+</xmp>
+<p/>
+
+ググった情報を元に eclipse の起動スクリプトに設定を追加してみた。
+<p/>
+
+<xmp>
+export MOZILLA_FIVE_HOME=/usr/local/lib/firefox3
+export LD_LIBRARY_PATH=$MOZILLA_FIVE_HOME:$LD_LIBRARY_PATH
+</xmp>
+<p/>
+
+しかし別のエラーが...
+<p/>
+
+<xmp>UnsatisfiedLinkError: no swt-mozilla-gtk-3555 or swt-mozilla-gtk in swt.library.path, java.library.path or the jar file
+</xmp>
+<p/>
+
+しかし、 swt-develでインストールされるライブラリはこれだけだ。
+
+<xmp>libswt-atk-gtk-3631.so
+libswt-awt-gtk-3631.so
+libswt-cairo-gtk-3631.so
+libswt-glx-gtk-3631.so
+libswt-gnome-gtk-3631.so
+libswt-gtk-3631.so
+libswt-pi-gtk-3631.so
+libswt-xulrunner-gtk-3631.so
+</xmp>
+<p/>
+
+本来なら libswt-xulrunner-gtk-3631.so が使われるべきと
+思うのだがググっても良く分からない。
+<p/>
+
+探し回ったらこんな所に居やがったのだが明らかに旧版。
+<p/>
+
+<xmp>~/eclipse/org.eclipse.platform_3.4.0_185596441/configuration/org.eclipse.osgi/bundles/129/1/.cp/libswt-mozilla-gtk-3452.so
+</xmp>
+<p/>
+
+バージョンの混乱が起こっているようなのだが原因がわからないので
+SWT のソースを読みまくってやっと状況が見えてきた。
+<p/>
+
+最初に libswt-xulrunner-gtk の使える環境か否か調べて
+だめなら libswt-mozilla-gtk を使うようになっていた。
+<p/>
+
+で、ソースをさらに読むとシステムプロパティに
+ org.eclipse.swt.browser.XULRunnerPath
+が設定されていないと xulrunner を使わないようになっている事が判明。
+<p/>
+
+実行環境に設定したら動いたよ。
+<xmp>-Dorg.eclipse.swt.browser.XULRunnerPath=/usr/local/lib/firefox3</xmp>
+<p/>
+言及しているサイトはあんまり無いけどFirefoxのみの設定だからか？
+<p/>
+
+あちこちにあるサンプルだけど一応置いとく。
+<xmp>
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.layout.*;
+
+public class BrowserTest {
+	public static void main(String[] args) {
+		Display display = new Display();
+		final Shell shell = new Shell(display);
+		shell.setText("BrowserTest");
+		shell.setLayout(new FillLayout());
+ 
+		Browser browser = new Browser(shell, SWT.NONE);
+		browser.setUrl("http://www.yahoo.co.jp");
+
+		shell.setSize(800, 600);
+		shell.open();
+	
+		while (!shell.isDisposed ()){
+			if (!display.readAndDispatch ()){
+				display.sleep ();
+			}
+		}
+		shell.dispose();
+		display.dispose();
+	}
+}
+</xmp>
+<p/>
+
+実行結果：
+<p><img src="/old/img/lovelog/eclipse-swt-brouser-test.png"/></p>
+
+

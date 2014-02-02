@@ -1,0 +1,94 @@
+Subject: HTML5のmanifestを使ってみた。
+Content-type: html/text
+Tags: HTML5
+Date: 2012/06/03
+Public: yes
+
+HTML5のmanifestはブラウザ側のキャッシュを制御する機能で
+クライアントがネットに継っていなくてもＷｅｂアプリを
+動かすことができる。
+<p/>
+地味な機能だけどスマホみたいに通信が不安定な端末で
+Ｗｅｂアプリを動かそうとすれば必須の機能だと思う。
+<p/>
+
+具体的な使い方は凄く単純でキャッシュ可能なファイルのパスの
+一覧を記述したファイルを用意してそれを html タグの属性に指定するだけだ。
+<p/>
+こんな感じ<p/>
+index.html:
+<xmp><!DOCTYPE html>
+<html manifest="cache.manifest">
+          :
+</xmp>
+<p/>
+cache.manifest:
+<xmp>CACHE MANIFEST
+# version 1.0
+
+CACHE:
+# キャッシュするパス
+img/all32.png
+img/others.png
+sound/all.mp3
+min/all-min.js
+
+NETWORK:
+# ネットワーク必須のパス
+
+FALLBACK: 
+# エラー処理。パスを２つ記述。後の方がエラーのパス。
+# / /error.html
+</xmp>
+<p/>
+書き方は
+<ul>
+<li>先頭行の「CACHE MANIFEST」はマジックナンバーなので必須
+<li># で始まる行はコメント
+<li>キャッシュをクリアする場合は manifest ファイルを更新。
+<li>ワイルドカードは使えない。
+<li>ブラウザによってはキャッシュしないパスは NETWORK: に記述が必須らしい。
+</ul>
+だそうです。<br>
+ワイルドカードが使えないのがなにげにウザイです。
+<p/>
+
+で、はまり所が１箇所有ります。<br>
+manifest ファイルは Content-type: text/cache-manifest
+で応答されなければならないのですが通常サーバ側に設定がありません。
+<p/>
+ここでは GAE/J での設定方法を示します。
+<p/>
+appengine-web-app.xml:
+<xmp>   <static-files>
+		:
+       <include path="*.manifest"/>
+   </static-files>
+</xmp>
+<p/>
+web.xml:
+<xmp>	<mime-mapping>
+	  <extension>manifest</extension>
+	  <mime-type>text/cache-manifest</mime-type>
+	</mime-mapping>
+</xmp>
+<p/>
+これでOKです。
+<p/>
+
+凄く分かりづらいですが実際に試したところ。
+<p/>
+サーバにアクセスしている状態。
+<p><img border=1 src="/old/img/lovelog/html5-mani-1.jpg" /></p>
+
+無線LANを止めてリロードしても正常に動作。
+<p><img border=1 src="/old/img/lovelog/html5-mani-2.jpg" /></p>
+
+参考：
+<ul>
+<li>こちらでJavaScriptからの制御方法まで整理されています。<br/>
+「[HTML5] アプリケーションキャッシュの使い方」<br/>
+http://tenderfeel.xsrv.jp/html-xhtml/html5-html-xhtml/1172/
+</ul>
+
+

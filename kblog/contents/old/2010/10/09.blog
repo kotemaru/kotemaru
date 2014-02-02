@@ -1,0 +1,108 @@
+Subject: GAE/Jでメールを受信。
+Content-type: lovelog/text
+Tags: GAE/J
+Date: 2010/10/09
+Public: yes
+
+いままで気が付かなかったがGAEはメールの受信ができるらしい。
+ちょっと試してみた。
+
+前準備。
+appengine-web.xml に設定を追加する。
+<pre>
+    &lt;inbound-services>
+       &lt;service>mail&lt;/service>
+    &lt;/inbound-services>
+</pre>
+こんだけ。
+
+後は xxxxx@<i>{app-id}</i>.appspotmail.com にメールを送ると
+http://<i>{app-id}</i>.appspot.com/_ah/mail/xxxxx@<i>{app-id}</i>.appspotmail.com へ
+メールの内容がそのまま転送される。
+
+WSJSで試そうと思ったがWSJSは現状、拡張子ベースになっているので
+ちょっと都合が悪い。
+しょうが無いので mod_rewrite 的な機能を書き足した。
+
+RewriteProc.java:
+<pre style="height:250px;">
+package kotemaru.wsjs.proc;
+
+import java.io.* ;
+import java.net.* ;
+import java.util.* ;
+import java.text.* ;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import org.mozilla.javascript.*;
+import java.util.regex.*;
+
+import kotemaru.auth.* ;
+import kotemaru.util.* ;
+import kotemaru.wsjs.* ;
+
+public class RewriteProc extends ProcessorBase {
+	private Pattern pattern;
+	private String destPageName;
+	private Processor destProc;
+
+	public RewriteProc(String patt, String dest) {
+		super();
+		this.pattern = Pattern.compile(patt);
+		this.destPageName = dest;
+	}
+	private RewriteProc(Processor proc) {
+		destProc = proc;
+	}
+
+	public Processor getInstance(WsjsContext ctx, Page page) throws IOException  {
+		Matcher matcher = pattern.matcher(page.getPageName());
+		if (!matcher.matches()) return null;
+		Processor proc = ctx.getProcessor(destPageName);
+		return new RewriteProc(proc);
+	}
+	public boolean isCachable() {
+		return false;
+	}
+
+	public void dispose() {
+	}
+
+	public void processing(WsjsContext ctx) throws IOException, javax.servlet.ServletException {
+		destProc.processing(ctx);
+	}
+}
+</pre>
+
+config.js:
+<pre>
+config.processors = [
+	new Packages.kotemaru.wsjs.proc.RewriteProc("^/_ah/mail/.*$","/mail/receiver.ssjs"),
+                  :
+</pre>
+
+これで /_ah/mail/* が /mail/receiver.ssjs に転送される。
+
+とりあえず、receiver.ssjs で POSTのボディをそのまま別のページに
+吐き出すようにしてみた。
+/mail/receiver.ssjs:
+<pre>
+function doPost(req, res) {
+	var page = __ENV__.getPage("/tmp/maildata.txt");
+	page.putBodyStream(req.getInputStream());
+}
+</pre>
+
+test@wsjs-gae.appspotmail.com にメールを送ってみる。
+
+<img border=2 width="480px" src="/old/img/auone/LOVELOG_IMG/20101009-1.png" />
+
+おお、ちゃんと受け取れた。ヘッダも込の全文ですね。
+
+<img border=2 width="480px" src="/old/img/auone/LOVELOG_IMG/20101009-2.png" />
+
+メールボットがいろいろ作れそう。
+MLは送信に 2000 件の制限があるからきついかも。
+テストでダミーのメールアドレスが大量に必要な時とかは役に立ちそう。
+
+

@@ -1,0 +1,25 @@
+Subject: QR code ビューア
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2010/04/10
+Public: yes
+
+ちょっと必要だったので QR code ビューアを作ってみました。
+
+http://wsjs.dip.jp:8008/samples/qrcode/qrcode.ssjs
+
+<img src="/old/img/auone/LOVELOG_IMG/qrviewer.png" alt="qrviewer.png"/>
+
+通常は画像で表示しますがこれは table でやってます。
+
+ライブラリはこちらの物をお借りしました。
+http://www.swetake.com/qr/java/qr_java.html
+このライブラリは結果をboolean配列で返してくれるので画像が使えない環境でも使えます。
+
+これで携帯でURLを入れるが楽になりました。
+
+ソースは http://wsjs.dip.jp:8008/develop/index.html から rqcode/ を開いてけば見れます。
+
+
+
+

@@ -1,0 +1,24 @@
+Subject: GAE/Jのログが見れた
+Content-type: html/text
+Tags: GAE/J
+Date: 2010/02/03
+Public: yes
+
+<textarea class="wikitext" style="font-size:12px;width:480px;height:200px;">
+放置してあった GEA/J だがある筋から
+「普通に管理画面からログは見れるよ」と教えて貰ったので試したところ
+ちゃんと見れました。
+
+- https://appengine.google.com/ -> Application -> Logs
+
+エラーログを元に調整したところとりあえずトップページの表示に成功。
+まだ、いろいろおかしい所が有りますがとにかくログが見れれば
+デバッグできるので何とでもなります。
+
+
+ただ応答は結構遅いですね。有料だと違うのかな。
+
+</textarea>
+<noscript style="color:red;">Wikiテキストを表示するにはJavaScriptが必要です。</noscript>
+
+

@@ -1,0 +1,87 @@
+Subject: LAVELOGでwikiのテスト
+Content-type: html/text
+Tags: メモ
+Date: 2010/01/29
+Public: yes
+
+<noscript style="color:red;">Wikiテキストを表示するにはJavaScriptが必要です。</noscript>
+<textarea class="wikitext" style="width:480px;height:200px;">
+* head1
+** head2
+
+- list1
+-- list2
+
+|テーブル|テーブル|h
+|テーブル|テーブル|
+</textarea>
+
+
+Subject: LAVELOGでwikiが使えた
+Content-type: html/text
+Tags: メモ
+Date: 2010/01/29
+Public: yes
+
+<textarea class="wikitext" style="width:480px;height:200px;">
+くる太郎さんに LAVELOG のカスタマイズができる事を教えて貰ったので
+Wiki でブログを書けるようにしてみました。
+
+ブラウザ側でWikiテキスト -> HTML の変換を行うので JavaScript が必要です。
+
+*** 準備
++ 管理画面の「デザイン」->「ＨＴＭＬ一覧」から「ＨＴＭＬの追加」を選択。
++ 適当に名前を付けて次の修正を加える。
+-- </head> の直前に追加。
+ <!-- inou custom jswiki -->
+ <link rel="stylesheet" type="text/css" href="/old/img/auone/LOVELOG_IMG/jswiki.css" ></link>
+ <script language="javascript" src="/old/img/auone/LOVELOG_IMG/jswiki-pack.js" charset="utf-8"></script>
+ <script>
+ function bodyOnLoad() {
+   <% if:page_name eq 'article' -%>
+     <% if:individual_article.accept_comment_catch -%> 
+       checkCookie();
+     <% /if -%>
+   <% /if -%>
+   <% if:page_name eq 'comment' -%>
+     <% if:individual_article.accept_comment_catch -%> 
+       checkCookie();
+     <% /if -%>
+   <% /if -%>
+       Wiki.onload('wikitext');
+ }
+ </script>
+-- <body> を変更
+  <body<% if:page_name eq 'article' -%><% if:individual_article.accept_comment_catch -%> onLoad="checkCookie()" <% /if -%><% /if -%><% if:page_name eq 'comment' -%><% if:individual_article.accept_comment_catch -%> onLoad="checkCookie()"<% /if -%><% /if -%>>
+↓
+  <body onload="bodyOnLoad()">
++ 「保存」して「適用」をチェックし「HTMLを適用」をクリックします。
+
+
+*** ブログの記述
++ 「記事設定」で改行の変換とURLの変換を無効にします。
++ 以下のようなテンプレの内側にブログ本文をWikiで記述します。
+ <textarea class="wikitext" style="width:480px;height:200px;">
+    ブログ本文(Wikiテキスト)
+ &lt/textarea>
+ <noscript style="color:red;">Wikiテキストを表示するにはJavaScriptが必要です。</noscript>
++ Wikiの書式はおおむね PukiWiki です。
+-- 詳細は[[こちら:http://wsjs.dip.jp:8008/develop/help/ext.wiki.wiki]]を参照して下さい。
++ 全体を再構築。
+
+*** 注意事項
+- JavaScriptで変換する為、SEO的に不利になる可能性があります。
+-- 特にリンクは検索サイトから認識されないので相互リンクの場合はWiki外にリンクを書く必要があります。
+- jswiki.css, jswiki-pack.js は自分の領域に置いても構いません。
+-- jswiki.css は通常カスタマイズが必要だと思います。
+
+------------------------------
+以上。
+
+＃ちなみにこの記事もWikiで書きました。
+JavaScriptを無効にするとソースが見れます。
+
+</textarea>
+<noscript style="color:red;">Wikiテキストを表示するにはJavaScriptが必要です。</noscript>
+
+

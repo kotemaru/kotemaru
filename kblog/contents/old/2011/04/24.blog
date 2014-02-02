@@ -1,0 +1,111 @@
+Subject: GAE/J の OAuth 認証を試してみた。その２
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/04/24
+Public: yes
+
+その１で一応 OAuth 認証は出来ているんだけど
+公開鍵を使った認証ができるのでこれを試してみる。
+<p/>
+最初、公開鍵を使うと consumer_key と consumer_secret で
+2-legged で認証できると思っていたのだがどうやら出来ないならしい。
+<br/>
+そもそも API がユーザを取得するようになっているので
+そういう物なんだろう。
+
+<h3>鍵の準備</h3>
+<p/>
+
+まず公開鍵を用意する。
+現状、使えるのは RSA だけ。
+<p/>
+
+openssl で鍵を作る。
+<ul><li>http://code.google.com/intl/ja/apis/gdata/docs/auth/authsub.html#Registered</ul>
+<pre>$ openssl req -x509 -nodes -days 365 -newkey rsa:1024 -sha1 \
+ -subj '/C=US/ST=CA/L=test/CN=wsjs-gae.appspot.com' \
+ -keyout wsjs-gae_pri.pem -out wsjs-gae_pub.pem
+</pre>
+subject は適当に修正が必要。
+<p/>
+
+java は pkcs8 形式しか受け付けないので秘密鍵を変換する。
+<pre>$ openssl pkcs8 -in wsjs-gae_pri.pem -out wsjs-gae_pri.pk8 -topk8 -nocrypt
+</pre>
+<p/>
+
+<h3>サーバに公開鍵を登録</h3>
+<p/>
+
+管理画面から公開鍵と登録する。
+<ul><li>https://www.google.com/accounts/UpdateDomain</ul>
+
+<p><img border="1" src="/old/img/lovelog/oauth-2-1.png" /></p>
+
+サーバ側の準備はこれだけ。
+
+<p/>
+
+<h3>クライアント側に秘密鍵を指定</h3>
+<p/>
+
+クライアント側で秘密鍵を使うコードは既にその１のコードに入っている。
+<p/>
+<pre>
+	protected OAuthAccessor getOAuthAccessor() throws Exception {
+		OAuthServiceProvider provider = 
+			new OAuthServiceProvider(reqUrl, authUrl, accessUrl);
+		OAuthConsumer consumer = 
+			new OAuthConsumer(null, domain, consumerSecret, provider);
+<font color="red">
+		String key = props.getProperty(PRIVATE_KEY);
+		if (key != null) {
+			EncodedKeySpec privKeySpec = new PKCS8EncodedKeySpec(
+				OAuthSignatureMethod.decodeBase64(key)
+			);
+			KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+			PrivateKey privateKey = keyFactory.generatePrivate(privKeySpec);
+			consumer.setProperty(RSA_SHA1.PRIVATE_KEY, privateKey);
+			consumer.setProperty(OAuth.OAUTH_SIGNATURE_METHOD, OAuth.RSA_SHA1);
+		}
+</font>
+		return new OAuthAccessor(consumer);
+	}
+</pre>
+<p/>
+
+プロパティファイルに private_key を指定すると時動的に RSA_SHA1
+モードに切り替わるようになっている。
+<p/>
+
+鍵の準備で作成した pkcs8 の秘密鍵を設定する。
+<ul><li>oauth.props:</ul>
+<pre>app_id=wsjs-gae
+consumer_secret=XXXXXXXXXXXXXXXXXXXXXXX
+private_key=\
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALFqa/6eR/Eb8Jf8\
+ftkuszfdjyybKeZXFBbnJejDjYc40wA9+kaEZbBwrFNCPFcRyF9+CCGbfkVKKvxH\
+hpe+81xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxghxtTb\
+VnKfhexxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxZfL1C4\
+OKEMI/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxJ/Ngts\
+EaP0YgxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxBi9jlS\
+i6vZN0xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxQG7eqM\
+UN4pjJxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxi8zjWZ\
+3vt8Epxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx0cEgB0\
+8iu3AExxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxR1OYlW\
+SmWJbbxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxexkVe+\
+GVe9XRTSzVU5zIk70oTocR9qFwUZhMk1jzcNuNvTVZbPr7mPXhNhAkEArFu3d3eK\
+csyGYG5+4e6QkYWkjce/xTdmt0YBdOLzyxMPcVZpUPxN75TBBDiLmpNAr2kRkWw5\
+0VlVlA/KMbN+qQ==
+</pre>
+<p/>
+
+これで その１ と同じ用に request、承認、access、目的URL と進めば
+RSA_SHA1 で 3-legged oauth で認証を行う事ができる。
+<p/>
+
+2-legged 出来ないんでセキュリティが強化されただけで
+あんまり面白く無い。<br/>
+しかも公開鍵登録しても HMAC-SHA1 でアクセス出来ちゃうし。
+
+

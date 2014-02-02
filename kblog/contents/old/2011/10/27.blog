@@ -1,0 +1,55 @@
+Subject: Android を VirtualBox で動かしてみた 
+Content-type: html/text
+Tags: android
+Date: 2011/10/27
+Public: yes
+
+作成中の jQuery Mobile アプリをAndroidで動かしてみた。<br/>
+開発用のエミュのAndroidは重すぎて話しにならなかったので
+以下のページを参考に VirtualBox で動かしてみた。
+<p/>
+<ul>
+<li>http://d.hatena.ne.jp/OkadaHiroshi/20100507/1273250632
+</ul>
+
+VirtualBox がインストールしてあれば実行は簡単で以下のサイトから
+ISO ファイルをどれか一つ落してきて
+VirtualBox にマウントして起動するだけ。
+<p/>
+
+<ul>
+<li>http://www.android-x86.org/download
+</ul>
+
+仮想HDDにインストールも出来るが仮想CDDからそのまま起動する事もできる。
+<p/>
+
+Androidのバージョンは現時点(2011/10)で 1.6/2.2/2.3 が存在する。<br/>
+但し、1.6はDeprecated、2.3はUnstableとなっているので注意。
+<p/>
+
+ハードウェア別に幾つかの ISO があるのだが良く分からないのでとりあえず
+android-x86-2.2-r2-sparta.iso を落してきた。<br/>
+一応仮想HDDにインストールして起動したらサクっと起動してきた。
+
+<p><img src="/old/img/lovelog/android-vbox.png" /></p>
+
+４つボタンが不明だったがいじくり回して
+<ul>
+<li>戻る：マウス右ボタン
+<li>メニュー：マウス中ボタン
+<li>ホーム：HOMEキー
+<li>検索：不明
+</ul>
+と判明。
+検索は無くてもあんまり困んないからまあいいや。
+<p/>
+で、肝心のアプリを実行してみたらブラウザが落ちた orz
+<p/>
+jQuery Mobile のサイトでもブラウザが落ちるので android-x86
+の問題か jQuery Mobile がブラウザのバグを突いているのだろう。
+<p/>
+とりあえず、一旦ペンディングだなー (´･ω･`)ｼｮﾎﾞｰﾝ
+
+
+

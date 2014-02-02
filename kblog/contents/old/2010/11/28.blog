@@ -1,0 +1,73 @@
+Subject: 静音PC買ってしまいました
+Content-type: lovelog/text
+Tags: 日記
+Date: 2010/11/28
+Public: yes
+
+Audio用のPCはとりあえずWinXPのNote-PCを使ってみたのだが
+やっぱり２４時間はきつい。
+
+使って無いときはサスペンドさせようとすると再生途中でサス
+ペンドしちゃったりして面倒臭い。
+
+そもそもファンがうるさいので音楽用に向いていない。
+
+つー訳で買っちゃいました静音PC。
+つっても D510MO と SEED のケースで仕事用とまったく同じ構成。
+
+拘ったわけでは無いのだがコストと静穏性を考慮すると結局
+これになってしまった。
+
+<img border=2 src="/old/img/auone/LOVELOG_IMG/2010-11-28-2.JPG" />
+<img border=2 src="/old/img/auone/LOVELOG_IMG/2010-11-28-1.JPG" />
+
+お会計：
+<pre>
+D510MO           6980円
+2.5" 250G HDD    3450円
+DDR2-800 2G      2880円
+CASE 90W         9980円
+--------------- -------
+合計            23290円
+</pre>
+
+今回はベアボーンじゃ無いので組み立てからやったが問題なく
+あっさり終了。
+OSもUSBメモリから FreeBSD/8.1 をすんなりインストール。
+
+問題はここから。
+
+再起動したものの HDD が認識出来ず起動できない。
+BIOS もインストーラも認識できてるのに...
+
+相性を疑ってショップに電話したがこの組み合わせは結構出てい
+るとの事。
+
+BIOS を疑って更新しようとしたがなぜか最新のBIOSを落してきて
+もエラーになって更新できない。
+
+手詰りになって あうあうしていたのだが はっと気が付き一つ前
+のBIOSをダウンロードして試したところ更新成功。
+しかもHDDも認識して起動できた。
+
+BIOSのバグは許せる、でも更新できないバイナリをWebに置いとく
+なよボケインテル。
+
+同じ状況の人の為に書いときます。
+D510MO + HTS545025B9A300 で起動できない場合、以下のバージョン
+0400 のBIOSを使ってください。 
+最新のバージョン 0501 は使えません。
+
+http://downloadcenter.intel.com/Detail_Desc.aspx?agr=Y&DwnldID=19453&ProdId=3196&lang=jpn
+
+さらに続く。。
+
+関連記事：
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9851656.html">静音PC、使用感</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9846418.html">静音PC買ってしまいました</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9833001.html">PCオーディオ始めますた</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9884344.html">共立エレのUSB-AUDIOキット</a>
+
+
+
+

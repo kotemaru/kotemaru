@@ -1,0 +1,66 @@
+Subject: Rhinoのevalを使用禁止に
+Content-type: lovelog/text
+Tags: Rhino
+Date: 2009/12/21
+Public: yes
+
+サーバ側のJSで eval() を使われちゃうとセキュリティ的にどうしようも無い。
+口頭で禁止しても eval() の魔力に勝てず使ってしまう輩は必ずいる。
+なので物理的に禁止する事にした。
+
+ググって見たがそれっぽい記事は出て来ない。
+しかたが無いので感でグローバル変数の eval を置き換えてみたらあっさり成功。
+オリジナルの eval() を保存して置けばユーザ関数の実行中のみ禁止にもできる。
+
+
+ユーザ関数の起動スクリプト:
+<pre>
+function include(pageName) {
+	__ENV__.include(pageName, this);
+}
+function XMLHttpRequest() {
+	return new Packages.kotemaru.wsjs.ssjs.XMLHttpRequest(__ENV__);
+}
+
+(function(req, res) {
+	var evalBackup = eval;
+	eval = function() {
+		throw new Packages.kotemaru.wsjs.ErrorPageException(500,"evalDisabled");
+	}
+	if (req.method == "GET") {
+		doGet(req, res);
+	} else if (req.method == "POST") {
+		doPost(req, res);
+	} else {
+		throw "Not imple method "+req.method
+	}
+	eval = evalBackup;
+})
+</pre>
+
+ユーザ関数:
+<pre>
+function doGet(req, res) {
+	eval("({a:'A'})");
+}
+</pre>
+
+
+実行結果:
+<pre>
+2009/12/21 10:22:02.249 [ERROR ] ErrorPage:500 evalDisabled[] (ssjs-boot.js#16)
+org.mozilla.javascript.JavaScriptException: ErrorPage:500 evalDisabled[] (ssjs-boot.js#16)
+        at org.mozilla.javascript.gen.c2._c4(ssjs-boot.js:16)
+        at org.mozilla.javascript.gen.c2.call(ssjs-boot.js)
+        at org.mozilla.javascript.ScriptRuntime.callSpecial(ScriptRuntime.java:2350)
+        at org.mozilla.javascript.optimizer.OptRuntime.callSpecial(OptRuntime.java:165)
+        at org.mozilla.javascript.gen.c10._c1(/home/kotemaru.openid.ne.jp/test3.ssjs:2)
+        at org.mozilla.javascript.gen.c10.call(/home/kotemaru.openid.ne.jp/test3.ssjs)
+        at org.mozilla.javascript.optimizer.OptRuntime.callName(OptRuntime.java:97)
+        at org.mozilla.javascript.gen.c2._c3(ssjs-boot.js:19)
+        at org.mozilla.javascript.gen.c2.call(ssjs-boot.js)
+</pre>
+
+簡単すぎてなんか不安だけどちゃんと動いてるみたいなのでとりあえずこれでいっちゃおーっと。
+
+

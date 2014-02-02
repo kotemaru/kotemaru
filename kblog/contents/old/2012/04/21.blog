@@ -1,0 +1,128 @@
+Subject: iPhoneのsafariで効果音を鳴らす
+Content-type: html/text
+Tags: iPhone
+Date: 2012/04/21
+Public: yes
+
+差速度センサのビー玉が思いの他気持良く動くのでゲームっぽく手を入れている。
+<p/>
+で、効果音が欲しいと思い調べたのだがこれが想像以上に厄介だった。
+<p/>
+基本的には HTML5 の audio タグでやるわけだが iPhone には特殊な制限が有る。
+<p/>
+<ul>
+<li>ユーザのアクションから起動しないと音声データを読み込めない。<br>
+    (※参考1サイトではonloadで読込できるとしているがiOS5では出来なかった)
+<li>同時に１つの音声データしか保持/再生できない。
+</ul>
+
+<font size=-2>
+<ul>
+<li>参考1：http://d.hatena.ne.jp/favril/20100806/1281093059
+<li>参考2：http://www.riaxdnp.jp/?p=1912
+</ul>
+</font>
+<p/>
+結局、解決策としてはこうなった。
+<p/>
+<ul>
+<li>複数の効果音を１つの音声データにまとめて一部を再生する。
+<li>読み込みは起動時に何らかのユーザアクションをさせるしかない。
+</ul>
+<font size=-2>
+<ul>
+<li>参考3：http://www.riaxdnp.jp/?p=1953
+</ul>
+</font>
+
+効果音が重なると前のが途切れちゃうけど仕方が無い。
+これが現状のiPhoneの限界。
+<p/>
+整理してライブラリにまとめて見た。<br/>
+ソース：
+<xmp style="height:250px;">
+/**
+ * iPhone用効果音ライブラリ。
+ * - iPhone の制限を回避して任意のタイミングで効果音を鳴らすライブラリ。
+ * - iPhone の safari には audio タグに以下の制限がある。
+ *   - ユーザのアクションから起動しないと音声データを読み込めない。
+ *   - 同時に１つの音声データしか保持できない。
+ * - 解決方
+ *   - 複数の効果音を１つの音声データにまとめて一部を再生する。
+ *   - 読み込みは起動時に何らかのユーザアクションをさせるしかない。
+ *
+使用例：
+	xxxx.addEventListener("click", function(){ // 何かのタップで
+		iPhoneSound.load("all.mp3",  {
+		  // 音の名前    開始秒    終了秒
+			bootup    : {s:0.0,   e:1.55,   },
+			shotdown  : {s:1.9,   e:2.48,   },
+			click     : {s:3.293, e:3.8,    },
+		}, function(){
+			onload();
+		});
+	);
+
+	function onload() {
+		// ロード後は何時でも呼べる。
+		iPhoneSound.play("bootup");
+	}
+ *
+ * @author kotemaru@kotemru.org
+ */
+function iPhoneSound(){};
+(function(Class){
+
+	/**
+	 * 音声データの読み込み。
+	 * @param url    音声データのURL
+	 * @param parts  部分定義 {効果音名:{s:開始秒,e:終了秒},…}
+	 * @param callback 読込完了ハンドラ
+	 */
+	Class.load = function(url, parts, callback) {
+		Class.audio = new Audio(url);
+		Class.parts = parts;
+		Class.audio.addEventListener("loadedmetadata", callback);
+		Class.audio.load();
+	}
+	/**
+	 * 効果音の再生。
+	 * @param name   効果音の名前
+	 */
+	Class.play = function(name){
+		var part = Class.parts[name];
+		playPart(part.s, part.e, 1.0);
+	}
+
+	function playPart(s,e,v){
+		Class.audio.pause();
+		Class.audio.currentTime = s;
+		Class.audio.volume = v;
+		Class.endTime = e;
+		Class.audio.play();
+		setTimeout(autoStop, (e-s)*1000);
+	}
+	function autoStop(){
+		if (Class.audio.paused) return;
+		if (Class.audio.currentTime >= Class.endTime) {
+			Class.audio.pause();
+		} else {
+			setTimeout(autoStop, 10);
+		}
+	}
+
+})(iPhoneSound);
+</xmp>
+<p/>
+ちなみに再生の開始位置は指定出来るが終了位置は指定出来ない。
+終了位置に来たらJavaScriptから停止する仕掛けを入れている。
+<p/>
+それと volume は指定しても効かなかったのであらかじめ音量のバランスを調整しておく必要がある。
+<p/>
+iPhoneのブラウザでアクションゲームはなかなか厳しいのー。
+<p/>
+P.S.
+遅いサーバに音声ファイルが有ると変な場所を再生したりして動作が不安定になった。
+ちょっと実用的では無いかも。
+
+

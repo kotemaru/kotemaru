@@ -1,0 +1,83 @@
+Subject: GAE/GO、今度はLinuxにするも...
+Content-type: html/text
+Tags: GAE/GO
+Date: 2011/07/09
+Public: yes
+
+GAE/GO を試そうとして FreeBSD で挫折したので
+VirtualBox に ubuntu/11 を入れて試して見ることにした。
+<p/>
+ここから最新版を落し直す。
+<ul><li>http://code.google.com/intl/en/appengine/downloads.html</ul>
+<p/>
+
+展開してパスを通しデモを実行してみる。
+<p/>
+
+最初 ubuntu/11 のデフォルトの python2.7 で試してみたが
+起動したものの挙動がおかしいので python2.5 をソースから入れ直した。
+詳細はこちらを参照。
+<ul><li>http://99blues.dyndns.org/blog/2011/06/install_python_2-5/</ul>
+<p/>
+
+実行結果。
+<xmp>$ export PATH=~/google_appengine:$PATH
+$ python2.5 dev_appserver.py demos/helloworld/
+WARNING  2011-07-09 00:24:46,648 urlfetch_stub.py:108] No ssl package found. urlfetch will not be able to validate SSL certificates.
+INFO     2011-07-09 00:24:46,939 appengine_rpc.py:159] Server: appengine.google.com
+WARNING  2011-07-09 00:24:46,948 datastore_file_stub.py:511] Could not read datastore data from /tmp/dev_appserver.datastore
+INFO     2011-07-09 00:24:46,950 rdbms_sqlite.py:58] Connecting to SQLite database '' with file '/tmp/dev_appserver.rdbms'
+WARNING  2011-07-09 00:24:46,964 dev_appserver.py:4700] Could not initialize images API; you are likely missing the Python "PIL" module. ImportError: No module named _imaging
+INFO     2011-07-09 00:24:46,991 dev_appserver_multiprocess.py:637] Running application helloworld on port 8080: http://localhost:8080
+INFO     2011-07-09 00:24:56,838 __init__.py:324] building _go_app
+INFO     2011-07-09 00:24:59,405 __init__.py:316] running _go_app
+INFO     2011-07-09 00:24:59,584 dev_appserver.py:4217] "GET / HTTP/1.1" 200 -
+</xmp>
+<p/>
+
+ローカルでの動作を確認。
+
+<p><img src="/old/img/lovelog/gae-go-hello.png" /></p>
+
+<p/>
+
+アップロードしてみようとしたらこんなエラーが...
+<p/>
+
+<xmp>$ python2.5 appcfg.py update demos/counter/
+Application: app-id; version: 1
+Host: appengine.google.com
+
+Starting update of app: app-id, version: 1
+Scanning files on local disk.
+Error 400: --- begin server output ---
+Invalid runtime or the current user is not authorized to use it.
+--- end server output ---
+</xmp>
+<p/>
+
+ググったら signup しろとのコメント。
+
+<ul><li>http://groups.google.com/group/google-appengine/browse_thread/thread/7f5fe4b86a87a491</ul>
+<p/>
+
+しかしそのページにアクセスすると..
+
+<xmp>Access to Go runtime in Google App Engine
+
+We are no longer accepting Trusted Testers. 
+We will make access to the Go runtime more widely 
+available in the near future. 
+
+Thank you for your interest in using Go in Google App Engine!
+</xmp>
+<p/>
+
+ガビーン。完全に出遅れてるじゃん。
+
+<p/>
+
+GO の spin-up 時間が知りたかったのだが.. ローカル環境じゃ意味無いし。
+だれかテスターになれた人教えてください。
+
+

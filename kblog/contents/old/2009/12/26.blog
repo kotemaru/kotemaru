@@ -1,0 +1,42 @@
+Subject: Firefoxのwindow.onerrorで文字化け
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2009/12/26
+Public: yes
+
+エラー処理がかったるいので window.onerror で一括処理しようとしたら文字化けした。
+
+<pre>
+window.onerror = function(desc, url, line)  {
+	alert(desc);
+}
+throw "テスト";
+</pre>
+
+結果：
+<pre>
+uncaught exception: &#198;&#185;&#200;
+</pre>
+
+エスケープして文字コードを調べて見る。
+<pre>
+window.onerror = function(desc, page, line, chr)  {
+	alert(escape(desc));
+}
+throw "テスト";
+</pre>
+
+結果:
+<pre>
+uncaught%20exception%3A%20%C6%B9%C8
+</pre>
+
+"テスト"のEUCコード 16進ダンプ。
+<pre>
+00000000= a5c6 a5b9 a5c8
+</pre>
+
+どうやら EUC(OSのデフォルト文字コード) に変換して下8bit に切ってるらしい..
+完全に FireFox のバグでどうにもなりそうな気がしないので諦める。
+
+

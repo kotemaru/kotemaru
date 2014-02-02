@@ -1,0 +1,14 @@
+Subject: WSJS を sourceforge.jp で公開してみた。
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2011/05/06
+Public: yes
+
+ほったらかしになっているWSJSですがsourceforge.jp で公開してみました。
+
+Eclipse対応になっているのでSVNで落してビルド、Uploadできる様になりました。
+
+ここから落してください。
+- https://svn.sourceforge.jp/svnroot/wsjs4gae/tags/wsjs4gae_SNAP_20110506
+
+

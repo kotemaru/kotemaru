@@ -1,0 +1,198 @@
+Subject: Bigtableに保存したjarファイルからクラスを読み込む 
+Content-type: html/text
+Tags: GAE/J
+Date: 2010/05/16
+Public: yes
+
+WSJSはBigtable上に疑似ファイルシステムを持っている。<br/>
+ここにスクリプトを置いて実行しているわけだけれども当然
+Javaのクラスも置きたくなる。
+<p/>
+まず URLClassLoader を使ってみる。
+
+<pre>
+var qrcode = newQrcode();
+
+function newQrcode() {
+	var jarUrl = java.net.URL("jar:http://localhost:8080/qrcode/Qrcode.jar!/");
+	var loader = java.net.URLClassLoader([jarUrl]);
+	return loader.loadClass("com.swetake.util.Qrcode").newInstance();
+}
+</pre>
+
+<p>撃沈。  </p>
+<pre>
+access denied (java.net.SocketPermission localhost connect,accept,resolve)
+  java.security.AccessControlException: access denied (java.net.SocketPermission localhost connect,accept,resolve)
+  java.security.AccessControlContext.checkPermission(AccessControlContext.java:323)
+  java.security.AccessController.checkPermission(AccessController.java:546)
+  java.lang.SecurityManager.checkPermission(SecurityManager.java:532)
+  com.google.appengine.tools.development.DevAppServerFactory$CustomSecurityManager.checkPermission(DevAppServerFactory.java:166)
+            :
+</pre>
+
+
+<p/>
+しょうが無いので疑似ファイルシステムから読み込むクラスローダを書いてみた。
+<p/>
+
+RepositoryClassLoader.java:
+<pre style="height:300px;">
+package kotemaru.wsjs;
+
+import java.io.* ;
+import java.net.* ;
+import java.util.* ;
+import javax.servlet.*;
+import javax.servlet.http.*;
+import kotemaru.util.* ;
+import kotemaru.auth.* ;
+import java.util.jar.* ;
+import kotemaru.wsjs.proc.ClassProc ;
+
+/**
+ * リポジトリからクラスをロードする。
+ * 
+ */
+public class RepositoryClassLoader extends ClassLoader {
+	private WsjsContext context;
+	private Page basePage;
+
+	public RepositoryClassLoader(WsjsContext ctx, String pageName, 
+				ClassLoader parent) throws IOException {
+		super(parent);
+		this.context = ctx;
+		this.basePage = ctx.getPage(pageName);
+	}
+
+	public Class findClass(String name) throws ClassNotFoundException {
+		if (basePage.isDirectory()) {
+			return findClassForPage(name);
+		} else {
+			return findClassForJarFile(name);
+		}
+	}
+
+	private Class findClassForPage(String name) throws ClassNotFoundException {
+		try {
+			String path = basePage.getPageName()+"/"
+								+name.replace('.','/')+".class";
+			Processor proc = context.getProcessor(path);
+			if (proc == null || !(proc instanceof ClassProc)) {
+				throw new ClassNotFoundException("Not found "+name+" in "+basePage.getPageName());
+			}
+
+			ClassProc cproc = (ClassProc) proc;
+			Class cls = cproc.getCacheClass();
+			if (cls != null) return cls;
+
+			byte[] data = cproc.getCacheBuffer(context);
+			cls = defineClass(name, data, 0, data.length);
+			cproc.setCacheClass(cls);
+			return cls;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	private Class findClassForJarFile(String name) throws ClassNotFoundException  {
+		try {
+			String path = name.replace('.','/')+".class";
+			InputStream in = getJarStream(path);
+			if (in == null) {
+				throw new ClassNotFoundException("Not found "+name+" in "+basePage.getPageName());
+			}
+			byte[] data = IOUtil.streamToBytes(in);
+			return defineClass(name, data, 0, data.length);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public InputStream getResourceAsStream(String name) {
+		try {
+			if (basePage.isDirectory()) {
+				Page page = context.getPage(basePage.getPageName()+"/"+name);
+				if (!page.exists()) return null;
+				byte[] data = page.getBodyBytes();
+				return new ByteArrayInputStream(data);
+			} else {
+				return getJarStream(name);
+			}
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private InputStream getJarStream(String path) {
+		try {
+			ByteArrayInputStream bin = new ByteArrayInputStream(basePage.getBodyBytes());
+			JarInputStream jarIn = new JarInputStream(bin);
+			JarEntry file = jarIn.getNextJarEntry();
+			while (file != null) {
+				if (path.equals(file.getName())) return jarIn;
+				file = jarIn.getNextJarEntry();
+			}
+			return null;
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		//} finally {
+		//	if (bin != null) bin.close();
+		}
+	}
+}
+
+</pre>
+
+<p>実行スクリプト:</p>
+<pre>
+var qrcode = newQrcode();
+
+function newQrcode() {
+	var loader = Packages.kotemaru.wsjs.RepositoryClassLoader(
+		__ENV__.wsjsContext, "/qrcode/Qrcode.jar", null);
+	return loader.loadClass("com.swetake.util.Qrcode").newInstance();
+}
+</pre>
+
+<p>
+動いた!!<br/><br/>
+Rhinoの実行環境にクラスパスを追加するメソッドを用意して普通に使える様にしてみる。
+</p>
+
+<p>__ENV__の実装クラス：</p>
+<pre>
+	public void addClassPath(String pageName) throws Exception {
+		pageName = getAbsPageName(pageName);
+		ClassLoader parent = context.getApplicationClassLoader();
+		ClassLoader loader =
+			new RepositoryClassLoader(wsjsContext, pageName, parent);
+		context.setApplicationClassLoader(loader);
+
+		// NOTE: Rhino-1.7 の実装に依存。
+		// これをしないと setApplicationClassLoader() が反映されない。
+		NativeJavaTopPackage.init(context, scope, false);
+	}
+</pre>
+<p>実行スクリプト</p>
+<pre>
+__ENV__.addClassPath("Qrcode.jar");
+var Qrcode = Packages.com.swetake.util.Qrcode;
+         :
+		var qrcode = new Qrcode();
+</pre>
+<p>
+ちゃんと動く。<br/>
+NativeJavaTopPackage.init()は非公開クラスで使いたく無いんだけど
+setApplicationClassLoader()が反映されないので仕方無く使ってる。
+</p>
+これで、GAE/Jアプリのアップロード無しに追加Javaライブラリが使えるようになった。
+すげぇ便利かも。
+<p>流れをまとめとく</p>
+<p>QrcodeライブラリのJarをアップロードする。</p>
+<img style="border:2px solid black;" src="/old/img/auone/LOVELOG_IMG/2010-05-16-1.png" width="500" />
+<p>JavaScriptのClassPathにQrcodeライブラリ追加する。</p>
+<img style="border:2px solid black;" src="/old/img/auone/LOVELOG_IMG/2010-05-16-2.png" width="500" />
+<p>実行結果。アップロードしたQrcodeライブラリが使えている。</p>
+<img style="border:2px solid black;" src="/old/img/auone/LOVELOG_IMG/2010-05-16-3.png" width="500" />
+
+

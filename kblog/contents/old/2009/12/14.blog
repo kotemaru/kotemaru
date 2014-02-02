@@ -1,0 +1,134 @@
+Subject: RhinoでJavaオブジェクトをfor-inする
+Content-type: lovelog/text
+Tags: Rhino
+Date: 2009/12/14
+Public: yes
+
+RhinoからJavaオブジェクトを操っているとJavaオブジェクトのプロパティ一覧を for-in で取りたいことが良く有る。
+
+で、自動のラッパーでなく ScriptableObject.defineClass() を使ってちゃんと定義すればできるんだろうと思ってやってみたらできねー。
+
+ScriptableObjectの実装クラス。
+<pre style="height:300px;">
+package kotemaru.wsjs;
+
+import org.mozilla.javascript.*;
+
+public  class UserConfig extends ScriptableObject {
+	private int timeout = 10;
+	private boolean server_log = false;
+
+	public String getClassName() { return "UserConfig"; }
+	public int jsGet_timeout() {
+		return timeout;
+	}
+	public void jsSet_timeout(int t) {
+		timeout = t;
+	}
+
+	public boolean jsGet_server_log() {
+		return server_log;
+	}
+	public void jsSet_server_log(boolean b) {
+		server_log = b;
+	}
+
+
+	public int getTimeout() {
+		return timeout;
+	}
+	public boolean isServerLog() {
+		return server_log;
+	}
+}
+</pre>
+
+実行スクリプト。
+<pre>
+(function(dest, json) {
+	var src = eval("("+json+")");
+	dest = new UserConfig();
+
+java.lang.System.out.println("-------->for-in UserConfig ");
+	for (var key in dest) {
+java.lang.System.out.println("-------->"+key+":"+dest[key]+":"+src[key]);
+		dest[key] = src[key];
+	}
+java.lang.System.out.println("-------->end");
+})
+</pre>
+
+結果：空っぽ。
+<pre>
+-------->for-in UserConfig 
+-------->end
+</pre>
+
+
+しかたが無いのでRhinoのソースを見て力技で実装したのがこのコード。
+
+<pre style="height:300px;">
+package kotemaru.wsjs;
+
+import org.mozilla.javascript.*;
+
+public  class UserConfig /*extends ScriptableObject*/ {
+	private int timeout = 10;
+	private boolean server_log = false;
+	public int getTimeout() {
+		return timeout;
+	}
+	public boolean isServerLog() {
+		return server_log;
+	}
+	public void setTimeout(int t) {
+		timeout = t;
+	}
+	public void setServer_log(boolean b) {
+		server_log = b;
+	}
+
+
+	private static final String[] NAMES = {
+		"timeout",
+		"server_log",
+	};
+	public java.util.Iterator __iterator__(boolean b){
+		return new MyIterator(NAMES);
+	}
+	public JavaScriptException __getStopIteratin() {
+		Context cx = Context.getCurrentContext();
+		Scriptable scope = cx.initStandardObjects();
+		return new JavaScriptException(
+			NativeIterator.getStopIterationObject(scope), null, 0);
+	}
+	private  class MyIterator implements java.util.Iterator {
+		private Object[] array;
+		private int idx = 0;
+		public MyIterator(Object[] ary) {array = ary;}
+		public boolean hasNext(){return idx<array.length;}
+		public Object next(){
+			if (idx>=array.length) throw __getStopIteratin();
+			return array[idx++];
+		}
+		public void remove(){throw new Error("Unsupport");}
+	}
+
+}
+</pre>
+
+
+実行結果：fon-inできてます。
+<pre>
+-------->for-in UserConfig
+-------->timeout:10:30
+-------->server_log:undefined:true
+-------->end
+</pre>
+
+
+御覧の通りの力技なので私の試した rhino1_7R2 以外のバージョンで動くかは怪しいです。
+
+正しいやり方をご存知の方はコメントお願いいたします。
+
+

@@ -1,0 +1,23 @@
+Subject: 自宅サーバ用 UPSタップ
+Content-type: lovelog/text
+Tags: FreeBSD
+Date: 2010/01/22
+Public: yes
+
+アマゾンに頼んだ UPSタップが届いた。
+思ったよりでかい。
+<img src="/old/img/auone/LOVELOG_IMG/ups-tap.jpg"/>
+
+マニュアルによると 100W 使用で 5.8 分持つとの事。
+但し、連動してPCをシャットダウンさせる機能は無いので寸断対策にしかならない。
+値段が 3880円とUPSとしては格安なのでしかたが無いだろう。
+
+自宅サーバを運用している人で電源に不安の有る人にはお勧め。
+
+<div class="see">関連記事：<ul><li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9125882.html">自宅サーバ 落ちた</a><li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9123548.html">WSJSサンプル ブロック崩し</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9122877.html">自宅サーバ 公開しました。 </a>
+</ul>
+公開中の自宅サーバ：http://wsjs.dip.jp:8008/
+
+
+

@@ -1,0 +1,23 @@
+Subject: X Window でクローンモニタ 
+Content-type: html/text
+Tags: FreeBSD
+Date: 2012/07/21
+Public: yes
+
+前に調べたのに忘れてたのでメモ。
+<p/>
+<pre>$ xrandr --auto</pre>
+<p/>
+X Window は起動時に繋がっていないモニタには出力しないので
+DVI使っていてたまにRGBに出力したい時に必要。
+<p/>
+昔は xorg.conf 書き換えて X を再起動する必要が有ったけど
+今はコマンド一発。
+<p/>
+auto だとクローン設定だけどdualモニタも設定できる。
+<p/>
+<pre>$ xrandr --output VGA --right-of DVI</pre>
+<p/>
+久々にプロジェクタでDVD見ようとしてはまった。
+
+

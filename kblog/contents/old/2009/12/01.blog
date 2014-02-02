@@ -1,0 +1,176 @@
+Subject: GAE/JのJDOのトランザクション
+Content-type: html/text
+Tags: GAE/J
+Date: 2009/12/01
+Public: yes
+
+JDOの(と言うかGAE固有かもしれない)トランザクションは結構ややこしい。
+まず一旦、従来のRDBは忘れた方が良い。
+<p/>
+GAEの場合、前提条件として
+<ul>
+<li>DBは複数のサーバに分散している。
+<li>だけど、分散トランザクションはしたくない。
+</ul>
+と言うのが有るらしい。矛盾している。
+<p/>
+
+で解決策として考え出されたのが永続オブジェクトどうしを関連付ける エンティティ グループ という考え方。
+<ul>
+<li>１つの エンティティ グループ は１つのDBに保存し
+<li>複数の エンティティ グループ は同一トランザクションに入れない。
+</ul>
+とする事で矛盾を回避する。めんどくさそうでしょ。
+<p/>
+
+エンティティ グループは単にクループ化すると言うことでは無く
+永続オブジェクトのフィールドに永続オブジェクトを持つ形で「親子」関係として
+芋蔓式に構成される。
+永続オブジェクトが保存される時、更新されている永続オブジェクトは芋蔓式に
+一緒に保存してくれるのだ。一種の OODB と言っていいと思う。
+<p/>
+
+が、昨日の記事を見て欲しい「永続オブジェクトは主キーが必須」なのだ。
+つまり、RDB で動作していて 「オブジェクト==レコード」 と言うこと。
+<p/>
+なので、子から親への逆参照が必要だったりして非常にださい。
+
+<table >
+<tr><th>親</th><th></th><th>子</th></tr>
+<tr><td>
+<pre style="margin:0;padding:0;width:220px;height:200px;">
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class PageInfoJDO {
+
+  @PrimaryKey
+  @Persistent
+  private String  pageName;
+
+  @Persistent
+  private PageBodyJDO pageBodyJDO;
+      :
+</pre>
+</td><td>=></td><td>
+<pre style="margin:0;padding:0;width:220px;height:200px;">
+@PersistenceCapable(identityType = IdentityType.APPLICATION)
+public class PageBodyJDO {
+
+  @PrimaryKey
+  @Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+  private Key key;
+
+  @Persistent(mappedBy = "pageBodyJDO")
+  private PageInfoJDO pageInfo;
+
+  @Persistent
+  private Blob    body;
+      :
+</pre>
+</td></tr></table>
+<p/>
+親から子への参照はフツー、子から親への逆参照は専用のアノテーションが必要。
+<pre>
+@Persistent(mappedBy = "子を参照している親のフィールド名")
+</pre>
+<p/>
+子の主キーは com.google.appengine.api.datastore.Key型必須でアノテーションを
+<pre>
+@Persistent(valueStrategy = IdGeneratorStrategy.IDENTITY)
+</pre>
+として自動設定にして置く。
+手動設定はまたややこしいのでグーグルのドキュメントを参照。
+<p/>
+後は普通に makePersistent() で親を保存すると子も一緒に保存される。
+<pre >
+public static void putPageInfo(PageInfoJDO info) {
+	PersistenceManager pm = getPMF().getPersistenceManager();
+	Transaction tx = pm.currentTransaction();
+	tx.begin();
+	try {
+		pm.makePersistent(info);
+		tx.commit();
+	} finally {
+		if (tx.isActive()) tx.rollback();
+		pm.close();
+	}
+}
+</pre>
+<p/>
+で、はまったのはここから。
+ドキュメント通りに親を取得して子にアクセスしたら NullPointer。
+<pre>
+PageInfoJDO info = getPageInfo(pageName);
+byte[] buff = info.getBody().getBytes();  <-- NullPointer
+
+public static PageInfoJDO getPageInfo(String pageName) {
+	PersistenceManager pm = getPMF().getPersistenceManager();
+	try {
+		List&lt;PageInfoJDO> sel = (List&lt;PageInfoJDO>) pm.newQuery(PageInfoJDO.class, "pageName=='"+pageName+"'").execute();
+		if (sel.size() == 0) return null;
+		PageInfoJDO info = sel.get(0);
+		return info;
+	} finally {
+		pm.close();
+	}
+}
+</pre>
+<p/>
+ドキュメントには子にアクセスすれば自動的にDBから取得してくる
+となっているのに..<br/>
+丸１日はまって分かったのが「PersistenceManagerを閉じたらダメ」と言うこと。
+理屈は分からんでも無い。
+しかし、ＤＢを隠蔽しているのにここで突然ＤＢ依存の話を出されても訳分からん。
+それに「元々null値を持っていた」のと「取得できなかった」の区別が付かない。
+何で例外を上げないのか？ 仕様なら仕様バグだろ。
+<p/>
+で最終的にこうなった。
+<pre>
+public static PageInfoJDO getPageInfo(String pageName, boolean withBody) {
+	PersistenceManager pm = getPMF().getPersistenceManager();
+	try {
+		List sel = (List) pm.newQuery(PageInfoJDO.class, "pageName=='"+pageName+"'").execute();
+		if (sel.size() == 0) return null;
+		PageInfoJDO info = sel.get(0);
+		if (withBody) info.getBody().getBytes();
+		return info;
+	} finally {
+		pm.close();
+	}
+}
+</pre>
+<p/>
+Body が必要な時はトランザクションの中で取得してから返す様にした。
+一回取得するとpm.close()後でも取得できる。
+因みに Blob 型は別オブジェクトとなるようで getBytes() して置かないと
+Blob の中身が空っぽになる。
+Blob が別オブジェクトになる事が分かったので PageBodyJDO は廃止して
+昨日の記事の状態となった。
+<p/>
+GAE/J は枯れて無いのでまだまだ人柱が必要だね.. orz
+
+<p>
+追記：2010.02.04<br/>
+@Persistent(defaultFetchGroup = "true")
+とすれば自動で取得してくれそう。
+でもBlobは不要な時も有るよね..
+</p>
+
+Subject: GAE/J動かず
+Content-type: lovelog/text
+Tags: GAE/J
+Date: 2009/12/01
+Public: yes
+
+ローカル環境で動くようになったのでアップロードして見たが動かず。
+<pre>
+Error: Server Error
+The server encountered an error and could not complete your request.
+
+If the problem persists, please report your problem and mention this error message and the query that caused it.
+</pre>
+
+ログも見れずこれでどうしろと？
+
+ここは一つ戦略的撤退と言うことで...
+
+

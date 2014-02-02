@@ -1,0 +1,65 @@
+Subject: FreeBSDでPCオーディオ：高音質再生
+Content-type: lovelog/text
+Tags: PCオーディオ
+Date: 2010/12/26
+Public: yes
+
+PCで音楽を再生する場合、何も考えなくても音源をその
+まま再生してくれると思っていたがそうでは無いらしい。
+
+OSにミキサーが入っていて各種音声データの加工や
+サンプリングの変換が行われている。
+
+Windows だと ASIO というドライバが有ってこれを使う
+と良いらしい。
+
+FreeBSD でどうすれば良いのか調べたところ PCM の
+マニュアルページに答えが載っていた。
+
+<pre>     dev.pcm.%d.bitperfect
+             Enable or disable bitperfect mode.  When enabled, channels will
+             skip all dsp processing, such as channel matrixing, rate convert-
+             ing and equalizing.  The pure sound stream will be fed directly
+             to the hardware.  If VCHANs are enabled, the bitperfect mode will
+             use the VCHAN format/rate as the definitive format/rate target.
+             The recommended way to use bitperfect mode is to disable VCHANs
+             and enable this sysctl.  Default is disabled.
+</pre>
+
+現状がどうなっているか調べてみる。
+
+<pre>$ sysctl -a | grep pcm.0
+dev.pcm.0.%desc: USB audio
+dev.pcm.0.%driver: pcm
+dev.pcm.0.%parent: uaudio0
+dev.pcm.0.play.vchans: 1
+dev.pcm.0.play.vchanmode: fixed
+dev.pcm.0.play.vchanrate: 48000
+dev.pcm.0.play.vchanformat: s16le:2.0
+dev.pcm.0.buffersize: 0
+dev.pcm.0.bitperfect: 0
+</pre>
+
+bitperfect は off。
+しかもサンプリング周波数が 48KHz になってるじゃん。
+CDは 44.1KHz なので周波数の変換が起こって音質
+が大幅に劣化する。
+
+dev.pcm.0.bitperfect: 1 にして再生してみた所 CPU
+使用率が大幅に減って 2～3% になった。
+音色もまったく別の物になった。ハードの癖だと思っ
+ていた音色の変化はこれのせいだったらしい。
+
+
+これでやっと落ち着いて音楽が聞けるようになった。
+PCオーディオは以外に奥が深い。
+
+
+関連記事：
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9851656.html">静音PC、使用感</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9846418.html">静音PC買ってしまいました</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9833001.html">PCオーディオ始めますた</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9884344.html">共立エレのUSB-AUDIOキット</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9858739.html">FreeBSDでPCオーディオ：リッピング</a>
+
+

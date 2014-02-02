@@ -1,0 +1,159 @@
+Subject: 自宅サーバの構築、その１(FreeBSD+jail)
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/01/02
+Public: yes
+
+光回線の開通日が揃まったのでサーバの構築を始めた。
+用意できる手持ちのＰＣは２世代くらい前のスペック。
+OS は FreeBSD/7.2 + jail とすることにしたので十分な性能だと思う。
+HDDだけ大きめのが有ったので入れといた。
+
+CPU: AMD Semplon/3100+
+MEM: 1G
+HDD: 320G
+
+
+* FreeBSD/7.2
+- ダウンロード
+-- ftp://ftp.jp.freebsd.org/pub/FreeBSD/ISO-IMAGES-i386/7.2/
+-- disk1 だけで十分。
+- インストール
+-- CD-R から起動して普通にインストール。
+-- パーティションは細かく分けるのが好き。
+-- /xvar はログ用の領域
+<pre>
+Filesystem            Size    Used   Avail Capacity  Mounted on
+/dev/ad4s1a           3.9G    279M    3.3G     8%    /
+/dev/ad4s1d           3.9G     54K    3.6G     0%    /tmp
+/dev/ad4s1f            15G    2.8G     11G    20%    /usr
+/dev/ad4s1e           9.7G    172M    8.7G     2%    /var
+/dev/ad4s1g           223G    309M    222G     0%    /jail
+/dev/ad4s1h            29G    179M     29G     1%    /xvar
+</pre>
+- パッチのアップデート
+ host# freebsd-update fetch install
+-- これは cron に設定して置いた方がいい。
+- ports のアップデート
+ host# portsnap fetch update
+
+* jail環境の構築
+- ezjail をインストール。
+ host# cd /usr/ports/sysutils/ezjail/
+ host# make install
+- ezjail の設定
+ host# cd /usr/local/etc
+ host# cp ezjail.conf.sample ezjail.conf
+ host# vi ezjail.conf
+<pre>ezjail_jaildir=/jail
+ezjail_ftphost=ftp.jp.freebsd.org</pre>
+-- ※ftpには最新版OS用しか残って無いので旧版はソースからやる必要が有りそう。
+- ベースの構築
+ host# ezjail-admin install
+-- jail 環境はホストとは別にパッチを当てる必要がある。
+ host# mkdir /jail/freebsd-update
+ host# freebsd-update -b /jail/basejail -d /jail/freebsd-update fetch install
+- 実行環境の構築
+ host# ezjail-admin create <i>jailホスト名</i> <i>jail-IP</i>
+-- 起動確認
+ host# /usr/local/etc/rc.d/ezjail.sh forcestart jail.myhome.jp
+ host# jls
+<pre>
+   JID  IP Address      Hostname                      Path
+     1  <i>jail-IP</i>            <i>jailホスト名</i>               /jail/<i>jailホスト名</i>
+</pre>
+ host# jexec <i>JID</i> /bin/csh
+ jail#
+
+- /jail/<i>jailホスト名</i>/etc/rc.conf
+<pre>
+keymap="us.iso"
+defaultrouter="<i>ルータIP</i>"
+hostname="jail.myhome.jp"
+ifconfig_<i>NIC名</i>="inet <i>jail-IP</i>  netmask 255.255.255.0"
+
+# メンテナンス用
+sshd_enable="YES"
+ftpd_enable="YES"
+
+# Postgreの起動
+postgresql_enable="YES"
+postgresql_data="<i>PGDATAディレクトリ</i>"
+
+# ログは親ホストに任せる
+syslogd_flags="-s -b <i>親ホストIP</i>"
+
+# sendmailを潰す設定。必要があれば有効に。
+sendmail_enable="NO"
+sendmail_submit_enable="NO"
+sendmail_outbound_enable="NO"
+sendmail_msp_queue_enable="NO"
+</pre>
+
+- /etc/resolv.conf を親サーバからコピー。
+
+
+* 親サーバの設定
+- /etc/rc.conf
+<pre>
+keymap="us.iso"
+defaultrouter="<i>ルータIP</i>"
+hostname="<i>親ホスト名</i>"
+ifconfig_<i>NIC名</i>="inet <i>親ホストIP</i>  netmask 255.255.255.0"
+ifconfig_<i>NIC名</i>_alias0="inet <i>jail-IP</i> netmask 255.255.255.255"
+
+sshd_enable="YES"
+
+# ipfw を有効にする設定。事前に kernel の再コンパイルが必要。
+firewall_enable="YES"
+
+# jail を自動起動する設定。
+ezjail_enable="YES"
+
+# シェアードメモリを必要とする為の設定。
+# セキュティ上は無い方が良いが Postgre が必要とする。
+jail_sysvipc_allow="YES"   
+
+# sendmailを潰す設定。必要があれば有効に。
+sendmail_enable="NO"
+sendmail_submit_enable="NO"
+sendmail_outbound_enable="NO"
+sendmail_msp_queue_enable="NO"
+
+</pre>
+
+- /etc/fstab への追加設定
+<pre>
+/usr/local      /jail/<i>jailホスト名</i>/usr/local      unionfs  ro    0   0
+/jail/local_etc /jail/<i>jailホスト名</i>/usr/local/etc  nullfs   rw    0   0
+/xvar/wsjs      /jail/<i>jailホスト名</i>/xvar/wsjs      nullfs   rw,noatime    0   0
+</pre>
+-- /usr/local をマウントしておくと親サーバのアプリが利用できる。
+--- ※なぜか nullfs だとアプリが実行できない。理由は不明。
+-- /usr/local/etc は jail 用の物に差し替え。
+
+
+* アプリのインストール
+- bash
+ host# cd /usr/ports/shells/bash
+ host# make install
+ host# cp -p /usr/local/bin/bash /bin/bash
+ host# cp -p /usr/local/bin/bash /jail/basejail/bin
+
+- postgre
+ host# cd /usr/ports/databases/postgresql84-server
+ host# make install
+ host# mkdir -p /jail/local_etc/rc.d/
+ host# cp -p /usr/local/etc/rc.d/postgresql /jail/local_etc/rc.d/
+-- jail環境に postgre のユーザ／グループを追加
+ host# jexec <i>JID</i> /bin/csh
+ jail# vi /etc/group
+<pre>pgsql:*:70:</pre>
+ jail# vipw
+<pre>pgsql:*:70:70::0:0:PostgreSQL Daemon:/usr/local/pgsql:/bin/sh</pre>
+
+
+参考にしたページ：
+http://d.hatena.ne.jp/mteramoto/20090705/p5
+この設定で公開している自宅サーバ：http://wsjs.dip.jp:8008/
+

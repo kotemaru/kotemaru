@@ -1,0 +1,52 @@
+Subject: FreeBSDとWindowsのマルチブート
+Content-type: lovelog/text
+Tags: FreeBSD
+Date: 2010/10/24
+Public: yes
+
+以前からFreeBSDとWin系のマルチブートで使っていたんだけど
+最近うまくマルチブート環境が構築できなくて困っていた。
+
+FreeBSDのブートローダをインストールするとWinXPが壊れて
+しまい起動しなくなるのだ。
+WinXPはリカバリをしてもMBRを戻しても起動しなくなる。
+
+仕方無くWinXPからFreeBSDを起動していた。
+c:\boot.ini
+<pre>
+ [boot loader]
+        timeout=30
+        default=c:\boot1
+        [operating systems]
+        multi(0)disk(0)rdisk(0)partition(1)\WINDOWS="Windows XP"
+        C:\boot1="FreeBSD"
+</pre>
+- c:\boot1 は /boot/boot1 をコピー
+
+ここに FreeBSD/8.1 を追加して WinXP/FB7.1/FB8.1 のマルチ
+ブートにしようとしたが boot.ini ではどうもうまく行かない。
+
+結局いろいろ試してなんとか解決法を見付けた。
+
+1. FreeBSDをインストールする時にブートローダをインストールしない。
+2. FreeBSDを起動して boot0cfg で MBR のみ書き込む。
+<pre># boot0cfg -Bv -o packet -f backup.mbr ad0</pre>
+
+これでFreeBSDのブートローダが普通に使えるようになった。
+単にFreeBSDのインストーラにバグがあってWinXPを壊している
+だけかも。
+
+
+ただ、Vista以降はMBRにIDを書き込んでチェックしているらし
+いのでもっとややこしくなりそう。 M$のいやがせか。
+
+一応調べたらVistaのMBRチェックは無効にできるらしい。
+http://uyota.asablo.jp/blog/2007/08/18/1733839から
+<pre> bcdedit /set {bootmgr} device boot
+ bcdedit /set {default} device boot
+ bcdedit /set {default} osdevice boot
+</pre>
+まだ、移行する気無いけどメモっとく。
+つーか、ゲームとデバイスの動作確認にしか使わないんだよね Windows。。
+
+

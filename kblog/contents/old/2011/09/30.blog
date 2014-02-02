@@ -1,0 +1,158 @@
+Subject: jsLex が 404 Not found に…
+Content-type: html/text
+Tags: JavaScript
+Date: 2011/09/30
+Public: yes
+
+EclipseでJavaScriptファイルを最小化するプラグインをググったら
+jsLex と言うのが定番らしい。
+<p/>
+しかし、リンクをクリックしたら 404 Not found。<br/>
+あれっと思って別のページのリンクを叩いても 404。<br/>
+どこかに引っ越したわけじゃなく無くなっちゃたらしい。<br/>
+<p/>
+代替のプラグインも見付からない...
+<p/>
+最小化自体は YUIComplessor で出来るようなので ant
+でやろうと思ったら何と AntTask が付いて無い。
+<p/>
+YUIComplessor の Anttask は幾つか公開されていたが
+どれも今一な感じなので自前で作ってみた。
+<p/>
+使い方はこんな感じ。
+<xmp>
+	<taskdef name="yuicompress"
+		classname="org.kotemaru.yui.YuiCompressTask"
+		classpath="lib/yuicompress-ant-task.jar;lib/yuicompressor-2.4.6.jar" />
+
+	<target name="all-min.js">
+		<concat destfile="tmp/all.js" >
+			<fileset dir="js/modules" />
+		</concat>
+			
+		<yuicompress
+			file="js/all-min.js"
+			verbose="true"
+			type="js"
+			charset="utf-8"
+			column="40"
+
+			munge="true"
+			semi="false"
+			optimize="true"
+		>
+			<fileset file="tmp/all.js" />
+		</yuicompress>
+	</target>
+</xmp>
+<p/>
+オプションは CUI と一対なので以下を参考にしてください。
+<p/>
+<xmp>Usage: java -jar yuicompressor-x.y.z.jar [options] [input file]
+
+Global Options
+  -h, --help                Displays this information
+  --type <js|css>           Specifies the type of the input file
+  --charset <charset>       Read the input file using <charset>
+  --line-break <column>     Insert a line break after the specified column number
+  -v, --verbose             Display informational messages and warnings
+  -o <file>                 Place the output into <file>. Defaults to stdout.
+                            Multiple files can be processed using the following syntax:
+                            java -jar yuicompressor.jar -o '.css$:-min.css' *.css
+                            java -jar yuicompressor.jar -o '.js$:-min.js' *.js
+
+JavaScript Options
+  --nomunge                 Minify only, do not obfuscate
+  --preserve-semi           Preserve all semicolons
+  --disable-optimizations   Disable all micro optimizations
+</xmp>
+
+<p/>
+
+concat 機能も一緒に付けたかったが面倒臭くなったのでパス。
+<p/>
+
+ソース抜粋：
+<xmp style="height:400px;">
+package org.kotemaru.yui;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.tools.ant.BuildException;
+import org.apache.tools.ant.DirectoryScanner;
+import org.apache.tools.ant.Task;
+import org.apache.tools.ant.types.FileSet;
+
+import com.yahoo.platform.yui.compressor.YUICompressor;
+
+public class YuiCompressTask extends Task {
+	private ArrayList<FileSet> filesets = new ArrayList<FileSet>();
+
+	private String file;
+
+	private boolean verbose = false;
+	private String type = null;
+	private String charset = null;
+	private int column = 0;
+
+	private boolean munge = true;
+	private boolean semi = true;
+	private boolean optimize = true;
+
+	public FileSet createFileSet() {
+		FileSet fs = new FileSet();
+		filesets.add(fs);
+		return fs;
+	}
+
+	
+	public void execute() throws BuildException {
+		if (file == null) throw new BuildException("Require file attribute.");
+		try{
+			_execute();
+		} catch(Exception e) {
+			throw new BuildException(e);
+		}
+	}
+	private void _execute() throws Exception {
+		List<String> argList = new ArrayList<String>(32);
+
+		
+		opt(argList, "-o", file);
+		if (type != null) opt(argList, "--type", type);
+		if (charset != null) opt(argList, "--charset", charset);
+		if (column > 0) opt(argList, "--line-break", ""+column);
+		if (verbose) opt(argList, "--verbose", null);
+		if (!munge) opt(argList, "--nomunge", null);
+		if (!semi) opt(argList, "--preserve-semi", null);
+		if (!optimize) opt(argList, "--disable-optimizations", null);
+
+		for (FileSet fs : filesets) {
+			DirectoryScanner ds = fs.getDirectoryScanner(getProject());
+			String dir = ds.getBasedir().getPath();
+			String[] files = ds.getIncludedFiles();
+			for (int i=0; i<files.length; i++) {
+				String inFile = dir+"/"+files[i];
+				argList.add(inFile);
+			}
+		}
+		log("YUICompressor"+argList);
+        YUICompressor.main((String[])argList.toArray(new String[0]));
+	}
+
+	private List<String> opt(List<String> list, String a1, String a2) {
+		list.add(a1);
+		if (a2 != null)list.add(a2);
+		return list;
+	}
+	
+	// setter 略
+}
+</xmp>
+<p/>
+ソース：<ul>
+<li>https://kotemaru.googlecode.com/svn/trunk/yuicompress-ant-task/
+</ul>
+
+

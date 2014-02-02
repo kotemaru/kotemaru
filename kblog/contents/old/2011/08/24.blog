@@ -1,0 +1,69 @@
+Subject: GAEでJSESSIONIDが永続化されない
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/08/24
+Public: yes
+
+GAE/J でセッションを使っていて困った現象が１つ。
+<p/>
+JSESSIONIDが永続化されないのだ。
+<p/>
+
+Chromeで見てみると御覧の通りで実機に上げても同じ。
+<p><img border=1 src="/old/img/lovelog/gae-session-timeout-1.png" /></p>
+
+web.xml の session-timeout を設定しても変わらない。
+<p/>
+
+
+jetty のソースを眺めてみたがそんな実装になっているように見えない。<br/>
+GAEの独自の仕様なのだろうか？
+<p/>
+
+自力でセッションを実装しても良いのだができればやりたく無いので
+逃げ手を探してみた。
+<p/>
+
+Set-Cookie は同じキーが複数ある場合、
+後の方が有効になるはずなので Filter をかましてみた。
+<p/>
+
+<xmp>
+public class SessionFilter implements Filter {
+
+	public void init(FilterConfig conf) throws ServletException {
+	}
+
+	public void doFilter(ServletRequest req, ServletResponse res,
+			FilterChain chain) throws ServletException, IOException {
+
+		chain.doFilter(req, res);
+
+		HttpServletRequest _req = (HttpServletRequest) req;
+		HttpServletResponse _res = (HttpServletResponse) res;
+		HttpSession session = _req.getSession();
+		Cookie jsid = new Cookie("JSESSIONID",session.getId());
+		jsid.setMaxAge(session.getMaxInactiveInterval());
+		jsid.setPath("/");
+		_res.addCookie(jsid);
+	}
+
+	public void destroy() {
+	}
+}
+</xmp>
+<p/>
+
+なんか行けてるみたい。<br/>
+とりあえず、session-timeout の設定が効くようになった。
+
+<p><img border=1 src="/old/img/lovelog/gae-session-timeout-2.png" /></p>
+
+しかし、GAE が何らかの意図を持ってやっている場合、
+将来的に動かなくなるかもしれないのでこういう回避に仕方は嫌なんだよね。
+<p/>
+
+でも、ブラウザ立ち上げっぱなしすれば同じだから意味がない。
+どういう仕様なんだろ。
+
+

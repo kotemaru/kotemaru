@@ -1,0 +1,79 @@
+Subject: FreeBSDのVirtualBoxでWin8 Preview版を動かしてみた
+Content-type: html/text
+Tags: FreeBSD
+Date: 2011/12/08
+Public: yes
+
+
+IE9 の動作確認をしたかったので VirtualBox
+で動かそうと思ったのだが Win7 はあまりに重そうだったので
+Windows8 Preview版を入れて見ることにした。
+<p/>
+Windows8 はタブレットを意識したOSでかなり軽量に作られているらしい。
+要求ハードは CPU:1GHz、Mem:1GB なので確かに軽い。
+<p/>
+ISO ファイルは以下のサイトから落せる。
+<ul>
+<li>http://msdn.microsoft.com/en-us/windows/home/</li>
+</ul>
+<p/>
+この中の Windows 8 Developer Preview English, 32-bit (x86) を使ってみた。
+<p/>
+これを VirtualBox にマウントして起動すると普通にインストーラが上がってくる。
+OSタイプに Windows8 は無かったので Windows Others にしておいた。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-1.png"/></p>
+
+途中ライセンスとか聞かれる事もなくあっさり起動。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-2.png"/></p>
+
+ネットワークが認識されなかったのでカードの種類を変えてみたら認識した。
+単にドライバが無かったらしい。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-5.png"/></p>
+
+肝心の IE を立ち上げてみたら IE10 だったw
+
+<p><img border=1 src="/old/img/lovelog/win8pre-3.png"/></p>
+
+こいつで動作確認してみる。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-4.png"/></p>
+
+すげぇ、角も丸いし影も付いてる。chromeと同じ見た目だ。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-6.png"/></p>
+
+デバッガも FireBug 風のまともそうなのが付いてる。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-7.png"/></p>
+
+ちなみにメモリは OS のみで 310k↑、IE起動で 360k↓ だった。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-8.png"/></p>
+
+HDDの使用量は 7.11G。
+
+<p><img border=1 src="/old/img/lovelog/win8pre-9.png"/></p>
+
+なんだろう、Windowsなのにまともなのが不思議な感じだ。<br/>
+ちなみに IE9 互換モードでもきれいに動作した。
+<p/>
+アメリカでは IE のシェアが 40% になったそうなので
+MS も尻に火が付いて本気になったと言うことだろうか。
+<p/>
+でも IE9 が WinXP で動かないのは MS の戦略ミスだと思う。<br/>
+IE9 が良いとは言ってもやっと chrome に追い付いただけなので
+ユーザに OS のアップグレードをさせる程の価値は無い。
+chrome で良いんだもの。
+<p/>
+ところでこれ何時まで使えるんだろ？期限が書いて無いんだが..<br/>
+まさかずっと？
+
+
+<p/>
+もうちょっと詳しい手順はこちらのブログで。<br/>
+http://blog.nully.org/2011/09/14/test-install-windows8-developper-version-on-mac-virtualbox/
+
+

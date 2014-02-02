@@ -1,0 +1,504 @@
+Subject: Javaのアノテーションでsetter/getterを自動生成してみた
+Content-type: html/text
+Tags: java
+Date: 2010/07/04
+Public: yes
+
+<font color="red">※</font>
+この記事の内容は古くなりました。
+<ul>
+<li>JDK8 からは新しい API の Annotation Processor しか使えません。
+<li>新しい API のサンプルは
+<a href="http://code.google.com/p/apt-helper/">こちら</a> からどうぞ。
+</ul>
+<hr/>
+
+
+おいらは基本 Eclipse 使わないので Bean の getter/setter とか結構かったるい。
+<p/>
+なので自前のアノテーションを定義して自動生成する方法を考えてみた。
+<p/>
+イメージとしてはフィールドのみを宣言した XxxCore.java にクラスアノテーション
+@AutoBean を設定すると自動的に XxxCore を継承して getter/setter を持った
+XxxBean.java が生成される。
+<p/>
+具体的にはこんな感じ。
+<p/>
+TestCore.java:
+<xmp>
+package test;
+import  kotemaru.autobean.annotation.*;
+
+@AutoBean(bean="test.TestBean")
+public abstract class TestCore {
+    protected String firstName;
+    protected String lastName;
+    protected int age;
+    protected String email;
+    protected String tel;
+}
+</xmp>
+<p/>
+TestBean.java:
+<xmp>
+package test;
+public class TestBean
+ extends test.TestCore
+{
+    public java.lang.String getFirstName() {return this.firstName;}
+    public void setFirstName(java.lang.String firstName) {this.firstName = firstName;}
+    public java.lang.String getLastName() {return this.lastName;}
+    public void setLastName(java.lang.String lastName) {this.lastName = lastName;}
+    public int getAge() {return this.age;}
+    public void setAge(int age) {this.age = age;}
+    public java.lang.String getEmail() {return this.email;}
+    public void setEmail(java.lang.String email) {this.email = email;}
+    public java.lang.String getTel() {return this.tel;}
+    public void setTel(java.lang.String tel) {this.tel = tel;}
+}
+</xmp>
+
+<h3>実装方法</h3>
+
+アノテーションの定義はこんな感じになる。<br/>
+@Retentionや@Targetの意味は javadoc 参照。
+
+<xmp>
+package kotemaru.autobean.annotation;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.lang.annotation.ElementType;
+
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.TYPE)
+public @interface AutoBean {
+	boolean setter() default true;
+	boolean getter() default true;
+	String bean(); // class
+}
+</xmp>
+<p/>
+メソッドの宣言はアノテーションに対する引数になりコード生成時に参照できる。
+default の宣言をすれば省略可能になる。<br/>
+使い方:
+<pre>@AutoBean(setter=bool,getter=bool,bean="クラス名")</pre>
+
+<p/>
+
+<h4>アノテーション プロセッサ</h4>
+コード生成をするには３つのクラスが必要になる。
+<ul>
+<li>Factory：AnnotationProcessorFactory インターフェースを実装する。
+<li>Processor: AnnotationProcessor インターフェースを実装する。
+<li>Visitor：SimpleDeclarationVisitor クラスを継承する。
+</ul>
+<h5>Factory</h5>
+FactoryはアノテーションとProceesorを関連付ける処理を書くだけである。
+<p/>
+AutoBeanApFactory.java:
+<xmp style="height:300px;">
+package kotemaru.autobean.apt;
+
+import java.util.Set;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import com.sun.mirror.apt.AnnotationProcessorFactory;
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessors;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.declaration.AnnotationTypeDeclaration;
+
+public class AutoBeanApFactory implements AnnotationProcessorFactory {
+	private static final String PKG	= "kotemaru.autobean.annotation.";
+	private static final String AUTO_BEAN	= PKG+"AutoBean";
+
+	private Collection supportedAnnotationTypes = Arrays.asList(
+		AUTO_BEAN
+	);
+	private Collection supportedOptions = Collections.emptySet();
+
+	public Collection supportedAnnotationTypes() {
+		return supportedAnnotationTypes;
+	}
+
+	public Collection supportedOptions() {
+		return supportedOptions;
+	}
+
+	public AnnotationProcessor getProcessorFor(Set atds, AnnotationProcessorEnvironment env) {
+		if (atds.contains(env.getTypeDeclaration(AUTO_BEAN))) {
+			return new AutoBeanAp(env);
+		} else {
+			return AnnotationProcessors.NO_OP;
+		}
+	}
+}
+</xmp>
+
+<h5>Processor</h5>
+プロセッサにはコンストラクタで AnnotationProcessorEnvironment が渡される。
+これに処理対象クラスのリストが入っている。
+実際の処理は process()メソッドで行う。
+通常は env.getSpecifiedTypeDeclarations() でクラスのリストを得て処理を回す。
+
+
+<p/>
+AutoBeanAp.java:
+<xmp style="height:300px;">
+package kotemaru.autobean.apt;
+
+import java.util.Collection;
+import java.io.IOException;
+import java.io.PrintWriter;
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.Filer;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
+import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.util.DeclarationVisitor;
+import com.sun.mirror.util.DeclarationVisitors;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.type.TypeMirror;
+
+import com.sun.mirror.util.*;
+import com.sun.mirror.type.*;
+import com.sun.mirror.declaration.*;
+
+import kotemaru.autobean.annotation.*;
+
+public class AutoBeanAp implements AnnotationProcessor {
+	private final AnnotationProcessorEnvironment env;
+
+	AutoBeanAp(AnnotationProcessorEnvironment env)  {
+		this.env = env;
+	}
+
+	public void process() {
+		for (TypeDeclaration types : env.getSpecifiedTypeDeclarations())  {
+			processType(types) ;
+		}
+	}
+
+	private void processType (TypeDeclaration type)  {
+		try {
+			String className = type.getSimpleName();
+			if (!className.endsWith("Core")) return; //２重処理回避用
+
+			BeanVisitor.process(type, env);
+		} catch (IOException e)  {
+			e.printStackTrace();
+		}
+	}
+}
+</xmp>
+
+<h5>Visitor</h5>
+Visitor が実際にコードを生成するクラスになる。<br/>
+visitFieldDeclaration(),visitMethodDeclaration() と言ったメソッドをOverrideすると
+処理対象クラスのフィールドやメソッドの情報を引数に持ってコールバック
+してくれる仕掛けが用意されている。
+<xmp>
+		DeclarationVisitor scanner =
+			DeclarationVisitors.getSourceOrderDeclarationScanner(visitor, DeclarationVisitors.NO_OP);
+		coreClassDecl.accept(scanner);
+</xmp>
+後は、AnnotationProcessorEnvironment から取り出した Writer
+に書き出して行くだけである。
+
+<p/>
+BeanVisitor.java:
+<xmp style="height:300px;">
+package kotemaru.autobean.apt;
+
+import java.util.Collection;
+import java.io.IOException;
+import java.io.PrintWriter;
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.Filer;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
+import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.util.DeclarationVisitor;
+import com.sun.mirror.util.DeclarationVisitors;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.type.TypeMirror;
+
+import com.sun.mirror.util.*;
+import com.sun.mirror.type.*;
+import com.sun.mirror.declaration.*;
+
+import kotemaru.autobean.annotation.*;
+import java.util.*;
+
+public class BeanVisitor extends SimpleDeclarationVisitor {
+	private static final String TMPL_HEADER =
+		 "// BeanVisitor generated.\n"
+		+"package ${packageName};\n"
+		+"public class ${className}\n"
+		+" extends ${coreClassName}\n"
+		+"{\n";
+
+	private static final String TMPL_GETTER =
+		"    public ${type} get${captalName}() {return this.${name};}\n";
+	private static final String TMPL_SETTER =
+		"    public void set${captalName}(${type} ${name}) {this.${name} = ${name};}\n";
+	private static final String TMPL_ABSTRACT_METHOD =
+		 "    ${modifiers} ${returnType} ${name}(${parameters}){\n"
+		+"        throw new java.lang.UnsupportedOperationException(\"${name}\");\n"
+		+"    }\n";
+
+	private static final String TMPL_FOOTER =
+		"}\n";
+
+	private AutoBean generatorAnno;
+	private PrintWriter writer;
+	protected BeanVisitor(AutoBean anno, PrintWriter writer) {
+		this.generatorAnno = anno;
+		this.writer = writer;
+	}
+
+	public static void process(TypeDeclaration coreClassDecl,
+				 env) throws IOException {
+		AutoBean anno = (AutoBean) coreClassDecl.getAnnotation(AutoBean.class);
+		String fullClassName = anno.bean();
+		if (fullClassName == null) return;
+                             
+		String pkgName = coreClassDecl.getPackage().getQualifiedName();
+		String className = fullClassName;
+		int pos = fullClassName.lastIndexOf('.');
+		if (pos > 0) {
+			pkgName   = fullClassName.substring(0,pos);
+			className = fullClassName.substring(pos+1);
+		}
+
+		//String interfaceName = anno.api();
+		String coreClassName = coreClassDecl.getQualifiedName();
+
+
+		Filer filer = env.getFiler();
+		PrintWriter writer = filer.createSourceFile(pkgName+"."+className);
+		BeanVisitor visitor = new BeanVisitor(anno, writer);
+
+		Map map = new HashMap();
+		map.put("coreClassName",coreClassName);
+		//map.put("interfaceName",interfaceName);
+		map.put("className",className);
+		map.put("packageName",pkgName);
+
+		visitor.header(map);
+
+		DeclarationVisitor scanner =
+			DeclarationVisitors.getSourceOrderDeclarationScanner(visitor, DeclarationVisitors.NO_OP);
+		coreClassDecl.accept(scanner);
+
+		visitor.footer(map);
+		writer.close();
+	}
+
+	public void header(Map map) {
+		writer.write(AptUtil.apply(TMPL_HEADER, map));
+	}
+	public void footer(Map map) {
+		writer.write(AptUtil.apply(TMPL_FOOTER, map));
+	}
+
+
+	public void visitFieldDeclaration(FieldDeclaration d) {
+		if (AptUtil.isPrivate(d)) return;
+		if (generatorAnno.getter()) writer.write(AptUtil.apply(TMPL_GETTER, d));
+		if (generatorAnno.setter()) writer.write(AptUtil.apply(TMPL_SETTER, d));
+	}
+
+	public void visitMethodDeclaration(MethodDeclaration d) {
+		if (AptUtil.isPrivate(d)) return;
+		if (!AptUtil.isAbstract(d)) return;
+		writer.write(AptUtil.apply(TMPL_ABSTRACT_METHOD, d, Modifier.ABSTRACT));
+	}
+
+}
+</xmp>
+
+<p/>
+AptUtil.java:
+<xmp style="height:300px;">
+package kotemaru.autobean.apt;
+
+import java.util.Collection;
+import java.io.IOException;
+import java.io.PrintWriter;
+import com.sun.mirror.apt.AnnotationProcessor;
+import com.sun.mirror.apt.AnnotationProcessorEnvironment;
+import com.sun.mirror.apt.Filer;
+import com.sun.mirror.declaration.TypeDeclaration;
+import com.sun.mirror.declaration.FieldDeclaration;
+import com.sun.mirror.declaration.ConstructorDeclaration;
+import com.sun.mirror.declaration.Modifier;
+import com.sun.mirror.util.DeclarationVisitor;
+import com.sun.mirror.util.DeclarationVisitors;
+import com.sun.mirror.util.SimpleDeclarationVisitor;
+import com.sun.mirror.type.TypeMirror;
+
+import com.sun.mirror.util.*;
+import com.sun.mirror.type.*;
+import com.sun.mirror.declaration.*;
+
+import kotemaru.autobean.annotation.*;
+import java.util.*;
+
+public class AptUtil {
+	public static String apply(String templ, Map map) {
+		Iterator<Map.Entry<String,String>> ite = map.entrySet().iterator();
+		while(ite.hasNext()){
+			Map.Entry<String,String> ent = (Map.Entry<String,String>) ite.next();
+			String key = "[$][{]"+ent.getKey()+"[}]";
+			String value = ent.getValue();
+			templ = templ.replaceAll(key, value);
+		}
+		return templ;
+	}
+	public static String apply(String templ, Declaration d) {
+		return apply(templ, d, null);
+	}
+
+	public static String apply(String templ, Declaration d, Modifier ignore) {
+		templ = templ.replaceAll("[$][{]modifiers[}]", getModifiers(d, ignore));
+		templ = templ.replaceAll("[$][{]name[}]", d.getSimpleName());
+		templ = templ.replaceAll("[$][{]captalName[}]", getCaptalName(d.getSimpleName()));
+
+		if (d instanceof FieldDeclaration) {
+			FieldDeclaration decl = (FieldDeclaration) d;
+			templ = templ.replaceAll("[$][{]type[}]", decl.getType().toString());
+		}
+		if (d instanceof MethodDeclaration) {
+			MethodDeclaration decl = (MethodDeclaration) d;
+			templ = templ.replaceAll("[$][{]returnType[}]", decl.getReturnType().toString());
+		}
+		if (d instanceof ExecutableDeclaration) {
+			ExecutableDeclaration decl = (ExecutableDeclaration) d;
+			templ = templ.replaceAll("[$][{]parameters[}]",  getParams(decl));
+			templ = templ.replaceAll("[$][{]arguments[}]",  getArguments(decl));
+			templ = templ.replaceAll("[$][{]throws[}]", getThrows(decl));
+		}
+		return templ;
+	}
+	public static  boolean isPrivate(Declaration d)  {
+		Collection<Modifier> mods = d.getModifiers();
+		for (Modifier mod : mods)  {
+			if (Modifier.PRIVATE.equals(mod))  {
+				return true;
+			} else if (Modifier.PROTECTED.equals(mod))  {
+				return false;
+			} else if (Modifier.PUBLIC.equals(mod))  {
+				return false;
+			}
+		}
+		return false;
+	}
+
+	public static  boolean isAbstract(Declaration d)  {
+		Collection<Modifier> mods = d.getModifiers();
+		for (Modifier mod : mods)  {
+			if (Modifier.ABSTRACT.equals(mod))  {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static String getModifiers(Declaration d, Modifier ignore) {
+		Collection<Modifier> mods = d.getModifiers();
+		if (mods.size() == 0) return "";
+		StringBuffer sbuf = new StringBuffer(mods.size()*20);
+		for (Modifier mod : mods)  {
+			if (!mod.equals(ignore)) sbuf.append(mod);
+			sbuf.append(' ');
+		}
+		sbuf.setLength(sbuf.length()-1);
+		return sbuf.toString();
+	}
+
+	public static String getParams(ExecutableDeclaration d) {
+		Collection<ParameterDeclaration> params = d.getParameters();
+		if (params.size() == 0) return "";
+		StringBuffer sbuf = new StringBuffer(params.size()*20);
+		for (ParameterDeclaration param : params)  {
+			sbuf.append(param.getType());
+			sbuf.append(' ');
+			sbuf.append(param.getSimpleName());
+			sbuf.append(',');
+		}
+		sbuf.setLength(sbuf.length()-1);
+		return sbuf.toString();
+	}
+	public static String getArguments(ExecutableDeclaration d) {
+		Collection<ParameterDeclaration> params = d.getParameters();
+		if (params.size() == 0) return "";
+		StringBuffer sbuf = new StringBuffer(params.size()*20);
+		for (ParameterDeclaration param : params)  {
+			sbuf.append(param.getSimpleName());
+			sbuf.append(',');
+		}
+		sbuf.setLength(sbuf.length()-1);
+		return sbuf.toString();
+	}
+
+	public static String getThrows(ExecutableDeclaration d) {
+		Collection<ReferenceType> params = d.getThrownTypes();
+		if (params.size() == 0) return "";
+		StringBuffer sbuf = new StringBuffer(params.size()*20);
+		sbuf.append("throws ");
+		for (ReferenceType param : params)  {
+			sbuf.append(param.toString());
+			sbuf.append(',');
+		}
+		sbuf.setLength(sbuf.length()-1);
+		return sbuf.toString();
+	}
+
+	public static String getCaptalName( String name ) {
+		return name.substring(0,1).toUpperCase() + name.substring(1);
+	}
+
+}
+</xmp>
+
+<h3>実行</h3>
+コンパイルと実行には tools.jar が必要になるので注意。
+<p/>
+コマンドラインからの実行はこんな感じになる。
+<xmp>
+apt -cp lib/tools.jar:build/classes\
+  -s build/src\
+  -d build/classes\
+  -factory kotemaru.autobean.apt.AutoBeanApFactory\
+  tests/src/test/TestCore.java
+</xmp>
+
+Eclipce は設定で AutoBeanApFactory を追加すればいいんじゃないかと思う。
+
+
+<h3>雑感</h3>
+
+応用範囲は広そう。<br/>
+類似パターンを水平展開するような大規模プロジェクトに応用すると劇的な効果が有りそうな気がするなー。
+
+<h3>関連記事</h3>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9960612.html">Java Annotation Processor を eclipse で開発する。</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/10264371.html">アノテーション＋Velocityでソースコードの自動生成</a>
+
+<hr/>
+ソース一式：
+<a href="/old/img/auone/LOVELOG_IMG/apt-sample.zip" target="_blank">apt-sample.zip</a>
+<p/>
+参考URL:
+<li>http://www.nurs.or.jp/~sug/soft/super/jbean.htm
+<li>http://www.edu.tuis.ac.jp/~mackin/javadocs/jdk1_5/docs/ja/guide/apt/GettingStarted.html
+
+

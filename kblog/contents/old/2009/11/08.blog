@@ -1,0 +1,53 @@
+Subject: lftpでのmirrorアップロード
+Content-type: lovelog/text
+Tags: 日記
+Date: 2009/11/08
+Public: yes
+
+aunet-oneのアップロードに lftp の mirror を使っていたんだが更新が正しく反映されてなかった。
+１日前の更新は反映されるのでピンと来て lftp mirror timezone でググったら答えが出て来た。
+
+ http://d.hatena.ne.jp/shidho/20070604
+
+この方、良く調べてあります。感謝感謝。
+こんなの分かるかーって感じですが要は仕様の曖昧さが原因の問題っだたらしい。
+
+結論：
+  set ftp:use-mdtm no
+  set ftp:timezone -9
+
+
+Subject: IE6の透明PNG
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2009/11/08
+Public: yes
+
+IE6でAlphaImageLoaderを指定しても透明PNGが出ない問題に悩んでけども理由が分かった。
+
+CSSファイルの内部でのURL指定はCSSファイルからの相対パスになるがAlphaImageLoaderの時だけHTMLファイルからの相対パスで指定する必要が有った。
+相変わらずやってくれますマイクロソフト...
+
+サンプルとかだと全部同一ディレクトリだから正常に動いちゃうんだよね。
+でもこの仕様だとCSSをライブラリ化できないじゃん。本当にアホだM＄。
+
+追記：
+http://www.yomotsu.net/lab/css/ie6_css_bg_png
+ここに相対パスのやり方が載っていたがうまく行かない。 これ以上こんな下らない事に時間をかけたくないのでペンデイング。
+
+
+
+Subject: FirefoxのIFRAMEの下部の隙間
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2009/11/08
+Public: yes
+
+FirefoxのIFRAMEの下部に4pxほど隙間ができて気持悪かったのだが margin-bottom: -4px; としたら消えた。
+単にバグなのか深い意味があるのか分からないけど取り合えずこれで逃げとく。
+
+	margin-bottom: -4px; /* for Fierfox3 */
+	*margin-bottom: 0px;
+
+
+

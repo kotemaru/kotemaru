@@ -1,0 +1,98 @@
+Subject: U24E を SSD に換装してみた
+Content-type: html/text
+Tags: 日記
+Date: 2012/12/11
+Public: yes
+
+仕事で使ってたノートPCの ASUS U24E が気に入ったので自分でも購入した。
+この機種は HDD を SSD 
+に自分で換装できるのでやってみた。
+<p/>
+SSD は INTEL 335 SERIES 240G を購入。
+ダメならデストップ用にするつもりだったので相性とか調査していない。
+
+<p><img src="/old/img/lovelog/u24e-ug-2.jpg" /></p>
+
+右は元々入っていた 700G HDD。
+以外にも HITACHI 製。
+<p/>
+ネジ数本で簡単に取り出せる。
+<p><img src="/old/img/lovelog/u24e-ug-5.jpg" /></p>
+
+とりあえず、SSD を代わりに入れて BIOS 確認したらあっさり認識。
+
+<p><img src="/old/img/lovelog/u24e-ug-1.jpg" /></p>
+
+ついでにメモリも増設。<br/>
+元々入っていたのは DDR3-1333 4Gx1
+だったが敢えて DDR3-1600 4Gx2 にしてみた。<br/>
+Transcend は DDR3-1333 と DDR3-1600 で 100円しか変わらなかったので。
+
+<p><img src="/old/img/lovelog/u24e-ug-8.jpg" /></p>
+
+memtest86+ の結果はOK。<br/>
+ちゃんと 1600MHz の Dual で認識されてる。<br/>
+メモリ 4Gx1 が余っちゃったけど安いからまあいいや。
+
+<p><img src="/old/img/lovelog/u24e-ug-9.jpg" /></p>
+
+と、問題なく進んだのはここまで。<br/>
+手持ちの USB DVD がブートデバイスとして認識されない。<br/>
+DVD からブートできないと SSD に OS をリカバリできない。
+<p/>
+色々、試しているうちにブートデバイスとして認識してくれる手持ちの
+USB HDD を発見。<br/>
+こいつで何とかならないかと頑張った手順をメモっとく。
+
+<hr/>
+<h4>1. ブートメディアとして USB HDD をフォーマットする。</h4>
+以下のツールを使って NTFS でフォーマットする。
+MBR も書き込んでくれるので起動メディアになります。
+<ul>
+<li>HP USB Disk Storage Format Tool <br/>
+<font size=1>http://hp-usb-disk-storage-format-tool.softonic.jp/</font>
+</ul>
+<p><img src="/old/img/lovelog/u24e-ug-10.jpg" /></p>
+
+<h4>2. リカバリ DVD の内容を USB HDD に全部コピー</h4>
+３枚有るけど全部必要。
+
+<h4>3. bootmgr を NTLDR 名前を変更</h4>
+2. の状態で起動すると NTLDR is missing... と言われます。
+Vista 以降の起動ファイルは bootmgr に変わったとの事なので
+bootmgr を NTLDR にコピーして起動したらリカバリが起動しました。
+
+<h4>4. 後は待つだけ</h4>
+リカバリ終了までは小１時間かかります。
+途中20回くらい再起動を繰り返すので気長にまつしかありません。
+<hr/>
+<p/>
+<br/><br/>
+２パーティション構成でリカバリした場合の配分です。
+<p><img src="/old/img/lovelog/u24e-ug-11.jpg" /></p>
+240G だと C: と D: のバランスはちょうど良い感じです。
+先頭の 25G はリカバリ用の隠しパーティションです。
+既に不要なので使えるのですが D: とは繋げられないので 
+SSD 延命の為の空き領域として開放しておきます。
+
+<p/>
+SSD には HDD とは異る特性があるのでOSの設定を見直します。<br/>
+参考：
+<ul style="font-size:12px;">
+<li>http://magumataishi.cocolog-nifty.com/blog/2011/04/windows-7-ssd-a.html
+<li>http://www.weeeple.jp/info/view.aspx?cate=1&idx=568
+</ul>
+
+<p/>
+これでやっと、SSD で PC が使えるようになりました。<br/>
+爆速ですw<br/>
+Windowsってこんなに速かったんですね、初めてストレス無く
+Windows使った感じです。
+<p/>
+なぜか CristalMark が動かなくベンチが取れないのが残念です。
+<p/>
+トータルの出費は６万円とちょっとでした。
+コストパフォーマンスは最強だと思います。
+
+
+

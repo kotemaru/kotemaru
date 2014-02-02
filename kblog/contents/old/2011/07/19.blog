@@ -1,0 +1,61 @@
+Subject: eclipseのアノテーションの設定ではまる
+Content-type: html/text
+Tags: eclipse
+Date: 2011/07/19
+Public: yes
+
+Verocity でアノテーション処理をするライブラリを作ろうと
+したのだが eclipse の設定ではまったのでメモ。
+<p/>
+そもそも eclipse はアノテーション処理に問題が有って処理が
+失敗していても何もエラーが起こらない。
+そのままコンパイルを実行してしまう。
+<p/>
+したがってアノテーション処理にバグや設定ミスが有っても
+原因がさっぱりわからない。
+<p/>
+今回はまったのは velocity 等の外部モジュールを
+アノテーション処理から使う場合、
+velocity.jar もファクトリーパスに入れ
+ておかないと実行時エラーになると言うもの。<br/>
+しかもエラーがどこにも出ない!!
+<p/>
+原因は ant から <apt> タスクを使っていろいろ実験した結果
+から勘で突き止めた。
+<p/>
+アノテーション処理を自前で作る人は少ないかも知れないが
+もうちょっと何とかしてほしいわ。
+<p/>
+eclipse の issue に上げればいいのかね？
+<p/>
+
+ちなみに ant で動作確認する場合の設定はこれ。
+<p/>
+<xmp>
+	<path id="aptpath">
+		<!-- ここにファクトリーパスを設定 -->
+		<fileset dir="lib">
+			<include name="my-apt-processor.jar" />
+		</fileset>
+	</path>
+
+	<target name="apt-test">
+		<apt
+			srcdir="${source}"
+			preprocessdir=".apt_generated"
+			destdir="${classes}"
+			debug="on" 
+			encoding="${encoding}"
+			compile="true"
+			factorypathref="aptpath">
+		</apt>
+	</target>
+</xmp>
+
+<p/>
+追記：<br/>
+Linux でコマンドラインから eclipse を起動すれば標準出力にエラーが出ることが判明。
+DOS窓は未確認。
+
+
+

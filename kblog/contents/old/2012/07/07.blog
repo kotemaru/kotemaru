@@ -1,0 +1,49 @@
+Subject: VirtualBoxで固定IP
+Content-type: html/text
+Tags: VirtualBox
+Date: 2012/07/07
+Public: yes
+
+Windows7 の VirtualBox から Windows Server を固定IPで使う方法を
+調べたのだが有りがちな割にはきれいにまとまっているサイトが
+無い。<br>
+しょうがないので自分で忘備録を書く。
+<p/>
+1. VMの設定でネットワークをブリッジアダプタにする。
+
+<p><img border=1 src="/old/img/lovelog/vbox-ip-1.png"/></p>
+
+2. ついでにアダプタタイプを Intel PRO に替える。<br/>
+(Win2008ではPCnetは認識しなかった。)
+
+<p><img border=1 src="/old/img/lovelog/vbox-ip-4.png"/></p>
+
+3. VirtualBox のネットワークとホストOSのネットワークを選んで「ブリッジ接続」する。
+
+<p><img border=1 src="/old/img/lovelog/vbox-ip-2.png"/></p>
+
+4. ブリッジ接続が作られる。
+
+<p><img border=1 src="/old/img/lovelog/vbox-ip-3.png"/></p>
+
+5. 後はゲストOSのネットワークを固定IPに設定するだけ。
+
+<p><img border=1 src="/old/img/lovelog/vbox-ip-5.png"/></p>
+
+6. 他のPCからちゃんと ping が通ればOK。
+
+<xmp>$ ping 192.168.0.100
+PING 192.168.0.100 (192.168.0.100): 56 data bytes
+64 bytes from 192.168.0.100: icmp_seq=0 ttl=128 time=1.162 ms
+64 bytes from 192.168.0.100: icmp_seq=1 ttl=128 time=1.264 ms
+64 bytes from 192.168.0.100: icmp_seq=2 ttl=128 time=1.128 ms
+64 bytes from 192.168.0.100: icmp_seq=3 ttl=128 time=1.102 ms
+^C
+--- 192.168.0.100 ping statistics ---
+4 packets transmitted, 4 packets received, 0.0% packet loss
+round-trip min/avg/max/stddev = 1.102/1.164/1.264/0.062 ms
+</xmp>
+<p/>
+以上。
+
+

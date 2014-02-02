@@ -1,0 +1,179 @@
+Subject: CSSだけでボーダーレイアウトのテンプレ
+Content-type: html/text
+Tags: CSS
+Date: 2012/11/18
+Public: yes
+
+CSSだけでヘッダー、フッター、サイドを固定するのは以外と難しい。<br/>
+ググっても怪しいやり方しか出てこない。(まあ IE6 のせいなんだが)
+<p/>
+つう訳でCSSだけでクロスブラウザの真っ当な(IEハック無し)
+ボーダーレイアウトのテンプレを書いてみた。
+(但し、IE7は後方互換モード)
+<p/>
+
+ボーダーレイアウト：
+<p><img border=1 src="/old/img/lovelog/border-layout-chrome-big.png" /></p>
+ブラウザを小さくした所：
+<p><img border=1 src="/old/img/lovelog/border-layout-chrome.png" /></p>
+ブラウザを小さくしてもヘッダー、フッター、サイドはそのままの大きさで中央部のみ可変サイズとなる。<br/>
+スクロールバーは中央部にしか出ない。
+<p/>
+他のブラウザで動作確認。
+<p/>
+Firefox-ESR:
+<p><img border=1 src="/old/img/lovelog/border-layout-ff.png" /></p>
+Safari:
+<p><img border=1 src="/old/img/lovelog/border-layout-safari.png" /></p>
+IE6:
+<p><img border=1 src="/old/img/lovelog/border-layout-ie6.png" /></p>
+IE7(後方互換モード):
+<p><img border=1 src="/old/img/lovelog/border-layout-ie7.png" /></p>
+IE8:
+<p><img border=1 src="/old/img/lovelog/border-layout-ie8.png" /></p>
+
+IE6,IE8は本物でも確認した。IE7はIE-Testerのみ。
+<p/>
+<a target="_brank" href="/old/img/lovelog/BorderLayout.html">実行サンプル</a>
+<p/><br/><br/>
+まあ、JavaScriptを使えば簡単だけどレイアウトの為だけに
+ jQuery+Plugin を使わなくて済むのは良いじゃないかと。
+<p/>
+
+<h3>ソース</h3>
+
+HTML:
+<xmp style="height:200px"><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>Border layout frame</title>
+
+	<link rel="stylesheet" href="BorderLayout.css" />
+
+	<style>
+*{font: bold large sans-serif;}
+	</style>
+
+</head>
+<body>
+	<div id="borderLayoutMain" class="BorderLayoutFrame">
+		<div id="borderLayoutMainInner">
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+テスト テスト テスト テスト テスト テスト テスト <br/> 
+		</div>
+	</div>
+
+	<div id="borderLayoutLeft" class="BorderLayoutFrame">
+		Left
+	</div>
+
+	<div id="borderLayoutRight" class="BorderLayoutFrame">
+		Right
+	</div>
+
+	<div id="borderLayoutHeader"  class="BorderLayoutFrame">
+		Header
+	</div>
+
+	<div id="borderLayoutFooter"  class="BorderLayoutFrame">
+		Footer
+	</div>
+</body>
+</html>
+</xmp>
+<p/>
+CSS: IEハック無しです (^^)v
+<xmp style="height:200px">html,body {
+	height:100%;
+	padding:0;
+	margin:0;
+	overflow: hidden;
+}
+
+.BorderLayoutFrame {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	display: inline-block;
+	position: absolute;
+	overflow: hidden;
+	zoom:1;
+	background: white;
+}
+
+#borderLayoutHeader {
+	width: 100%;
+	height: 80px;			/* Header height */
+	top: 0;
+	border-bottom: 1px solid gray;
+}
+#borderLayoutFooter {
+	width: 100%;
+	height: 30px;			/* Footer height */
+	bottom: 0;
+	border-top: 1px solid gray;
+}
+#borderLayoutLeft {
+	width: 200px;			/* Left width */
+	height: 100%;
+	top: 0;
+	left: 0;
+	padding-top: 80px;		/* Header height */
+	padding-bottom: 30px;		/* Footer height */
+	border-right: 1px solid gray;
+}
+#borderLayoutRight {
+	width: 200px;			/* Right width */
+	height: 100%;
+	top: 0;
+	right: 0;
+	padding-top: 80px;		/* Header height */
+	padding-bottom: 30px;		/* Footer height */
+	border-left: 1px solid gray;
+}
+
+#borderLayoutMain {
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	padding-top:    80px;	/* Header height */
+	padding-left:   200px;	/* Left width */
+	padding-right:  200px;	/* Right width */
+	padding-bottom: 30px;	/* Footer height */
+}
+
+#borderLayoutMainInner {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	position: relative;
+}
+
+/* EOF */
+</xmp>
+
+

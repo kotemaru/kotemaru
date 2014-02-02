@@ -1,0 +1,80 @@
+Subject: WSJSの使い方、その４（動的HTML:JSCP）
+Content-type: html/text
+Tags: WSJS
+Date: 2009/11/22
+Public: yes
+
+WSJSはPHPやJSP風のHTMLを動的生成するJSCPと言う機能を持っています。
+但し、サーバ側ではなくクライアント側で動作します。
+<p/>
+以下のサンプルHTMLを d:/test/jscp/select.html に置きます。
+
+<textarea readonly="true" wrap="off" style="width:100%;height:250px;font-size:12px;" >
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+                   "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja"
+      xmlns:jscp="http://jscp/">
+	<head>
+		<script src="../lib/JSCP.js"></script>
+		<script>
+
+var selectorVal = [
+	["みかん","りんご","すいか","メロン"],
+	["白菜","キャベツ","人参","タマネギ"]
+];
+var selector2 = selectorVal[0];
+
+function onSelector1(_this) {
+	selector2 = selectorVal[_this.selectedIndex]
+	JSCP.applyById("selector2");
+}
+
+		</script>
+	</head>
+	<body onload="JSCP.init()" onresize="JSCP.resize();">
+
+		<select size="3" onchange="onSelector1(this)">
+			<option value="0">果物</option>
+			<option value="1">野菜</option>
+		</select>
+
+		<jscp:jscp id="selector2">
+		<!--
+			<select size="3">
+			<% for (var i=0; i<selector2.length; i++) { %>
+				<option value="<%= selector2[i]%>"><%= selector2[i]%></option>
+			<% } %>
+			</select>
+		-->
+		</jscp:jscp>
+	</body>
+</html>
+</textarea>
+<p/>
+<img width="500px" src="/old/img/auone/wsjs/docs/images/tutorial-web/jscp-files.png"/>
+<p/>
+
+http://localhost:8080/wsjs/jscp/select.html にアクセスします。
+<img width="500px" src="/old/img/auone/wsjs/docs/images/tutorial-web/jscp-sel-1.png"/>
+&lt;select>タグの内容がスクリプトによって展開されています。
+<p/>
+「野菜」をクリックします。
+<img width="500px" src="/old/img/auone/wsjs/docs/images/tutorial-web/jscp-sel-2.png"/>
+&lt;select>タグの内容がスクリプトによって更新されています。
+<p/>
+
+select.htmlについて説明します。
+<ul>
+<li>JSCPはXHTMLを使用するためDOCTYPEとHTMLの宣言は必須です。
+<li>"http://jscp/" の名前空間定義も必須です。プレフィックスは自由です。
+<li>JSCP.js はJSCPの本体です。
+<li>&lt;jscp:jscp>タグの内側では &lt;%～%> に JavaScript が記述できます。
+<li>&lt;%= 式%> は JavaScript の式の値に置き換わります。
+<li>コメントで括られているのは &lt;% %> がXHTMLエラーとなる為です。
+</ul>
+
+JSCPはHTMLでしかありませんのでサーバに負担をかけません(というかWSJSサーバが無くても動作します)。
+又、サンプルの様にクライアント側で再度、動的な展開が行えるので
+リッチクライアントを非常に簡単に実装できます。
+
+

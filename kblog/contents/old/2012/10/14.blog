@@ -1,0 +1,78 @@
+Subject: mod_rewrite+mod_jkによるTomcatの文字化け 
+Content-type: html/text
+Tags: java
+Date: 2012/10/14
+Public: yes
+
+環境が変わったら Tomcat が文字化けするようになったので
+調査してくれと依頼されて調べた。
+<p/>
+結論から言ってしまうと mod_rewrite と mod_jk
+を併用した場合の問題だったのだが
+整理された情報が無くてはまったのでまとめとく。
+<p/>
+
+
+<dl>
+<DT>発生条件:</DT>
+<DD>
+URLパラメータに日本語を使っていて mod_rewrite と mod_jk
+を経由して Tomcat にリクエストを渡す場合、文字化けが発生する。<br/><br/>
+</DD>
+
+<DT>原因:</DT>
+<DD>
+mod_jk の設定に以下の設定が有る場合、
+mod_rewriteが日本語をデコードしてしまうので文字化けする。
+<pre>JkOptions +ForwardURICompat</pre>
+<br/>
+</DD>
+
+<DT>解決方法:</DT>
+<DD>
+mod_jk の設定を以下に変更する。但し、mod_jk-1.2.24 以降が必要。
+<pre>JkOptions +ForwardURIProxy</pre>
+<br/>
+</DD>
+
+<DT>問題の本質:</DT>
+<DD>
+<li>mod_rewrite と Tomcat がどちらもURL内のエスケープ文字(%xx)
+を自前で解析したいため矛盾が発生する。
+<li>mod_jkがどちらを優先するかのデフォルトの設定を２転３転させているため
+混乱に拍車がかかっている。
+<p/>
+バージョンとデフォルト動作の整理。
+<table border=1 cellspacing=0 style="font-size: 70%;">
+<tr><td>mod_jk Ver.</td><td>デフォルト設定</td>          <td>動作</td></tr>
+<tr><td>〜1.2.22</td>   <td>ForwardURICompat</td>        
+	<td>mod_jkに渡すURLはmod_rewriteを通す。<br/>%xxはデコードされる。</tr>
+<tr><td>1.2.23</td>     <td>ForwardURICompatUnparsed</td>
+	<td>mod_jkに渡すURLはmod_rewriteを通さない。<br/>%xxはデコードされない。</tr>
+<tr><td>1.2.24〜</td>   <td>ForwardURIProxy</td>         
+	<td>mod_jkに渡すURLはmod_rewriteを通す。<br/>mod_rewriteが操作した所以外は%xxはデコードされない。</tr>
+</table>
+
+</DD>
+</dl>
+<p/>
+<br/><br/><br/>
+最新版の mod_jk はデフォルトの ForwardURIProxy でほぼ問題無いはずなのですが
+日本語公式サイトの設定例に ForwardURICompat が指定されていたりするので
+コピペしちゃう人がいたりしそうです。
+<ul style="font-size: 70%;">
+<li>内容が古い：http://www.jajakarta.org/tomcat/tomcat-jk2/ja/docs/jk/aphowto.html
+</ul>
+<p/>
+まあ、URLに日本語使うなって言うのが正論なんでしょうけど
+現実にはそうもいかないですしね...
+
+<p/>
+その他の参考サイト：
+<ul style="font-size: 70%;">
+<li>http://tomcat.apache.org/connectors-doc/reference/apache.html
+<li>http://d.hatena.ne.jp/kusakari/20070616/1181971048
+<li>http://d.hatena.ne.jp/kusakari/20080325/1206417188
+</ul>
+
+
