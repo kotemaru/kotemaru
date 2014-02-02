@@ -23,7 +23,8 @@ public class Blog extends HashMap<String, Object> {
 	public static final String Date = "date";
 	public static final String Public = "public";
 	
-	public static final String PLAIN_TEXT = "html/text";
+	public static final String LOVELOG_TEXT = "lovelog/text";
+	public static final String PLAIN_TEXT = "plain/text";
 	public static final String HTML_TEXT = "html/text";
 	public static final String MARKDOWN_TEXT = "markdown/text";
 	
@@ -76,6 +77,8 @@ public class Blog extends HashMap<String, Object> {
 		if (MARKDOWN_TEXT.equals(cType)) {
 			MarkdownProcessor markdown = new MarkdownProcessor();
 			setContent(markdown.markdown(rawText));
+		} else if (LOVELOG_TEXT.equals(cType)) {
+			setContent(rawText.replaceAll("\n", "<br>\n"));
 		} else {
 			setContent(rawText);
 		}
