@@ -1,0 +1,191 @@
+Subject: JavaScriptからPicasaにアクセス
+Content-type: html/text
+Tags: JavaScript
+Date: 2011/12/25
+Public: yes
+
+＃やっと抜歯の痛みが引いて来たよ。一部歯茎の腫れが引かないけど..
+<p/>
+
+iPhone は safari から画像の Upload が出来ないんで JavaScript
+から画像ライブラリにアクセスする方法を探していたんだけど
+Picasa の webapi で出来る事が分かった。
+<p/>
+
+参考サイト：<ul>
+<li>http://tnker.com/?p=1996
+<li>http://code.google.com/intl/ja/apis/picasaweb/docs/2.0/developers_guide.html
+</ul>
+<p/>
+
+GoogleにはJavaScript用のライブラリは用意されていないようだが WebAPI
+なので直接叩けばなんとかなる。
+<p/>
+
+しかも公開設定になっているアルバムはユーザ名がわかればログインしなくても
+参照できる事が分かった。
+<p/>
+
+<h4>アルバム一覧の取得</h4>
+
+<pre>http://picasaweb.google.com/data/feed/api/user/${email}?kind=album&alt=json</pre>
+<p/>
+
+このURLの${email}にGMailのアドレスを入れてGETすればアルバムの一覧がJSONで帰ってくる。
+<p/>
+
+大事なとこだけ抜粋：
+<xmp>{
+    "encoding": "UTF-8", 
+    "feed": {
+        "author": […],
+        "category": […],
+        "entry": [
+            {
+                …
+                "gphoto$access": {"$t": "public"}, 
+                …
+                "gphoto$id": {"$t": "5684368764816860881"}, 
+                …
+                "media$group": {
+                    "media$thumbnail": [
+                        {
+                            "width": 160, "height": 160, 
+                            "url": "http://lh4.ggpht.com/….jpg", 
+                        }
+                    ], 
+                }
+            },
+            …
+        ],
+    }
+}
+</xmp>
+<p/>
+
+<dl>
+<dt>entry<dd>アルバムのリスト</dd></dt>
+<dt>gphoto$access<dd>public/private<br/>ログインしてると自分のprivateは見えちゃうのでpublicのチェックが必要。</dd></dt>
+<dt>gphoto$id<dd>アルバムのID。</dd></dt>
+<dt>media$thumbnail<dd>アルバムのサムネイル情報</dd></dt>
+</dl>
+<p/>
+
+<h4>アルバム内写真一覧の取得</h4>
+<p/>
+
+<pre>http://picasaweb.google.com/data/feed/api/user/${email}/albumid/${album_id}?alt=json</pre>
+<p/>
+
+このURLの${email}にGMail、${album_id}に上記のアルバムIDを入れてGETすれば写真の一覧がJSONで帰ってくる。
+<p/>
+
+大事なとこだけ抜粋：
+<xmp>{
+    "encoding": "UTF-8", 
+    "feed": {
+        "author": […],
+        "category": […],
+        "entry": [
+            {
+                …
+                "content": {
+                    "src": "http://lh4.ggpht.com/…/xxxxxx.JPG", 
+                    "type": "image/jpeg"
+                }, 
+                …
+                "gphoto$access": { "$t": "public" }, 
+                …
+                "media$group": {
+                   …
+                   "media$thumbnail": [
+                        {
+                            "height": 54, "width": 72,
+                            "url": "http://lh4.ggpht.com/…/s72/xxxxxx.JPG", 
+                        }, 
+                        {
+                            "height": 108, "width": 144,
+                            "url": "http://lh4.ggpht.com/…/s144/xxxxxx.JPG", 
+                        }, 
+                        {
+                            "height": 216, "width": 288,
+                            "url": "http://lh4.ggpht.com/…/s288/xxxxxx.JPG", 
+                        }
+                    ], 
+                }
+            },
+            …
+        ]
+    }
+}
+</xmp>
+<p/>
+
+<dl>
+<dt>entry<dd>写真のリスト</dd></dt>
+<dt>content.src<dd>写真のURL</dd></dt>
+<dt>gphoto$access<dd>public/private</dd></dt>
+<dt>media$thumbnail<dd>写真のサムネイル情報。３サイズ。</dd></dt>
+</dl>
+
+
+<h4>JavaScriptからの呼び出し</h4>
+
+普通に呼び出そうとするとXSSになるのでJSONPを使う。
+具体的には callback をURLパラメータに追加するだけで良い。
+<p/>
+
+jQuery から使う場合は $.getJSON を使わず $.ajax で dataType:"jsonp"
+とする。
+<p/>
+例：
+<xmp>    var URL_ALBUM = 
+        "http://picasaweb.google.com/data/feed/api/user/${user}?kind=album&alt=json";
+
+    var url = URL_ALBUM.replace(/[$][{]user[}]/,self.user);
+    $.ajax({
+      url:url, cache:true, dataType: "jsonp",
+      error: function(xreq,stat,err) {
+        alert("load error:"+err+" "+url);
+      },
+      success: function(json, type) {
+        var list = [];
+        for (var i=0; i<json.feed.entry.length; i++) {
+          var e = json.feed.entry[i];
+          if (e.gphoto$access.$t == "public") {
+            list.push({
+              thumbnail: e.media$group.media$thumbnail[0].url,
+              albumid: e.gphoto$id.$t
+            });
+          }
+        }
+        self.albums = list;
+      }
+    });
+
+</xmp>
+
+
+<h4>サンプル</h4>
+
+JQMDPで作ったサンプル。
+<ul>
+<li><a href="http://jqmdp.googlecode.com/svn/tags/jqmdp-1.0rc1/war/demos/samples/picasa/picasa.html">->動かす</a>
+<li><a href="http://jqmdp.googlecode.com/svn/tags/jqmdp-1.0rc1/war/demos/docs/samples/pages.html#picasa">->ソース</a>
+</ul>
+
+<p><img src="/old/img/lovelog/picasa-1.png"/></p>
+
+画像をクリックしてアルバムの一覧へ
+
+<p><img src="/old/img/lovelog/picasa-2.jpg"/></p>
+
+アルバムのサムネをクリックして写真の一覧へ
+
+<p><img src="/old/img/lovelog/picasa-3.jpg"/></p>
+
+写真をクリックすると元の画像が選択したものに差し変わる。
+
+<p><img src="/old/img/lovelog/picasa-4.jpg"/></p>
+
+

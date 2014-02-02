@@ -1,0 +1,102 @@
+Subject: GAE/Jのspinup
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/03/06
+Public: yes
+
+spin-up時間に Servlet と Filter でどれくらい違いがでるのか
+ちょっと気になったので調べてみた。
+<p/>
+いずれも中身は空っぽの NullServlet と NullFilter を用意して
+実機で動かした。
+<p/>
+結果：
+<p/>
+<li>NullServlet
+<pre>
+1241ms 1260cpu_ms
+1035ms 1306cpu_ms
+1035ms 1306cpu_ms
+1032ms 1516cpu_ms
+1253ms 1400cpu_ms
+1200ms 1540cpu_ms
+</pre>
+
+<p/>
+<li>NullFilter
+<pre>
+1175ms 1306cpu_ms 
+ 900ms 1423cpu_ms 
+ 910ms 1190cpu_ms 
+1442ms 1353cpu_ms 
+1152ms 1610cpu_ms 
+ 982ms 1190cpu_ms 
+</pre>
+<p/>
+うーん、気持早くなってる。<br/>
+100～200ms くらいだろうか。<br/>
+通常のアプリの spin-up 時間は 3000～4000ms くらいかかると思われるので
+誤差の範囲と言えなくも無い。
+<p/>
+まぁキチキチを目指す場合は最初から Filter にしとけって事くらいかな。<br/>
+後から変えようとすると結構面倒だし。
+<p/>
+
+以下、ソース。
+<li>NullServlet.java:
+<xmp>package org.kotemaru.test;
+
+import java.io.*;
+import java.net.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
+
+public class NullServlet extends HttpServlet {
+	public void init(ServletConfig config) throws ServletException {
+		System.out.println("Servlet init");
+	}
+
+	public void service(HttpServletRequest request, HttpServletResponse response) 
+			throws ServletException, IOException 
+	{
+		// nop.
+	}
+
+}
+</xmp>
+<p/>
+
+<li>NullFilter.java:
+<xmp>package org.kotemaru.test;
+
+import java.io.*;
+import java.net.*;
+import javax.servlet.*;
+
+public class NullFilter implements Filter {
+
+	public void init(FilterConfig config) throws ServletException {
+		System.out.println("Filter init");
+	}
+	public void destroy() {
+		// nop.
+	}
+	public void doFilter(ServletRequest _req, ServletResponse _res,
+              FilterChain chain)
+              throws java.io.IOException, ServletException
+	{
+		// nop.
+	}
+}
+</xmp>
+
+<p/>
+関連記事：<ul>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9999439.html">GAE/Jのspinupとmemcache その３</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9634506.html">GAE/Jのspinupとmemcache その２</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9634506.html">GAEのspinupとmemcache</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9403800.html">GAEのspin-up/down時間</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/10011184.html">GAE/Jのspinupとmemcache:クラスのキャッシュ化</a>
+</ul>
+
+

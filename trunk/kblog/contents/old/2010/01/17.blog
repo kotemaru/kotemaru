@@ -1,0 +1,39 @@
+Subject: FreeBSDでYoutube 
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/01/17
+Public: yes
+
+FreeBSDでyoutubeを見ようとすると結構めんどくさい。
+FreeBSD用のFlashは無いのでLinux用のプラグインを入れなくちゃいけない。
+それ自体もめんどくさいのだがFlashはセキュリティ上のバグが多くて入れたくない。
+
+で、「別にブラウザで見れなくても動画ファイルがDLできて見れれば良いんじゃね」
+と思ってググったらYoutubeの仕組みが分かったのでちょろっとスクリプトを書いてみた。
+
+<pre>
+#!/bin/sh
+
+VID=$1
+url="http://www.youtube.com/watch?v=${VID}"
+
+swfArgs=`wget -q -O - $url | grep SWF_ARGS`
+T=`echo $swfArgs|\
+  awk '{match($0,/"t": "[^"]*"/);print substr($0,RSTART+6,RLENGTH-7);}'`
+
+mplayer -cache 8192 "http://youtube.com/get_video?video_id=${VID}&t=${T}"
+
+#一旦、Downloadする場合はこっち。
+#wget -O $VID.flv "http://youtube.com/get_video?video_id=${VID}&t=${T}"
+#mplayer -fs -cache 8192 $VID.flv
+</pre>
+
+おお、ちゃんと動画が再生できてます。
+でも youtube-dl なんて ports が既に有ったのね...
+
+2010.12.23 追記
+このスクリプトはもう受け付け無いようです。
+youtube-dl を使ってください。
+
+
+

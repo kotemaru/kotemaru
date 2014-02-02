@@ -1,0 +1,56 @@
+Subject: HTTPでURLと異るDownloadファイル名を指定する
+Content-type: lovelog/text
+Tags: メモ
+Date: 2009/12/17
+Public: yes
+
+ブラウザからのバックアップ処理を書いていて保存ファイル名が backup.cgi みたいな事になっちゃうのでちょっと調べてみた。
+
+ググったらすぐ出て来て Content-Disposition ヘッダを応答すれば良いことが分かった。
+あれ？こんなヘッダ 仕様に有ったっけ、と思ったら非標準ヘッダだそうで。
+非標準だけあって IE と Firefox で日本存の扱いが違っていていろいろ問題らしい。
+でも両方サポートしてるなら今回は xxx.jar になればOK。
+
+と、言うわけでこんな感じ。
+jar形式のストリームへの出力も以外に簡単。
+<pre style="height:300px;">
+function backup(req, res, params) {
+	var pageName  = params.pageName.getString();
+	var jarName = pageName.replace("/","_")+".jar";
+
+	res.setContentType("application/java-archiver");
+	res.setHeader("Content-Disposition", "attachment; filename="+jarName);
+
+	var jarOut = new java.util.jar.JarOutputStream(res.getOutputStream());
+	var page = __ENV__.getPage(pageName);
+	if (page.isDirectory()) {
+		backupDir(jarOut, pageName, page);
+	} else {
+		var pos = pageName.lastIndexOf("/");
+		var baseName = pageName.substring(0, pos);
+		backupFile(jarOut, baseName, page);
+	}
+	jarOut.close();
+}
+function backupDir(jarOut, baseName, page) {
+	var pages = page.listPages();
+	for (var i=0; i&lt;pages.length; i++) {
+		if (pages[i].isDirectory()) {
+			backupDir(jarOut, baseName, pages[i]);
+		} else {
+			backupFile(jarOut, baseName, pages[i]);
+		}
+	}
+}
+function backupFile(jarOut, baseName, page) {
+	var entName = page.pageName.substring(baseName.length());
+	if (entName.startsWith("/")) entName = entName.substring(1);
+	var entry = new java.util.zip.ZipEntry(entName);
+	entry.setTime(page.lastModified());
+
+	jarOut.putNextEntry(entry);
+	page.writeBody(jarOut, false);
+	jarOut.closeEntry();
+}
+</pre>
+

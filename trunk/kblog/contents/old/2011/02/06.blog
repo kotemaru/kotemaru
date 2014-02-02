@@ -1,0 +1,215 @@
+Subject: FreeBSD の Android 開発環境
+Content-type: html/text
+Tags: FreeBSD
+Date: 2011/02/06
+Public: yes
+
+最近、猫も杓子もスマートフォンで再来年にはシェアが 50% を超えると言われてる。
+<br/>
+つー訳でおいらもミーハーに Android 開発をやって見たくなり、とりあえず開発環境をしらべて見た。
+<p/>
+と言ってもいつもの如く FreeBSD & Eclispe使いたく無い なので偉く苦労するはめに。
+<p/>
+<p/>
+
+<br/><br/>
+
+Android の SDK は Google が公開している。<br/>
+http://developer.android.com/sdk/index.html
+<p/>
+
+Linux 版があるので動かしてみた。<br/>
+ダウンローダみたいのは起動したが Linux とは認識されずダウンロード出来ない (;_;)
+/blog/20110206/android-sdk-linux.png
+
+<img border=1 src="/old/img/auone/blog/20110206/android-sdk-linux.png"/>
+<br/>赤い×印が...
+<p/>
+
+で、ググってたら bsdroid なる物が有志で移植されてるらしいのを見付けた。<br/>
+http://bsdroid.org/tiki-index.php
+<p/>
+
+ここから AOSP-2.2-20100709-i386, 14Mb を落してくる。<br/>
+GUI でもできるけど基本 CUI でやる。
+<p/>
+<br/><br/>
+
+BSDroid.INFO に従ってまずは環境設定。
+<pre>$ setenv ANDROID_SDK_ROOT /opt/android-AOSP-2.2-i386-distro-20100709
+$ setenv SDK_UPDATER_URLS http://bsdroid.org/
+</pre>
+<p/>
+
+でツール起動して更新パッケージを全部落す。
+<pre>$ tools/android update sdk -u</pre>
+<p/>
+<br/><br/>
+
+AVD(AndroidVirtualDevice)を作る。
+<pre>$ tools/android list target
+Available Android targets:
+id: 1 or "android-AOSP"
+     Name: Android AOSP (Preview)
+     Type: Platform
+     API level: AOSP
+     Revision: 20100709
+     Skins: WQVGA432, HVGA (default), WVGA854, WQVGA400, QVGA, WVGA800
+
+$ tools/android create avd --name test --sdcard 64M --target 1
+</pre>
+<p/>
+
+状況確認。
+<pre>$ tools/android list avd                                                  
+Available Android Virtual Devices:
+    Name: test
+    Path: /home/xxxx/.android/avd/test.avd
+  Target: Android AOSP (Preview) (API level AOSP)
+    Skin: HVGA
+  Sdcard: 64M
+</pre>
+<p/>
+
+<br/><br/>
+エミュレータの起動。起動が凄く重い。Core2Duoで２分かかる。
+<pre>$ tools/emulator -avd test</pre>
+<p/>
+<img src="/old/img/auone/blog/20110206/android-sdk-5.png" />
+<p/>
+↓２分...
+<p/>
+<img src="/old/img/auone/blog/20110206/android-sdk-6.png" />
+<p/>
+
+<br/><br/>
+adb サーバを起動する。adbはデバッガらしい。
+<pre>$ tools/adb fork-server server
+$ tools/adb start-server
+</pre>
+<p/>
+
+<br/><br/>
+プロジェクトを作る。
+<pre>$ tools/android create project -t 1 -p projects/sample -k "com.sample.test" -a HelloWorld
+</pre>
+<p/>
+
+mainのソースとインストールまでできる build.xml が生成される。
+<pre>$ ls -1 projects/sample/
+AndroidManifest.xml
+bin/
+build.properties
+build.xml
+default.properties
+libs/
+local.properties
+res/
+src/
+</pre>
+<p/>
+
+<br/><br/>
+インストールを行うにはリリース用の鍵が必要なので keytool で作る。
+パスワードは "android" でないといけない。
+変更できると思うが設定の場所がよく分からん。
+<pre>$ cd ~/.android/
+$ keytool -genkey -v -keystore debug.keystore \
+	-alias androiddebugkey -keyalg RSA \
+	-validity 10000 -dname "CN=Android Debug,O=Android,C=US"
+passwd: android
+</pre>
+<p/>
+
+<br/><br/>
+メインクラスに HelloWorld 出力コードの修正。<br/>
+projects/sample/src/com/sample/test/HelloWorld.java:<br/>
+<xmp>
+package com.sample.test;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.widget.TextView;
+
+public class HelloWorld extends Activity
+{
+    /** Called when the activity is first created. */
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+	TextView disp = new TextView(this);
+	disp.setText("Hello world!");
+        setContentView(disp);
+    }
+}
+</xmp>
+<p/>
+<br/><br/>
+やっとコンパイルとインストール。
+<p/>
+
+が、このままコンパイルするとこんなエラーが出る。
+<pre>…/projects/sample/build.xml:78: For 'AOSP' SDK Preview, attribute minSdkVersion in AndroidManifest.xml must be 'AOSP'</pre>
+<p/>
+
+よく分からんがググって出て来た設定を projects/sample/AndroidManifest.xml に追加。
+<xmp>
+< ?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.sample.test"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <application android:label="@string/app_name" android:icon="@drawable/icon">
+        <activity android:name="HelloWorld"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+    <uses-sdk android:minSdkVersion="AOSP" />  <!-- これ追加 -->
+</manifest>
+</xmp>
+<p/>
+<br/><br/>
+
+
+
+さらに、コンパイル時に tools/ant が無いと言われたら tools/ant を<br/>
+ http://bsdroid.org/tiki-index.php <br/>
+の別のアーカイブから探してコピーする。
+<pre>…/projects/sample/build.xml:78: Rules directory '…/tools/ant' is missing.</pre>
+<p/>
+<br/><br/>
+
+後は、エミュレータへのインストールまで ant がやってくれる。
+<pre>$ cd projects/sample
+$ ant install
+</pre>
+<p/>
+
+
+エミュレータの画面を確認すると HelloWorld がアプリに追加されている。
+<p/>
+<img src="/old/img/auone/blog/20110206/android-sdk-7.png" />
+<p/>
+
+実行してみる。
+<p/>
+<img src="/old/img/auone/blog/20110206/android-sdk-8.png" />
+<p/>
+動いた!!
+<p/>
+
+一応、これで最低限の開発環境が出来た。<br/>
+でも実機持って無いんだよねオレ... orz
+<p/>
+<br/><br/>
+
+参考にしたページ：<br/>
+http://d.hatena.ne.jp/isher/20100928/1285616799<br/>
+http://blog.goo.ne.jp/quamtacq/e/416f3335540cee9e50b90dee47688bb4<br/>
+
+

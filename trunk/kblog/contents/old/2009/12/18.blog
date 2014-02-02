@@ -1,0 +1,23 @@
+Subject: &lt;pre>タグで折り返しを有効にする 
+Content-type: lovelog/text
+Tags: メモ
+Date: 2009/12/18
+Public: yes
+
+掲示版を作ってると元の改行を生かしつつ自動の折り返しもして欲しい状況が発生する。
+text.replace(/\n/g,"&lt;br/>"); でも良いんだけどもっと簡単な方法を発見。
+CSS で &lt;pre> タグに改行を指定するだけ。
+<pre>
+pre {
+	overflow: auto;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+</pre>
+
+古いブラウザだとサポートして無い場合があるようだが最近の物はおおむねOKらしい。
+元情報はこの辺から。
+http://bowz.info/409
+http://blog.daichifive.com/archives/142
+
+

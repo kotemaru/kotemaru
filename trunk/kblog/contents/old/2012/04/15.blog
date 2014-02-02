@@ -1,0 +1,15 @@
+Subject: jQuery Mobile 1.1.0 Final がリリースされてた 
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2012/04/15
+Public: yes
+
+昨日、jQuery Monile 1.1.0 の正式版がリリースされていたようです。
+
+rc2 で試してましたが iPhone でもスクロール時にフッターが
+ガクガクしなくなったのでそれだけでも乗り換えの価値有りです。
+
+JQMDP の移行では内部APIを使っていた所以外は変更無かったので
+通常は差し替えだけでいけるんじゃないかな。
+
+

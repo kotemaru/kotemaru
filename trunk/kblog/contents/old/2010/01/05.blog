@@ -1,0 +1,43 @@
+Subject: 自宅サーバの構築、その４(Postgre on jail)
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/01/05
+Public: yes
+
+Postgre を jail 上で動かす設定。
+今回の環境では親ホストの Postgre を使用するので jail に pgsql ユーザの作成と起動スクリプトのコピーをしておく必要が有る。
+jail 上に直接インストールすれば必要無いはず。
+
+- jail環境に postgre のユーザ／グループを追加
+ jail# vi /etc/group
+<pre>pgsql:*:70:</pre>
+ jail# vipw
+<pre>pgsql:*:70:70::0:0:PostgreSQL Daemon:/usr/local/pgsql:/bin/sh</pre>
+- 起動スクリプトのコピー。
+ host# cp -p /usr/local/etc/rc.d/postgresql /jail/local_etc/rc.d/
+-- ※/jail/local_etc は jail:/usr/local/etc にマウントされている。
+
+
+- jail 上で共有メモリを有効にする。
+-- 親ホストの /etc/rc.conf に追加
+<pre>jail_sysvipc_allow="YES"</pre>
+-- セキュリティ上は無い方が良いが動かないものはしょうがない。
+
+- postgre のネットワーク設定の調整
+-- initdb でＤＢを作成後。
+-- $PGDATA/postgresql.conf に追加
+<pre>listen_addresses = '<i>jail-IP</i>'</pre>
+-- $PGDATA/pg_hba.conf に追加
+<pre>host    all         all         <i>jail-IP</i>/32          trust</pre>
+-- jail では localhost が使えない為。
+
+
+- jail環境の /etc/rc.conf に Prestgre の起動設定を追加。
+<pre>
+# Postgreの起動
+postgresql_enable="YES"
+postgresql_data="<i>PGDATAディレクトリ</i>"
+</pre>
+
+この設定で公開中の自宅サーバ：http://wsjs.dip.jp:8008/
+

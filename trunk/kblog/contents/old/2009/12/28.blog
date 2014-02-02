@@ -1,0 +1,43 @@
+Subject: 「未知の実行時エラーです」その２
+Content-type: lovelog/text
+Tags: JavaScript
+Date: 2009/12/28
+Public: yes
+
+またIEで「未知の実行時エラーです」を食らった。
+結論から言うと form タグの内側で form を innerHTML に入れようとすると発生する。
+普通に form を入れ子にする場合にはエラーにならない。
+
+これを実行すると６行目で「未知の実行時エラーです」になる。
+<pre>
+&lt;!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+&lt;html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+
+&lt;script>
+function init(){
+	var div = document.getElementById("test");
+	div.innerHTML = '&lt;form>&lt;input name="test"/>&lt;/form>';
+}
+&lt;/script>
+
+&lt;body onload="init();">
+
+	&lt;form>
+		&lt;div id="test">&lt;/div>
+		&lt;form>
+			&lt;input />
+		&lt;/form>
+	&lt;/form>
+&lt;/body>
+
+&lt;/html>
+</pre>
+
+これを踏む事はあんまり無いかもしれないけど覚書。
+
+しかし、エラーにする事自体は意味が分かるのに何で
+「FORMは入れ子にできません。」
+とエラーが出せないのかね。
+それだけではまらずに済むのに。
+
+

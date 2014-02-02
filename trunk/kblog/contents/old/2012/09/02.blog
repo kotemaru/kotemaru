@@ -1,0 +1,43 @@
+Subject: enchant.js向けマップエディタ
+Content-type: html/text
+Tags: JavaScript
+Date: 2012/09/02
+Public: yes
+
+
+enchant.js 向けマップエディタを 9leap に上げて有ったのだが
+こっちに書くのを忘れてたんで書いとく。
+<p/>
+enchant.js には一応、マップエディタがあるのだがあまりに貧弱で
+ゲームを作るのに支障をきたすので自前で作ってみた。
+<p/>
+方針としては<ul>
+<li>UNDO,REDOが効く。
+<li>レイヤーが使える。
+<li>複数チップを矩形で切り貼りできる。
+<li>ブラウザの localStrage に保存できてダウンロードできる。
+<li>フォーマットはJSON形式。
+<li>マニュアルレスでもなんとなく使える。
+</ul> 
+ぐらいの感じで。
+<p/>
+こんな感じの画面構成になりました。
+<p><img src="/old/img/lovelog/kmaped-1.png" width=450>
+<br/><font size=1>(画像は縮小してます)</font></p>
+
+
+このぐらいのマップは５分もかからず作れます。
+<p><img src="/old/img/lovelog/kmaped-2.png" ></p>
+<p/>
+マニュアルレスを目指すのでマニュアルはありません。
+決して手抜きでは有りません(^^;
+
+<p/>
+<ul><li>
+<a href="http://9leap.net/games/1808">
+実行＆ダウンロードは 9leap からできます。
+</a>
+</ul>
+
+
+

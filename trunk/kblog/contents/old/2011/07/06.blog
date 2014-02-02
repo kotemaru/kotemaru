@@ -1,0 +1,97 @@
+Subject: FreeBSD用のCPU温度モニタ
+Content-type: html/text
+Tags: FreeBSD
+Date: 2011/07/06
+Public: yes
+
+クーラー我慢してPCを付けてるとCPU温度が気になる。<br/>
+しかし xmbmon は Core2Duo に未対応のまま放置されてるので
+稼働中の温度がわからない。
+<p/>
+しょうが無いんで自力で作ってみた。
+<p/>
+温度の取り方はググったら既にまとめている人がいた。感謝。<br/>
+http://www.usamimi.info/~sakura/cgi-bin/blog/article.php?id=164
+<p/>
+
+へー、カーネルモジュールと sysctl で取れるんだー。
+<p/>
+
+<xmp># kldload coretemp
+$ sysctl -a | grep temper
+dev.cpu.0.temperature: 44.0C
+dev.cpu.1.temperature: 42.0C
+</xmp>
+<p/>
+
+おー、取れた。しかもコア毎に温度が違うんだ。知らんかった。
+<p/>
+
+後はこれをグラフにするだけなのだがグラフ化でCPUを消費するのは
+本末転倒なのでヘビーなツールは使いたく無い。
+<p/>
+
+しょうが無いので久しぶりに X Window で書いて見ることにした。
+<p/>
+
+が、覚えてねー (^^;<br/>
+どこから手を付けていいのかすら思い出せない。
+でもグーグル先生は偉大です。
+ちゃんと情報が出て来ました。少なめだけど。
+<p/>
+
+今時、生の X アプリってどこに需要あんだろ。
+MacOSの特殊なアプリぐらいか？
+<p/>
+
+と言うわけでソースはこちらからどうぞ。
+<ul>
+<li>https://kotemaru.googlecode.com/svn/trunk/xcpumon/
+</ul>
+<p/>
+
+FreeBSD で Core2 系CPU と言う非常に限られた環境専用です。
+(Atomでも動作しました。最近のIntel系はOKなのかな？)
+<p/>
+
+温度だけではもったい無いのでCPU使用率と周波数も表示してみました。
+<br/>
+CPU使用率は top みたいにコアの平均値のみだと意味無いので単コアの最大値も表示します。
+<p/>
+
+こんな感じ。
+<p><img border=1 src="/old/img/lovelog/xcpumon.png"/></p>
+
+<div style="background: black;color:white;">
+<font color="yellow">−</font>: CPU周波数
+<br/><font color="#f040c0">−</font>: CPU温度
+<br/><font color="#00f0f0">−</font>: CPU使用率/単コアの最大値
+<br/><font color="#00ff00">−</font>: CPU使用率/全コアの平均値
+<br/>
+</div>
+<p/>
+
+リアルタイムに確認したいCPU情報としては十分かと。
+<p/>
+
+オプションはザックリこんな感じなので環境に合わせて
+適当に調整してください。
+<p/>
+
+<xmp>
+	usage: xcpumon [<options>...]
+	    -g <width>x<height>+<x>+<y> : window size.
+	    -mt <val>   : max value of temperature.
+	    -mf <val>   : max value of freq.
+	    -l <val>    : max logging count.
+	    -i <val>    : interval sec.
+	    -v          : verbose mode.
+	    -wm         : enable window manager.
+	    -font <font>: 8px X font name.
+</xmp>
+<p/>
+-display とか未サポートですが俺得実装なので
+必要な人は勝手に拡張してください。
+て言うかお願いしまふ。
+
+

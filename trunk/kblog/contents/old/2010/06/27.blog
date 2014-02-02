@@ -1,0 +1,91 @@
+Subject: クライアント証明書を使ったSSH認証
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/06/27
+Public: yes
+
+とある事情で ssh を外部に公開する必要がでてきた。
+でも 22 番ポートなんて一番突っ込まれ安いんで開けたくねー
+(実際、公開中に総当たり攻撃受けたし)
+
+さすがに単純な user/pass の設定では公開したく無かったので
+クライアント証明書を使うことにした。
+
+とりあえず sshd の設定変更。
+/etc/ssh/sshd_config の変更点は以下の通り。
+<pre>
+PasswordAuthentication no
+PubkeyAuthentication yes
+ChallengeResponseAuthentication no
+</pre>
+
+ChallengeResponseAuthentication は FreeBSD の場合だけ必要になる。
+(デフォルトの違いらしい)
+
+
+クライアント側で鍵を作る。
+<pre>
+$ cd ~/.ssh/
+$ ssh-keygen -b 1024 -t dsa -N 鍵パスワード -f key-ssh
+$ mv key-ssh identity
+$ chown 600 identity
+</pre>
+公開鍵が key-ssh.pub に出来ているはずなのでサーバ側に送る。
+
+
+サーバ側で公開鍵を承認する。
+<pre>
+$ cd ~/.ssh/
+$ cp key-ssh.pub authorized_keys
+$ chmod 600 ~/.ssh/authorized_keys
+$ chmod g-w ~ ~/.ssh
+</pre>
+パーミッションの変更を忘れると動かないので要注意。
+
+後は普通にクライアント側から ssh を使うと鍵のパスワードを聞かれるようになる。
+<pre>
+$ ssh ホスト名
+Enter passphrase for key '/home/user/.ssh/identity': 
+</pre>
+パスワードを入力すればログイン。
+
+
+ちなみにクライアントにWindowsを使いたい場合は Putty とかがよさげ。
+- このへんから http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html
+- インストールは展開してコピーするだけ。
+- この中の puttygen.exe を起動して鍵を生成する。
+
+<img src="/old/img/auone/LOVELOG_IMG/ssh-1.png" />
+
+- まずは Generate をポチッと押す。
+
+<img src="/old/img/auone/LOVELOG_IMG/ssh-2.png" />
+
+- 次にマウスをグリグリする。
+
+<img src="/old/img/auone/LOVELOG_IMG/ssh-3.png" />
+
+- 生成された鍵をサーバの ~/.ssh/authorized_keys に追加する。
+
+<img src="/old/img/auone/LOVELOG_IMG/ssh-4.png" />
+
+- パスワードを入れて秘密鍵を保存する。
+-- ファイル名はここでは ssh-key.ppk とする。
+
+- 以下のようなバッチファイルを作って Putty を起動する。
+<pre>
+c:\xxxx\putty.exe -i c:\xxxx\ssh-key.ppk ユーザ名@ホスト名
+</pre>
+
+でいけるはず。
+
+
+手渡しとか安全な経路があれば秘密鍵をクライアントに渡してしまって
+も良いと思います。
+ちょっと手間はかかりますが安易なパスワードに対する不安を無くせる
+事を考えるとメリットの方が大きいかと。
+
+
+
+
+

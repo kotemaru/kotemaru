@@ -1,0 +1,41 @@
+Subject: IE8 の XMPタグ がバグってる。
+Content-type: html/text
+Tags: JavaScript
+Date: 2011/01/16
+Public: yes
+
+友達からブログが崩れてると言われたので調べた。<br/>
+どうも IE8 の時だけ XMPタグがおかしくなるらしい。
+</p>
+こんな感じのソースが
+<pre>
+&lt;xmp>
+xmp test
+xmp test
+xmp test
+&lt/xmp>
+</pre>
+こうなる。
+<p><img border=1 src="/old/img/auone/LOVELOG_IMG/xmp-test-1.PNG" /></p>
+
+通常の XMPタグは問題無かったので CSS との組み合わせと
+睨んでいろいろいじってみたところ原因判明。
+<ul>
+<li>XMPタグの dsiplay のデフォルトが inline になっていた。
+</ul>
+のである。<br/>
+更に border の設定してたので余計にぐちゃぐちゃになってた。
+</p>
+CSS で以下の設定を追加して無事解決。
+<xmp>xmp {
+	display: block;
+}
+</xmp>
+
+
+正しくはこんな感じ。
+<p><img border=1 src="/old/img/auone/LOVELOG_IMG/xmp-test-2.PNG" /></p>
+
+めでたし、めでたし。
+
+

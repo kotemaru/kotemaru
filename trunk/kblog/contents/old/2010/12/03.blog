@@ -1,0 +1,56 @@
+Subject: GAE/J SDK 1.4.0 ｷﾀ━(ﾟ∀ﾟ)━ !!!
+Content-type: lovelog/text
+Tags: GAE/J
+Date: 2010/12/03
+Public: yes
+
+GAE SDK が 1.4.0 に更新されていました。
+
+http://code.google.com/p/googleappengine/wiki/SdkReleaseNotes
+http://googleappengine.blogspot.com/2010/12/happy-holidays-from-app-engine-team-140.html
+
+今回の更新は凄いです。
+主な物だけですが、
+
+* Always On
+
+$9/月でインスタンスを３つ上げっぱなしにできるらしいです。
+これで spin-up 問題から開放されますが高いのか安いのか微妙な所です。
+
+* Warm Up Requests
+
+これ Always On を買っている必要がある見たい。
+よくわかんね。
+
+* Channel API
+
+サーバ側から push できるようになる。
+クライアント側 HTML5 じゃなくて google のライブラリを使うみたい。
+
+* TaskQueue/Cron 30秒制限 -> 10分
+
+鉄のルールが遂に解禁されました。
+10分あれば大概はタスクに振っとけば大丈夫でしょ。
+
+* URLFetch 1M制限 -> 32M, Mail送信 1M制限 -> 10M
+
+この辺は制限に当たった事が無いので良く分からんが多いにこした事は
+無いよね。
+
+
+ロードマップで気になった物
+
+* SSL for third-party domains
+
+鍵は自前で用意できるんだろうか。
+現状、AUの携帯は GAE に SSL できないけど問題解決出来るかも。
+
+* Bulk Datastore Import and Export tool
+
+おせーよ。自前で作っちゃったよ。
+とは言え管理コンソールから使えるなら嬉しい。
+
+
+てな感じらしい。
+Always On やっぱ有料だよね.. そりゃそうだよね..
+

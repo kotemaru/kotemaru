@@ -1,0 +1,30 @@
+Subject: GAEの新料金体系、追記
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/11/15
+Public: yes
+
+前の記事で 1entity=1ops と書いたがどうもそうじゃ無いらしい。<br/>
+ちゃんと計算する方法は分からないのだがローカルの環境で Datastore Viewer
+を見ると Write Ops と言う項目が勝手に追加されている事に気づいた。
+
+<p><img border=1 src="/old/img/lovelog/GAE-1.6.0-1.png" /></p>
+
+この Entity を書き込んだ時に使った Datastore Write Operations
+の値と思われる。
+<p/>
+Kind により異なるが手元のデータでは 1entity=20〜90ops になっている。<br/>
+おそらく index の書き込みがカウントされているのだと思うがそれにしても大きい値だ。
+<p/>
+無料分では1000件書込みできない。
+<p/>
+もう一回、資料を読み直そうと思ったら
+<div>http://code.google.com/intl/ja/appengine/docs/quotas.html</div>
+から Datastore Operations に付いての記述が無くなってる...
+<p/>
+おそらく内容が実態と一致していないため削除されたのだろう。
+<p/>
+現状は Write Ops から Read Ops を類推して使うしか無さそうだ。
+
+
+

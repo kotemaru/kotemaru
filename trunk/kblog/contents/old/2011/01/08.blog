@@ -1,0 +1,162 @@
+Subject: GAE/J の OpenID を使ってみた。
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/01/08
+Public: yes
+
+参考にしたページはこの辺り
+<li>http://code.google.com/p/appengine-openid-test/
+<li>http://d.hatena.ne.jp/knj77/20100612/1276328107
+<li>http://d.hatena.ne.jp/hidemon/20100521/1274472966
+<li>http://d.hatena.ne.jp/int128/20100525/1274809086
+<p/>
+openid4java で OpenID は実装した事があるが GAE/J の API
+では試した事が無かったのでいつもの様に WSJS でお手軽に
+試してみた。
+<p/>
+まずは認証の必要なページの作成。
+<li>未ログインの場合は OpenID を入力する自前のページに飛ばす。
+<p/>
+<xmp>
+var UserServiceFactory = Packages.com.google.appengine.api.users.UserServiceFactory;
+
+function doGet(req, res) {
+
+	var userService = UserServiceFactory.getUserService();
+	var user = userService.getCurrentUser();
+	if (user == null) {
+		res.sendRedirect("/openid/openid.ssjs?continue="+req.getRequestURI());
+	}
+
+	res.writer.write("This id target page. UserName="+user);
+}
+</xmp>
+<p/>
+web.xml に &lt;security-constraint> を設定しておけば自動で
+/_ah/login_required に飛ばしてくれるみたいです。
+/_ah/login_required には自前の Servlet が必要。
+<p/>
+<p/>
+OpenID の入力画面とプロバイダのログイン画面への転送処理。
+<li>画面は流用なので無意味に凝っている。
+<li>continue パラメータをセッション変数で引き継いでいる事に注意。
+<xmp>
+var UserServiceFactory = Packages.com.google.appengine.api.users.UserServiceFactory;
+
+// OpenIDの入力画面
+function doGet(req, res) {
+	req.session.setAttribute("returnUrl", req.getParameter("continue"));
+
+	var styleUrl = ""
+		+"border:1px solid #A6B9CA;"
+		+"color: black;"
+		+"background-color: #f0f8ff;"
+		+"font-family:Arial,MS PGothic;"
+		+"font-size:12px;"
+		+"padding:3px;"
+		+"padding-bottom:3px;"
+	;
+	var html =
+	<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja">
+		<body style="font-family: sans-serif,'ＭＳ ゴシック'">
+			<form method="POST">
+<table><tr><td>
+		<fieldset><legend>ユーザ認証</legend>
+				<div style="font-size:20px;">
+					<img src="/_wsjs_/login/images/OpenID-32.png" style="vertical-align:bottom;" />
+					OpenIDを入力して下さい。
+				</div>
+				<div style="margin: 8px 0px;">
+				<nobr>
+					<input id="openid_url" name="openid_url" size="40" style={styleUrl}/>
+					<input value="Login" name="Login" type="submit"/>
+				</nobr>
+				</div>
+				<div style="font-size:12px;" >
+					<span style="color:red;">※</span>Yahoo! OpenIDは現在サポートできていません。<br/>
+					Google又はOpenID.ne.jpをお勧めします。<br/>
+					OpenIDをお持ちで無い方は
+					<a href="http://openid.ne.jp" target="_blank">こちら</a>
+					から取得して下さい。<br/>
+				</div>
+		</fieldset>
+</td></tr></table>
+			</form>
+		</body>
+	</html>
+	;
+	res.setContentType("text/html; charset=utf-8");
+	res.writer.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">\n');
+	res.writer.write(html);
+}
+
+// OpenID受け取り
+function doPost(req, res) {
+	var returnTo = req.session.getAttribute("returnUrl");
+	if (returnTo.startsWith("/")) {
+		returnTo = "http://"+req.getServerName()+returnTo;
+	}
+
+	var domain = req.getServerName();
+	var openid_url = req.getParameter("openid_url");
+	var attributes = new java.util.HashSet();
+
+	var userService = UserServiceFactory.getUserService();
+	var loginUrl = userService.createLoginURL(
+		returnTo,
+		domain,
+		openid_url,
+		attributes
+	);
+
+	// プロバイダのログイン画面へ
+	res.sendRedirect(loginUrl);
+}
+</xmp>
+<p/>
+
+動かしてみる。
+まず、
+<li>  http://wsjs-gae.appspot.com/openid/target-page.ssjs 
+にアクセスすると
+<li> http://wsjs-gae.appspot.com/openid/openid.ssjs?continue=/openid/target-page.ssjs
+に転送され OpenID の入力を行う。
+<p/>
+
+<img border=1 src="/old/img/auone/LOVELOG_IMG/gae-openid-2.png" />
+<p/>
+
+あれ？何かエラーが...
+<pre>
+java.lang.IllegalArgumentException: The requested URL was not allowed: http://wsjs-gae.appspot.com/openid/target-page.ssjs
+	com.google.appengine.api.users.UserServiceImpl.makeSyncCall(UserServiceImpl.java:131)
+	com.google.appengine.api.users.UserServiceImpl.createLoginURL(UserServiceImpl.java:62)
+</pre>
+<p/>
+
+ググったらすぐ分かった。
+GAEに認証で gmail.com 以外を許可してなかった。
+管理画面から設定。
+<p/>
+
+<img border=1 src="/old/img/auone/LOVELOG_IMG/gae-openid-setting.png" />
+<p/>
+
+再度挑戦すると無事 プロバイダのログイン画面が現れた。
+<p/>
+
+<img border=1 src="/old/img/auone/LOVELOG_IMG/gae-openid-3.png" />
+<p/>
+
+ログインするとターゲットのページに戻って OpenID の登録メアドが
+表示されてＯＫ。
+<p/>
+
+<img border=1 src="/old/img/auone/LOVELOG_IMG/gae-openid-4.png" />
+<p/>
+
+思ったより簡単。
+面倒なのは最初のURLを引き回すとこだけだね。
+
+
+

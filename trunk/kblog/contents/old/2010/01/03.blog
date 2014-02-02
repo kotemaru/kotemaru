@@ -1,0 +1,86 @@
+Subject: 自宅サーバの構築、その２(パケットフィルタ)
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/01/03
+Public: yes
+
+公開する jail 環境はホームネットの環境に有るわけだがクラックされた場合の事を考えると他のＰＣにはアクセスさせたくない。
+しかし、メンテを考えると作業用ＰＣからログインして操作したい。
+
+この辺の制御を jail 環境の親ホストの ipfw を使ってやることにした。
+ipfw は FreeBSD 用のパケットフィルタだが jail のパケットもこのフィルタにちゃんと引っかかる。
+
+- ipfw を使うには kernel の再コンパイルが必要。
+ # cd /sys/i386/conf
+ # vi GENERIC
+<pre>options IPFIREWALL
+options IPFIREWALL_VERBOSE</pre>
+ # config GENERIC
+ # cd ../compile/GENERIC
+ # make depend ; make ; make install
+- /etc/rc.conf に設定追加
+<pre>firewall_enable="YES"</pre>
+
+
+自宅内のネット構成は大体こんな感じ。
+<pre style="font-family: fixed;">
+                 (inter-net)
+                      |
+                   [Router]
+                      |
+   ----+--------------+-----------+----- (local-net)
+       |                          |
+     [MYPC]                  [Server-PC] &lt;-ここでフィルタリング
+                                  |
+                              [Jail-VM]
+</pre>
+これにこういう制限をかけたい。
+<pre style="font-family: fixed;">
+○ (inter-net) <-> [Jail-VM]
+○ [MYPC]      --> [Jail-VM]
+× (inter-net) --> [MYPC],[Server-PC]   // これは Router の設定。
+× [Jail-VM]   --> [MYPC],[Server-PC]
+</pre>
+
+その初期化用スクリプトがこうなります。
+- /usr/local/etc/rc.d/ipfw-init.sh
+<pre>
+#!/bin/sh
+IPFW=/sbin/ipfw
+ME=<i>親サーバIP</i>
+JAIL=<i>jail-JIP</i>
+ROUTER=<i>ルータ-IP</i>
+MYHOME=<i>ホームNET(例：192.168.0.0/24)</i>
+MYPC=<i>作業ＰＣ-IP</i>
+PUBPORT=<i>公開ポート番号</i>
+
+${IPFW} -f flush
+
+${IPFW} add  90 deny  all from ${JAIL} to ${ME}
+${IPFW} add 100 allow all from any to any via lo0
+${IPFW} add 200 deny  all from any to 127.0.0.0/8
+${IPFW} add 300 deny  all from 127.0.0.0/8 to any
+
+${IPFW} add 1000 allow tcp from any to ${JAIL} dst-port ${PUBPORT}
+${IPFW} add 1100 allow all from ${MYHOME} to ${JAIL}
+${IPFW} add 1200 allow all from ${JAIL} to ${ROUTER} dst-port domain
+${IPFW} add 1300 allow tcp from ${JAIL} to ${MYHOME} established
+${IPFW} add 1400 deny  tcp from ${JAIL} to ${MYHOME} setup
+${IPFW} add 1500 deny  all from ${JAIL} to ${MYHOME}
+${IPFW} add 1600 allow all from ${JAIL} to any
+
+${IPFW} add 9100 allow all from ${MYPC} to ${ME}
+${IPFW} add 9200 allow all from ${ME} to any
+</pre>
+
+肝になるのは 1300 と 1400 の設定です。
+- 1300: jailから他PCに向かう確立しているセッションのパケットは通します。
+- 1400: jailから他PCに向かうセッション開始のパケットは破棄します。
+
+作業PCから jail に向かうパケットは制限されていないのでセッションは開始できます。
+jailから他PCへはセッションが開始できないので一方通行が成立します。
+受動的にセッションハイジャックしてクライアントアプリをクラックすれば突破できますが相当難しいでしょう。
+そこまでしてこのサイトをクラックするメリットも無いですし。
+
+この設定で公開中の自宅サーバ：http://wsjs.dip.jp:8008/
+

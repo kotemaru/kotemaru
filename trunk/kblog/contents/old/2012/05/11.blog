@@ -1,0 +1,43 @@
+Subject: html5のDOMとCanvasの描画性能
+Content-type: html/text
+Tags: JavaScript
+Date: 2012/05/11
+Public: yes
+
+「ビー玉ころころ」でDOM(imgタグ)とCanvasを使った場合の
+描画速度に差があるのか気になったので調べてみた。
+<p/>
+
+こんなサイトを見付けた。
+<ul>
+<li>参考：HTML5はFlashの3倍重かった! 描画パフォーマンスの比較<br/>
+http://clockmaker.jp/blog/2012/02/html5-flash-draw_performance/
+</li>
+</ul>
+
+Flash, HTML5(DOM), HTML5(Canvas) の比較を行っている。
+<p/>
+Flash圧勝なのは予想通りだけど今回知りたいのは DOM vs Canvas。
+<br/>
+で、PCでの結果を見ると Canvas 圧勝。<br/>
+<p/>
+テストコードが公開されていたのでiPodTouch4で試してみた。
+<p/>
+テストコード：指定した個数の矩形画像が下に流れ落ちる。
+<p><img border=1 src="/old/img/lovelog/draw-test-can.jpg"/></p>
+
+500個の画像を処理させてみた。
+<p/>
+DOMの結果: 12fps
+<p><img border=1 src="/old/img/lovelog/draw-test-dom-c.png"/></p>
+Canvasの結果: 26fps
+<p><img  border=1 src="/old/img/lovelog/draw-test-can-c.png"/></p>
+
+となり、Canvasの方が２倍くらい早い結果となった。
+<p/>
+PC用のテストコードなのでテスト方法が妥当か疑問の余地があるが
+まあ納得の行く結果だと思う。
+<p/>
+ゲームの様な性能の要求される描画ではCanvasを使えって事だな。
+
+

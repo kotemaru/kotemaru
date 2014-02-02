@@ -1,0 +1,90 @@
+Subject: Jetty+PostgreSQLの設定
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2009/12/03
+Public: yes
+
+公開サーバのスクリプトからはＤＢも使える様にしたい。
+１ユーザ＝１スキーマでやるとするとDerbyでは心許ないので postgre を使う事に。
+
+とりあえず ports に有った最新版は 8.4 たっだのでこれを使う。
+<pre>
+ # cd /usr/ports/databases/postgresql84-server
+ # make install
+</pre>
+
+インストールできたらＤＢの初期化と開始。
+<pre>
+ > export PGDATA=$HOME/pgdata
+ > initdb
+ > pg_ctl start
+</pre>
+
+テストユーザとテストスキーマの作成。
+<pre>
+ > createuser -P test
+ Password: ****
+ agein: ****
+ > createdb --owner test test
+</pre>
+
+postgre用のJDBCドライバをダウンロードしておく。
+- http://jdbc.postgresql.org/download.html
+- 今回は JDBC3 Postgresql Driver, Version 8.4-701 を選択。
+- postgresql-8.4-701.jdbc3.jar を lib に入れて置く。
+
+jetty への DataSource の登録。
+- WEB-INF/web-jetty.xml に設定を追加する。
+- パラメータは DataSource の実装毎に違うので用注意。
+-- http://siisise.net/pgsql/jdbc.html
+<pre>
+&lt;?xml version='1.0'  encoding='ISO-8859-1'?>
+&lt;!DOCTYPE Configure PUBLIC '-//Mort Bay Consulting//DTD Configure//EN' 'http://jetty.mortbay.org/configure.dtd'>
+&lt;Configure class='org.mortbay.jetty.webapp.WebAppContext'>
+    &lt;Set name='war'>&lt;SystemProperty name='jetty.home' default='.'/>/webapps/wsjs&lt;/Set>
+    &lt;Set name='contextPath'>/wsjs&lt;/Set>
+
+    &lt;New id='jdbc/test' class='org.mortbay.jetty.plus.naming.Resource'>
+        &lt;Arg>jdbc/test&lt;/Arg>
+        &lt;Arg>
+            &lt;New class='org.postgresql.jdbc3.Jdbc3PoolingDataSource'>
+                &lt;Set name='serverName'>localhost&lt;/Set>
+                &lt;Set name='databaseName'>test&lt;/Set>
+                &lt;Set name='user'>test&lt;/Set>
+                &lt;Set name='password'>****&lt;/Set>
+            &lt;/New>
+        &lt;/Arg>
+    &lt;/New>
+&lt;/Configure>
+</pre>
+
+
+
+
+動作確認。
+<pre>
+function doGet(req, res) {
+	var conn = __ENV__.getDBConnection("jdbc/test");
+	res.writer.write(conn.toString());
+	conn.close();
+}
+</pre>
+
+実行すると正しく取れている。
+<pre>
+Pooled connection wrapping physical connection org.postgresql.jdbc3.Jdbc3Connection@1c41e49
+</pre>
+
+WSJSにJNDIアクセス制限の機能追加。
+- これで /home/${user}/** のファイル以外からは jdbc/${user} にはアクセスできない。
+<pre>
+config.permitJNDI = [
+	["jdbc/${user}",            "${user}"],
+];
+</pre>
+
+と、ここまでは良かったのだが Derby 用に作ったデモが全然動かない。
+SQLが結構違うみたいだ.. orz
+いい加減 SQL は互換性を取ってくれ..
+
+

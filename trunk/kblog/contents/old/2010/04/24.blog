@@ -1,0 +1,338 @@
+Subject: GAE/JのBigtable低レベルAPIをRhinoから使う
+Content-type: html/text
+Tags: GAE/J
+Date: 2010/04/24
+Public: yes
+
+GAE/J で Rhino からＤＢを使いたいときに JDO だとJavaクラスが
+必要なのでどうしたもんかと考えていたのだがBigtableの例レベルAPI
+を調べてみたら元々Bigtableはプロパティでレコードを保存している
+事が分かった。
+<p/>
+プロパティ名も固定されている必要が無くPrimaryKeyさえあれば後は
+何でも有りでむしろスクリプト言語の方が簡単に扱える様になっている。
+<p/>
+性能的にもJDOより低レベルAPIの方が早いらしい。Slim3は40%早いと
+言っている。
+<p/>
+但し、検索機能は SQL に比べると著しく劣る。NOT EQ すら無いのは
+なんとかして欲しい。
+<p/>
+と、言うわけで WSJS から使うラッパーを書いてみた。
+<p/>
+DataStore.js:
+<pre style="height:300px;overflow:scroll;">
+/**
+ * DataStore クラス。
+ * JavaScript から GAE の低レベルAPI を容易に使う為のクラス。
+ */
+
+/**
+ * コンストラクタ。
+ */
+function DataStore() {
+	this.ds = DataStore.DSF.getDatastoreService();
+}
+/**
+ * トランザクション処理の補助関数。
+ * &lt;li>処理関数をトランザクションの開始と終了の内側で実行する。
+ * &lt;li>処理関数が例外を発生させた場合は rollback する。
+ * @param func 処理関数
+ * @return func の戻り値
+ */
+DataStore.transaction = function(func){
+	var ds = new DataStore();
+	try {
+		return func(ds);
+	} catch (e) {
+		// TODO:
+		if (e.rhinoException) {
+			throw e.rhinoException;
+		} else if (e.fileName &amp;&amp; e.lineNumber){
+			throw e.message+"("+e.fileName+"#"+e.lineNumber+")";
+		} else {
+			throw e;
+		}
+	} finally {
+		//TODO:
+	}
+}
+
+
+DataStore.API = Packages.com.google.appengine.api.datastore;
+DataStore.DSF = DataStore.API.DatastoreServiceFactory;
+DataStore.KEY = "pkey";
+
+
+DataStore.prototype.put = function(kind, data){
+	with (this) {
+		var entity = data.key 
+			? new DataStore.API.Entity(kind, data[DataStore.KEY])
+			: new DataStore.API.Entity(kind);
+		for (var name in data) {
+			if (name != DataStore.KEY) {
+				entity.setProperty(name, data[name]);
+			}
+		}
+		var _key_ = ds.put(entity);
+		return _key_.getName();
+	}
+}
+
+DataStore.prototype.get = function(kind, key){
+	with (this) {
+		var query = new DataStore.API.Query(kind);
+		var _key_ = DataStore.API.KeyFactory.createKey(kind, key);
+		query.addFilter(DataStore.API.Entity.KEY_RESERVED_PROPERTY, 
+								DataStore.API.Query.FilterOperator.EQUAL , _key_);
+		var preQuery = ds.prepare(query);
+		var entity = preQuery.asSingleEntity();
+		if (entity == null) return null;
+
+		return toJS(entity);	
+	}
+}
+
+DataStore.prototype.remove = function(kind, key){
+	with (this) {
+		var _key_ = DataStore.API.KeyFactory.createKey(kind, key);
+		ds._delete(_key_);
+	}
+}
+
+DataStore.prototype.query = function(kind, where, sort){
+	var query = this.newQuery(kind);
+	if (where != null) {
+		for (var name in where)	query.eq(name, where[name]);
+	}
+	if (sort != null) {
+		for (var name in sort) query.sort(name, sort[name]);
+	}
+	return query.asArray(query, true);
+}
+
+DataStore.prototype.newQuery = function(kind){
+	return new DataStore.Query(this, kind);
+}
+
+
+DataStore.prototype.toJS = function(entity){
+	// TODO: ラッパーの方が高速。
+	var data = {};
+	data[DataStore.KEY] = entity.getKey().getName();
+	if (data[DataStore.KEY] == null) {
+		data[DataStore.KEY] = entity.getKey().getId();
+	}
+	var ite = entity.getProperties().entrySet().iterator();
+	while (ite.hasNext()) {
+		var ent = ite.next();
+		data[ent.getKey()] = ""+ent.getValue();
+	}
+	return data;
+}
+
+
+//-------------------------------------------------------------------
+DataStore.Query = function(parent, kind) {
+	this.parent = parent;
+	this.ds = parent.ds;
+	this.query = new DataStore.API.Query(kind);
+	this._limit = null;
+	this._offset = null;
+}
+DataStore.Query.API = DataStore.API;
+DataStore.Query.FilterOperator = DataStore.API.Query.FilterOperator;
+DataStore.Query.SortDirection = DataStore.API.Query.SortDirection;
+
+DataStore.Query.prototype.eq = function(name, val){
+	this.query.addFilter(name,	DataStore.Query.FilterOperator.EQUAL, val);
+	return this;
+}
+DataStore.Query.prototype.gt = function(name, val){
+	this.query.addFilter(name,	DataStore.Query.FilterOperator.GREATER_THAN, val);
+	return this;
+}
+DataStore.Query.prototype.gteq = function(name, val){
+	this.query.addFilter(name,	DataStore.Query.FilterOperator.GREATER_THAN_OR_EQUAL, val);
+	return this;
+}
+DataStore.Query.prototype.lt = function(name, val){
+	this.query.addFilter(name,	DataStore.Query.FilterOperator.LESS_THAN, val);
+	return this;
+}
+DataStore.Query.prototype.lteq = function(name, val){
+	this.query.addFilter(name,	DataStore.Query.FilterOperator.LESS_THAN_OR_EQUAL, val);
+	return this;
+}
+DataStore.Query.prototype.sort = function(name, dir){
+	with (this) {
+		if (dir == "DESC") {
+			query.addSort(name,	DataStore.Query.SortDirection.DESCENDING);
+		} else {
+			query.addSort(name);
+		}
+	}
+	return this;
+}
+DataStore.Query.prototype.limit = function(val){
+	this._limit = val;
+	return this;
+}
+DataStore.Query.prototype.offset = function(val){
+	this._offset = offset;
+	return this;
+}
+
+DataStore.Query.prototype.asList = function(){
+	return ds.prepare(this.query).asList(this._getOperator());
+}
+DataStore.Query.prototype.asIterator = function(){
+	return ds.prepare(this.query).asIterator(this._getOperator());
+}
+DataStore.Query.prototype.asArray = function(){
+	with (this) {
+		//var ite = ds.prepare(query).asIterator(_getOperator());
+		var ite = ds.prepare(query).asIterator();
+		var array = [];
+		while (ite.hasNext()) {
+			var entity = ite.next();
+			array.push(parent.toJS(entity));
+		}
+		return array;
+	}
+}
+
+
+DataStore.Query.prototype._getOperator = function(){
+	with (this) {
+		var op = DataStore.API.FetchOptions.Builder.withChunkSize(10);
+		if (_limit) op = op.limit(_limit);
+		if (_offset) op = op.offset(_offset);
+		return op;
+	}
+}
+
+//EOF
+</pre>
+
+<p/>
+掲示版のサーバ側コードをRDBから差し替えてみる。
+<p/>
+BBS.rpjs:
+<pre style="height:300px;overflow:scroll;">
+include("/_wsjs_/lib/DataStore.js");
+
+var DATA_SOURCE = "jdbc/bbs";
+var ARTICLE = "article";
+var ARTICLE_IDX = "article_idx";
+var STATUS_DELETE = 0x0001;
+var STATUS_ADMIN_DELETE = 0x0002;
+var RECENT50_JSON = "/bbs/recent50.json";
+var DAY = 24 * 60 * 60 * 1000; // 24H/ms
+
+var BBS = {};
+BBS.dbInit = function(isDrop) {
+	var LOG = __ENV__.LOG;
+	if (!__ENV__.user.hasRole("admin")) {
+		throw "Need admin role by DB init.";
+	}
+}
+
+BBS.postComment = function(params) {
+	DataStore.transaction(function(ds) {
+		params = Util.escapeAll(params);
+		params.username = __ENV__.user.name;
+		params.datetime = new java.util.Date(__ENV__.currentTimeMillis());
+		params.status = 0;
+		params.deleted = false;
+		ds.put(ARTICLE, params);
+	});
+	BBS.makeRecent50(params);
+}
+BBS.makeRecent50 = function(params) {
+	//var datas = BBS.getRecent50(params);
+	//var page = __ENV__.wsjsContext.getPage(RECENT50_JSON);
+	//page.putBodyString(uneval(datas));
+}
+BBS.getRecent50 = function(params) {
+	return DataStore.transaction(function(ds) {
+		var q = ds.newQuery(ARTICLE).eq("category", params.category)
+					.eq("deleted", false)
+					.sort("datetime", "DESC");
+		q.limit(50);
+		var datas = q.asArray();
+		return datas;
+	});
+}
+
+BBS.findComments = function(params) {
+	return DataStore.transaction(function(ds) {
+		params = Util.escapeAll(params);
+
+		var q = ds.newQuery(ARTICLE).eq("category", params.category)
+					.eq("deleted", false)
+					.sort("pkey")
+					.limit(50);
+		if (params.mycomment == true) {
+			q.eq("username", __ENV__.user.name);
+		}
+		if (params.datelimit &amp;&amp; params.datelimit != 0) {
+			var curTime = __ENV__.currentTimeMillis();
+			q.gt("username", new java.util.Date(curTime-params.datelimit*DAY));
+		}
+
+		var ite = q.asIterator();
+		while (ite.hasNext()) {
+			var ent = ite.next();
+			if (params.keyword &amp;&amp; params.keyword != "") {
+				var comment = ent.getProperty("comment");
+				if (comment &amp;&amp; comment.indexOf(params.keyword)>0) {
+					datas.push(ds.toJS(ent));
+				}
+			}
+		}
+		return datas;
+	});
+}
+
+BBS.deleteComment = function(params) {
+	DataStore.transaction(function(ds) {
+		var ent = ds.get(ARTICLE, params.pkey);
+		if (ent == null) {
+			throw "コメントが存在しません。";
+		}
+		if (ent.username != __ENV__.user.name) {
+			throw "ユーザIDが一致しません。";
+		}
+
+		ent.deleted = true;
+		ds.put(ARTICLE, ent);
+	});
+	BBS.makeRecent50(params);
+}
+
+
+
+exports(BBS);
+
+//-------------------------------------------
+var Util = {};
+Util.escapeAll = function(params) {
+	for (var name in params) {
+		if (typeof params[name] == "string") {
+			params[name] = (""+params[name]).replace(/&amp;/g,"&amp;amp;").replace(/&lt;/g,"&amp;lt;");
+		}
+	}
+	return params;
+}
+
+</pre>
+
+
+結構、シンプルに書ける。慣れればSQLよりこっちの方が楽かも。
+テーブル定義もいらないし。
+
+
+
+
+

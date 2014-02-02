@@ -1,0 +1,91 @@
+Subject: C#.NETでSQL
+Content-type: html/text
+Tags: C#
+Date: 2012/08/12
+Public: yes
+
+Java 案件に投入されたはずがいつのまにか C#.NET
+案件にすり代わっていたでござるよ。*ﾟдﾟ)ｴｴｪｪ
+<p/>
+C# なんて10年くらい前にチョコっとやったことが有るくらい。<br/>
+まだ .NET でも無かったし。
+<p/>
+と言うわけで納期は目の前にもかかわらず C#.NET で SQL
+の使い方とか基本的なとこからお勉強。<br/>
+間に合うのかね ┐(´ー｀)┌ 
+<p/>
+
+とりあえずテーブルに挿入して自動採番された ID 
+を取得するとこまでググって整理してみた。
+<p/>
+<xmp>
+using System.Data;
+using System.Data.SqlClient;
+
+{
+	string url = @"Server=.\SQLEXPRESS;database=<database>;uid=<user>;pwd=<pass>";
+	SqlConnection db = new SqlConnection(url);
+	db.Open();
+	SqlTransaction tx = db.BeginTransaction(IsolationLevel.Serializable);
+
+	string sql = "INSERT INTO tblTEST(text1,text2)"
+	   + " VALUES (@text1,@text2);"
+	   + "SELECT @id = IDENT_CURRENT('tblTEST')";
+
+	SqlCommand cmd = new SqlCommand(sql, db, tx);
+
+	cmd.Parameters.Add("@text1", SqlDbType.VarChar, 10).Value = "text1";
+	cmd.Parameters.Add("@text2", SqlDbType.VarChar, 10).Value = "text2";
+	cmd.Parameters.Add("@id", SqlDbType.Int).Direction = ParameterDirection.Output;
+
+	int newId = cmd.Parameters["@id"].Value;
+	
+	tx.Commit();
+	db.Close();
+}
+</xmp>
+<p/>
+一応、動いた。
+あれ？ PHP+SQLServerでやった時は OUTPUT とかって機能が有ったはずなんだよね..
+<p/>
+調べたら SQLServer/2005 以降には OUTPUT が有る。<br/>
+けど C#.NET 用のサンプルが見当たらない...
+<p/>
+勘でいじくってみた。
+<p/>
+<xmp>
+using System.Data;
+using System.Data.SqlClient;
+
+{
+	string url = @"Server=.\SQLEXPRESS;database=<database>;uid=<user>;pwd=<pass>";
+	SqlConnection db = new SqlConnection(url);
+	db.Open();
+	SqlTransaction tx = db.BeginTransaction(IsolationLevel.Serializable);
+
+	string sql = @"INSERT INTO  tblTEST(text1,text2)"
+	   + " OUTPUT INSERTED.id"
+	   + " VALUES (@text1,@text2);"
+	SqlCommand cmd = new SqlCommand(sql, db, tx);
+	cmd.Parameters.Add("@text1", SqlDbType.VarChar, 10).Value = "text1";
+	cmd.Parameters.Add("@text2", SqlDbType.VarChar, 10).Value = "text2";
+
+	SqlDataAdapter adapter = new SqlDataAdapter();
+	DataSet dataSet = new DataSet();
+	adapter.SelectCommand = cmd;
+	adapter.Fill(dataSet);
+
+	int newId = (int)dataSet.Tables[0].Rows[0][0];
+	
+	tx.Commit();
+	db.Close();
+}
+</xmp>
+<p/>
+これでも動いた。<br/>
+SELECT の結果の受け方が分かりづらいね C#.NET は。
+<p/>
+発行されるSQLが１回で済む後述の方が正解なんだろう。<br/>
+先は長そう...
+
+

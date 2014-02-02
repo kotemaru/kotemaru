@@ -1,0 +1,27 @@
+Subject: JQMDP 1.0b2 公開します。
+Content-type: html/text
+Tags: jQueryMobile
+Date: 2011/12/05
+Public: yes
+
+
+「<a href="http://blogs.dion.ne.jp/kotemaru/archives/10486666.html">
+jQuery Mobileのプラグインを作ってみた。</a>」
+で作った物を仕様をちゃんとして作り直してみました。
+
+<ul>
+<li>ダウンロード：http://code.google.com/p/jqmdp/downloads/list
+<li>ドキュメント：http://jqmdp.googlecode.com/svn/tags/jqmdp-1.0b2/war/demos/index.html
+</ul>
+
+Chrome,Firefox,Safari は動きますが IE が動きません。
+<p/>
+いつもの
+「オブジェクトでサポートされていないプロパティまたはメソッドです」
+攻撃で意味不明です。(T_T)
+<p/>
+なんでそのプロパティ名をメッセージに含めるというだけの改修が
+IE になされないのか、本当に疑問です。
+
+
+

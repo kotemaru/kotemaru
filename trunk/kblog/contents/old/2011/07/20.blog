@@ -1,0 +1,25 @@
+Subject: eclipseのアノテーションの設定ではまる、その２ 
+Content-type: html/text
+Tags: eclipse
+Date: 2011/07/20
+Public: yes
+
+Velocityを使う場合の別の問題が発生。
+
+<ol>
+<li>Velocity は singleton で環境を持っている。
+<li>eclipse の標準ビルダーはアノテーション処理の実行環境をワークスペース内で共有するらしい。
+<li>Velocity は環境の再初期化ができない。
+</ol>
+
+結果、
+<ul>
+<li>Velocityを使うアノテーション処理が複数プロジェクトにあると誤動作しまくり。
+</ul>
+動いたり動かなかったりなので本当に訳わかめ。
+<p/>
+１日潰れてしまった。<br/>
+eclipse 好きになりかていたのですがまた嫌いになりました。
+
+
+

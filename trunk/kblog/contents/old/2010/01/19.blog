@@ -1,0 +1,37 @@
+Subject: 自宅サーバ  公開しました。
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2010/01/19
+Public: yes
+
+光回線が開通したので自宅サーバを公開します。
+
+http://wsjs.dip.jp:8008/
+
+Web上からWSJSアプリの開発が可能です。
+- 当然ですが JavaScript 必須です。
+- 「このサイトの使い方」のタグにしたがってユーザ登録して下さい。
+- 不明な点や不具合はここか自宅サーバの掲示版に書き込んで下さい。
+
+では、みなさん遊びに来て下さい。
+
+
+Subject: WSJSサンプル ブロック崩し
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2010/01/19
+Public: yes
+
+自宅サーバを公開したのでちょっと目を引くサンプル「ブロック崩し」を作ってみました。
+
+これはクライアントの JavaScript のみで動作するブロック崩しで１つの玉をEXJSの疑似スレッドで動かしています。
+複数の玉を同時に出現させても並列に動作するデモになっています。
+
+実行URL：http://wsjs-gae.appspot.com/samples/game_block_kuzusi/block.html
+ソース：http://wsjs-gae.appspot.com/_wsjs_/develop/index.html から game_block_kuzusi/ のディレクトリを開いて下さい。
+
+<a href="http://wsjs.dip.jp:8008/samples/game_block_kuzusi/block.html">
+<img src="/old/img/auone/LOVELOG_IMG/block-kuzushi.png"/>
+</a>
+
+

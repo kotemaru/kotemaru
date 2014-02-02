@@ -1,0 +1,106 @@
+Subject: GAE/Jのimage APIを使ってみた。
+Content-type: html/text
+Tags: GAE/J
+Date: 2010/08/29
+Public: yes
+
+GAE/J は java.awt が使えないので通常のイメージ処理が行えない。<br/>
+なので専用のAPIが用意されている。<br/>
+<br/>
+基本的なイメージの読み込み、拡大／縮小、回転、結合とかの機能が提供されている。<br/>
+カスタムのイメージフィルタも使えるらしい。<br/>
+<br/>
+とりあえず、image APIを使ってアクセスカウンタをWSJS上に作ってみた。<br/>
+0～9の数字のイメージを読み込んでカウンタの値に合成してレスポンスとするだけ。<br/>
+カウンタは Bigtable に保存する。<br/>
+注意するのは Cache-contorl: nocache を設定して置くことぐらいかな。<br/>
+<br/>
+で、実際のコードがこれ。<br/>
+<br/>
+<xmp style="height:300px;">
+include("DataStore.js");
+
+var IMAGES = Packages.com.google.appengine.api.images;
+var ImagesServiceFactory = Packages.com.google.appengine.api.images.ImagesServiceFactory;
+var ImagesService = Packages.com.google.appengine.api.images.ImagesService;
+var Composite = Packages.com.google.appengine.api.images.Composite;
+
+var COUNTER = {name: "Counter", types: {
+	count: 0
+}};
+
+var Counter = {
+	add: function(key) {
+		return DataStore.transaction(function (ds) {
+			var counter = ds.get(COUNTER, key);
+			if (counter == null) {
+				counter = {pkey:key, count:0};
+			}
+			counter.count++;
+			ds.put(COUNTER, counter);
+			return counter.count;
+		});
+	}
+}
+
+
+function doGet(req, res) {
+	var imagesService = ImagesServiceFactory.getImagesService();
+	var numImages = [
+		getImage(0),getImage(1),getImage(2),getImage(3),
+		getImage(4),getImage(5),getImage(6),getImage(7),
+		getImage(8),getImage(9)
+	];
+
+	var num = Counter.add(req.getParameter("key"));
+	var nums = [];
+	while (num>0) {
+		nums.unshift(num%10);
+		num = Math.floor(num / 10);
+	}
+	while (nums.length < 8) nums.unshift(0);
+
+	var list = new java.util.LinkedList();
+	var offX = 0;
+	var maxHeight = 0;
+	for (var i=0; i<nums.length; i++) {
+		var n = nums[i];
+
+		var comp = ImagesServiceFactory.makeComposite(
+			numImages[n], offX,0, 1.0,
+			Composite.Anchor.TOP_LEFT);
+		list.addFirst(comp);
+
+		offX += numImages[n].getWidth();
+		maxHeight = Math.max(maxHeight, numImages[n].getHeight());
+	}
+
+	var image = imagesService.composite(list, offX, maxHeight, 0,
+			ImagesService.OutputEncoding.PNG);
+
+	res.setHeader("Cache-Control", "nocahe");
+	res.setContentType("image/png");
+	res.outputStream.write(image.getImageData());
+}
+
+function getImage(num) {
+	var data = __ENV__.getPage("img/"+num+".gif").getBodyBytes();
+	var image = ImagesServiceFactory.makeImage(data);
+	return image;
+}
+</xmp>
+<p/>
+イメージの読み込みはイメージのバイト列か BlobKey から行える。<br/>
+BlobKey を使う場合は BlobStore に上げとく必要がありそう。<br/>
+バイト列の場合はローカルかネットからイメージデータを先に読み込んでくる。<br/>
+<p/>
+イメージの加工は Transform や Composite インスタンスを先に生成してそれを
+適用する形になっている。<br/>
+<br/>
+あんまり、使い勝手が良い気がしないけど他に無いんでしょうがないっすねー。
+<p/>
+実際の動きはこちらからどーぞ。<br/>
+http://wsjs-gae.appspot.com/index.html
+
+
+

@@ -1,0 +1,209 @@
+Subject: サーバ監視ツール 結局自作 
+Content-type: lovelog/text
+Tags: メモ
+Date: 2010/01/16
+Public: yes
+
+Munin は入れてみたもののなんかいろいろ気に入らない。
+
+- CPU使用率が取得した瞬間のもので前回取得からの平均値でない。
+- 情報の取得処理でCPU使用率がちょっと上がっちゃう。
+- HDD I/O レートが取れない。
+- グラフに余計な情報が多くて見づらい。
+- グラフがカスタマイズしずらい。
+- ローカルでしか使わないのにデーモンなんか上げたくない。
+
+と、不満たらたら。
+基本的には「top コマンドの内容がグラフで見れたら十分」な分けだがそれがシンプルにできるツールが無い。
+
+仕方が無いので作る!!
+基本的な方針は、
+(1) top や *stat 系コマンドの出力を awk で加工してログる。
+(2) (1)のログを gnuplot でグラフ化する。
+おお、とってもシンプル。
+
+取得する情報は
+- CPU, Memory の使用率  (top)
+- CPU 温度  (mbmon)
+- HDD I/O レート (iostat)
+- Net I/O レート (netstat)
+とする。
+
+
+まずロガー起動スクリプト。
+- 各コマンドとフィルタをバックグランドで起動する。
+- 各コマンドは１時間後に自動終了するようにしておく。
+- cron で１時間おき<sup>(*1)</sup>にロガー起動スクリプトを実行する。
+
+logging.sh:
+<pre>
+#!/bin/sh
+
+BASE=`dirname $0`
+MBMON=/usr/local/bin/mbmon
+GAWK=/usr/local/bin/gawk
+
+LOGDIR=/var/sysmonitor
+LOGTIME=3600
+INT=300
+AWKPARAM="-v logdir=$LOGDIR -v timeout=$LOGTIME -v interval=$INT"
+
+top -s $INT -d 100 -bu 0 | $GAWK $AWKPARAM -f $BASE/logging-top.awk &
+$MBMON $INT           | $GAWK $AWKPARAM -f $BASE/logging-mbmon.awk &
+netstat -w $INT       | $GAWK $AWKPARAM -f $BASE/logging-netstat.awk &
+iostat -x -w $INT -d  | $GAWK $AWKPARAM -f $BASE/logging-iostat.awk &
+</pre>
+
+
+topコマンドのフィルタ。
+- 日付,時間,CPU使用率,Memory使用率を CSV 形式で出力する。
+- Memory使用率は inact+buf を分離する。<sup>(*2)</sup>
+- 出力先は $LOGDIR/top-YYYY-MM-DD.log とする。
+- FreeBSD/7.2 以外では未確認。多分 Linux では調整が必要。
+
+logging-top.awk:
+<pre>
+BEGIN {
+	endtime = systime() + timeout;
+	dropHeaderCount = -1;
+}
+
+/^last pid/ {
+	load1m = substr($6, 0, length($6)-1) * 100;
+	load5m = substr($7, 0, length($7)-1) * 100;
+}
+
+/^CPU:/{
+	cpuUsed = 100 - substr($10, 0, length($10)-1);
+}
+
+/^Mem:/{
+	act   = kbytes($2);
+	inact = kbytes($4);
+	wired = kbytes($6);
+	cache = kbytes($8);
+	buf   = kbytes($10);
+	free  = kbytes($12);
+
+	memTotal = act+inact+wired+cache+buf+free;
+	memUsed1 = (act+wired+cache) * 100 / memTotal;
+	memUsed2 = (inact+buf) * 100 / memTotal;
+
+	if (dropHeaderCount++ >= 0) {
+		curtime = systime();
+		logFile = logdir "/" strftime("top-%Y-%m-%d.log", curtime);
+		datetime = strftime("%Y/%m/%d,%H:%M:%S", curtime);
+
+		printf("%s,%d,%d,%d\n",
+			datetime,cpuUsed,memUsed1,memUsed2) >> logFile;
+		fflush(logFile);
+
+		if (curtime > endtime) exit;
+	}
+}
+
+func kbytes(size) {
+	if (size ~ /M$/) {
+		return substr(size, 0, length(size)-1) * 1048576;
+	} else if (size ~ /K$/) {
+		return substr(size, 0, length(size)-1) * 1024;
+	}
+	return size;
+}
+</pre>
+
+
+グラフ化スクリプト。
+- ログをgnuplotのコマンド列に変換して gnuplot に食わせる。
+- 実行タイミングは適当に。
+mkgraph.sh
+<pre>
+#!/bin/sh
+
+BASE=`dirname $0`
+LOGDIR=/var/sysmonitor
+OUTDIR=<i>出力先ディレクトリ</i>
+DATE=`date -v -1H +%Y-%m-%d`
+GNUPLOT=/usr/local/bin/gnuplot
+
+$BASE/plot-top.awk   $LOGDIR/top-$DATE.log   | $GNUPLOT > $OUTDIR/top-$DATE.png
+$BASE/plot-mbmon.awk $LOGDIR/mbmon-$DATE.log | $GNUPLOT > $OUTDIR/mbmon-$DATE.png
+$BASE/plot-disk.awk  $LOGDIR/disk-$DATE.log  | $GNUPLOT > $OUTDIR/disk-$DATE.png
+$BASE/plot-net.awk   $LOGDIR/net-$DATE.log   | $GNUPLOT > $OUTDIR/net-$DATE.png
+
+cd $OUTDIR
+rm -f *-current.png
+ln -s top-$DATE.png   top-current.png 
+ln -s mbmon-$DATE.png mbmon-current.png 
+ln -s disk-$DATE.png  disk-current.png 
+ln -s net-$DATE.png   net-current.png 
+</pre>
+
+
+logging-top.awkのログをgnuplotのコマンド列に置き換えるツール。
+- 横軸に時間、縦軸に使用率とする。
+- CPU使用率を折れ線で Memory使用率を棒グラフにする。
+plot-top.awk:
+<pre>
+#!/usr/local/bin/gawk -f
+
+BEGIN {
+	FS = ","
+
+	print "set term png";
+	print "set size 1,0.38";
+
+	#printf("set output '%s'\n",outfile);
+
+	print "set multiplot";
+	print "set xrange [0:24]";
+	print "set xtics 00,1,24";
+
+	print "set title 'CPU & Memory'";
+	print "set ylabel 'ratio'";
+	print "set yrange [0:105]";
+
+	cnt = 0 ;
+}
+
+
+!/^#/{
+	split($2,t,":");
+	time[cnt] = sprintf("%02d.%02d",t[1],int(t[2]*100/60));
+	cpu[cnt] = $3 ;
+	mem1[cnt] = $4 ;
+	mem2[cnt] = $4+$5 ;
+	cnt++;
+}
+
+END{
+	print "plot '-' title 'mem-buf' lc rgb '#aaffe0' with impulses\\";
+	print ", '-' title 'mem-act' lc rgb '#aae0ff' with impulses\\";
+	print ", '-' title 'cpu' lc rgb '#ff4400' with line";
+
+	for( i=0 ; i&lt;cnt ; i++ ) print time[i],mem2[i];
+	print "end, ";
+
+	for( i=0 ; i&lt;cnt ; i++ ) print time[i],mem1[i];
+	print "end";
+
+	for( i=0 ; i&lt;cnt ; i++ ) print time[i],cpu[i]+1;
+	print "end";
+}
+</pre>
+
+実行結果：<a href="/old/img/auone/LOVELOG_IMG/top-current.png">
+<img width="480px" src="/old/img/auone/LOVELOG_IMG/top-current.png"/>
+</a>※10:30くらいからカーネルのコンパイルを走らせてみました。
+
+gnuplot のコマンドは分かりづらいですがカスタマイズはそんなに難しく無いと思います。
+(ググればいくらでも情報はあります。)
+
+その他のスクリプトはこちらから落して下さい。
+<a href="/old/img/auone/LOVELOG_IMG/sysmonitor.zip" target="_blank">sysmonitor.zip</a>
+
+
+(*1)１時間おきにしているのは万が一スクリプトが死んでしまった場合に翌朝までログが取れないと言う状態を回避する為です。
+(*2)inactとbufは無くても動作するが合った方がより効率的に動作できるメモリ領域です。
+
+

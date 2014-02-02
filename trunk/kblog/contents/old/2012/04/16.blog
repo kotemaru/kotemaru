@@ -1,0 +1,165 @@
+Subject: jQueryMobile+iPhone で QUnit を使う。
+Content-type: html/text
+Tags: JavaScript
+Date: 2012/04/16
+Public: yes
+
+jQuery Monile 1.1.0 に対応した JQMDP-1.0rc2 を googlecode に置きました。
+<ul>
+<li>http://code.google.com/p/jqmdp/downloads/list
+</ul>
+<hr/>
+本題。<br/>
+JavaScriptのテストコードってどうすれば良いかと調べると
+QUnit って言うのが見付かった。<br/>
+<ul>
+<li>本家：http://docs.jquery.com/Qunit
+<li>参考：http://d.hatena.ne.jp/Jxck/20100721/1279681676
+</ul>
+使い方はほぼ JUnit と同じ。<br/>
+特殊なのは JavaScript はスレッドが使えないので非同期処理をするための
+仕掛けが用意されている事くらい。<br/>
+<p/>
+参考サイトは非常に良くまとめてくれるいるので先に参照して欲しい。
+
+<p/>
+で、現実的なテストの場合、アプリとテストコードは分離したいので
+別Window(又は iframe)でテストアプリを起動してやる必要がある。<br/>
+<p/>
+参考サイトにはこの辺の解説が無かったので自分で調べてみた。
+<p/>
+
+本家サイトのデモを見ると基本系はこんな感じだが
+<xmp>module("Module name");
+
+test("test1", function() {
+  equal( true, true, "passing test" );
+});
+test("test2", function() {
+  equal( true, false, "failing test" );
+});
+</xmp>
+<p/>
+module()関数の第２引数にオプションを指定すると開始と終了をフックできる。
+<xmp>module("Module name", {
+	setup: function(){ 開始処理 },
+	teardown: function{ 終了処理 }
+});
+test("test1", function() {
+	// ここで this は module()第２引数になる。
+});
+</xmp>
+<p/>
+
+なのでおおざっぱに考えると
+<ul>
+<li>setup() で window.open("アプリURL");<ul>
+  <li>onload でテスト起動
+</ul>
+<li>teardown() で  window.close();
+</ul>
+してやれば良さげ。
+<p/>
+具体的にはこうなった。
+<xmp>var Sandbox = function(url){
+	this.url = url;
+	this.win = null;
+	this.onload = [];
+	this.autoClose = true;
+}
+Sandbox.prototype = {
+	setup: function() {
+		var self = this;
+		this.win = window.open(this.url, "_blank");
+		this._onload = function(){
+			var $handle = $(self.win.document);
+			for (var i=0; i<self.onload.length; i++) {
+				self.onload[i]($handle, self);
+			}
+		};
+		function checker() {
+			if (self.win.document.readyState == "complete") {
+				self._onload();
+			} else {
+				setTimeout(checker, 50);
+			}
+		}
+		setTimeout(checker, 100);
+	},
+	teardown: function() {
+		if (this.autoClose) this.win.close()
+	},
+	load: function(callback){
+		this.onload.push(callback);
+	}
+};
+
+
+module("module name", new Sandbox("アプリURL"));
+
+test("test1", function() {
+	stop();
+	this.load(function($sandbox){  // Sandbox.load()
+		start();
+		same($sandbox.find("#id").val(), "正解", "項目詳細");
+	});
+});
+</xmp>
+<p/>
+IEは別 Window の onload が取れないのでしかたなくポーリングにした。
+IEいらないなら this.win.onload = function(){...} で良いはず。
+<p/>
+Sandbox.load()で設定したコールバックが別Windowの onload で呼ばれるので、
+引数の $sandbox (別Windowの$(document))から値を引っ張り出してチェックすれば良い。
+<p/>
+PC の Chrome, IE, Safari で動作が確認できた。<br/>
+が、残念ながら iPhone では動かなかったので iframe に変更してみた。
+<xmp>$(function(){
+	$(document.body).append($("<iframe id='sandbox'></iframe>"));
+})
+
+var Sandbox = function(url){
+	this.url = url;
+	this.win = null;
+	this.onload = [];
+	this.autoClose = true;
+}
+Sandbox.prototype = {
+	setup: function() {
+		var self = this;
+		var ifr = document.getElementById("sandbox");
+		this.win = ifr.contentWindow;
+		function onload(){
+			var $handle = $(self.win.document);
+			for (var i=0; i<self.onload.length; i++) {
+				self.onload[i]($handle, self);
+			}
+		};
+		ifr.onload = onload;
+		// for IE
+		ifr.onreadystatechange = function(){
+			if (this.readyState == "complete") {
+				onload();
+			}
+		};
+
+		ifr.src = this.url;
+	},
+	teardown: function() {
+	},
+	load: function(callback){
+		this.onload.push(callback);
+	}
+};
+</xmp>
+<p/>
+iframe だとちゃんと iPhone でも QUnit が動いた。(iOS5、他未確認)
+
+<p><img  src="/old/img/lovelog/qunit-iphone.jpg"/></p>
+
+デバックは別Windowの方がやり易いので切替えられるようにしたいかな。
+<p/>
+あと、普通のWebアプリのテストにも使えそうなので環境が面倒な Selenium
+の代わりになりそうに思います。
+
+

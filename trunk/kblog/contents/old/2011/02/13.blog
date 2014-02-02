@@ -1,0 +1,50 @@
+Subject: GAE/Jのspinupとmemcache その２
+Content-type: html/text
+Tags: GAE/J
+Date: 2011/02/13
+Public: yes
+
+Google の中の人と話す機会があったのsinup/downについて聞いてきた。<br/>
+でいくつか思い違いが有ったのでメモっとく。<br/>
+
+<ul><li>spindownは時間じゃなくてリソース競合で起こる</li></ul>
+
+他のアプリが使いたいリソースを開放させる為に発生するらしい。<br/>
+それが無ければずっとインスタンスは生きているとの事。<br/>
+実際試しているとアクセスが無いのに30分以上 spindown が起こらない事がある。<br/>
+
+<ul><li>sipnupで遅い時が有るのは主にI/O待ちが発生している。</li></ul>
+
+I/Oリソースを共有している他のアプリと競合した場合に待たされているらしい。<br/>
+したがってCPUタイムと無関係にバラツキの有る処理時間になるとの事。<br/>
+
+<br/><br/>
+
+この話からするととにかく I/O は memcache にキャッシュすれば
+バラツキを押えて CPU 時間前後で安定する事になる。
+<p/>
+それを前提に現在実験中なのだがログからはコード改修の結果なのか
+単に環境の負荷が下がっているだけなのかの区別が付かないので結論が出ない。
+<p/>
+少し、長い目で見るしか無いねこの件は。
+<p/>
+ちなみに今のところはっきり効果を感じたのはクラスパス内の
+リソースファイルの読み込みを memcache 化した場合。
+複数有ったため 1000ms くらいがっつり減った。
+<p/>
+
+<br/><br/>
+<p/>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9634506.html">GAEのspinupとmemcache</a>
+の記事で変化が無かったのはデシリアライズで失敗してた為、
+memcache が効いていなかった。<br/>
+これはクラスローダの問題が絡んでいたのだがこっちはこっちで根が深いのでまた別の機会に。
+
+<p/>
+関連記事：<ul>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/10011184.html">GAE/Jのspinupとmemcache:クラスのキャッシュ化</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9999439.html">GAE/Jのspinupとmemcache その３</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9634506.html">GAEのspinupとmemcache</a>
+<li><a href="http://blogs.dion.ne.jp/kotemaru/archives/9403800.html">GAEのspin-up/down時間</a>
+</ul>
+

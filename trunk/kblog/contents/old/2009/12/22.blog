@@ -1,0 +1,23 @@
+Subject: OpenIDで困るユーザ名
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2009/12/22
+Public: yes
+
+OpenIDをユーザ認証に使うようになると困ることが１つ有る、ユーザ名だ。
+OpenIDはURLがそのまま一意のIDになる訳だけどそのままユーザ名に使うと長い。
+「xxxxxx.openid.ne.jp」ぐらいならメールアドレス相当なので許せるがYahooとかだと「me.yahoo.co.jp/a/8asdgfjqmnKasilisdijklsf」とかになって訳が分からない。
+OpenIDとユーザ名の対応表を持つようになると結局、ユーザ登録してもらって自前でユーザ管理が必要になる。
+OpenIDは一応 nickname を持っているが、そのIdPの中でしか一意にならない。
+
+方針としては
+
+- OpenID -> ユーザ名の対応表は必要。
+- OpenIDのnicknameで自動登録
+- nicknameが衝突した場合はダイアログを出して別名を入力してもらう。
+
+くらいかな。
+
+他のOpenID対応サイトはどうしてるんだろ。認証をOpenIDのみでする所の方が珍しいのかな。
+
+

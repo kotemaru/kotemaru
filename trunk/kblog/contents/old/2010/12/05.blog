@@ -1,0 +1,79 @@
+Subject: FreeBSDでPCオーディオ：リッピング
+Content-type: lovelog/text
+Tags: FreeBSD
+Date: 2010/12/05
+Public: yes
+
+リッピングは最初 Windows Media Player でやろうと思ってた。
+リッピング時にWebからCDの情報をアーティストやアルバム名を
+自動でファイル名にしてくれるのが便利過ぎだったので。
+
+しかし「&#228;」のような特殊文字がファイル名に使われてどうにも
+FreeBSDにコピーできなかったのでやめる事に。
+
+同じ機能を持つアプリをFreeBSDで探したとろ見付かりました。
+grip というアプリです。
+ports からインストールします。
+<pre># cd /usr/ports/audio/grip
+# make install
+</pre>
+
+起動してCDを入れるとこんな画面に。すばらしい!!
+<img src="/old/img/auone/LOVELOG_IMG/grip-5.png" />
+
+CDの情報を集めているオープンなサーバがあるようです。デフォでOKです。
+<img src="/old/img/auone/LOVELOG_IMG/grip-3.png" />
+
+日本語ファイル名を扱う為にはちょっと環境設定が必要なようです。
+<pre>export G_FILENAME_ENCODING=@locale
+    or
+setenv G_FILENAME_ENCODING @locale
+</pre>
+その上で「日本語(EUC-jp)を使用する」を有効にします。
+但し、これをすると「&#228;」が逆に文字化けするので注意が必要です。
+<img src="/old/img/auone/LOVELOG_IMG/grip-6.png" />
+
+出力先ファイル名のデフォルトではトラック番号が付かないので追加しました。
+%t がトラック番号です。エンコーダは非可逆圧縮の flac に変えています。デフォは mp3 だったかな。
+<img src="/old/img/auone/LOVELOG_IMG/grip-2.png" />
+
+中間ファイルの wav ファイルは最後に削除されるので RAMディスクにしておきました。
+<img src="/old/img/auone/LOVELOG_IMG/grip-7.png" />
+
+リッピングを実行します。
+きれいなCDなら10倍速以上でガシガシ リッピングします。
+<img src="/old/img/auone/LOVELOG_IMG/grip-4.png" />
+画面上の顔文字の意味は以下を参照してください。
+http://ja.wikipedia.org/wiki/Cdparanoia
+
+
+ファイルを確認してみます。
+エンコーダを非可逆圧縮にしたので１つ30M位のサイズです。
+<pre>$ ls -Rs ~/music
+~/music/上々颱風/愛があるから大丈夫:
+29648 01.銀の琴の糸のように.flac
+31200 02.上海我愛イ尓.flac
+32720 03.愛があるから大丈夫.flac
+34832 04.黄昏酒場でまた会おね.flac
+37136 05.アビシニアを遠く離れて.flac
+37648 06.ハロハロヨコスカ.flac
+36928 07.Sara.flac
+41040 08.なんじゃもんじゃの木の下で.flac
+35760 09.いつでも誰かが.flac
+27488 10.メトロに乗って浅草へ.flac
+</pre>
+
+聞いてみました。
+<pre>$ mplayer `find ~/music -name '*.flac'`
+</pre>
+ちゃんと鳴ってます。
+
+関連記事：
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9851656.html">静音PC、使用感</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9846418.html">静音PC買ってしまいました</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9833001.html">PCオーディオ始めますた</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9884344.html">共立エレのUSB-AUDIOキット</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9896058.html">FreeBSDでPCオーディオ：高音質再生</a>
+<a href="http://blogs.dion.ne.jp/kotemaru/archives/9858739.html">FreeBSDでPCオーディオ：リッピング</a>
+
+

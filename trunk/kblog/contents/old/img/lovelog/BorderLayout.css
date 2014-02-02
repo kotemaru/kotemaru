@@ -1,0 +1,71 @@
+/**
+Border layout template CSS.
+*/
+
+html,body {
+	height:100%;
+	padding:0;
+	margin:0;
+	overflow: hidden;
+}
+
+.BorderLayoutFrame {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	display: inline-block;
+	position: absolute;
+	overflow: hidden;
+	zoom:1;
+	background: white;
+}
+
+#borderLayoutHeader {
+	width: 100%;
+	height: 80px;			/* Header height */
+	top: 0;
+	border-bottom: 1px solid gray;
+}
+#borderLayoutFooter {
+	width: 100%;
+	height: 30px;			/* Footer height */
+	bottom: 0;
+	border-top: 1px solid gray;
+}
+#borderLayoutLeft {
+	width: 200px;			/* Left width */
+	height: 100%;
+	top: 0;
+	left: 0;
+	padding-top: 80px;		/* Header height */
+	padding-bottom: 30px;	/* Footer height */
+	border-right: 1px solid gray;
+}
+#borderLayoutRight {
+	width: 200px;			/* Right width */
+	height: 100%;
+	top: 0;
+	right: 0;
+	padding-top: 80px;		/* Header height */
+	padding-bottom: 30px;	/* Footer height */
+	border-left: 1px solid gray;
+}
+
+#borderLayoutMain {
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	padding-top:    80px;	/* Header height */
+	padding-left:   200px;	/* Left width */
+	padding-right:  200px;	/* Right width */
+	padding-bottom: 30px;	/* Footer height */
+}
+
+#borderLayoutMainInner {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	position: relative;
+}
+
+/* EOF */

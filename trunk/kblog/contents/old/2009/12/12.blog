@@ -1,0 +1,113 @@
+Subject: RhinoのスレッドをTimeoutさせる。
+Content-type: lovelog/text
+Tags: Rhino
+Date: 2009/12/12
+Public: yes
+
+WSJSのアプリを書いていて気が付いた。
+スクリプトが無限ループすると止められない。
+Thread.stop()は使用禁止のお達しが出ているしどうしたものかのうとググってみたら１件だけありました。
+
+http://hydrocul.seesaa.net/article/118727709.html
+
+日本語の情報はここだけみたい。
+オリジナルの情報は Rhino の apidoc らしい。
+
+http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ContextFactory.html
+
+おおざっぱに解説すると
+- Context と ContextFactory を自前で拡張実装する。
+- インターバルを設定すると ContextFactory のコールバッグが呼ばれる。
+- Context にタイムスタンプを持たしてコールバック内で適当に例外を上げる。
+と言うことになる。
+
+タイムアウトなんて普通に必要になりそうなんだから標準実装でもよさそうな気がするけどなぁ。
+ま、それはそれとしてWSJSに組み込み。
+
+
+メインクラスにこれが必要。
+<pre>
+	static {
+		ContextFactory.initGlobal(new SsjsContextFactory());
+	}
+</pre>
+
+SsjsContextFactory.java:
+<pre>
+package kotemaru.wsjs.ssjs;
+
+import org.mozilla.javascript.*;
+
+public class SsjsContextFactory extends ContextFactory {
+	private static final int LIMIT_TIME = 30*1000; //30sec
+
+	protected Context makeContext(){
+		SsjsContext cx = new SsjsContext();
+		cx.setInstructionObserverThreshold(LIMIT_TIME/10);
+		return cx;
+	}
+		
+	protected Object doTopCall(Callable callable, Context cx,
+				Scriptable scope, Scriptable thisObj, Object[] args){
+		long curTime = System.currentTimeMillis();
+		((SsjsContext)cx).setTimeout(curTime + LIMIT_TIME);
+		return super.doTopCall(callable, cx, scope, thisObj, args);
+	}
+
+	protected void observeInstructionCount(Context cx, int instructionCount){
+		((SsjsContext)cx).checkTimeout();
+	}
+		
+}
+</pre>
+
+
+SsjsContext.java:
+<pre>
+package kotemaru.wsjs.ssjs;
+
+import org.mozilla.javascript.*;
+import kotemaru.wsjs.*;
+
+public class SsjsContext extends Context {
+	private long timeout;
+
+	public SsjsContext() {
+	}
+	public void setTimeout(long t) {
+		timeout = t;
+	}
+	public void checkTimeout() {
+		if(timeout &lt; System.currentTimeMillis()) {
+			throw new ErrorPageException(503,"JavaScriptTimeout");
+		}
+	}
+}
+</pre>
+
+
+テストコード、いつもより多く回っております。
+<pre>
+function doGet(req, res) {
+	var timeout = __ENV__.currentTimeMillis() + 60*1000;
+	while (timeout > __ENV__.currentTimeMillis()) {
+		"aaa"+"bbbb";
+	}
+}
+</pre>
+
+
+30秒後にめでたく例外発生。
+<pre>
+ErrorPage:503 JavaScriptTimeout[]
+        at kotemaru.wsjs.ssjs.SsjsContext.checkTimeout(SsjsContext.java:16)
+        at kotemaru.wsjs.ssjs.SsjsContextFactory.observeInstructionCount(SsjsContextFactory.java:22)
+        at org.mozilla.javascript.Context.observeInstructionCount(Context.java:2251)
+        at org.mozilla.javascript.ScriptRuntime.addInstructionCount(ScriptRuntime.java:3110)
+</pre>
+
+サンプルと違いタイムアウトのチェックを Context に持って来ているのはアプリからタイムアウトを制御できるようにするため。
+
+これができないとリモートからスクリプト記述する場合にかなり問題になるので助かった。
+
+

@@ -40,6 +40,7 @@
         >
         	<fileset dir="${contents}">
         		<include name="20??/**/*.blog"/>
+        		<include name="old/20??/**/*.blog"/>
         	</fileset>
 		</blog.builder>
     </target>
@@ -54,6 +55,7 @@
         >
         	<fileset dir="${contents}">
         		<include name="20??/**/*.blog"/>
+        		<include name="old/20??/**/*.blog"/>
         	</fileset>
 		</blog.builder>
 		
@@ -80,6 +82,7 @@
 	      	<include name="**" />
 	      	<exclude name="WEB-INF/**"/>
 	      	<exclude name="*.ico"/>
+	      	<exclude name="*.png"/>
 	      </fileset>
 	    </delete>
 	</target>

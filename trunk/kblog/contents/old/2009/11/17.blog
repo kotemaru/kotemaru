@@ -1,0 +1,78 @@
+Subject: OpenID,CASユーザへのロールの付与
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2009/11/17
+Public: yes
+
+OpenIDの調査の結果からロール管理は認証とは完全に分離する事にした。
+その上で安全にロールを付与使用とすると
+
+- ロール管理は複数を並列かつ階層的に扱えること。
+-- 基幹系と部門系で管理を分けるようなケースを想定。
+-- 部門系のadmin権限が基幹系で通用しないような階層化が必要。
+
+- 認証サーバによって適用するロールを細かく制御できること。
+-- OpenIDによって認証されたユーザが信用できるとは限らないと言う状態が出て来た。
+-- 自身の制御下にあるような信用できる認証サーバに認証されたユーザとその他のユーザを分離できないといけない。
+
+ぐらいの条件が出て来る。
+解決策として
+
+- ロール管理をJavaScriptでConfigに書ける。
+- ユーザは自身を認証したサーバを持つ。
+
+を導入した。
+
+設定ファイルはこんな感じ。
+- 認証はOpenIDを使う。
+- ロール管理はLDAPを使う。
+- 但し、MyDomain.com 以外に認証されたユーザが強制的に guest 扱い。
+
+<pre style="border: 1px solid black; height:200px; overflow:auto;">
+config.pam = config.newJavaInstance({
+	"class": "kotemaru.auth.openid.PAMImpl",
+	"loginUrl" : "http://localhost:8080/wsjs/login/login-OpenID.ssjs",
+	"verifyUrl": "http://localhost:8080/wsjs/login/login-OpenID-verify.ssjs"
+});
+
+var ldapRoleManager =	config.newJavaInstance({
+	"class": "kotemaru.auth.ldap.RoleManagerImpl",
+	"java.naming.provider.url": "ldap://localhost/",
+	"role.contextName": "ou=Group,dc=example,dc=com",
+	"role.memberAttr":  "memberUid",
+	"role.nameAttr":    "cn",
+});
+
+config.roleManager = new Packages.kotemaru.auth.JSRoleManager({
+	getRoles: function(user) {
+		var IdP = user.idProvider.uniqName;
+		if (IdP != "http://MyDomain.com/auth") {
+			return ["users", "guest"];
+		}
+		return ldapRoleManager.getRoles(user);
+	},
+});
+</pre>
+
+全部LADPの場合はこんな感じ。
+<pre style="border: 1px solid black; height:200px; overflow:auto;">
+config.pam = config.newJavaInstance({
+	"class": "kotemaru.auth.ldap.PAMImpl",
+	"loginUrl" : "/wsjs/login/login.html",
+	"java.naming.provider.url": "ldap://localhost/",
+	"java.naming.security.authentication": "simple",
+	"java.naming.security.principal":	"cn=${user},ou=People,dc=example,dc=com",
+	"java.naming.security.credentials": "${passwd}", 
+});
+config.roleManager =	config.newJavaInstance({
+	"class": "kotemaru.auth.ldap.RoleManagerImpl",
+	"java.naming.provider.url": "ldap://localhost/",
+	"role.contextName": "ou=Group,dc=example,dc=com",
+	"role.memberAttr":  "memberUid",
+	"role.nameAttr":    "cn",
+});
+</pre>
+
+これでスッキリかつ柔軟に認証系が記述できる。
+
+

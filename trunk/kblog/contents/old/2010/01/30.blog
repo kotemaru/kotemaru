@@ -1,0 +1,30 @@
+Subject: IEのpreタグのスクロールバー
+Content-type: html/text
+Tags: メモ
+Date: 2010/01/30
+Public: yes
+
+<textarea class="wikitext" style="width:480px;height:200px;">
+昨日の記事をIEで見たら結構崩れていたので CSS を調整した。
+特に困ったのが IE は auto でスクロールバーを出すとコンテンツの内側に被ってしまうこと。
+１行しか無い pre タグだと完全に潰れてしまう。
+結局 IE の時だけ常にスクロールバーを出すしか無いと言う結論に。
+
+そのコードがこれ。
+ .jswiki pre, .jswiki blockquote, .jswiki xmp {
+    overflow: scroll;
+ }
+ html>/**/body .jswiki pre, .jswiki blockquote, .jswiki xmp { // IE以外有効
+    overflow: auto;
+ }
+
+/**/ でIEが認識に失敗するらしい。
+
+ホントにIEには早く氏んで欲しい。
+</textarea>
+<noscript style="color:red;">Wikiテキストを表示するにはJavaScriptが必要です。</noscript>
+
+参考したサイト:
+<a href="http://weblog.2-d.jp/pc/internet/000010.php">http://weblog.2-d.jp/pc/internet/000010.php</a>
+
+

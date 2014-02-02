@@ -1,0 +1,73 @@
+Subject: RhinoのJavaクラスのアクセス制限
+Content-type: lovelog/text
+Tags: WSJS
+Date: 2009/12/02
+Public: yes
+
+公開サーバはスクリプトの書き込みも公開したいので放置してあったセキュリティ回りをやることにした。
+
+サーバ側のJavaScriptはRhinoを使っているのだけれどもデフォルトだとJavaのクラスを全て使えてしまう。
+java.io.* とか使われちゃうとセキュリティ的にいろいろまずいので制限したい。
+
+Rhinoはそんな時の為に ClassShutter と言う機能を用意している。
+使い方は凄く簡単で ClassShutter インターフェースを実装して実行Contextに設定するだけ。
+メソッド visibleToScripts() はフルパスのクラス名を引数に取るので使って良いクラスならば true を返す。
+
+http://www.mozilla.org/rhino/apidocs/org/mozilla/javascript/ClassShutter.html
+<pre>
+public Interface ClassShutter {
+  boolean visibleToScripts(String fullClassName);
+}
+
+Context.getCurrentContext().setClassShutter(new ClassShutterImpl());
+</pre>
+
+
+これを使ってアクセス制限をすることにする。
+細かい指定ができる様に config のプロパティ permitClass を追加する。
+- permitClass[*][0] : クラス名
+-- ".*",".**"で終るクラス名はマスクとする。
+- permitClass[*][1..n] : ロール名のリスト
+-- "*" は全員OKを意味する。
+-- "${deny}" は使用禁止を意味する。
+- 上から順で最初にヒットした物が有効。
+- いずれもヒットしなければ使用禁止。
+
+<pre>
+config.permitClass = [
+	// Visitor
+	["java.lang.Object",            "*"],
+	["java.lang.String",            "*"],
+	["javax.servlet.**",            "*"],
+	["kotemaru.wsjs.ssjs.SsjsEnv",  "*"],
+
+	// Member
+	["java.beans.**",             "member"],
+	["java.math.**",              "member"],
+	["java.text.**",              "member"],
+	["java.util.**",              "member"],
+	["java.sql.DriverManager",    "${deny}"],
+	["java.sql.**",               "member"],
+	["kotemaru.wsjs.ssjs.XMLHttpRequest",  "member"],
+];
+</pre>
+
+ここでアクセス制限の対象となるのはログインユーザではなくクラスを参照しているページの所有ユーザとなる。
+WSJSではページの所有者の概念が無いので当該ページに write 権を持つユーザは全て所有ユーザとする。
+つまり上の例では java.beans.* にアクセスするには write 権を持つユーザ全員が member ロールを持ってなければならない。
+
+と、これだとユーザが増えると処理が∞になってしまう。
+回避するにはロールに継承の概念が必要だがとりあえず TODO としておこう。
+
+現状、運用で考えている write 権はこれだけなので問題無い。
+<pre>
+config.permitWrite = [
+	["/home/${user}/",          "${user}"],
+];
+</pre>
+write 権の全く無いページはシステムが用意した物として全てのクラスが使える。
+
+DataSource でも同じ事しないといけないんだよね..
+
+
+

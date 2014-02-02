@@ -1,0 +1,23 @@
+Subject: LinuxでSharpのノートPCの有線LANが継らない 
+Content-type: html/text
+Tags: メモ
+Date: 2011/08/20
+Public: yes
+
+SharpのノートPCでLinuxを動かすと有線LANが継らない。
+ググる他の人もはまっているようなので複数の機種で発生するらしい。
+<p/>
+Fadara の時に services network stop/start
+で回避できる事を発見していやのだが、
+Ubuntuに入れ換えたら効かなくなって焦った。
+<p/>
+
+結局、
+<xmp># ifconfig eth0 down
+# ifconfig eth0 up
+</xmp>
+で、行ける事が分かったのでメモっとく。
+<p/>
+
+因みに機種は XG60K で NIC は ULi M526x と出ている。
+

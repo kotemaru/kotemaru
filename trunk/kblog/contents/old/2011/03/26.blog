@@ -1,0 +1,54 @@
+Subject: FreeBSDのVirtualBoxが凄すぎる
+Content-type: lovelog/text
+Tags: FreeBSD
+Date: 2011/03/26
+Public: yes
+
+FreeBSD をメインで使っているとどうしても Windows が
+必要な時が有って困る。
+仮想マシンを使えば良いのだが FreeBSD は XEN のホスト
+になれない。
+
+で、仕方無く QEMU を使うのだがこれが Core2Duo でも
+結構重く結局ノートPCを使っていた。
+
+別件で調べ物をしていた時に VirtualBox と言う仮想マシン
+が FreeBSD でも動作し結構速いと書いて有ったので試して
+みたがこれが凄すぎる。
+
+- Sempron/2800+ のノートPCより速い (Core2Duo/6420)
+- ネットワークは無設定で使える。(NAT)
+- オーディオも無設定で鳴る。
+- ホストOSのファイルは共有フォルダでアクセスできる。
+- マウスを仮想マシンに取られない。
+- X_Window <-> Windows 間でコピペができる。
+- Youtube も普通に見れる。(さすがにコマ落ちはする)
+
+と、もう至れり尽くせり。
+
+
+
+インストールは port の emulators/virtualbox-ose から
+行えば問題なくできる。
+起動は /usr/local/bin/VirtualBox コマンドで。
+<img src="/old/img/auone/LOVELOG_IMG/vbox-1.png" />
+
+後は「新規」で仮想マシンを作って、「設定」から Windows
+のCDイメージをマウントして「起動」するとインストール
+が始まる。
+
+但し、CD-ROM は直接マウントできない。一旦、ISO イメージ
+に落す必要がある。
+<pre>$ dd if=/dev/acd0 of=win-xp.iso bs=1024000</pre>
+
+
+chromeでYoutubeを見ている所。
+<img src="/old/img/auone/LOVELOG_IMG/vbox-4.png" />
+
+なんかもう ウハウハ です。
+
+
+参考サイト：
+http://www.running-dog.net/2009/07/emulatorsvirtualbox.html
+
+

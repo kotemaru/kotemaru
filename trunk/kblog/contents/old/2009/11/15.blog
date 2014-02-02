@@ -1,0 +1,240 @@
+Subject: OpenID用のPAM実装
+Content-type: lovelog/text
+Tags: メモ
+Date: 2009/11/15
+Public: yes
+
+CASで挫折しつつOpenIDに手を出してみた。
+OpenIDはやったことが無かったので一から調査。
+
+ググってみたが以外に分かり易いページが無い。結局、仕様の翻訳が一番分かりやすかった。
+http://www.goodpic.com/mt/archives2/2005/12/openid_1.html 
+
+* サーバ
+立てる必要が無い。なぜなら公開サーバが幾つもあるから。
+今回は openid.ne.jp を使用した。ググったら最初に出て来たので。
+OpenIDは以下のURLから取得できる。
+http://www.openid.ne.jp/index.php?action=register
+
+* クライアント
+
+やっぱりややこしい。CASに比べると１段階増えている。
+
+<a href="/old/img/auone/LOVELOG_IMG/OpenID.png">
+<img src="/old/img/auone/LOVELOG_IMG/OpenID.png" alt="OpenID.png" width="500" />
+</a>
+(1) ServiceはOpenIDの入力画面に転送する。
+(2) ユーザはOpenID(==URL)を入力してServiceに送信する。
+(3) ServiceはOpenIDのページを取得する。認証サーバのURLが含まれている。
+(4) Serviceは認証サーバに転送する。パラメータにはServiceの認証結果処理ページのURLを設定する。
+(5) ユーザは認証サーバで認証を行う。
+(6) 認証サーバはServiceの認証結果処理ページに転送する。パラメータには認証結果を設定する。
+(7) Serviceは認証サーバに認証結果の正当性を問い合わせ、正当ならユーザ情報を受け取る。
+(8) Serviceは得られたユーザ名でログイン処理をする。
+(9) 以降、認証済みアクセスとなる。
+
+
+※(3)：厳密に言うとここでの戻り値はHTMLで&lt;link>タグに認証サーバが書いてある。
+つまりOpenIDとはユーザ情報の書かれたHTMLページへのURLでしか無いと言うこと。
+※(7)：今回はライブラリを使用しため細かいプロトコルは把握していない。
+
+
+ちなみにOpenIDには用語が有って
+- EndUser   : ブラウザを利用するユーザ
+- UserAgent : ブラウザ
+- Consumer  : OpenIDを利用するWebアプリ
+- IdP       : 認証サーバ(Idenfier Proverderの略)
+だそうで知らないと資料が読めないので覚えておいたほうがよさげ。
+
+** クライアントの実装
+
+java向けのOpenIDライブラリはopenid4javaというのが有った。
+最新版は 0.9.5 で以下から落せる。
+http://code.google.com/p/openid4java/downloads/list
+- 今回は openid4java-full-0.9.5.593.tar.gz を使用。
+
+展開したソースにConsumerのサンプル実装が有るのでこれをベースにする。
+- サンプル:src/org/openid4java/consumer/SampleConsumer.java
+- OpenIDConsumer.java
+<pre style="border: 1px solid black; height:200px; overflow:auto;">
+package kotemaru.auth.openid;
+
+import org.openid4java.discovery.Identifier;
+import org.openid4java.discovery.DiscoveryInformation;
+import org.openid4java.message.ax.FetchRequest;
+import org.openid4java.message.ax.FetchResponse;
+import org.openid4java.message.ax.AxMessage;
+import org.openid4java.message.sreg.SRegMessage;
+import org.openid4java.message.sreg.SRegRequest;
+import org.openid4java.message.sreg.SRegResponse;
+import org.openid4java.message.*;
+import org.openid4java.OpenIDException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import java.util.List;
+import java.io.IOException;
+
+import org.openid4java.consumer.*;
+
+/**
+ * Based SampleConsumer.java
+ */
+public class OpenIDConsumer
+{
+	private ConsumerManager manager;
+	private String returnToUrl;
+	private DiscoveryInformation discovered = null;
+	private AuthRequest authRequest = null;
+
+	public OpenIDConsumer(String returnToUrl) throws ConsumerException
+	{
+		this.returnToUrl = returnToUrl;
+		manager = new ConsumerManager();
+		manager.setAssociations(new InMemoryConsumerAssociationStore());
+		manager.setNonceVerifier(new InMemoryNonceVerifier(5000));
+		manager.getRealmVerifier().setEnforceRpId(false);
+	}
+
+	public DiscoveryInformation getDiscovered() {
+		return discovered;
+	}
+	public AuthRequest getAuthRequest() {
+		return authRequest;
+	}
+
+
+	// --- placing the authentication request ---
+	public AuthRequest authRequest(String userSuppliedString)
+			throws IOException
+	{
+		try {
+
+			// --- Forward proxy setup (only if needed) ---
+			// ProxyProperties proxyProps = new ProxyProperties();
+			// proxyProps.setProxyName("proxy.example.com");
+			// proxyProps.setProxyPort(8080);
+			// HttpClientFactory.setProxyProperties(proxyProps);
+
+			List discoveries = manager.discover(userSuppliedString);
+			discovered = manager.associate(discoveries);
+			authRequest = manager.authenticate(discovered, returnToUrl);
+
+			if (!discovered.isVersion2()) {
+				//httpResp.sendRedirect(authRequest.getDestinationUrl(true));
+				return authRequest;
+			} else {
+				// TODO:良く分からん。
+				// Option 2: HTML FORM Redirection (Allows payloads >2048 bytes)
+
+				//RequestDispatcher dispatcher =
+				//		getServletContext().getRequestDispatcher("formredirection.jsp");
+				//httpReq.setAttribute("prameterMap", response.getParameterMap());
+				//httpReq.setAttribute("destinationUrl", response.getDestinationUrl(false));
+				//dispatcher.forward(request, response);
+			 }
+		} catch (OpenIDException e) {
+			throw new RuntimeException(e);
+		}
+
+		return null;
+	}
+
+	public Identifier verifyResponse(HttpServletRequest httpReq) {
+		try {
+			ParameterList response =
+					new ParameterList(httpReq.getParameterMap());
+
+			// extract the receiving URL from the HTTP request
+			StringBuffer receivingURL = httpReq.getRequestURL();
+			String queryString = httpReq.getQueryString();
+			if (queryString != null && queryString.length() > 0)
+				receivingURL.append("?").append(httpReq.getQueryString());
+
+			VerificationResult verification = manager.verify(
+					receivingURL.toString(),
+					response, discovered);
+			Identifier verified = verification.getVerifiedId();
+			return verified;
+		} catch (OpenIDException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+}
+</pre>
+
+- これだけじゃだめなので受信ページ。
+-- login-OpenID.ssjs : OpenIDに入力画面とOpenIDの問い合わせ処理。
+-- (ssjsはサーブレットをJavaScriptで書くWSJSの機能)
+<pre style="border: 1px solid black; height:200px; overflow:auto;">
+function doGet(req, res) {
+	req.session.setAttribute("returnUrl", req.getParameter("returnUrl"));
+	req.session.setAttribute("verifyUrl", req.getParameter("verifyUrl"));
+
+	var html =
+&lt;html>
+&lt;body>
+&lt;form method="POST">
+&lt;nobr>OpenID:
+&lt;input id="openid_url" name="openid_url" size="30" />
+&lt;input value="Login" type="submit"/>
+&lt;/nobr>
+&lt;/form>
+&lt;/body>
+&lt;/html>
+	;
+	res.writer.write(html);
+}
+
+function doPost(req, res) {
+	var verifyUrl = req.session.getAttribute("verifyUrl");
+	var consumer =
+		new Packages.kotemaru.auth.openid.OpenIDConsumer(verifyUrl);
+	var openid_url = req.getParameter("openid_url");
+
+	var authReq = consumer.authRequest(openid_url);
+	if (authReq != null) {
+		req.session.setAttribute("openid.consumer", consumer);
+		res.sendRedirect(authReq.getDestinationUrl(true));
+	}
+	return null;
+}
+</pre>
+
+-- login-OpenID-verify.ssjs : 認証結果処理
+<pre style="border: 1px solid black; height:200px; overflow:auto;">
+function doGet(req, res) {
+	var consumer = req.session.getAttribute("openid.consumer");
+	var id = consumer.verifyResponse(req);
+	var map = new java.util.HashMap();
+	map.put("Identifier", id);
+	var authres = Packages.kotemaru.auth.PAMFactory.login(req, map);
+	if (authres.status == authres.PASS) {
+		returnUrl = req.session.getAttribute("returnUrl");
+		res.sendRedirect(returnUrl);
+	} else {
+		res.setStatus(403);
+		res.writer.write("OpenID login failed.");
+	}
+}
+</pre>
+
+
+これで一応動いてるみたい。
+ただ、localhostを使っているせいかプロトコルの途中で NoScript にブロックされる。
+とりあえず解除してテストしているが公開ホストでも出たらやだなぁ。
+
+もうひとつ、OpenIDは「認証はするけど権限は与えない」と言うスタンスを取っている。
+認証サーバがいつも信用できるとは限らないからだ。
+CASでもうまくいかなかったがSSOの場合、認証と権限を完全に分離すると言うのは正しいのかもしれない。
+非SSOの場合はたまたま認証と権限が一元管理されているだけと。
+認証回りのAPIはやり直しだな...
+
+参考：
+http://sparetime.ukauka.net/article/97759151.html
+http://blog.mono-koubou.net/archives/10
+
+
