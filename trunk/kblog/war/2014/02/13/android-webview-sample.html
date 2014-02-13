@@ -1,0 +1,412 @@
+
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link rel="stylesheet" href="/css/blog.css?20140213_215712" type="text/css" />
+<!--[if lte IE 9 ]>
+	<link rel="stylesheet" href="/css/blog-ie.css?20140213_215712" type="text/css" />
+<![endif]-->
+
+	<title>AndroidでWebViewとNativeのハイブリッドアプリ : 時々、失業SEの開発日誌</title>
+	<meta name="keywords" content="android,java" /> 
+
+	<meta property="og:title" content="AndroidでWebViewとNativeのハイブリッドアプリ : 時々、失業SEの開発日誌" />
+	<meta property="og:type" content="blog" />
+	<meta property="og:url" content="http://blog.kotemaru.org/2014/02/13/android-webview-sample.html" />
+	<meta property="og:locale" content="ja_JP" />
+	<meta property="og:site_name" content="時々、失業SEの開発日誌" />
+	<meta property="og:description" content="AndroidでWebViewとNativeのハイブリッドアプリ" />
+	<script src="/js/jquery-1.8.2.js" ></script>
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-21698246-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</head>
+<body>
+  <div id="outFrame">
+    <div id="header">
+	<a href="http://blog.kotemaru.org/" id="mainTitle">時々、失業SEの開発日誌</a>
+	<div id="subTitle"></div>
+    </div>
+
+    <div id="content">
+<script>
+var Global = {};
+Global.contentPath = "2014/02/13/android-webview-sample.html";
+</script>
+<script src="/js/comment.js?20140213_215712" ></script>
+
+<div class="Paging">
+<span class="NextPage"><a href="/2013/10/30/android-bluetooth-sample.html">AndroidとPCのBluetooth接続のサンプル ≫</a></span>
+<br clear="all"/>
+<br style="line-height: 50%;"/>
+</div>
+<!-- ===================================================== -->
+
+<div class="PostedDate">2014/02/13</div>
+<h1 class="ContentHeader"><a href="/2014/02/13/android-webview-sample.html">AndroidでWebViewとNativeのハイブリッドアプリ</a></h1>
+<div class="ContentBody">
+<p>最近、WebViewを使ったWebとNativeのハイブリッドアプリが流行っている。</p>
+
+<p>iPhoneとAndroidで同一アプリを開発する場合、Web部分が共通化できるメリットが大きいからだろう。</p>
+
+<p>と言うわけで WebView を使ったハイブリッドアプリの作り方を調べてみた。</p>
+
+<h3>iPhoneってどうしてるの？</h3>
+
+<p>私は iPhone はやってません。（だって開発するだけで金取られるんだもんw）<br>
+とは言え iPhone との互換性を無視しては意味ないのでやり方だけは調べて置きます。</p>
+
+<p>ググると一杯出てきますが、通信のリクエストをフックして 
+Native のコードで WebAPI を擬似的に実装するようです。</p>
+
+<ul>
+<li>参考：<a href="http://blog.engineer.adways.net/archives/13813985.html">iPhoneのネイティブ機能をWebViewから呼び出す方法（２）</a></li>
+</ul>
+
+<p>JavaScriptとの接続方法としては無理が無く良い方法だと思われます。</p>
+
+<h3>一方、Android は...</h3>
+
+<p>WebView#addJavascriptInterface() を使って Java
+のオブジェクトを登録すると JavaScript からそのまま使えると言う直接的な方法です。</p>
+
+<ul>
+<li>参考：<a href="http://www.techdoctranslator.com/android/webapps/webview">ソフトウェア技術ドキュメントを勝手に翻訳</a></li>
+</ul>
+
+<p>が、これ結構致命的なセキュリホールが報告されています。<br>
+JavaScript から getClass() 等も呼べてしまうため、
+WebView に信頼できないサイトの JavaScript が紛れ込むと何でも出来てしまいます。</p>
+
+<p>スマホの運用条件を考えると PKI でサーバを固め、
+アプリも XSS に細心の注意を払う必要がありそうです。<br>
+現実的にはかなりハードル高いっすね。</p>
+
+<p>但し、API Level 17 (4.2.2) からは @JavascriptInterface 
+アノテーションが追加されメソッドのアクセス制限ができる用になったので
+この問題は解決されています。<br>
+って、最近過ぎるだろw</p>
+
+<h3>それはそれとして使ってみる</h3>
+
+<p>最近のブラウザはカメラやバイブレーションの API
+も最初から持っていて以外に追加機能のネタが無かったりします。</p>
+
+<p>なのでクロスサイト可能な XMLHttpRequestXS
+とか追加してさらにセキュリティホールを広げて見たいと思います。</p>
+
+<h4>Javaオブジェクトの登録</h4>
+
+<p>基本ドキュメントの通りですが登録しているのはファクトリです。
+ファクトリから得た Java オブジェクトも JavaScript から使えます。</p>
+
+<p>登録処理抜粋：</p>
+
+<pre><code>private class SampleWebViewClient extends WebViewClient {
+    @Override
+    public void onPageStarted (WebView webview, String url, Bitmap favicon) {
+        // 拡張XMLHttpRequestファクトリの初期化。
+        XMLHttpRequestXSFactory factory = getXMLHttpRequestXSFactory();
+        factory.setAccessControlList(_accessControlList);
+        factory.setWebView(webview);
+        webview.addJavascriptInterface(factory, "XMLHttpRequestXSFactory");
+    }
+    …省略
+}
+</code></pre>
+
+<p>登録されるクラス抜粋:</p>
+
+<pre><code>public class XMLHttpRequestXSFactory {
+    private WebView _webview;
+    private AccessControlList _accessControlList;
+    public XMLHttpRequestXSFactory() { }
+    @JavascriptInterface
+    public XMLHttpRequestXS getXMLHttpRequestXS() {
+        return new XMLHttpRequestXS(this);
+    }
+    …省略
+}
+</code></pre>
+
+<p>登録名に abc.XMLHttpRequestXSFactory とかしてみましたがダメでした。
+navigator.～ もダメです。
+グローバルの直下のみに登録できるようです。</p>
+
+<p>登録のタイミングは onCreate() だけで無く WebViewClient#onPageStarted()
+にも必要なようです。</p>
+
+<ul>
+<li>参考：<a href="http://d.hatena.ne.jp/glass-_-onion/20110302/1299071501">ページ読み込みエラーが発生すると JavascriptInterface が無効になる</a></li>
+</ul>
+
+<h4>JavaScript から Java の呼び出し</h4>
+
+<p>登録されたJavaオブジェクトの呼び出しはほぼそのままです。
+但し、フィールドにはアクセス出来ません。</p>
+
+<p>JavaScript抜粋:</p>
+
+<pre><code>function XMLHttpRequestXS() {
+    this._native = XMLHttpRequestXSFactory.getXMLHttpRequestXS();
+    …省略
+};
+XMLHttpRequestXS.prototype = {
+    open : function(method, url, async) {
+        var error = this._native.open(method, url, async);
+        if (error) throw error;
+    },
+    …省略
+}
+</code></pre>
+
+<p>呼ばれ側Java抜粋:</p>
+
+<pre><code>public class XMLHttpRequestXS {
+    …省略
+    @JavascriptInterface
+    public String open(String type, String url, boolean isAsync) throws Exception {
+        Log.d(TAG,"open:"+type+" "+url);
+        try {
+            _isAsync = isAsync;
+            if (GET.equalsIgnoreCase(type)) {
+                _request = new HttpGet(url);
+            } else {
+                _request = new HttpPost(url);
+            }
+            _factory.checkDomain(_request.getURI());
+
+            String cookie = CookieManager.getInstance().getCookie(url);
+            _request.setHeader("Cookie", cookie);
+            setReadyState(OPENED);
+            return null;
+        } catch (Throwable t) {
+            Log.e(TAG, t.getMessage(), t);
+            setReadyState(ERROR);
+            return t.getMessage();
+        }
+    }
+    …省略
+}
+</code></pre>
+
+<p>ここで気になったのはメソッドへの引数です。
+ドキュメントには JS -> Java の変換ルールが見つけられませんでした。</p>
+
+<p>実際に試した方の情報では String,int,double,boolean,int[],String[] が受け取れたようです。</p>
+
+<ul>
+<li>参考：<a href="http://zentoo.hatenablog.com/entry/20120507/1336399651">addJavascriptInterfaceにおけるJS -> Java間の型変換</a></li>
+</ul>
+
+<p>とりあえず、プリミティブまでは大丈夫そうな気がします。<br>
+JSON変換できるオブジェクトならこんな感じで渡せるようです。</p>
+
+<pre><code>Android.test(JSON.stringify({abc:"ABC", yyy:2}));
+</code></pre>
+
+<p><span></span></p>
+
+<pre><code>@JavascriptInterface
+public void test(String jsonStr) throws JSONException {
+    JSONObject json = new JSONObject(jsonStr);
+    String abc = json.getString("abc");
+    int yyy = json.getInt("yyy");
+}
+</code></pre>
+
+<h4>Java から JavaScript の呼び出し</h4>
+
+<p>ドキュメントの通り以下で呼び出せます。</p>
+
+<pre><code>webview.loadUrl("javascript:スクリプト");
+</code></pre>
+
+<p>が、JS->Java->JSと呼び出すと例外になります。</p>
+
+<pre><code>02-13 04:35:39.382: W/webview(3503): java.lang.Throwable: Warning: 
+A WebView method was called on thread 'WebViewCoreThread'.
+All WebView methods must be called on the UI thread.
+Future versions of WebView may not support use on other threads.
+</code></pre>
+
+<p>JavaScript は WebView のスレッドで走っているので UIスレッドから呼べ、
+と言うことらしいです。</p>
+
+<p>つまり、JavaScriptから呼び出されたメソッドからコールバックしようとする場合、
+HandlerかAsyncTaskを経由する必要があるようです。</p>
+
+<h4>Java から JavaScript オブジェクトの生成</h4>
+
+<p>どうも無理そうです。<br>
+JavaScript自体がJavaで実装されて無いと思われるので難しいのでしょう。</p>
+
+<p>XMLやJSONは文字列で渡して JavaScript 側でパーズしてもらう事になりそうです。</p>
+
+<h3>動かしてみる</h3>
+
+<p>完成した XMLHttpRequestXS を jQuery.ajax() で実行してみます。<br></p>
+
+<p>HTML:</p>
+
+<pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=utf-8" /&gt;
+    &lt;script type="text/javascript" src="XMLHttpRequestXS.js" &gt;&lt;/script&gt;
+    &lt;script type="text/javascript" src="jquery-1.11.0.js" &gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+jQuery.support.cors = true; // クロスサイトをjQueryでするために必要。
+
+function testJqueryAsync() {
+    console.log("testJqueryAsync");
+    $.ajax({
+        type: "GET", url: "http://www.redmine.org/issues.json",
+        dataType: "json",
+        success: function(data){
+            var issues = data.issues;
+            var $table = $("#table");
+            for (var i=0; i&lt;issues.length;i++) {
+                $table.append($("&lt;tr&gt;&lt;td&gt;"+issues[i].id+"&lt;/td&gt;&lt;td&gt;"+issues[i].subject+"&lt;/td&gt;&lt;/tr&gt;"));
+            }
+        },
+        error: function(xhr, status, error){
+            alert("error:"+status+":"+error);
+        },
+        xhr: function() { // jQueryが使うXHRの差替用API
+            return new XMLHttpRequestXS();
+        }
+    });
+}
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body onload="testJqueryAsync()"&gt;
+    &lt;h3&gt;Ajax result from http://www.redmine.org/issues.json&lt;/h3&gt;
+    &lt;table id="table" width="100%" border="1" &gt;
+        &lt;tr&gt;&lt;th&gt;ID&lt;/th&gt;&lt;th&gt;Subject&lt;/th&gt;&lt;/tr&gt;
+    &lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+<p>jQuery には XMLHttpRequest 差替え用の API が最初から付いてました。
+さすが jQuery です。</p>
+
+<p>実行結果：</p>
+
+<p><img src="/2014/02/13/android-webview-1.png" width="500px" /></p>
+
+<p>外部サイトからちゃんとデータを取って来ています。</p>
+
+<h3>所感</h3>
+
+<p>一見単純そうに見えてやってみると以外に泥沼w<br>
+iPhoneとの共通化は表面を JavaScript の API にしてスタブを２種類用意する感じでしょうか。</p>
+
+<p>課題も多いですが Andorid/iPhone のコード共通化やWebからアプリが更新できるメリットは大きいですね。</p>
+
+<p>PhoneGap や Titanium を使う手もありますが HTML5
+の機能拡張が著しいので足りない機能だけ Native
+で実装すると言う方がフレームワークの縛りが無い分楽かもしれません。</p>
+
+<p>サンプルのソースコード一式は以下のSVNにあります。<br>
+<font color="red">注意：XMLHttpRequestXSはXSSのセキュリティホールを持ちます。技術検証以上の利用はしないで下さい。</font></p>
+
+<ul>
+<li><a href="https://kotemaru.googlecode.com/svn/trunk/androidWebviewSample">https://kotemaru.googlecode.com/svn/trunk/androidWebviewSample</a></li>
+</ul>
+
+</div>
+<!-- ===================================================== -->
+<a name="Comment"></a>
+<div class="CommentTitle">この投稿へのコメント
+<img src="/img/refresh.png" onclick="Global.commentLoad()"/>
+</div>
+
+<div id="commentView">
+</div>
+
+
+<div class="CommentFormTitle">コメント・フォーム</div>
+<form name="commentForm" action="/Comment" method="POST">
+	<input name="page" type="hidden" value="2014/02/13/android-webview-sample.html" />
+	<table class="CommentFormTable" width="70%">
+		<tr><th>名前</th>	<td><input name="name" value="名無し"/></td></tr>
+		<tr><th>EMail</th>	<td><input name="email" /></td></tr>
+		<tr><th>削除キー</th>	<td><input name="passwd" /></td></tr>
+		<tr><th>本文</th><td><textarea name="body"></textarea></td></tr>
+
+		<tr><td width="1%"></td><td width="99%"></td></tr>
+		<tr><td colspan="2">
+			<button type="Button" onclick="Global.commentPost()">書込</button>
+			(コメントが反映されない場合はリロードしてください。)
+		</td></tr>
+	</table>
+</form>
+<!-- ===================================================== -->
+
+<hr class="ContentEnd"/>
+
+<div class="Paging">
+<span class="NextPage"><a href="/2013/10/30/android-bluetooth-sample.html">AndroidとPCのBluetooth接続のサンプル ≫</a></span>
+<br clear="all"/>
+</div>
+
+
+
+    </div>
+
+    <div id="side">
+     	<h5>プロフィール</h5>
+     	<div id="profile">
+     	<img src="/apple-touch-icon.png" align="left"/>
+     	20年勤めた会社がリーマンショックで消滅、紆余曲折を経て現在はフリーランスのSE。
+     	失業をきっかけにこのブログを始める。
+     	</div>
+     	
+    	<p/><h5>サイト内検索</h5>
+		<form action="http://www.google.com/search">
+			<input type="hidden" name="hl" value="ja" />
+			<input type="hidden" name="ie" value="UTF-8">
+			<input type="hidden" name="oe" value="UTF-8">
+			<input type="hidden" value="blog.kotemaru.org" name="as_sitesearch" />
+			<input type="text" id="query" name="q" size="20" maxlength="256" value="" 
+			/><input type="submit" name="btnG" value="検索" />
+		</form> 
+
+		
+     	<p/><h5>登録</h5>
+    	<a class="RSS" href="/atom.xml"><img src="/img/RSS.png"/><span>RSS/2.0</span></a>
+
+    	<p/><h5>カテゴリ</h5>
+		<iframe class="BlogParts" height="200" src="/category.html?20140213_215712" frameborder="0" ></iframe>
+
+    	<p/><h5>最近の投稿<span class="CategoryTag"><span></h5>
+	 	<iframe class="BlogParts" height="200" src="/recent.html?20140213_215712" frameborder="0" ></iframe>
+
+    	<p/><h5>リンク</h5>
+	 	<iframe class="BlogParts" src="/links.html?20140213_215712" frameborder="0" ></iframe>
+
+    	<p/><h5>アーカイブ</h5>
+	 	<iframe class="BlogParts" src="/archive.html?20140213_215712" frameborder="0" ></iframe>
+
+    </div>
+    <br clear="all" />
+    <div id="footer">
+	Copyright 2013- @kotemaru.org<br/>
+	<img src="http://developers.google.com/appengine/images/appengine-noborder-120x30.gif"
+alt="Powered by Google App Engine" />
+    </div>
+  </div>
+</body>
+</html>
