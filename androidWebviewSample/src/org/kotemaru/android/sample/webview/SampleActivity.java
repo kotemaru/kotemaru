@@ -9,6 +9,7 @@ import java.net.URISyntaxException;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -67,24 +68,19 @@ public class SampleActivity extends Activity {
 	private void initWebView(Bundle savedInstanceState) {
 		WebView webview = (WebView) findViewById(R.id.webview);
 
-		// 拡張XMLHttpRequestファクトリの初期化。
-		XMLHttpRequestXSFactory factory = getXMLHttpRequestXSFactory();
-		factory.setAccessControlList(_accessControlList);
-		factory.setWebView(webview);
-		webview.addJavascriptInterface(factory, "XMLHttpRequestXSFactory");
 
 		// WebViewの基本リスナを設定。
-		webview.setWebViewClient(new AccessControlWebViewClient());
+		webview.setWebViewClient(new SampleWebViewClient());
 		webview.setWebChromeClient(new LoggingWebChromeClient());
 
 		if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
 			//WebView.setWebContentsDebuggingEnabled(true);
 		}
-		// JavaScript有効化（デフォルトは無効）
-		webview.getSettings().setJavaScriptEnabled(true);
 
 		// 初期ページ読み込み。
 		webview.loadUrl("file:///android_asset/test.html");
+		// JavaScript有効化（デフォルトは無効）
+		webview.getSettings().setJavaScriptEnabled(true);
 	}
 	
 	/**
@@ -129,9 +125,20 @@ public class SampleActivity extends Activity {
 	}
 
 	/**
-	 * WebViewにアクセス制限をかけるクライアント。
+	 * WebViewのリスナー。
+	 * - JavascriptInterfaceを登録する。
+	 * - WebViewにアクセス制限をかける。
 	 */
-	private class AccessControlWebViewClient extends WebViewClient {
+	private class SampleWebViewClient extends WebViewClient {
+		@Override
+		public void onPageStarted (WebView webview, String url, Bitmap favicon) {
+			// 拡張XMLHttpRequestファクトリの初期化。
+			XMLHttpRequestXSFactory factory = getXMLHttpRequestXSFactory();
+			factory.setAccessControlList(_accessControlList);
+			factory.setWebView(webview);
+			webview.addJavascriptInterface(factory, "XMLHttpRequestXSFactory");
+		}
+		
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			try {
