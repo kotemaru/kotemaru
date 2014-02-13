@@ -1,4 +1,5 @@
 
+
 /**
  * クロスサイト可能なXMLHttpRequest
  * - jQuery.ajaxから使用する場合はxhrパラメータを使用する。
@@ -70,8 +71,8 @@ XMLHttpRequestXS.prototype = {
 	open : function(method, url, async) {
 		this._async = async;
 		var error = this._native.open(method, url, async);
-		if (error) throw error;
 		this._nativeCallback();
+		if (error) throw error;
 	},
 	send : function(body) {
 		this._native.setResponseType(this.responseType);
