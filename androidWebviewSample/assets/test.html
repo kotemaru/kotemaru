@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="XMLHttpRequestXS.js" ></script>
+	<script type="text/javascript" src="jquery-1.11.0.js" ></script>
+	
+	<script type="text/javascript">
+// クロスサイトをjQueryでするために必要。
+jQuery.support.cors = true;
+
+function testJqueryAsync() {
+	console.log("testJqueryAsync");
+	$.ajax({
+		type: "GET", url: "http://www.redmine.org/issues.json",
+		dataType: "json",
+		success: function(data){
+			var issues = data.issues;
+			var $table = $("#table");
+			for (var i=0; i<issues.length;i++) {
+				$table.append($(
+					"<tr><td>"+issues[i].id+"</td><td>"+issues[i].subject+"</td></tr>"
+				));
+			}
+		},
+		error: function(xhr, status, error){
+			alert("error:"+status+":"+error);
+		},
+		xhr: function() { // jQueryが使うXHRの差替用API
+			return new XMLHttpRequestXS();
+		}
+	});
+}
+	</script>
+</head>
+<body onload="testJqueryAsync()">
+	<h3>Ajax result from http://www.redmine.org/issues.json</h3>
+	<table id="table" width="100%" border="1" >
+		<tr><th>ID</th><th>Subject</th></tr>
+	</table>
+</body>
+</html>
