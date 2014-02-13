@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<script type="text/javascript" src="XMLHttpRequestXS.js" ></script>
+	<script type="text/javascript" src="jquery-1.11.0.js" ></script>
+	
+	<script type="text/javascript">
+// クロスサイトをjQueryでするために必要。
+jQuery.support.cors = true;
+
+function testSync() {
+	var xreq = new XMLHttpRequestXS();
+	xreq.overrideMimeType("text/xml");
+	xreq.open("GET", "http://blog.kotemaru.org/atom.xml", false);
+	xreq.send(null);
+	document.getElementById("text").value = xreq.responseXML.documentElement.nodeName;
+}
+
+
+function testAsync() {
+	var xreq = new XMLHttpRequestXS();
+	xreq.open("GET", "http://www.google.co.jp/", true);
+	xreq.onreadystatechange = function() {
+		console.log(xreq.readyState);
+		if (xreq.readyState == 4) {
+			document.getElementById("text").value = xreq.responseText;
+		}
+	}
+	xreq.send(null);
+}
+
+function testJquerySync() {
+	console.log("testJqueryAsync");
+	$.ajax({
+		async: false,
+		type: "GET", url: "http://www.redmine.org/issues.json",
+		dataType: "json",
+		success: function(data){
+			document.getElementById("text").value = data.issues[0].subject;
+		},
+		error: function(xhr, status, error){
+			alert("error:"+status+":"+error);
+		},
+		xhr: function(orgXhr) {
+			return new XMLHttpRequestXS();
+		}
+	});
+}
+
+function testJqueryAsync() {
+	console.log("testJqueryAsync");
+	$.ajax({
+		type: "GET", url: "http://www.redmine.org/issues.json",
+		dataType: "json",
+		success: function(data){
+			var issues = data.issues;
+			var $table = $("table");
+			for (var i=0; i<issues.length;) {
+				$table.appendChild($(
+					"<tr><td>"+issues[i].id+"</td><td>"+issues[i].subject+"</td></tr>";
+				)));
+			}
+		},
+		error: function(xhr, status, error){
+			alert("error:"+status+":"+error);
+		},
+		xhr: function(orgXhr) {
+			return new XMLHttpRequestXS();
+		}
+	});
+}
+		
+		
+	</script>
+
+<body>
+
+<a href="javascript:testSync();">sync</a><p>
+<a href="javascript:testAsync();">Async</a><p>
+<a href="javascript:testJquerySync();">jQuery Sync</a><p>
+<a href="javascript:testJqueryAsync();">jQuery Async</a><p>
+
+<textarea id="text" rows="10" ></textarea>
+
+
+
+</body>
+</html>
