@@ -7,6 +7,10 @@ package org.kotemaru.android.sample.webview;
 import java.io.IOException;
 import java.net.URI;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
@@ -28,7 +32,12 @@ public class XMLHttpRequestXSFactory {
 	public XMLHttpRequestXS getXMLHttpRequestXS() {
 		return new XMLHttpRequestXS(this);
 	}
-
+	@JavascriptInterface
+	public JSONObject test(String json) throws JSONException {
+		Log.e("DEBUG", "json.abc="+new JSONObject(json).get("abc"));
+		return new JSONObject("{\"xyz\":1,\"aaa\":\"ssss\"}");
+	}
+ 
 	/**
 	 * Activityが終了した時に呼ばれる。
 	 */

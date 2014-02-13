@@ -68,6 +68,11 @@ public class SampleActivity extends Activity {
 	private void initWebView(Bundle savedInstanceState) {
 		WebView webview = (WebView) findViewById(R.id.webview);
 
+		// 拡張XMLHttpRequestファクトリの初期化。
+		XMLHttpRequestXSFactory factory = getXMLHttpRequestXSFactory();
+		factory.setAccessControlList(_accessControlList);
+		factory.setWebView(webview);
+		webview.addJavascriptInterface(factory, "XMLHttpRequestXSFactory");
 
 		// WebViewの基本リスナを設定。
 		webview.setWebViewClient(new SampleWebViewClient());

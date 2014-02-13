@@ -110,6 +110,7 @@ public class XMLHttpRequestXS {
 			return null;
 		} catch (Throwable t) {
 			Log.e(TAG, t.getMessage(), t);
+			setReadyState(ERROR);
 			return t.getMessage();
 		}
 	}
