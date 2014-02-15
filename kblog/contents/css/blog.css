@@ -185,10 +185,10 @@ table.KTable td {
 .ContentBody img {
 	padding: 2px;
 	background: white;
-	border: 1px solid #EEE;
-	-moz-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
-	-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
-	box-shadow: 1px 1px 5px rgba(0, 0, 0, .1);
+	border: 1px solid #ddd;
+	-moz-box-shadow: 1px 1px 5px rgba(0, 0, 0, .8);
+	-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, .8);
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, .8);
 }
 .ContentBody pre,xmp {
 	background: #F0F0FF;
