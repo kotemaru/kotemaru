@@ -26,7 +26,6 @@ public class UsbReceiver extends BroadcastReceiver {
 
 		/* receiver */
 		IntentFilter filter = new IntentFilter();
-		
 		filter.addAction(permissionName);  // USBデバイスの利用許可の通知を受ける。
 		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		activity.registerReceiver(receiver, filter);
