@@ -10,7 +10,7 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/recBtn"
+        android:id="@+id/receBtn"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Receive IR Data" />
