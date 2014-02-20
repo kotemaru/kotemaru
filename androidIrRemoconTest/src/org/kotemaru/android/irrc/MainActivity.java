@@ -29,8 +29,8 @@ public class MainActivity extends Activity {
 		irrcUsbDriver = new IrrcUsbDriver(this, ACTION_USB_PERMISSION);
 		usbReceiver = UsbReceiver.init(this, irrcUsbDriver, ACTION_USB_PERMISSION);
 
-		Button recBtn = (Button) findViewById(R.id.recBtn);
-		recBtn.setOnClickListener(new OnClickListener() {
+		Button receBtn = (Button) findViewById(R.id.receBtn);
+		receBtn.setOnClickListener(new OnClickListener() {
 			/**
 			 * 赤外線データ受信処理。
 			 * @param view
@@ -79,7 +79,7 @@ public class MainActivity extends Activity {
 	protected void onResume() {
 		super.onResume();
 		if (! irrcUsbDriver.hasDevice()) {
-			// TODO: Dialog
+			// デバイスがなければすぐ終了。TODO: Dialog
 			finish();
 			return;
 		}
