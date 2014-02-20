@@ -28,7 +28,6 @@ public class UsbReceiver extends BroadcastReceiver {
 		IntentFilter filter = new IntentFilter();
 		
 		filter.addAction(permissionName);  // USBデバイスの利用許可の通知を受ける。
-		//filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
 		filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
 		activity.registerReceiver(receiver, filter);
 
@@ -47,17 +46,12 @@ public class UsbReceiver extends BroadcastReceiver {
 		String action = intent.getAction();
 		Log.d(TAG,"onReceive:"+action);
 		UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
-		//if (UsbManager.ACTION_USB_DEVICE_ATTACHED.equals(action)) {
-		//	String errorMeg = driver.onAttach(device);
-		//	if (errorMeg != null) activity.errorDialog(errorMeg);
-		//} else 
 		if (permissionName.equals(action)) {
 			String errorMeg = driver.onStart(device);
 			if (errorMeg != null) activity.errorDialog(errorMeg);
 		} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 			if (driver.onDetach(device) == null) {
-				//activity.finish();
-				activity.moveTaskToBack(true);
+				activity.finish();
 			}
 		}
 	}

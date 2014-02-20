@@ -2,6 +2,8 @@ package org.kotemaru.android.irrc;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import android.app.PendingIntent;
 import android.content.Context;
@@ -52,9 +54,14 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 
 	public IrrcUsbDriver(MainActivity activity, String permissionName) {
 		this.usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
-		this.usbDevice = activity.getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
 		this.permissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(permissionName), 0);
-		onAttach(this.usbDevice); // USB_DEVICE_ATTACHEDで起動される前提。
+
+		UsbDevice device = activity.getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+		if (device == null) {
+			// ランチャーの起動の場合は一覧から検索する。
+			device = findDevice(usbManager);
+		}
+		onAttach(device);
 	}
 	/**
 	 * @return true=デバイスの確認。
@@ -313,6 +320,19 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 			return buff;
 		}
 
+	}
+	
+	private static UsbDevice findDevice(UsbManager usbManager) {
+		HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
+		Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
+		while (deviceIterator.hasNext()) {
+			UsbDevice d = deviceIterator.next();
+			Log.d(TAG, "device="+d);
+			if (d.getVendorId() == VENDER_ID && d.getProductId() == PRODUCT_ID) {
+				return d;
+			}
+		}
+		return null;
 	}
 
 	private static byte[] initBuffer(byte[] buff, byte data) {
