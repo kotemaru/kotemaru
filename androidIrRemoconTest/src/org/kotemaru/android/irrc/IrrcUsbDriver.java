@@ -19,8 +19,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 /**
- * 「赤外線リモコンキット」のドライバ。 - 注：AsyncTask は Activity のライフサイクルと同期しません。 Activity
- * を持たないように。
+ * 「赤外線リモコンキット」のドライバ。
+ * - 注：このクラスの AsyncTask は Activity のライフサイクルと同期しません。 
+ *   Activity を持たないように。
  * 
  * @author kotemaru@kotemaru.org
  */
@@ -63,6 +64,7 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		}
 		onAttach(device);
 	}
+
 	/**
 	 * @return true=デバイスの確認。
 	 */
@@ -185,7 +187,8 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 	}
 
 	/**
-	 * リモコンの赤外線受信データ取得。 - データが取れるまで戻らない。
+	 * リモコンの赤外線受信データ取得。 
+	 * - データが取れるまで戻らない。
 	 * 
 	 * @param listener
 	 *            応答リスナ。
@@ -208,7 +211,8 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 	}
 
 	/**
-	 * デバイスとの通信処理。 - 「赤外線リモコンキット」の通信は非同期なので UsbRequest を使用する必要がある。
+	 * デバイスとの通信処理。 
+	 * - 「赤外線リモコンキット」の通信は非同期なので UsbRequest を使用する必要がある。
 	 * 
 	 * @author inou
 	 * 
@@ -288,8 +292,7 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		/**
 		 * デバイスからパケット受信。
 		 * 
-		 * @param commandCode
-		 *            応答チェック用コマンドコード。
+		 * @param commandCode  応答チェック用コマンドコード。
 		 * @return パケットデータ
 		 * @throws IOException
 		 */
@@ -321,13 +324,13 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		}
 
 	}
-	
+
 	private static UsbDevice findDevice(UsbManager usbManager) {
 		HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
 		Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
 		while (deviceIterator.hasNext()) {
 			UsbDevice d = deviceIterator.next();
-			Log.d(TAG, "device="+d);
+			Log.d(TAG, "device=" + d);
 			if (d.getVendorId() == VENDER_ID && d.getProductId() == PRODUCT_ID) {
 				return d;
 			}
