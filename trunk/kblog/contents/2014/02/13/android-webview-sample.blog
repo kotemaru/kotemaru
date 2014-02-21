@@ -5,7 +5,7 @@ Date: 2014/02/13
 Public: yes
 
 最近、WebViewを使ったWebとNativeのハイブリッドアプリが流行っている。
-
+ 
 iPhoneとAndroidで同一アプリを開発する場合、Web部分が共通化できるメリットが大きいからだろう。
 
 と言うわけで WebView を使ったハイブリッドアプリの作り方を調べてみた。
@@ -47,7 +47,7 @@ WebView に信頼できないサイトの JavaScript が紛れ込むと何でも
 最近のブラウザはカメラやバイブレーションの API
 も最初から持っていて以外に追加機能のネタが無かったりします。
 
-なのでクロスサイト可能な XMLHttpRequestXS
+なのでクロスドメイン可能な XMLHttpRequestXS
 とか追加してさらにセキュリティホールを広げて見たいと思います。
 
 #### Javaオブジェクトの登録
@@ -201,7 +201,7 @@ HTML:
 		<script type="text/javascript" src="XMLHttpRequestXS.js" ></script>
 		<script type="text/javascript" src="jquery-1.11.0.js" ></script>
 		<script type="text/javascript">
-	jQuery.support.cors = true; // クロスサイトをjQueryでするために必要。
+	jQuery.support.cors = true; // クロスドメインをjQueryでするために必要。
 	
 	function testJqueryAsync() {
 		console.log("testJqueryAsync");

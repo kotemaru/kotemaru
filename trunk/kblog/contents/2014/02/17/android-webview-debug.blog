@@ -1,12 +1,12 @@
-Subject: AndroidでWebViewのデバッグ
+Subject: AndroidのWebViewをPCのChromeでデバッグ
 Content-type: markdown/text
 Tags: android,java,javascript
 Date: 2014/02/17
-Public: no
+Public: yes
 
 WebView 上で Web アプリを開発する場合に JavaScript
 のデバッグが大変そうだなと思いどうすれば良いのか調べてみた。
-
+ 
 結論から言うと PC の Chrome に ADB プラグインをインストールすると
 リモートで Chrome のデバッガが使える事が分かった。
 
