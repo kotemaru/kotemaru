@@ -17,12 +17,12 @@
 
     <application
         android:allowBackup="true"
-        android:configChanges="orientation|screenSize"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
             android:name="org.kotemaru.android.irrc.MainActivity"
+            android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
