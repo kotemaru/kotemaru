@@ -65,7 +65,7 @@ OSに誤認されデバイス全体が隠蔽されてしまっているようで
 
 USBのdescriptor定義をいじってキーボード、マウスと認識されないようにしただけです。
 
-自分でビルドしたい人は以下の修正パッチを当てて下さい。
+自分でビルドしたい人は以下の修正パッチを当てて `-D__FOR_ANDROID` でコンパイルして下さい。
 
   - [usb_descriptors.c Android用修正パッチ](https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest/Firmware/usb_descriptors-for-android.patch)
 
@@ -87,4 +87,6 @@ USBのdescriptor定義をいじってキーボード、マウスと認識され�
 ファームウェアのコンパイラはチップメーカのサイトから消えてるし。
 
 ともあれやっとこれで Android のプログラムに入れます。
+
+「[Nexus7からUSB赤外線リモコンを操る(中編)](/2014/02/22/android-ir-remocon-2.html)」に続きます。
 
