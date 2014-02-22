@@ -47,7 +47,9 @@ public class UsbReceiver extends BroadcastReceiver {
 		UsbDevice device = (UsbDevice)intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
 		if (permissionName.equals(action)) {
 			String errorMeg = driver.onStart(device);
-			if (errorMeg != null) activity.errorDialog(errorMeg);
+			if (errorMeg != null) {
+				activity.errorDialog(errorMeg);
+			}
 		} else if (UsbManager.ACTION_USB_DEVICE_DETACHED.equals(action)) {
 			if (driver.onDetach(device) == null) {
 				activity.finish();

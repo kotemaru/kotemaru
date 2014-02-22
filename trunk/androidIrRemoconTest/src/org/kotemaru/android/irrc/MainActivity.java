@@ -26,7 +26,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		irrcUsbDriver = new IrrcUsbDriver(this, ACTION_USB_PERMISSION);
+		irrcUsbDriver = IrrcUsbDriver.init(this, ACTION_USB_PERMISSION);
 		usbReceiver = UsbReceiver.init(this, irrcUsbDriver, ACTION_USB_PERMISSION);
 
 		Button receBtn = (Button) findViewById(R.id.receBtn);
