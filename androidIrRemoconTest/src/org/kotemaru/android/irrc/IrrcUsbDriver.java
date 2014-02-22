@@ -20,8 +20,8 @@ import android.util.Log;
 
 /**
  * 「赤外線リモコンキット」のドライバ。
- * - 注：このクラスの AsyncTask は Activity のライフサイクルと同期しません。 
- *   Activity を持たないように。
+ * - 注：このクラスの AsyncTask は Activity のライフサイクルと同期しません。
+ * Activity を持たないように。
  * 
  * @author kotemaru@kotemaru.org
  */
@@ -53,16 +53,26 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		public void onIrrcResponse(byte[] data);
 	}
 
+	public static IrrcUsbDriver init(MainActivity activity, String permissionName) {
+		IrrcUsbDriver driver = new IrrcUsbDriver(activity, permissionName);
+		// USB_DEVICE_ATTACHEDから起動された場合は intent がデバイスを持っている。
+		UsbDevice device = activity.getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
+		if (device == null) {
+			// LAUNCHER からの起動の場合は接続済デバイス一覧から検索する。
+			device = findDevice(driver.usbManager, VENDER_ID, PRODUCT_ID);
+		}
+		/*
+		 * USB_DEVICE_ATTACHED で起動するように AndroidManifest.xml を記述すると
+		 * USB_DEVICE_ATTACHED で必ず onCreate() が呼ばれるので Activity から設定した Receiver は呼ばれない。
+		 * 従って、ここで onAttach() を呼ぶ。
+		 */
+		driver.onAttach(device);
+		return driver;
+	}
+
 	public IrrcUsbDriver(MainActivity activity, String permissionName) {
 		this.usbManager = (UsbManager) activity.getSystemService(Context.USB_SERVICE);
 		this.permissionIntent = PendingIntent.getBroadcast(activity, 0, new Intent(permissionName), 0);
-
-		UsbDevice device = activity.getIntent().getParcelableExtra(UsbManager.EXTRA_DEVICE);
-		if (device == null) {
-			// ランチャーの起動の場合は一覧から検索する。
-			device = findDevice(usbManager);
-		}
-		onAttach(device);
 	}
 
 	/**
@@ -96,6 +106,7 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 			return onStart(usbDevice);
 		} else {
 			// デバイスの利用許可をユーザに求める。
+			// 結果は UsbReceiver.onReceive()にコールバック。
 			usbManager.requestPermission(usbDevice, permissionIntent);
 		}
 		return null;
@@ -109,10 +120,13 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 	@Override
 	public String onStart(UsbDevice device) {
 		Log.d(TAG, "onStart:" + device);
-		if (usbDevice != device) {
+		if (! device.equals(usbDevice)) {
 			return "No device attach.";
 		}
-
+		if (! usbManager.hasPermission(usbDevice)) {
+			return "No device permission.";
+		}
+		
 		usbConnection = usbManager.openDevice(usbDevice);
 		// TODO:インターフェースの検出は端折ってます。
 		UsbInterface usbIf = usbDevice.getInterface(INTERFACE_INDEX);
@@ -153,8 +167,10 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 			return "Other device";
 		}
 
-		UsbInterface usbIf = usbDevice.getInterface(INTERFACE_INDEX);
-		usbConnection.releaseInterface(usbIf);
+		if (usbConnection != null) {
+			UsbInterface usbIf = usbDevice.getInterface(INTERFACE_INDEX);
+			usbConnection.releaseInterface(usbIf);
+		}
 		usbDevice = null;
 		isReady = false;
 		return null;
@@ -187,7 +203,7 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 	}
 
 	/**
-	 * リモコンの赤外線受信データ取得。 
+	 * リモコンの赤外線受信データ取得。
 	 * - データが取れるまで戻らない。
 	 * 
 	 * @param listener
@@ -211,7 +227,7 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 	}
 
 	/**
-	 * デバイスとの通信処理。 
+	 * デバイスとの通信処理。
 	 * - 「赤外線リモコンキット」の通信は非同期なので UsbRequest を使用する必要がある。
 	 * 
 	 * @author inou
@@ -292,7 +308,8 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		/**
 		 * デバイスからパケット受信。
 		 * 
-		 * @param commandCode  応答チェック用コマンドコード。
+		 * @param commandCode
+		 *            応答チェック用コマンドコード。
 		 * @return パケットデータ
 		 * @throws IOException
 		 */
@@ -325,13 +342,13 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 
 	}
 
-	private static UsbDevice findDevice(UsbManager usbManager) {
+	private static UsbDevice findDevice(UsbManager usbManager, int venderId, int productId) {
 		HashMap<String, UsbDevice> deviceList = usbManager.getDeviceList();
 		Iterator<UsbDevice> deviceIterator = deviceList.values().iterator();
 		while (deviceIterator.hasNext()) {
 			UsbDevice d = deviceIterator.next();
 			Log.d(TAG, "device=" + d);
-			if (d.getVendorId() == VENDER_ID && d.getProductId() == PRODUCT_ID) {
+			if (d.getVendorId() == venderId && d.getProductId() == productId) {
 				return d;
 			}
 		}
