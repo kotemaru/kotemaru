@@ -260,7 +260,11 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 				do {
 					doRequest(reqData);
 					if (withResponse) {
-						resData = doResponse(reqData[0]);
+						resData = doResponse();
+						if (resData[0] != reqData[0]) {
+							Log.e(TAG, "Bad resposne code " + resData[0]);
+							return null;
+						}
 						if (withRetry && resData[1] == 0x00) {
 							sleep(500);
 							isRetry = true;
@@ -309,19 +313,16 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 
 		/**
 		 * デバイスからパケット受信。
-		 * 
-		 * @param commandCode
-		 *            応答チェック用コマンドコード。
 		 * @return パケットデータ
 		 * @throws IOException
 		 */
-		private byte[] doResponse(byte commandCode) throws IOException {
-			ByteBuffer buffer = ByteBuffer.allocate(PACKET_SIZE);
+		private byte[] doResponse() throws IOException {
+			ByteBuffer buffer = ByteBuffer.allocate(endpointIn.getMaxPacketSize());
 			buffer.clear();
 			UsbRequest request = new UsbRequest();
 			request.initialize(usbConnection, endpointIn);
-			request.queue(buffer, PACKET_SIZE);
-
+			request.queue(buffer, endpointIn.getMaxPacketSize());
+			
 			UsbRequest finishReq;
 			while ((finishReq = usbConnection.requestWait()) != request) {
 				if (finishReq == null) throw new IOException("Request failed.");
@@ -331,14 +332,9 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 			// Note: OSバージョンにより flip() の必要性が異なる気がする...
 			if (buffer.remaining() == 0) buffer.flip();
 
-			byte[] buff = new byte[PACKET_SIZE];
+			byte[] buff = new byte[buffer.remaining()];
 			buffer.get(buff);
-
 			Log.d(TAG, "response:" + dump(buff));
-			if (buff[0] != commandCode) {
-				Log.e(TAG, "Bad resposne code " + buff[0]);
-				return null;
-			}
 			return buff;
 		}
 
