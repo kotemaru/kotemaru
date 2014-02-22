@@ -170,7 +170,9 @@ public class IrrcUsbDriver implements UsbReceiver.Driver {
 		if (usbConnection != null) {
 			UsbInterface usbIf = usbDevice.getInterface(INTERFACE_INDEX);
 			usbConnection.releaseInterface(usbIf);
+			usbConnection.close();
 		}
+		usbConnection = null;
 		usbDevice = null;
 		isReady = false;
 		return null;
