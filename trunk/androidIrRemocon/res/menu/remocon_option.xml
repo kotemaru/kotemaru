@@ -1,0 +1,24 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/menu_find_device"
+        android:checkable="false"
+        android:showAsAction="never"
+        android:title="@string/find_device"/>
+    <item
+        android:id="@+id/menu_setting_mode"
+        android:checkable="false"
+        android:showAsAction="never"
+        android:title="@string/setting_mode"/>
+    <item
+        android:id="@+id/menu_backup"
+        android:checkable="false"
+        android:showAsAction="never"
+        android:title="@string/backup"/>
+    <item
+        android:id="@+id/menu_restore"
+        android:checkable="false"
+        android:showAsAction="never"
+        android:title="@string/restore"/>
+
+</menu>
