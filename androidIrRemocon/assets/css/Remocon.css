@@ -1,0 +1,66 @@
+html,body {
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.GridTable {
+	border-spacing: 0px;
+	width: 100%;
+	height: 100%;
+}
+.GridTable td {
+	text-align: center;
+	padding: 0px;
+	margin: 0px;
+}
+
+.Dialog {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 100000;
+	background: #eee;
+	opacity: 0.8;
+}
+.DialogBody {
+	position: relative;
+	width: 50%;
+	background: black;
+	color: white;
+	border: 2px solid #eee;
+	padding: 0.2in;
+	font-size: 0.25in;
+}
+.DialogButton {
+	background: #eee;
+	color: black;
+	padding: 0.01in 0.1in;
+	cursor: pointer;
+}
+.Dialog #dialogButtonImg img{
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#aaa));
+	width: 0.2in;
+	padding: 0.02in;
+	vertical-align: base-line;
+}
+
+button {
+	padding: 0;
+	margin: 0;
+	font-weight: bold;
+	font-familly: sans-serif;
+	line-height: 100%;
+	background: -webkit-gradient(linear, left top, left bottom, from(#eee), to(#aaa));
+}
+button:active {
+	background: -webkit-gradient(linear, left top, left bottom, from(#aaa), to(#eee));
+}
+
+button > img {
+	vertical-align: text-bottom;
+}

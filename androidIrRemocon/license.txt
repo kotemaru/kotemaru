@@ -1,0 +1,3 @@
+source code: licenser kotemaru.org
+remote_control.png : licenser VistaIcons.com
+asserts/remocon/img : licenser Adam Whitcroft
