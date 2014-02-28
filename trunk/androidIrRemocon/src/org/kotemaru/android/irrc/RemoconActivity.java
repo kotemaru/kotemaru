@@ -68,6 +68,7 @@ public class RemoconActivity extends FragmentActivity implements UsbReceiverActi
 				errorDialog("Not found USB device.");
 			}
 		}
+		//viewPagerAdapter.onResume();
 	}
 
 	/**
@@ -85,6 +86,7 @@ public class RemoconActivity extends FragmentActivity implements UsbReceiverActi
 	@Override
 	protected void onDestroy() {
 		usbReceiver.destroy();
+		viewPagerAdapter.onDestroy();
 		super.onDestroy();
 	}
 
