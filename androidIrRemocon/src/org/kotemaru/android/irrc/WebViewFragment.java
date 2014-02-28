@@ -2,54 +2,34 @@ package org.kotemaru.android.irrc;
 
 import android.annotation.SuppressLint;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
-public class WebViewFragment extends Fragment {
+
+public class WebViewFragment {
 	private static final String TAG = "WebViewFragment";
 
+	private RemoconActivity activity;
 	private String url;
 	private WebView webview;
 	private IrrcUsbDriverForJs irrcUsbDriverForJs;
 
-	public WebViewFragment() {
-	}
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		//Log.i(TAG, "Fragment.onCreate();" + this);
-		this.setRetainInstance(true);
-	}
-
-	@Override
-	public View onCreateView(LayoutInflater inflater,
-			ViewGroup container,
-			Bundle savedInstanceState) {
-		//Log.i(TAG, "Fragment.onCreateView();" + this+":"+webview);
-		IrrcUsbDriver irrcUsbDriver = ((RemoconApplication) getActivity().getApplication()).getIrrcUsbDriver(getActivity());
+	public WebViewFragment(RemoconActivity activity) {
+		this.activity = activity;
+		
+		IrrcUsbDriver irrcUsbDriver = ((RemoconApplication) activity.getApplication()).getIrrcUsbDriver(activity);
 		irrcUsbDriverForJs = new IrrcUsbDriverForJs(this, irrcUsbDriver);
-
-		webview = (WebView) inflater.inflate(R.layout.webview, null);
+		webview = (WebView) activity.getLayoutInflater().inflate(R.layout.webview, null);
 		// webview.setWebViewClient(new MyWebViewClient());
 		webview.setWebChromeClient(new LoggingWebChromeClient());
-		return webview;
 	}
-
+	
 	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
-	@Override
-	public void onResume() {
-		super.onResume();
-		//Log.i(TAG, "Fragment.onResume();" + this);
-
+	public void load() {
+		// JS変数に NativeFactory に this を設定。
 		webview.addJavascriptInterface(this, "NativeFactory");
 		// 初期ページ読み込み。
 		webview.loadUrl(url);
@@ -62,9 +42,15 @@ public class WebViewFragment extends Fragment {
 			WebView.setWebContentsDebuggingEnabled(true);
 		}
 	}
+	
+	public void onDestroy() {
+		Log.i(TAG, "Fragment.onDestroy();" + this);
+		webview.removeAllViews();
+		webview.destroy();
+	}
 
 	public void onSelected() {
-		getActivity().setTitle(webview.getTitle());
+		activity.setTitle(webview.getTitle());
 	}
 
 	public WebView getWebview() {
@@ -79,20 +65,6 @@ public class WebViewFragment extends Fragment {
 		this.url = url;
 	}
 
-	/*
-	 * private class MyWebViewClient extends WebViewClient {
-	 * 
-	 * @Override
-	 * public void onPageStarted (WebView webview, String url, Bitmap favicon) {
-	 * }
-	 * 
-	 * @Override
-	 * public void onReceivedError (WebView view, int errorCode, String description, String failingUrl) {
-	 * ((RemoconActivity) getActivity()).errorDialog(description);
-	 * }
-	 * }
-	 */
-
 	/**
 	 * WebViewのログをLogcatに転送するクライアント。
 	 */
@@ -105,7 +77,7 @@ public class WebViewFragment extends Fragment {
 		@Override
 		public void onReceivedTitle(WebView view, String title) {
 			super.onReceivedTitle(view, title);
-			if (WebViewFragment.this == ((RemoconActivity) getActivity()).getCurrentWebViewFragment()) {
+			if (WebViewFragment.this == activity.getCurrentWebViewFragment()) {
 				onSelected();
 			}
 		}
@@ -121,7 +93,7 @@ public class WebViewFragment extends Fragment {
 
 	@JavascriptInterface
 	public Options getOptions() {
-		return ((RemoconActivity) getActivity()).getOptions();
+		return activity.getOptions();
 	}
 
 	@JavascriptInterface
@@ -131,7 +103,7 @@ public class WebViewFragment extends Fragment {
 
 	@JavascriptInterface
 	public IrDataDao getIrDataDao() {
-		return ((RemoconActivity) getActivity()).getIrDataDao();
+		return activity.getIrDataDao();
 	}
 
 }
