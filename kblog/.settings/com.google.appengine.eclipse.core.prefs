@@ -1,6 +1,6 @@
-#Sat Mar 01 14:41:34 JST 2014
+#Sat Mar 01 15:37:03 JST 2014
 eclipse.preferences.version=1
-filesCopiedToWebInfLib=appengine-api-1.0-sdk-1.8.5.jar|appengine-api-labs.jar|appengine-endpoints.jar|appengine-jsr107cache-1.8.5.jar|jsr107cache-1.1.jar
+filesCopiedToWebInfLib=appengine-api-1.0-sdk-1.9.0.jar|appengine-api-labs.jar|appengine-endpoints-deps.jar|appengine-endpoints.jar|appengine-jsr107cache-1.9.0.jar|jsr107cache-1.1.jar
 gaeDatanucleusEnabled=false
 gaeDatanucleusVersion=
 gaeDeployDialogSettings=

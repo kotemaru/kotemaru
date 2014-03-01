@@ -81,10 +81,11 @@ h1,h2,h3,h4,h5,h6 {
 	margin-bottom: 0.25em;
 }
 h1.ContentHeader {
-	font-size: 22px;
+	font-size: 28px;
 	background: aliceBlue;
 	padding-left: 4px;
 	padding-top: 3px;
+	line-height: 110%;
 	margin-bottom: 12px;
 	border-bottom: none;
 }
@@ -99,6 +100,15 @@ h1.ContentHeader a:hover  {
 h1.ContentHeader a:visited  {
 	text-decoration: underline;
 	color: #8800ee;
+}
+hr.ContentEnd  {
+	margin-top: 32px;
+	margin-bottom: 48px;
+	height: 1px;
+	border: 1px inset gray;
+	border-color: #000 #ddd #ddd #000;
+	color: #888;
+	background-color: #888;
 }
 
 h1 {
