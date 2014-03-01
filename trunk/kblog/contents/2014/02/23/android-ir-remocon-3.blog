@@ -206,6 +206,8 @@ Nexus7に繋げるのですがここで一つ問題が。<br>
 追々、リモコンアプリを作って行きたいのですが
 ボタン配置のカスマイズをできるようにしないといけないので以外に難しそうです。
 
+  - 作りました => [USB赤外線リモコン アプリ](/2014/03/01/android-ir-remocon-app.html)
+
 ソース全体は以下のSVNを参照して下さい。
 
   - [https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest](https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest)
