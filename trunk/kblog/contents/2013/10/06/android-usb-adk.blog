@@ -14,6 +14,8 @@ USB の API は ADK(Accessory Development Kit)と呼ばれている物。
 Android がホストになる場合とUSB機器になる場合があるが今回試したのは後者の方で
 Android が PC の USBデバイスとして認識されるケース。
 
+  - Android がホストになるケースは「[Nexus7からUSB赤外線リモコンを操る(前編)](/2014/02/21/android-ir-remocon-1.html)」をどうぞ。
+
 ### Android側
 
 #### API の選択

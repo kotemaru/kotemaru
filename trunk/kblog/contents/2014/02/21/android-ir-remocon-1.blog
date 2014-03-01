@@ -52,6 +52,7 @@ OSに誤認されデバイス全体が隠蔽されてしまっているようで
 
   - [ファームウェア書換えツール](http://bit-trade-one.co.jp/BTOpicture/Products/005-RS/HIDBootLoader.exe)
   - [Android用修正ファームウェア](https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest/Firmware/RemoconServant-for-android.hex)
+    - (追記：2014/3/1に更新しました。)
 
 #### ファームウェア書き換え手順
 
@@ -68,6 +69,7 @@ USBのdescriptor定義をいじってキーボード、マウスと認識され�
 自分でビルドしたい人は以下の修正パッチを当てて `-D__FOR_ANDROID` でコンパイルして下さい。
 
   - [usb_descriptors.c Android用修正パッチ](https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest/Firmware/usb_descriptors-for-android.patch)
+  - [main.c Android用修正パッチ](https://kotemaru.googlecode.com/svn/trunk/androidIrRemoconTest/Firmware/main-for-android.patch)(2014/3/1追記)
 
 ビルドツールが見つけ辛いのでリンクを張って置きます。
 
