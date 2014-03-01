@@ -1,10 +1,11 @@
-#Sun Oct 13 09:51:00 JST 2013
+#Sat Mar 01 14:41:34 JST 2014
 eclipse.preferences.version=1
-filesCopiedToWebInfLib=appengine-api-1.0-sdk-1.7.5.jar|appengine-api-labs.jar|appengine-endpoints.jar|appengine-jsr107cache-1.7.5.jar|jsr107cache-1.1.jar
+filesCopiedToWebInfLib=appengine-api-1.0-sdk-1.8.5.jar|appengine-api-labs.jar|appengine-endpoints.jar|appengine-jsr107cache-1.8.5.jar|jsr107cache-1.1.jar
 gaeDatanucleusEnabled=false
 gaeDatanucleusVersion=
 gaeDeployDialogSettings=
 gaeHrdEnabled=false
 gaeIsEclipseDefaultInstPath=false
+gaeLaunchAppInBrowser=true
 googleCloudSqlEnabled=false
 localDevMySqlEnabled=true
