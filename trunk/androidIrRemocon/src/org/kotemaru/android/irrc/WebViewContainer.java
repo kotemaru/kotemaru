@@ -9,15 +9,15 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 
-public class WebViewFragment {
-	private static final String TAG = "WebViewFragment";
+public class WebViewContainer {
+	private static final String TAG = "WebViewContainer";
 
 	private RemoconActivity activity;
 	private String url;
 	private WebView webview;
 	private IrrcUsbDriverForJs irrcUsbDriverForJs;
 
-	public WebViewFragment(RemoconActivity activity) {
+	public WebViewContainer(RemoconActivity activity) {
 		this.activity = activity;
 		
 		IrrcUsbDriver irrcUsbDriver = ((RemoconApplication) activity.getApplication()).getIrrcUsbDriver(activity);
@@ -28,7 +28,11 @@ public class WebViewFragment {
 	}
 	
 	@SuppressLint({ "SetJavaScriptEnabled", "NewApi" })
-	public void load() {
+	public void load(boolean isForce) {
+		if (url.equals(webview.getUrl()) && !isForce) {
+			return; // not reload.
+		}
+		
 		// JS変数に NativeFactory に this を設定。
 		webview.addJavascriptInterface(this, "NativeFactory");
 		// 初期ページ読み込み。
@@ -77,7 +81,7 @@ public class WebViewFragment {
 		@Override
 		public void onReceivedTitle(WebView view, String title) {
 			super.onReceivedTitle(view, title);
-			if (WebViewFragment.this == activity.getCurrentWebViewFragment()) {
+			if (WebViewContainer.this == activity.getCurrentWebViewFragment()) {
 				onSelected();
 			}
 		}

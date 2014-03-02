@@ -3,78 +3,84 @@ package org.kotemaru.android.irrc;
 import java.util.List;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 
 public class WebViewPagerAdapter extends PagerAdapter {
-	private List<String> remoconList;
-	private WebViewFragment[] fragments;
+	// private List<String> remoconList;
+	private ViewPager viewPager;
+	private WebViewContainer[] containers;
 	private OnPageChangeListener onPageChangeListener = new OnPageChangeListener() {
 		@Override
 		public void onPageSelected(int index) {
-			WebViewFragment fragment = getWebViewFragment(index);
-			if (fragment != null) fragment.onSelected();
+			WebViewContainer container = getWebViewContainer(index);
+			if (container != null) container.onSelected();
 		}
 
 		@Override
 		public void onPageScrollStateChanged(int state) {
+			// Log.d("WebViewPagerAdapter", "onPageScrollStateChanged:"+state);
 		}
 
 		@Override
-		public void onPageScrolled(int arg0, float arg1, int arg2) {
+		public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+			// Log.d("WebViewPagerAdapter", "onPageScrolled:"+ position+","+ positionOffset+","+ positionOffsetPixels);
 		}
 	};
 
-	public WebViewPagerAdapter(RemoconActivity activity, List<String> remoconList) {
+	public WebViewPagerAdapter(RemoconActivity activity, ViewPager viewPager, List<String> remoconList) {
 		super();
-		this.remoconList = remoconList;
-		this.fragments = new WebViewFragment[remoconList.size()];
-		for (int i=0; i<fragments.length; i++) {
-			fragments[i] = new WebViewFragment(activity);
+		this.viewPager = viewPager;
+		// this.remoconList = remoconList;
+		this.containers = new WebViewContainer[remoconList.size()];
+		for (int i = 0; i < remoconList.size(); i++) {
+			WebViewContainer container = new WebViewContainer(activity);
+			container.setUrl(remoconList.get(i));
+			containers[i] = container;
 		}
 	}
 
 	@Override
 	public int getCount() {
-		return fragments.length;
+		return containers.length;
 	}
 
 	@Override
-	public Object instantiateItem(ViewGroup container, int position) {
+	public Object instantiateItem(ViewGroup viewGroup, int position) {
 		Log.d("WebViewPagerAdapter", "getItem:" + position);
-		WebViewFragment fragment = fragments[position];
-		fragment.setUrl(remoconList.get(position));
-		fragment.load();
-		container.addView(fragment.getWebview());
-		fragments[position] = fragment;
-		return fragment;
+		WebViewContainer container = containers[position];
+		container.load(false);
+		viewGroup.addView(container.getWebview());
+		return container;
 	}
+
 	@Override
 	public boolean isViewFromObject(View view, Object key) {
-		if (key instanceof WebViewFragment) {
-			return ((WebViewFragment)key).getWebview() == view;
+		if (key instanceof WebViewContainer) {
+			return ((WebViewContainer) key).getWebview() == view;
 		}
 		return false;
 	}
 
 	@Override
-	public void destroyItem(ViewGroup container, int position, Object object) {
+	public void destroyItem(ViewGroup viewGroup, int position, Object object) {
 		Log.d("WebViewPagerAdapter", "destroyItem:" + object);
-		((WebViewFragment)object).onDestroy();
-		super.destroyItem(container, position, object);
+
+		viewGroup.removeView(((WebViewContainer) object).getWebview());
 	}
-	
+
 	public void onDestroy() {
-		Log.i("WebViewPagerAdapter", "Fragment.onDestroy();" + this);
-		for (int i=0; i<fragments.length; i++) {
-			if (fragments[i] != null) fragments[i].onDestroy();
+		Log.i("WebViewPagerAdapter", "Container.onDestroy();" + this);
+		for (int i = 0; i < containers.length; i++) {
+			if (containers[i] != null) containers[i].onDestroy();
 		}
 	}
 
-	public WebViewFragment getWebViewFragment(int index) {
-		return fragments[index];
+	public WebViewContainer getWebViewContainer(int index) {
+		return containers[index];
 	}
 
 	public OnPageChangeListener getOnPageChangeListener() {

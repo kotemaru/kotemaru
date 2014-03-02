@@ -15,10 +15,10 @@ import android.webkit.JavascriptInterface;
 public class IrrcUsbDriverForJs {
 	// private static final String TAG = "IrrcUsbDriverForJs";
 	private IrrcUsbDriver irrcUsbDriver;
-	private WebViewFragment fragment;
+	private WebViewContainer fragment;
 	private Bytes irData = new Bytes();
 
-	public IrrcUsbDriverForJs(WebViewFragment fragment, IrrcUsbDriver irrcUsbDriver) {
+	public IrrcUsbDriverForJs(WebViewContainer fragment, IrrcUsbDriver irrcUsbDriver) {
 		this.fragment = fragment;
 		this.irrcUsbDriver = irrcUsbDriver;
 	}

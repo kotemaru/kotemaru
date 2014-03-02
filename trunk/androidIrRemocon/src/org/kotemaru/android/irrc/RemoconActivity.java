@@ -45,8 +45,8 @@ public class RemoconActivity extends FragmentActivity implements UsbReceiverActi
 		String aid = (savedInstanceState != null) ? savedInstanceState.getString(ACTIVITY_ID) : null;
 		activityId = (aid != null) ? aid : ("@" + this.hashCode());
 
-		viewPagerAdapter = new WebViewPagerAdapter(this, RemoconResource.getRemoconList(this));
 		viewPager = (ViewPager) findViewById(R.id.pager);
+		viewPagerAdapter = new WebViewPagerAdapter(this, viewPager, RemoconResource.getRemoconList(this));
 		viewPager.setAdapter(viewPagerAdapter);
 		viewPager.setOnPageChangeListener(viewPagerAdapter.getOnPageChangeListener());
 
@@ -54,8 +54,8 @@ public class RemoconActivity extends FragmentActivity implements UsbReceiverActi
 		usbReceiver = UsbReceiver.init(this, irrcUsbDriver);
 	}
 
-	public WebViewFragment getCurrentWebViewFragment() {
-		return viewPagerAdapter.getWebViewFragment(viewPager.getCurrentItem());
+	public WebViewContainer getCurrentWebViewFragment() {
+		return viewPagerAdapter.getWebViewContainer(viewPager.getCurrentItem());
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class RemoconActivity extends FragmentActivity implements UsbReceiverActi
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int menuId = item.getItemId();
 		if (menuId == R.id.menu_setting_mode) {
-			viewPagerAdapter.getWebViewFragment(viewPager.getCurrentItem()).callbackJs("onChangeSettingMode()");
+			viewPagerAdapter.getWebViewContainer(viewPager.getCurrentItem()).callbackJs("onChangeSettingMode()");
 		} else if (menuId == R.id.menu_find_device) {
 			if (irrcUsbDriver.findDevice()) {
 				alertDalog("OK!", "Found USB device.");
