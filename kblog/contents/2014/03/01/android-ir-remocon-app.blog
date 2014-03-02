@@ -11,7 +11,7 @@ Public: yes
 
 
   - [androidIrRimocon-0.5.apk(野良ビルド)](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5/androidIrRemocon-0.5.apk)
-  - [SVNプロジェクト](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5/)
+  - [SVNプロジェクト](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5.0.1/)
 
 
 ### 使い方
@@ -73,7 +73,7 @@ Public: yes
 現状ではリモコン画面のカスタマイズは Android の開発環境が無いとできません。<br>
 SVN からプロジェクトを落として Eclipse で開いてください。
 
-  - [https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5/](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5/)
+  - [https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5.0.1/](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5.0.1/)
 
 リモコン画面は HTML で記述されています。
 テンプレートとなる assets/remocon/1.TV.html を同じフォルダに別名をつけてコピーしてください。
