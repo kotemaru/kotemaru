@@ -1,0 +1,203 @@
+Subject: ViewPagerのループ
+Content-type: markdown/text
+Tags: android,java
+Date: 2014/03/05
+Public: yes 
+
+リモコンアプリを作って気がついたのだが ViewPager 
+ってページの循環（ループ）が出来ない。
+
+どうしても循環させたい場合は ViewPager を全部作り直す必要が有るっぽい。
+
+  - [ループできる ViewPager （完全版）作った](http://y-anz-m.blogspot.jp/2012/11/android-viewpager.html)
+
+このライブラリ使わせてもらえ、で話は終わってしまうのですがもう少し突っ込んでみました。
+
+### PagerAdapter だけで頑張ってみた。
+
+ViewPager のソースを見ると子要素として持っている View
+は表示中のページとその左右のページの３枚のみでした。
+
+ならば最初と最後に擬似的なページを用意してやればループしたように見せられるじゃないでしょうか。
+
+こういうことです。
+
+<table class="KTable" style="margin-left: 3em;">
+	<tr><td >C'<td>A <td>B <td>C <td>A'</tr>
+</table>
+
+
+  - A と A' の View は共有します。
+  - A' に遷移した時は A にジャンプします。
+  - C,C' も同じです。
+
+具体的に実装してみた物がこれです。
+
+	public class LoopPagerAdapter extends PagerAdapter {
+		private static final String TAG = "LoopPagerAdapter";
+		
+		private ViewPager viewPager;
+		private Page[] pages;
+		
+		public LoopPagerAdapter(ViewPager viewPager, View[] views) {
+			super();
+			this.viewPager = viewPager;
+			this.pages = new Page[views.length+2];
+			
+			for (int i=0;i<views.length; i++) {
+				pages[i+1] = new Page(views[i]);
+			}
+			pages[0] = new Page(views[views.length-1]);
+			pages[pages.length-1] = new Page(views[0]);
+			viewPager.setOnPageChangeListener(onPageChangeListener);
+		}
+		
+		private OnPageChangeListener onPageChangeListener = new OnPageChangeListener() {
+			@Override
+			public void onPageSelected(int position) {
+				if (position == 0) viewPager.setCurrentItem(getCount()-2,false);
+				if (position == getCount()-1) viewPager.setCurrentItem(1,false);
+			}
+			@Override
+			public void onPageScrollStateChanged(int state) {}
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
+		};
+		
+		@Override
+		public int getCount() {
+			return pages.length;
+		}
+	
+		@Override
+		public Object instantiateItem(ViewGroup viewGroup, int position) {
+			Log.d(TAG, "instantiateItem:" + position);
+			Page page = pages[position];
+			View view = page.getView();
+			for (int i=0;i<pages.length; i++) {
+				if (pages[i].getView() == view) pages[i].setValid(false);
+			}
+			page.setValid(true);
+			
+			viewGroup.removeView(view);
+			viewGroup.addView(view);
+			return page;
+		}
+	
+		@Override
+		public boolean isViewFromObject(View view, Object object) {
+			Page page = (Page) object;
+			return page.isValid() && page.getView() == view;
+		}
+	
+		@Override
+		public void destroyItem(ViewGroup viewGroup, int position, Object object) {
+			Page page = (Page) object;
+			Log.d(TAG, "destroyItem:" + position+" : "+((TextView)page.getView()).getText());
+			if (page.isValid()) {
+				viewGroup.removeView(page.getView());
+			}
+			page.setValid(false);
+		}
+	}
+
+	public class Page {
+		private View view;
+		private boolean isValid = true;
+	
+		public Page(View view) {
+			this.view = view;
+		}
+		public View getView() {
+			return view;
+		}
+		public boolean isValid() {
+			return isValid;
+		}
+		public void setValid(boolean isValid) {
+			this.isValid = isValid;
+		}
+	}
+
+A と A' は同時に存在できないのでどちらが有効なのかを管理する為に
+Page クラスを用意しています。
+
+
+実際に動かしてみます。
+
+  - <img src="/2014/03/05/android-viewpager-1.png" width="400px"/>
+
+ちゃんと A と C を行き来できました。<br>
+但、必ず３ページ以上必要な上、ViewPager
+の実装に依存するため将来動かなくなるかもしれませんw
+
+### ViewFlipper で代用
+
+ページング用のクラスとしてもう一つ ViewFlipper が有ります。
+こちらは最初からループ可能です。<br>
+但、Fragment に対応していませんし操作が Swipe でなく Fling
+になります。
+
+フリックに反応して左右にページ遷移する ViewFlipper
+のサンプルはこうなります。
+
+	public class FlingViewFlipper extends ViewFlipper {
+		private static final String TAG = "FlingViewFlipper";
+		private final Animation right_in_trans_anim = createAnim(1, 0);
+		private final Animation right_out_trans_anim = createAnim(0, 1);
+		private final Animation left_in_trans_anim = createAnim(-1, 0);
+		private final Animation left_out_trans_anim = createAnim(0, -1);
+		private GestureDetector gestureDetector;
+	
+		public FlingViewFlipper(Context context, AttributeSet attrSet) {
+			super(context, attrSet);
+			this.gestureDetector = new GestureDetector(context, onGestureListener);
+			setFlipInterval(0);
+		}
+	
+		// Require delegate from Activiy.onTouchEvent()
+		public boolean onTouchEvent(MotionEvent ev) {
+			gestureDetector.onTouchEvent(ev);
+			return false;
+		}
+	
+		private OnGestureListener onGestureListener = new SimpleOnGestureListener() {
+			@Override
+			public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+				Log.d(TAG, "onFling:" + velocityX);
+				if (velocityX < -300) {
+					setOutAnimation(left_out_trans_anim);
+					setInAnimation(right_in_trans_anim);
+					showNext();
+					return true;
+				} else if (velocityX > 300) {
+					setOutAnimation(right_out_trans_anim);
+					setInAnimation(left_in_trans_anim);
+					showPrevious();
+					return true;
+				}
+				return false;
+			}
+		};
+	
+		private static Animation createAnim(float startX,float entX) {
+			Animation anim = new TranslateAnimation(
+				Animation.RELATIVE_TO_PARENT, startX, Animation.RELATIVE_TO_PARENT, entX,
+				Animation.RELATIVE_TO_PARENT, 0, Animation.RELATIVE_TO_PARENT, 0
+			);
+			anim.setDuration(300);
+			anim.setStartOffset(0);
+			return anim;
+		}
+	}
+
+
+### 感想
+
+PageViewer はちょと実装が複雑過ぎる気がしました。<br>
+PagerAdapter がどう呼ばれるのか PageViewer のソースを見ないと理解が難しいです。
+
+どうしても Fragment でページを管理したいと言う要求がなければ普通に
+ViewFlipper を使うのがおすすめです。
+
+

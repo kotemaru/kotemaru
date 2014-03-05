@@ -74,6 +74,7 @@ Public: yes
 SVN からプロジェクトを落として Eclipse で開いてください。
 
   - [https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5.0.1/](https://kotemaru.googlecode.com/svn/tags/androidIrRemocon-0.5.0.1/)
+    - (2014/3/2 追記　バグがあったので修正しました。URL変更になっています)
 
 リモコン画面は HTML で記述されています。
 テンプレートとなる assets/remocon/1.TV.html を同じフォルダに別名をつけてコピーしてください。
