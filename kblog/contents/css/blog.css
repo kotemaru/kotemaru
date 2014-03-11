@@ -296,5 +296,11 @@ table.KTable td {
 .CommentFormTable td {
 }
 
+iframe#oshigoto {
+	height: 48px;
+}
 
+.Dummy {
+	display: none;
+}
 

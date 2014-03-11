@@ -8,6 +8,12 @@
 	<threadsafe>true</threadsafe>
 
 	<static-files>
+		<include path="*.html" >
+			<http-header name="Cache-Control" value="max-age=0" />
+		</include>
+		<include path="**/*.html" >
+			<http-header name="Cache-control" value="max-age=0" />
+		</include>
 		<include path="*" />
 		<include path="**/*" />
 	</static-files>
