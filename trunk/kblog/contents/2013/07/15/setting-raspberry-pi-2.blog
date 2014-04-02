@@ -40,6 +40,11 @@ RaspberryPiにちょうど良いのでDNSにしてみた。
 	        listen-on-v6 { any; };         
 	};
 
+PS. forwardersが効いていなかったので修正
+
+	        allow-transfer { localnet; };
+	        dnssec-validation no;
+
 /etc/bind/named.conf.local:
 
 	zone "myhome.jp" {
