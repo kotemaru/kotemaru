@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<link rel="stylesheet" href="../css/Remocon.css" type="text/css">
+<script type="text/javascript" src="../js/jquery-1.11.0.js"></script>
+<script type="text/javascript" src="../js/CssLib.js"></script>
+<script type="text/javascript" src="../js/NativeFactory.js"></script>
+<script type="text/javascript" src="../js/Native.js"></script>
+<script type="text/javascript" src="../js/Dialog.js"></script>
+<script type="text/javascript" src="../js/Remocon.js"></script>
+
+<title>TV</title>
+<style>
+body {
+	background: -webkit-gradient(linear, left top, right top, from(#888), to(#555));
+}
+</style>
+<script>
+$(function(){
+	Remocon.setButtonGrid(5,8); // ボタン配置のGrid指定
+})
+</script>
+
+</head>
+<body>
+	<table class="GridTable" >
+		<tr>
+			<td><button id="power"><img src="img/power-red.png"/></button></td>
+			<td></td>
+			<td></td>
+			<td width="3%" ></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr></tr>
+		
+		<tr>
+			<td><button id="1">1</button></td>
+			<td><button id="2">2</button></td>
+			<td><button id="3">3</button></td>
+			<td></td>
+			<td><button id="audio-high"><img src="img/audio-high.png"/></button></td>
+			<td><button id="audio-low"><img src="img/audio-mid.png"/></button></td>
+		</tr>
+		<tr>
+			<td><button id="4">4</button></td>
+			<td><button id="5">5</button></td>
+			<td><button id="6">6</button></td>
+			<td></td>
+			<td><button id="audio-mute"><img src="img/speech-bubble-left-4.png"/></button></td>
+			<td><button id="audio-mute"><img src="img/audio-mute.png"/></button></td>
+		</tr>
+		<tr>
+			<td><button id="7">7</button></td>
+			<td><button id="8">8</button></td>
+			<td><button id="9">9</button></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr>
+			<td><button id="10">10</button></td>
+			<td><button id="11">11</button></td>
+			<td><button id="12">12</button></td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
+		<tr></tr>
+		<tr>
+			<td><button id="list"><img src="img/list.png"/></button></td>
+			<td><button id="up"><img src="img/arrow-up.png"/></button></td>
+			<td><button id="menu"><img src="img/windows.png"/></button></td>
+			<td></td>
+			<td><button id="record"><img src="img/record.png"/></button></td>
+			<td><button id="play"><img src="img/play.png"/></button></td>
+		</tr>
+		<tr>
+			<td><button id="left"><img src="img/arrow-left.png"/></button></td>
+			<td><button id="tick"><img src="img/tick.png"/></button></td>
+			<td><button id="right"><img src="img/arrow-right.png"/></button></td>
+			<td></td>
+			<td><button id="pause"><img src="img/pause.png"/></button></td>
+			<td><button id="stop"><img src="img/stop.png"/></button></td>
+		</tr>
+		<tr>
+			<td><button id="book"><img src="img/book-lines-2.png"/></button></td>
+			<td><button id="down"><img src="img/arrow-down.png"/></button></td>
+			<td><button id="return"><img src="img/reply.png"/></button></td>
+			<td></td>
+			<td><button id="rewind"><img src="img/rewind.png"/></button></td>
+			<td><button id="forward"><img src="img/fast-forward.png"/></button></td>
+		</tr>
+	</table>
+	
+</body>
+</html>
