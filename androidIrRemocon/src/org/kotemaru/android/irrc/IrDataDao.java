@@ -155,12 +155,15 @@ public class IrDataDao extends SQLiteOpenHelper {
 		copyFile(dbFile, file);
 	}
 	public void restore(String dirName, String fileName) throws IOException {
-		File file = new File(dirName, fileName);
+		File dir = Environment.getExternalStoragePublicDirectory(dirName);
+		File file = new File(dir, fileName);
 		File dbFile = context.getDatabasePath(DB_NAME);
 		copyFile(file, dbFile);
 	}
 
 	private void copyFile(File inFile, File outFile) throws IOException {
+		outFile.getParentFile().mkdirs();
+		
 		@SuppressWarnings("resource")
 		FileChannel inChannel = new FileInputStream(inFile).getChannel();
 		try {
