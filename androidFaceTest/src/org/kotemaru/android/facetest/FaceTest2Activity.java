@@ -110,10 +110,10 @@ public class FaceTest2Activity extends Activity {
 				PointF midPoint = new PointF(0, 0);
 				faces[0].getMidPoint(midPoint); // 顔認識結果を取得
 				float eyesDistance = faces[0].eyesDistance(); // 顔認識結果を取得
-				faceRect.left = (int) (midPoint.x - eyesDistance / 2);
-				faceRect.top = (int) (midPoint.y - eyesDistance / 2);
-				faceRect.right = (int) (midPoint.x + eyesDistance / 2);
-				faceRect.bottom = (int) (midPoint.y + eyesDistance / 2);
+				faceRect.left = (int) (midPoint.x - eyesDistance * 0.8 );
+				faceRect.right = (int) (midPoint.x + eyesDistance * 0.8 );
+				faceRect.top = (int) (midPoint.y - eyesDistance * 0.2);
+				faceRect.bottom = (int) (midPoint.y + eyesDistance * 0.2 );
 			}
 			overlayListener.drawFace(faceRect, Color.YELLOW, image);
 		}
@@ -152,7 +152,7 @@ public class FaceTest2Activity extends Activity {
 			surfaceHolder = holder;
 			surfaceHolder.setFormat(PixelFormat.TRANSPARENT);
 			paint.setStyle(Style.STROKE);
-			paint.setStrokeWidth(surfaceView.getWidth() / 100);
+			paint.setStrokeWidth(1);
 		}
 
 		@Override
