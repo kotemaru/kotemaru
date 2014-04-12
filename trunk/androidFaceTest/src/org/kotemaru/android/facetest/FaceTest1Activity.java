@@ -49,7 +49,6 @@ public class FaceTest1Activity extends Activity {
 	{
 		private SurfaceView surfaceView;
 		private SurfaceHolder surfaceHolder;
-		private byte[] previewRawData;
 
 		public CameraListener(SurfaceView surfaceView) {
 			this.surfaceView = surfaceView;
@@ -103,7 +102,6 @@ public class FaceTest1Activity extends Activity {
 			if (faces.length == 0) return;
 			Face face = faces[0];
 			if (face.score < 30) return;
-			if (previewRawData == null) return;
 			
 			overlayListener.drawFace(faceRect2PixelRect(face), Color.RED);
 		}
@@ -124,8 +122,8 @@ public class FaceTest1Activity extends Activity {
 			// フロントカメラなので左右反転、portraitなので座標軸反転
 			rect.left = w * (-face.rect.top + 1000) / 2000;
 			rect.right = w * (-face.rect.bottom + 1000) / 2000;
-			rect.top = h * (face.rect.left + 1000) / 2000;
-			rect.bottom = h * (face.rect.right + 1000) / 2000;
+			rect.top = h * (-face.rect.left + 1000) / 2000;
+			rect.bottom = h * (-face.rect.right + 1000) / 2000;
 			//Log.d(TAG, "rect=" + face.rect + "=>" + rect);
 			return rect;
 		}
