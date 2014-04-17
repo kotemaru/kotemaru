@@ -402,7 +402,7 @@ Googleの作法から外れている場合も有りますので公式文書も�
 
 PCから以下の URI をブラウザで開きます。
 
-	http://アプリサーバ/gcmserversample?acrion=send&userId=ユーザID&msg=Hello%20Android!
+	http://アプリサーバ/gcmserversample?action=send&userId=ユーザID&msg=Hello%20Android!
 
 Androidでトーストが無事表示されました。
 
