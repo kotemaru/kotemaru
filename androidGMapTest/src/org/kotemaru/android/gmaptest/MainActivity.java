@@ -34,7 +34,7 @@ public class MainActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		setUpMapIfNeeded();
-		setUpLocationClientIfNeeded();
+		setUpLocation(true);
 	}
 
 	// ---------------------------------------------------------------------
@@ -67,21 +67,28 @@ public class MainActivity extends FragmentActivity {
 	}
 
 	// --------------------------------------------------------------------------------
-	// 以下、GPS連動の設定
-	private void setUpLocationClientIfNeeded() {
-		gMap.setMyLocationEnabled(true);
-		if (locationClient == null) {
-			locationClient = new LocationClient(
-					getApplicationContext(),
-					connectionCallbacks,
-					onConnectionFailedListener);
+	// 以下、GPS連動の設定。
+	private void setUpLocation(boolean isManual) {
+		if (isManual) {
+			// 画面右上にGPSボタンが表示される。
+			// タップすると現在地への移動までかってにやってくれる。
+			gMap.setMyLocationEnabled(true);
+		} else {
+			// 現在地を定期的に取得する設定。
+			if (locationClient == null) {
+				locationClient = new LocationClient(
+						getApplicationContext(),
+						connectionCallbacks,
+						onConnectionFailedListener);
+				locationClient.connect();
+			}
 		}
 	}
 
 	ConnectionCallbacks connectionCallbacks = new ConnectionCallbacks() {
 		private final LocationRequest locationRequest = LocationRequest.create()
 				.setInterval(5000)         // 5 seconds
-				.setFastestInterval(100)    // 100ms = 10fps
+				.setFastestInterval(5000)
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 		@Override
@@ -103,7 +110,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onLocationChanged(Location location) {
 			LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-			float zoom = 13;
+			float zoom = 20;
 			gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
 		}
 	};
