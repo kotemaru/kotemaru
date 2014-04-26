@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gcm.GCMBaseIntentService;
@@ -46,7 +47,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 		Log.i(TAG, "onMessage: msg = " + messageType);
 		if ("onRegistered".equals(messageType)) {
 			CharSequence mail = intent.getCharSequenceExtra("mail");
-			Notification notice = new Notification.Builder(this)
+			Notification notice = new NotificationCompat.Builder(this)
 					.setContentTitle(context.getString(R.string.on_registered))
 					.setContentText(String.format(context.getString(R.string.on_registered_sub), mail))
 					.setSmallIcon(R.drawable.niconama_alert_trim)
@@ -62,7 +63,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			Intent action = new Intent(Intent.ACTION_VIEW, uri);
 			PendingIntent pi = PendingIntent.getActivity(this, 0, action, Intent.FLAG_ACTIVITY_NEW_TASK);
 
-			Notification n = new Notification.Builder(this)
+			Notification n = new NotificationCompat.Builder(this)
 					.setContentTitle(intent.getCharSequenceExtra("community"))
 					.setContentText(String.format(context.getString(R.string.on_live_sub), title))
 					.setSmallIcon(R.drawable.niconama_alert_trim)
