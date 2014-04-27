@@ -38,23 +38,34 @@ public class GCMIntentService extends GCMBaseIntentService {
 	@Override
 	protected void onRegistered(Context context, String registrationId) {
 		Log.i(TAG, "onRegistered: regId = " + registrationId);
-		Util.transition(context, RegisterActivity.class);
+		Transit.activity(context, RegisterActivity.class);
 	}
 
 	@Override
 	protected void onMessage(Context context, Intent intent) {
 		CharSequence messageType = intent.getCharSequenceExtra("messageType");
 		Log.i(TAG, "onMessage: msg = " + messageType);
+
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+				.setSmallIcon(R.drawable.niconama_alert_trim)
+				.setDefaults(Notification.DEFAULT_ALL);
+
 		if ("onRegistered".equals(messageType)) {
 			CharSequence mail = intent.getCharSequenceExtra("mail");
-			Notification notice = new NotificationCompat.Builder(this)
+			Notification notice = builder
 					.setContentTitle(context.getString(R.string.on_registered))
 					.setContentText(String.format(context.getString(R.string.on_registered_sub), mail))
-					.setSmallIcon(R.drawable.niconama_alert_trim)
-					.setDefaults(Notification.DEFAULT_ALL)
+					.build();
+			notificationManager.notify(1, notice);
+
+		} else if ("onUnRegistered".equals(messageType)) {
+			CharSequence mail = intent.getCharSequenceExtra("mail");
+			Notification notice = builder
+					.setContentTitle(context.getString(R.string.on_unregistered))
+					.setContentText(String.format(context.getString(R.string.on_registered_sub), mail))
 					.build();
 			notificationManager.notify(0, notice);
-			
+
 		} else if ("onLive".equals(messageType)) {
 			CharSequence liveId = intent.getCharSequenceExtra("liveId");
 			CharSequence title = intent.getCharSequenceExtra("title");
@@ -63,20 +74,16 @@ public class GCMIntentService extends GCMBaseIntentService {
 			Intent action = new Intent(Intent.ACTION_VIEW, uri);
 			PendingIntent pi = PendingIntent.getActivity(this, 0, action, Intent.FLAG_ACTIVITY_NEW_TASK);
 
-			Notification n = new NotificationCompat.Builder(this)
+			Notification notice = builder
 					.setContentTitle(intent.getCharSequenceExtra("community"))
 					.setContentText(String.format(context.getString(R.string.on_live_sub), title))
 					.setSmallIcon(R.drawable.niconama_alert_trim)
-					.setDefaults(Notification.DEFAULT_ALL)
-					.setContentIntent(pi)
 					.build();
-			notificationManager.notify(Integer.parseInt(liveId.toString()), n);
+			notificationManager.notify(Integer.parseInt(liveId.toString()), notice);
 		} else {
-			Log.w(TAG,"Unknown message "+messageType);
+			Log.w(TAG, "Unknown message " + messageType);
 		}
 	}
-
-	
 
 	@Override
 	protected void onUnregistered(Context context, String registrationId) {

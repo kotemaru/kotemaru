@@ -3,30 +3,30 @@ package org.kotemaru.android.nnalert;
 import android.content.Context;
 import android.content.Intent;
 
-public class Util {
+public class Transit {
 
-	public static void transition(Context context, Class<?> clazz) {
+	public static void activity(Context context, Class<?> clazz) {
 		Intent intent = new Intent(context, clazz);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		context.startActivity(intent);
 	}
 
 	public static void dialog(Context context, int messageId, String detail) {
-		dialog(context, messageId, detail, DialogActivity.OK);
+		dialog(context, messageId, detail, DialogActivity.MODE_ALERT);
 	}
 	public static void waiting(Context context, String detail) {
-		dialog(context, R.string.message_doing, detail, DialogActivity.NONE);
+		dialog(context, R.string.message_doing, detail, DialogActivity.MODE_WATING);
 	}
-	public static void finish(Context context, String detail) {
-		dialog(context, R.string.message_finish, detail, DialogActivity.FINISH);
+	public static void finish(Context context, int messageId, String detail) {
+		dialog(context, messageId, detail, DialogActivity.MODE_FINISH);
 	}
 
-	public static void dialog(Context context, int messageId, String detail, int buttonType) {
+	public static void dialog(Context context, int messageId, String detail, int mode) {
 		Intent intent = new Intent(context, DialogActivity.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		intent.putExtra(DialogActivity.MESSAGE_ID_KEY, messageId);
 		intent.putExtra(DialogActivity.MESSAGE_DETAIL_KEY, detail);
-		intent.putExtra(DialogActivity.BUTTONS_KEY, buttonType);
+		intent.putExtra(DialogActivity.MODE_KEY, mode);
 		context.startActivity(intent);
 	}
 
@@ -37,6 +37,4 @@ public class Util {
 		context.startActivity(intent);
 	}
 
-	
-	
 }

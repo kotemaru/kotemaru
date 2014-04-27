@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 public class DialogActivity extends Activity {
@@ -15,17 +17,23 @@ public class DialogActivity extends Activity {
 	public static final String MESSAGE_ID_KEY = "MESSAGE_ID";
 	public static final String MESSAGE_DETAIL_KEY = "MESSAGE_DETAIL";
 
-	public static final String BUTTONS_KEY = "BUTTONS";
-	public static final int NONE = 0;
-	public static final int OK = 1;
-	public static final int FINISH = 2;
-
-
+	public static final String MODE_KEY = "MODE";
+	public static final int MODE_ALERT = 1;
+	public static final int MODE_CONFIRM = 2;
+	public static final int MODE_WATING = 3;
+	public static final int MODE_FINISH = 4;
+	
 	private TextView dialogMessage;
 	private TextView dialogMessageDetail;
-	private Button okButton;
-	private Button finishButton;
+	
+	private ProgressBar progressIcon;
+	private ImageView alertIcon;
 
+	private Button okButton;
+	private Button cancelButton;
+	private Button finishButton;
+	private DismissListener dismissListener = new DismissListener();
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.d(TAG, "onCreate");
@@ -34,50 +42,76 @@ public class DialogActivity extends Activity {
 
 		dialogMessage = (TextView) this.findViewById(R.id.dialogMessage);
 		dialogMessageDetail = (TextView) this.findViewById(R.id.dialogMessageDetail);
+		
+		progressIcon =  (ProgressBar) this.findViewById(R.id.progressIcon);
+		alertIcon =  (ImageView) this.findViewById(R.id.alertIcon);
+		
 		okButton = (Button) this.findViewById(R.id.okButton);
-		okButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.d(TAG, "Dialog finish,");
-				finish();
-			}
-		});
+		cancelButton = (Button) this.findViewById(R.id.cancelButton);
 		finishButton = (Button) this.findViewById(R.id.finishButton);
-		finishButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				Log.d(TAG, "Task finish,");
-				finish();
-				Util.exit(DialogActivity.this);
-			}
-		});
-	}
-	@Override
-	protected void onStart() {
-		Log.d(TAG, "onStart");
-		super.onStart();
+		setup(getIntent());
 	}
 
 	@Override
-	protected void onResume() {
-		Log.d(TAG, "onResume");
-		super.onResume();
+	protected void onNewIntent(Intent intent) {
+		Log.d(TAG, "onNewIntent");
+		super.onNewIntent(intent);
+		setup(intent);
+	}
 
-		Intent intent = getIntent();
+	private void setup(Intent intent) {
+		final DialogActivity self = DialogActivity.this;
+		
 		int messageId = intent.getIntExtra(MESSAGE_ID_KEY, 0);
 		String messageDetail = intent.getStringExtra(MESSAGE_DETAIL_KEY);
-		int buttons = intent.getIntExtra(BUTTONS_KEY, OK);
+		int mode = intent.getIntExtra(MODE_KEY, MODE_ALERT);
 
 		dialogMessage.setText(getString(messageId));
 		dialogMessageDetail.setText(messageDetail);
-		
-		finishButton.setVisibility(View.GONE);
+
 		okButton.setVisibility(View.GONE);
-		if (buttons == OK) {
+		cancelButton.setVisibility(View.GONE);
+		finishButton.setVisibility(View.GONE);
+		progressIcon.setVisibility(View.GONE);
+		alertIcon.setVisibility(View.GONE);
+
+		switch (mode) {
+		case MODE_ALERT:
+			alertIcon.setVisibility(View.VISIBLE);
 			okButton.setVisibility(View.VISIBLE);
-		} else if (buttons == FINISH) {
+			okButton.setOnClickListener(dismissListener);
+			break;
+		case MODE_CONFIRM:
+			okButton.setVisibility(View.VISIBLE);
+			okButton.setOnClickListener(dismissListener);
+			cancelButton.setVisibility(View.VISIBLE);
+			cancelButton.setOnClickListener(dismissListener);
+			break;
+		case MODE_WATING:
+			progressIcon.setVisibility(View.VISIBLE);
+			//cancelButton.setVisibility(View.VISIBLE);
+			//cancelButton.setOnClickListener(dismissListener);
+			break;
+		case MODE_FINISH:
 			finishButton.setVisibility(View.VISIBLE);
+			finishButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Log.d(TAG, "Task exit,");
+					DialogActivity.this.finish();
+					Transit.exit(self);
+				}
+			});
+			break;
 		}
 	}
+
+	class DismissListener implements OnClickListener {
+		@Override
+		public void onClick(View v) {
+			Log.d(TAG, "Dialog finish,");
+			DialogActivity.this.finish();
+		}
+	};
 
 }
