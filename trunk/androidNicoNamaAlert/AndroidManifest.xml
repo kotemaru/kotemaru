@@ -35,7 +35,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.kotemaru.android.nnalert.RegisterActivity" android:launchMode="singleTop" >
+        <activity android:name="org.kotemaru.android.nnalert.RegisterActivity" android:launchMode="standard" >
         </activity>
         <activity android:name="org.kotemaru.android.nnalert.DialogActivity" android:launchMode="standard" >
         </activity>

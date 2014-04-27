@@ -8,9 +8,10 @@
     <string name="message_doing">処理中…</string>
     <string name="message_finish">登録完了しました。\n完了通知を確認してください。\n※参加コミュニティの変更を行った場合は再登録が必要となります。</string>
     <string name="message_error">エラーが発生しました。</string>
-    <string name="message_registoring">通知サーバに登録中です。\nすぐに処理が終わらない場合は通信回線かサーバに異常があります。</string>
+    <string name="message_registoring">通知サーバに登録中です。\n数秒で終わらない場合は通信回線かサーバに異常があります。</string>
     
     <string name="okButton">確認</string>
+    <string name="finishButton">終了</string>
     
     <string name="mail_address">Mail address</string>
     <string name="password">Password</string>
