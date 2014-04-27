@@ -77,7 +77,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 			Notification notice = builder
 					.setContentTitle(intent.getCharSequenceExtra("community"))
 					.setContentText(String.format(context.getString(R.string.on_live_sub), title))
-					.setSmallIcon(R.drawable.niconama_alert_trim)
+					.setContentIntent(pi)
 					.build();
 			notificationManager.notify(Integer.parseInt(liveId.toString()), notice);
 		} else {

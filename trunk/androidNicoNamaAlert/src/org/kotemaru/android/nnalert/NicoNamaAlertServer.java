@@ -35,8 +35,8 @@ public class NicoNamaAlertServer {
 	private static final String LOGIN1_URL = "https://secure.nicovideo.jp/secure/login?site=nicolive_antenna";
 	private static final String LOGIN2_URL = "http://live.nicovideo.jp/api/getalertstatus";
 
-	// private static final String SERRVER_ADDR = "kote.dip.jp";
-	private static final String SERRVER_ADDR = "192.168.0.2";
+	private static final String SERRVER_ADDR = "kote.dip.jp";
+	//private static final String SERRVER_ADDR = "192.168.0.2";
 	private static final int SERRVER_PORT = 9001;
 
 	private static DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
