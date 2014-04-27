@@ -21,6 +21,7 @@ public class RegisterActivity extends Activity {
 	private EditText mailAddressEdit;
 	private EditText passwordEdit;
 	private Button registerButton;
+	private Button unregisterButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,14 @@ public class RegisterActivity extends Activity {
 		registerButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				register();
+				register(true);
+			}
+		});
+		unregisterButton = (Button) this.findViewById(R.id.unregister);
+		unregisterButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				register(false);
 			}
 		});
 		
@@ -50,7 +58,7 @@ public class RegisterActivity extends Activity {
 		}
 	}
 	
-	public void register() {
+	public void register(boolean isRegister) {
 		String regId = GCMRegistrar.getRegistrationId(this);
 		if (regId == null) return;
 		String mail = mailAddressEdit.getText().toString();
@@ -62,7 +70,10 @@ public class RegisterActivity extends Activity {
 		//editor.putString("pass", pass);
 		editor.commit();
 		
-		NicoNamaAlertServer.registerAsync(getApplicationContext(), regId, mail, pass);
+		NicoNamaAlertServer.registerAsync(getApplicationContext(), isRegister, regId, mail, pass);
+		if (!isRegister) {
+			GCMRegistrar.unregister(this);
+		}
 		//this.finish();
 	}
 

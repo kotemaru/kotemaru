@@ -37,7 +37,7 @@
         </activity>
         <activity android:name="org.kotemaru.android.nnalert.RegisterActivity" android:launchMode="standard" >
         </activity>
-        <activity android:name="org.kotemaru.android.nnalert.DialogActivity" android:launchMode="standard" >
+        <activity android:name="org.kotemaru.android.nnalert.DialogActivity" android:launchMode="singleTop" >
         </activity>
 
         <receiver
