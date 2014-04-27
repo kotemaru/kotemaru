@@ -94,12 +94,11 @@ public class NicoNamaAlert {
 	}
 
 	private void sendToMatchUsers(String liveId, String commId) throws IOException {
-		Map<String, UserInfo> all = Config.getUsers();
-		for (Map.Entry<String, UserInfo> ent : all.entrySet()) {
-			UserInfo uinfo = ent.getValue();
-			// if (uinfo.communities.contains(commId)) {
-			sendToAndroid(uinfo, liveId, commId);
-			// }
+		UserInfo[] all = Config.getUserArray();
+		for (UserInfo uinfo : all) {
+			if (uinfo.communities.contains(commId)) {
+				sendToAndroid(uinfo, liveId, commId);
+			}
 		}
 	}
 
