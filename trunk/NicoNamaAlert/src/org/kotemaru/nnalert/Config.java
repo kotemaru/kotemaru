@@ -18,6 +18,7 @@ public class Config {
 	public static Map<String,UserInfo> users = new HashMap<String,UserInfo>();
 
 	public static class UserInfo {
+		String command;
 		String regId;
 		String mail;
 		Set<String> communities;
@@ -33,6 +34,7 @@ public class Config {
 		}
 	}
 	public static Map<String,UserInfo> getUsers() {
+		// TODO: 同期問題
 		return users;
 	}
 
@@ -79,6 +81,7 @@ public class Config {
 		Xml xml = new Xml(parser);
 
 		UserInfo uinfo = new UserInfo();
+		uinfo.command = xml.getContent("command");
 		uinfo.regId = xml.getContent("regId");
 		uinfo.mail = xml.getContent("mail");
 		uinfo.communities = new HashSet<String>(xml.getContents("communities/community_id"));
@@ -115,5 +118,10 @@ public class Config {
 		return sbuf.toString();
 	}
 
+	public static void removeUserInfo(UserInfo uinfo) throws IOException {
+		File file = new File(getRegistrationDir() + "/" + uinfo.mail);
+		file.delete();
+		users.remove(uinfo.mail);
+	}
 
 }
