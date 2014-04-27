@@ -30,14 +30,14 @@ public class RegistrationServer {
 			try {
 				while (true) {
 					Socket sock = ssock.accept();
-					receiveRegistrationId(sock);
+					doRegister(sock);
 				}
 			} catch (IOException e) {
 				Log.e("AcceptThread", e);
 			}
 		}
 
-		public void receiveRegistrationId(Socket sock) {
+		public void doRegister(Socket sock) {
 			try {
 				InputStream in = sock.getInputStream();
 				OutputStream out = sock.getOutputStream();
@@ -48,13 +48,20 @@ public class RegistrationServer {
 					if (uinfo == null) {
 						throw new Exception("Xml data error.");
 					}
-					Config.saveUserInfo(uinfo);
-					sendTestMessage(uinfo);
+					if ("register".equals(uinfo.command)) {
+						Config.saveUserInfo(uinfo);
+						sendTestMessage("onRegistered", uinfo);
+						Log.d("register user:" + uinfo.mail);
+					} else { // unregister
+						Config.removeUserInfo(uinfo);
+						sendTestMessage("onUnRegistered", uinfo);
+						Log.d("unregister user:" + uinfo.mail);
+					}
 					result = "<?xml version='1.0' encoding='utf-8' ?>"
 							+ "<response_register status='success'>"
 							+ "<userId>" + uinfo.mail + "</userId>"
 							+ "</response_register>";
-					Log.d("receiveRegistrationId:" + uinfo.mail);
+					Log.d("receiveRegistrationId:" + uinfo.regId);
 				} catch (Throwable t) {
 					result = "<?xml version='1.0' encoding='utf-8' ?>"
 							+ "<response_register status='error'>"
@@ -75,10 +82,10 @@ public class RegistrationServer {
 			}
 		}
 
-		public Result sendTestMessage(UserInfo uinfo) throws IOException {
+		public Result sendTestMessage(String type, UserInfo uinfo) throws IOException {
 			Sender sender = new Sender(Config.getApiKey());
 			Message message = new Message.Builder()
-					.addData("messageType", "onRegistered")
+					.addData("messageType", type)
 					.addData("mail", uinfo.mail)
 					.build();
 			Result result = sender.send(message, uinfo.regId, 5);

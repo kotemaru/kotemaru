@@ -11,6 +11,7 @@ import java.net.UnknownHostException;
 import java.util.Map;
 import org.kotemaru.nnalert.Config.UserInfo;
 
+import com.google.android.gcm.server.Constants;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.Result;
 import com.google.android.gcm.server.Sender;
@@ -22,7 +23,7 @@ public class NicoNamaAlert {
 	private final String GETALERTINFO_URL = "http://live.nicovideo.jp/api/getalertinfo";
 	private final String GETSTREAMINFO_URL = "http://live.nicovideo.jp/api/getstreaminfo/lv";
 	private static final int RETRY_COUNT = 5;
-	private static final int SERVER_PORT = 65000;
+	private static final int SERVER_PORT = 9001;
 
 	private static class CommentServerInfo {
 		String addr;
@@ -50,7 +51,6 @@ public class NicoNamaAlert {
 		openCommentServer(info);
 		doRun(info);
 	}
-
 
 	private CommentServerInfo getCommentServer() throws IOException {
 		Xml xml = doPost(GETALERTINFO_URL, null);
@@ -83,12 +83,12 @@ public class NicoNamaAlert {
 		int n;
 		while ((n = in.read(buff)) >= 0) { // TODO:手抜きread
 			String chat = new String(buff, 0, n, UTF8);
-			//Log.d(chat);
+			// Log.d(chat);
 			String content = chat.replaceFirst("^<chat[^>]*>", "").replaceFirst("</chat>\0$", "");
 			if (content.charAt(0) == '<') continue;
 			String[] datas = content.split(",");
 			if (datas.length == 3) {
-				 sendToMatchUsers(datas[0], datas[1]);
+				sendToMatchUsers(datas[0], datas[1]);
 			}
 		}
 	}
@@ -97,17 +97,17 @@ public class NicoNamaAlert {
 		Map<String, UserInfo> all = Config.getUsers();
 		for (Map.Entry<String, UserInfo> ent : all.entrySet()) {
 			UserInfo uinfo = ent.getValue();
-			if (uinfo.communities.contains(commId)) {
-				sendToAndroid(uinfo,liveId, commId);
-			}
+			// if (uinfo.communities.contains(commId)) {
+			sendToAndroid(uinfo, liveId, commId);
+			// }
 		}
 	}
 
-	private Result sendToAndroid(UserInfo uinfo,String liveId, String commId) throws IOException {
+	private Result sendToAndroid(UserInfo uinfo, String liveId, String commId) throws IOException {
 		Xml xml = doPost(GETSTREAMINFO_URL + liveId, null);
 		if (xml == null) return null;
 
-		Log.i("Send to " + uinfo.mail+"="+ liveId);
+		Log.i("Send to " + uinfo.mail + "=" + liveId);
 		Sender sender = new Sender(Config.getApiKey());
 		Message message = new Message.Builder()
 				.addData("messageType", "onLive")
@@ -116,6 +116,21 @@ public class NicoNamaAlert {
 				.addData("title", xml.getContent("streaminfo/title"))
 				.build();
 		Result result = sender.send(message, uinfo.regId, RETRY_COUNT);
+
+		if (result.getMessageId() != null) {
+			String canonicalRegId = result.getCanonicalRegistrationId();
+			if (canonicalRegId != null) {
+				uinfo.regId = canonicalRegId;
+				Config.saveUserInfo(uinfo);
+			}
+		} else {
+			String error = result.getErrorCodeName();
+			Log.d("GCMsend error="+uinfo.mail+" : "+error);
+			if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
+				Config.removeUserInfo(uinfo);
+			}
+		}
+
 		return result;
 	}
 
