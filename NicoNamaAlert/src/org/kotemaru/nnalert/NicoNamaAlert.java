@@ -1,5 +1,6 @@
 package org.kotemaru.nnalert;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -69,7 +70,7 @@ public class NicoNamaAlert {
 		info.sock = new Socket(info.addr, Integer.parseInt(info.port));
 		OutputStream out = info.sock.getOutputStream();
 		// 最後に 0x00 が必要。仕様には書いてない。
-		String data = "<thread thread=\"" + info.thread + "\" version=\"20061206\" res_from=\"-1\"/>\0";
+		String data = "<thread thread=\"" + info.thread + "\" version=\"20061206\" res_from=\"50\"/>\0";
 		Log.d("thread=" + data);
 		out.write(data.getBytes(UTF8));
 		out.flush();
@@ -77,13 +78,12 @@ public class NicoNamaAlert {
 	}
 
 	private void doRun(CommentServerInfo info) throws IOException {
-		InputStream in = info.sock.getInputStream();
+		InputStream in = new BufferedInputStream(info.sock.getInputStream());
 		Log.d("doRun start");
-		byte[] buff = new byte[1500];
-		int n;
-		while ((n = in.read(buff)) >= 0) { // TODO:手抜きread
-			String chat = new String(buff, 0, n, UTF8);
-			// Log.d(chat);
+		StringBuilder sbuf = new StringBuilder(200);
+		String chat;
+		while ((chat = readLine(in, sbuf)) != null) {
+			//Log.d(chat);
 			String content = chat.replaceFirst("^<chat[^>]*>", "").replaceFirst("</chat>\0$", "");
 			if (content.charAt(0) == '<') continue;
 			String[] datas = content.split(",");
@@ -91,6 +91,15 @@ public class NicoNamaAlert {
 				sendToMatchUsers(datas[0], datas[1]);
 			}
 		}
+	}
+	private String readLine(InputStream in, StringBuilder sbuf) throws IOException {
+		sbuf.setLength(0);
+		int ch;
+		while ((ch=in.read()) != '\0') {
+			if (ch == -1) return null;
+			sbuf.append((char)ch);
+		}
+		return sbuf.toString();
 	}
 
 	private void sendToMatchUsers(String liveId, String commId) throws IOException {
