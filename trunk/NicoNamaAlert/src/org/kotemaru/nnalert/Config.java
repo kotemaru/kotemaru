@@ -15,7 +15,8 @@ public class Config {
 
 	public static String configFile = "/var/run/NicoNamaAlert/NicoNamaAlert.properties";
 	public static Properties config = new Properties();
-	public static Map<String,UserInfo> users = new HashMap<String,UserInfo>();
+	public static Map<String, UserInfo> users = new HashMap<String, UserInfo>();
+	public static UserInfo[] userArray;;
 
 	public static class UserInfo {
 		String command;
@@ -32,10 +33,6 @@ public class Config {
 		} catch (IOException e) {
 			// ignore.
 		}
-	}
-	public static Map<String,UserInfo> getUsers() {
-		// TODO: 同期問題
-		return users;
 	}
 
 	public static String getApiKey() {
@@ -54,13 +51,17 @@ public class Config {
 			reader.close();
 		}
 
-		users.clear();
-		File dir = new File(getRegistrationDir());
-		for (String fileName : dir.list()) {
-			if (fileName.indexOf('@') > 0) {
-				UserInfo uinfo = parseUserInfo(new File(dir, fileName));
-				users.put(uinfo.mail, uinfo);
+		synchronized (users) {
+			users.clear();
+			File dir = new File(getRegistrationDir());
+			for (String fileName : dir.list()) {
+				if (fileName.indexOf('@') > 0) {
+					UserInfo uinfo = parseUserInfo(new File(dir, fileName));
+					users.put(uinfo.mail, uinfo);
+					Log.i("Load user " + uinfo.mail);
+				}
 			}
+			updateUserArray();
 		}
 	}
 
@@ -107,7 +108,10 @@ public class Config {
 		} finally {
 			out.close();
 		}
-		users.put(uinfo.mail, uinfo);
+		synchronized (users) {
+			users.put(uinfo.mail, uinfo);
+			updateUserArray();
+		}
 	}
 
 	private static String toXml(Set<String> communities) {
@@ -121,7 +125,27 @@ public class Config {
 	public static void removeUserInfo(UserInfo uinfo) throws IOException {
 		File file = new File(getRegistrationDir() + "/" + uinfo.mail);
 		file.delete();
-		users.remove(uinfo.mail);
+		synchronized (users) {
+			users.remove(uinfo.mail);
+			updateUserArray();
+		}
+	}
+
+	public static UserInfo[] getUserArray() {
+		synchronized (users) {
+			return userArray;
+		}
+	}
+
+	private static void updateUserArray() throws IOException {
+		synchronized (users) {
+			userArray = new UserInfo[users.size()];
+			int i = 0;
+			for (Map.Entry<String, UserInfo> ent : users.entrySet()) {
+				UserInfo uinfo = ent.getValue();
+				userArray[i++] = uinfo;
+			}
+		}
 	}
 
 }
