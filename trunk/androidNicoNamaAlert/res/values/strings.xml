@@ -6,7 +6,7 @@
     <string name="message_pre">アプリケーションの初期化中です。</string>
     <string name="message_top">通知サーバに端末を登録します。\nニコニコ動画のログイン情報を入力し登録してください。</string>
     <string name="message_doing">処理中…</string>
-    <string name="message_finish">登録完了しました。\n完了通知を確認してください。\n※参加コミュニティの変更を行った場合は再登録が必要となります。</string>
+    <string name="message_finish">登録完了しました。\n完了通知を確認してください。\n\n※1:参加コミュニティの変更を行った場合は再登録が必要となります。\n\n※2:アンインストール前には登録解除を必ず行ってください。サーバにデータが残ってしまいます。</string>
     <string name="message_finish_unregister">登録解除が完了しました。</string>
     <string name="message_error">エラーが発生しました。</string>
     <string name="message_registoring">通知サーバに登録中です。\n数秒で終わらない場合は通信回線かサーバに異常があります。時間を置いてやり直してみてください。</string>
