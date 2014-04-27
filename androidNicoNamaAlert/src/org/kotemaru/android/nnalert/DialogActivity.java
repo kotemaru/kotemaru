@@ -18,10 +18,13 @@ public class DialogActivity extends Activity {
 	public static final String BUTTONS_KEY = "BUTTONS";
 	public static final int NONE = 0;
 	public static final int OK = 1;
+	public static final int FINISH = 2;
+
 
 	private TextView dialogMessage;
 	private TextView dialogMessageDetail;
 	private Button okButton;
+	private Button finishButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,15 @@ public class DialogActivity extends Activity {
 			public void onClick(View v) {
 				Log.d(TAG, "Dialog finish,");
 				finish();
+			}
+		});
+		finishButton = (Button) this.findViewById(R.id.finishButton);
+		finishButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				Log.d(TAG, "Task finish,");
+				finish();
+				Util.exit(DialogActivity.this);
 			}
 		});
 	}
@@ -58,10 +70,13 @@ public class DialogActivity extends Activity {
 
 		dialogMessage.setText(getString(messageId));
 		dialogMessageDetail.setText(messageDetail);
-		if (buttons == NONE) {
-			okButton.setVisibility(View.GONE);
-		} else {
+		
+		finishButton.setVisibility(View.GONE);
+		okButton.setVisibility(View.GONE);
+		if (buttons == OK) {
 			okButton.setVisibility(View.VISIBLE);
+		} else if (buttons == FINISH) {
+			finishButton.setVisibility(View.VISIBLE);
 		}
 	}
 

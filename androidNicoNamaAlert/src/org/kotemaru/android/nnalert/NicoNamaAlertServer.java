@@ -35,8 +35,9 @@ public class NicoNamaAlertServer {
 	private static final String LOGIN1_URL = "https://secure.nicovideo.jp/secure/login?site=nicolive_antenna";
 	private static final String LOGIN2_URL = "http://live.nicovideo.jp/api/getalertstatus";
 
-	private static final String SERRVER_ADDR = "wsjs.dip.jp";
-	private static final int SERRVER_PORT = 65000;
+	//private static final String SERRVER_ADDR = "kote.dip.jp";
+	private static final String SERRVER_ADDR = "192.168.0.7";
+	private static final int SERRVER_PORT = 9001;
 
 	private static DocumentBuilderFactory dbfactory = DocumentBuilderFactory.newInstance();
 	private static XPathFactory xpfactory = XPathFactory.newInstance();
@@ -81,7 +82,7 @@ public class NicoNamaAlertServer {
 		protected void onPostExecute(String error) {
 			if (error == null) {
 				Log.d(TAG, "register finish");
-				Util.dialog(context, R.string.message_finish, "");
+				Util.finish(context, "");
 			} else {
 				Log.d(TAG, "register error:"+error);
 				Util.dialog(context, R.string.message_error, error);

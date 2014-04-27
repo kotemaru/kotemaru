@@ -15,6 +15,7 @@ public class RegisterActivity extends Activity {
 	private static final String TAG = MainActivity.class.getSimpleName();
 
 	public static final String MESSAGE_ID_KEY = "MESSAGE_ID_KEY";
+	public static final String EXIT_KEY = "EXIT";
 	public static final String PREF_FILE = "pref";
 
 	private EditText mailAddressEdit;
@@ -40,7 +41,15 @@ public class RegisterActivity extends Activity {
 		mailAddressEdit.setText(pref.getString("mail", ""));
 		//passwordEdit.setText(pref.getString("pass", ""));
 	}
-
+	@Override
+	protected void onResume() {
+		super.onResume();
+		boolean isExit = getIntent().getBooleanExtra(EXIT_KEY, false);
+		if (isExit) {
+			finish();
+		}
+	}
+	
 	public void register() {
 		String regId = GCMRegistrar.getRegistrationId(this);
 		if (regId == null) return;
