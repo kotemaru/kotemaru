@@ -1,5 +1,7 @@
 package org.kotemaru.android.nnalert;
 
+import org.kotemaru.android.nnalert.PrefActivity.Config;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -46,9 +48,13 @@ public class GCMIntentService extends GCMBaseIntentService {
 		CharSequence messageType = intent.getCharSequenceExtra("messageType");
 		Log.i(TAG, "onMessage: msg = " + messageType);
 
+		int defaults = Notification.DEFAULT_LIGHTS;
+		if (Config.isSound()) defaults |= Notification.DEFAULT_SOUND;
+		if (Config.isVibration()) defaults |= Notification.DEFAULT_VIBRATE;
+		
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
 				.setSmallIcon(R.drawable.niconama_alert_trim)
-				.setDefaults(Notification.DEFAULT_ALL);
+				.setDefaults(defaults);
 
 		if ("onRegistered".equals(messageType)) {
 			CharSequence mail = intent.getCharSequenceExtra("mail");
