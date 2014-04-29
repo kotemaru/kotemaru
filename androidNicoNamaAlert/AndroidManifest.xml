@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="8"
+        android:minSdkVersion="11"
         android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -35,9 +35,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="org.kotemaru.android.nnalert.RegisterActivity" android:launchMode="standard" >
+        <activity
+            android:name="org.kotemaru.android.nnalert.RegisterActivity"
+            android:launchMode="standard" >
         </activity>
-        <activity android:name="org.kotemaru.android.nnalert.DialogActivity" android:launchMode="singleTop" >
+        <activity
+            android:name="org.kotemaru.android.nnalert.DialogActivity"
+            android:launchMode="singleTop" >
+        </activity>
+        <activity
+            android:name="org.kotemaru.android.nnalert.PrefActivity"
+            android:launchMode="singleTop" >
         </activity>
 
         <receiver
