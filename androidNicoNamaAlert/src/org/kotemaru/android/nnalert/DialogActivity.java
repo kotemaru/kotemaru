@@ -57,16 +57,19 @@ public class DialogActivity extends Activity {
 	protected void onNewIntent(Intent intent) {
 		Log.d(TAG, "onNewIntent");
 		super.onNewIntent(intent);
+		setIntent(intent);
 		setup(intent);
 	}
 
 	private void setup(Intent intent) {
 		final DialogActivity self = DialogActivity.this;
+		@SuppressWarnings("unused")
 		final NicoNamaAlertApplication application = (NicoNamaAlertApplication)getApplication();
 
 		int messageId = intent.getIntExtra(MESSAGE_ID_KEY, 0);
 		String messageDetail = intent.getStringExtra(MESSAGE_DETAIL_KEY);
 		int mode = intent.getIntExtra(MODE_KEY, MODE_ALERT);
+		@SuppressWarnings("unused")
 		final String taskId = intent.getStringExtra(TASK_ID_KEY);
 
 		dialogMessage.setText(getString(messageId));
