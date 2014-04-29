@@ -1,8 +1,14 @@
 package org.kotemaru.android.nnalert;
 
+import org.kotemaru.android.nnalert.PrefActivity.Config;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,7 +33,8 @@ public class RegisterActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_register);
-
+		Config.init(this);
+		
 		mailAddressEdit = (EditText) this.findViewById(R.id.mail_address);
 		passwordEdit = (EditText) this.findViewById(R.id.password);
 		registerButton = (Button) this.findViewById(R.id.register);
@@ -70,11 +77,36 @@ public class RegisterActivity extends Activity {
 		//editor.putString("pass", pass);
 		editor.commit();
 		
-		NicoNamaAlertServer.registerAsync(getApplicationContext(), isRegister, regId, mail, pass);
+		NicoNamaAlertApplication application = (NicoNamaAlertApplication)getApplication();
+		new RegisterTask(application, isRegister).execute(regId, mail, pass);
+
 		if (!isRegister) {
 			GCMRegistrar.unregister(this);
 		}
 		//this.finish();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		int menuId = item.getItemId();
+		if (menuId == R.id.menu_settings) {
+			Transit.preference(this);
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == R.id.menu_settings) {
+			// nop.
+		}
 	}
 
 }
