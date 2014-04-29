@@ -16,6 +16,7 @@ public class DialogActivity extends Activity {
 
 	public static final String MESSAGE_ID_KEY = "MESSAGE_ID";
 	public static final String MESSAGE_DETAIL_KEY = "MESSAGE_DETAIL";
+	public static final String TASK_ID_KEY = "TASK_ID";
 
 	public static final String MODE_KEY = "MODE";
 	public static final int MODE_ALERT = 1;
@@ -61,10 +62,12 @@ public class DialogActivity extends Activity {
 
 	private void setup(Intent intent) {
 		final DialogActivity self = DialogActivity.this;
-		
+		final NicoNamaAlertApplication application = (NicoNamaAlertApplication)getApplication();
+
 		int messageId = intent.getIntExtra(MESSAGE_ID_KEY, 0);
 		String messageDetail = intent.getStringExtra(MESSAGE_DETAIL_KEY);
 		int mode = intent.getIntExtra(MODE_KEY, MODE_ALERT);
+		final String taskId = intent.getStringExtra(TASK_ID_KEY);
 
 		dialogMessage.setText(getString(messageId));
 		dialogMessageDetail.setText(messageDetail);
@@ -89,8 +92,18 @@ public class DialogActivity extends Activity {
 			break;
 		case MODE_WATING:
 			progressIcon.setVisibility(View.VISIBLE);
-			//cancelButton.setVisibility(View.VISIBLE);
-			//cancelButton.setOnClickListener(dismissListener);
+			/* Note: Socket.connect()は中断不可(timeoutのみ)なのでcancelボタンは付けない。
+			cancelButton.setVisibility(View.VISIBLE);
+			cancelButton.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					Log.d(TAG, "Dialog cancel.");
+					AsyncTask<?,?,?> task = application.getAsyncTask(taskId);
+					if (task != null) ((RegisterTask)task).abort();
+					DialogActivity.this.finish();
+				}
+			});
+			*/
 			break;
 		case MODE_FINISH:
 			finishButton.setVisibility(View.VISIBLE);
