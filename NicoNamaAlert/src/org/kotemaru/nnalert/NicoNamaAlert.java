@@ -70,7 +70,7 @@ public class NicoNamaAlert {
 		info.sock = new Socket(info.addr, Integer.parseInt(info.port));
 		OutputStream out = info.sock.getOutputStream();
 		// 最後に 0x00 が必要。仕様には書いてない。
-		String data = "<thread thread=\"" + info.thread + "\" version=\"20061206\" res_from=\"50\"/>\0";
+		String data = "<thread thread=\"" + info.thread + "\" version=\"20061206\" res_from=\"20\"/>\0";
 		Log.d("thread=" + data);
 		out.write(data.getBytes(UTF8));
 		out.flush();
@@ -120,20 +120,23 @@ public class NicoNamaAlert {
 		Message message = new Message.Builder()
 				.addData("messageType", "onLive")
 				.addData("liveId", liveId)
-				.addData("community", xml.getContent("communityinfo/name"))
-				.addData("title", xml.getContent("streaminfo/title"))
+				.addData("community", ""+xml.getContent("communityinfo/name"))
+				.addData("title", ""+xml.getContent("streaminfo/title"))
 				.build();
 		Result result = sender.send(message, uinfo.regId, RETRY_COUNT);
 
 		if (result.getMessageId() != null) {
 			String canonicalRegId = result.getCanonicalRegistrationId();
+			Log.d("result : " + uinfo.mail + "=" + result.getMessageId());
 			if (canonicalRegId != null) {
+				Log.i("canonicalRegId : " + uinfo.mail + "=" + canonicalRegId);
 				uinfo.regId = canonicalRegId;
-				Config.saveUserInfo(uinfo);
+				// Note: Google BUG. やっちゃいけない。
+				//Config.saveUserInfo(uinfo);
 			}
 		} else {
 			String error = result.getErrorCodeName();
-			Log.d("GCMsend error="+uinfo.mail+" : "+error);
+			Log.i("GCMsend error="+uinfo.mail+" : "+error);
 			if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
 				Config.removeUserInfo(uinfo);
 			}
