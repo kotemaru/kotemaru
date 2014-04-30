@@ -64,7 +64,7 @@ public class PrefActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		fragment = new PrefFragment(this);
+		fragment = new PrefFragment();
 		getFragmentManager().beginTransaction()
 				.replace(android.R.id.content, fragment).commit();
 	}
@@ -77,13 +77,6 @@ public class PrefActivity extends Activity {
 	public static class PrefFragment extends PreferenceFragment
 			implements OnSharedPreferenceChangeListener
 	{
-		private PrefActivity activity;
-		
-		public PrefFragment(PrefActivity activity) {
-			super();
-			this.activity = activity;
-		}
-
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			super.onCreate(savedInstanceState);
@@ -108,7 +101,7 @@ public class PrefActivity extends Activity {
 		@Override
 		public void onSharedPreferenceChanged(SharedPreferences paramSharedPreferences, String paramString) {
 			resetSummary();
-			activity.setChanged(true);
+			((PrefActivity)getActivity()).setChanged(true);
 		}
 
 		// CheckBoxを除く項目のSummaryに現在値を設定する。
