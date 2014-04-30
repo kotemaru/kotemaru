@@ -237,6 +237,10 @@ Googleの作法から外れている場合も有りますので公式文書も�
 
 ##### GCMIntentService.java:
 
+注意事項：クラス名は「GCMIntentService」に固定です。
+クラス名が異なるとレシーバがサービスを起動できなくなりハマります。
+
+
 	package org.kotemaru.sample.gcm.client;
 	
 	import static org.kotemaru.sample.gcm.client.MainActivity.*;
