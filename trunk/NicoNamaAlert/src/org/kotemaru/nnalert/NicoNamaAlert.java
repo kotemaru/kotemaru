@@ -79,25 +79,30 @@ public class NicoNamaAlert {
 
 	private void doRun(CommentServerInfo info) throws IOException {
 		InputStream in = new BufferedInputStream(info.sock.getInputStream());
-		Log.d("doRun start");
+		Log.d("doRun start testMode="+Config.isTestMode());
 		StringBuilder sbuf = new StringBuilder(200);
 		String chat;
 		while ((chat = readLine(in, sbuf)) != null) {
-			//Log.d(chat);
+			if (Config.isTestMode()) Log.d(chat);
 			String content = chat.replaceFirst("^<chat[^>]*>", "").replaceFirst("</chat>\0$", "");
 			if (content.charAt(0) == '<') continue;
 			String[] datas = content.split(",");
 			if (datas.length == 3) {
-				sendToMatchUsers(datas[0], datas[1]);
+				if (Config.isTestMode()) {
+					sendToMatchTest(datas[0], datas[1]);
+				} else {
+					sendToMatchUsers(datas[0], datas[1]);
+				}
 			}
 		}
 	}
+
 	private String readLine(InputStream in, StringBuilder sbuf) throws IOException {
 		sbuf.setLength(0);
 		int ch;
-		while ((ch=in.read()) != '\0') {
+		while ((ch = in.read()) != '\0') {
 			if (ch == -1) return null;
-			sbuf.append((char)ch);
+			sbuf.append((char) ch);
 		}
 		return sbuf.toString();
 	}
@@ -111,17 +116,28 @@ public class NicoNamaAlert {
 		}
 	}
 
+	private void sendToMatchTest(String liveId, String commId) throws IOException {
+		UserInfo[] all = Config.getUserArray();
+		for (UserInfo uinfo : all) {
+			if (liveId.endsWith("0") && uinfo.mail.equals("nico@kotemaru.org")) {
+				sendToAndroid(uinfo, liveId, commId);
+			}
+		}
+	}
+
 	private Result sendToAndroid(UserInfo uinfo, String liveId, String commId) throws IOException {
 		Xml xml = doPost(GETSTREAMINFO_URL + liveId, null);
 		if (xml == null) return null;
+		String title = xml.getContent("streaminfo/title");
+		if (title == null) return null;
 
-		Log.i("Send to " + uinfo.mail + "=" + liveId);
+		Log.i("Send to " + uinfo.mail + "=" + liveId+" : "+uinfo.regId);
 		Sender sender = new Sender(Config.getApiKey());
 		Message message = new Message.Builder()
 				.addData("messageType", "onLive")
 				.addData("liveId", liveId)
-				.addData("community", ""+xml.getContent("communityinfo/name"))
-				.addData("title", ""+xml.getContent("streaminfo/title"))
+				.addData("community", "" + xml.getContent("communityinfo/name"))
+				.addData("title", title)
 				.build();
 		Result result = sender.send(message, uinfo.regId, RETRY_COUNT);
 
@@ -130,13 +146,13 @@ public class NicoNamaAlert {
 			Log.d("result : " + uinfo.mail + "=" + result.getMessageId());
 			if (canonicalRegId != null) {
 				Log.i("canonicalRegId : " + uinfo.mail + "=" + canonicalRegId);
-				uinfo.regId = canonicalRegId;
+				// uinfo.regId = canonicalRegId;
 				// Note: Google BUG. やっちゃいけない。
-				//Config.saveUserInfo(uinfo);
+				// Config.saveUserInfo(uinfo);
 			}
 		} else {
 			String error = result.getErrorCodeName();
-			Log.i("GCMsend error="+uinfo.mail+" : "+error);
+			Log.i("GCMsend error=" + uinfo.mail + " : " + error);
 			if (error.equals(Constants.ERROR_NOT_REGISTERED)) {
 				Config.removeUserInfo(uinfo);
 			}

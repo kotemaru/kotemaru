@@ -67,7 +67,7 @@ public class RegistrationServer {
 							+ "<response_register status='error'>"
 							+ "<error>" + t.getMessage() + "</error>"
 							+ "</response_register>";
-					Log.e("receiveRegistrationId:",t);
+					Log.e("receiveRegistrationId:", t);
 				}
 				out.write(result.getBytes(UTF8));
 				out.flush();

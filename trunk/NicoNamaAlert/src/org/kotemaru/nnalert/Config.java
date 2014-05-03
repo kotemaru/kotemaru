@@ -42,6 +42,12 @@ public class Config {
 	public static String getRegistrationDir() {
 		return config.getProperty("registrationDir");
 	}
+	
+	public static boolean isTestMode() {
+		String str = config.getProperty("testMode");
+		if (str == null) return false;
+		return Boolean.parseBoolean(str);
+	}
 
 	public static void loadConfig() throws IOException {
 		FileReader reader = new FileReader(configFile);
