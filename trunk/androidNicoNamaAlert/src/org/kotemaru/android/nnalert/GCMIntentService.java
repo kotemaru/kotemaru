@@ -34,6 +34,7 @@ public class GCMIntentService extends GCMBaseIntentService {
 	public void onCreate() {
 		Log.i(TAG, "onCreate:");
 		super.onCreate();
+		Config.init(this);
 		notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 
