@@ -7,6 +7,7 @@
     <declare-styleable name="ObiTextView">
         <attr name="color" format="color" />
         <attr name="mode" format="string" />
-    </declare-styleable>
+        <attr name="fontSizeRate" format="float" />
+        </declare-styleable>
 
 </resources>
