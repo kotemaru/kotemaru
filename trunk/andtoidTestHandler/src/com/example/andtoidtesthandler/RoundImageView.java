@@ -53,8 +53,8 @@ public class RoundImageView extends ImageView {
 			if (url.equals(imageUrl)) return;
 			this.setImageDrawable(null);
 			if (imageBitmap != null) imageBitmap.recycle();
-			imageUrl = url;
 			imageBitmap = null;
+			imageUrl = url;
 			if (this.isActivated()) {
 				startLoadImage();
 			}
@@ -73,6 +73,8 @@ public class RoundImageView extends ImageView {
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 		cancelLoadImage();
+		if (imageBitmap != null) imageBitmap.recycle();
+		imageBitmap = null;
 	}
 
 	private void startLoadImage() {
@@ -116,8 +118,11 @@ public class RoundImageView extends ImageView {
 
 		@Override
 		protected void onPostExecute(Bitmap result) {
-			if (this.isCancelled()) return;
-			onLoadImage(result);
+			if (!this.isCancelled()) {
+				onLoadImage(result);
+			} else {
+				result.recycle();
+			}
 		}
 	}
 
