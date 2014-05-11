@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:frfl="http://schemas.android.com/apk/res/com.example.andtoidtesthandler"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent"
+    android:baselineAligned="false" >
 
     <com.example.andtoidtesthandler.FixedAspectFrameLayout
         android:layout_width="0dp"
@@ -31,47 +32,67 @@
             android:id="@+id/imageView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:scaleType="centerCrop"
             android:layout_margin="8dp"
-            android:src="@drawable/test_image" />
-
-        <com.example.andtoidtesthandler.ObiTextView
-            android:id="@+id/textView2"
-             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="TextView"
-            frfl:mode="left"
-            frfl:color="#88fff000" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/waiting" />
 
         <com.example.andtoidtesthandler.ObiTextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TextView"
-            frfl:mode="right"
-            frfl:color="#88ff0000" />
+            android:layout_margin="4dp"
+            android:text="読み切り"
+            android:textSize="8dp"
+            frfl:mode="left"
+            frfl:color="#cc80ff80" />
 
+        <com.example.andtoidtesthandler.ObiTextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="新連載"
+            android:textSize="8dp"
+            frfl:mode="right"
+            frfl:color="#ccffff40" />
 
         <LinearLayout
-            android:gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="8dp"
+            android:gravity="bottom"
             android:orientation="vertical" >
-                    <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/top_content_bg"
-            android:text="TextView" />
-                    <TextView
-            android:id="@+id/textView4"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#aaffffff"
-            android:text="TextView" />
-                    
-        </LinearLayout>
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="4dp"
+                android:background="@drawable/top_content_bg"
+                android:text=""
+                android:textSize="6dp" />
+            
+             <TextView
+                android:id="@+id/textView3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ccffffff"
+                android:text="作者名"
+                android:textSize="6dp" />
 
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ccffffff"
+                android:text="タイトル"
+                android:textSize="10dp" />
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ccffffff"
+                android:text="コメント\nコメント２行目"
+                android:textSize="6dp" />
+        </LinearLayout>
     </com.example.andtoidtesthandler.FixedAspectFrameLayout>
 
 </LinearLayout>

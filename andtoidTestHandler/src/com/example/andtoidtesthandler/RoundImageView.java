@@ -97,6 +97,7 @@ public class RoundImageView extends ImageView {
 		@Override
 		protected Bitmap doInBackground(URL... params) {
 			URL imageUrl = params[0];
+			Log.i(TAG, "Image loading:" + imageUrl);
 			InputStream in;
 			try {
 				in = imageUrl.openStream();
