@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.Path;
+import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ public class ObiTextView extends TextView {
 	private int obiColor;
 	private Object mode;
 	private Path path = new Path();
+	private float fontSizeRate;
 
 	public ObiTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -24,6 +26,7 @@ public class ObiTextView extends TextView {
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ObiTextView);
 		this.mode = a.getString(R.styleable.ObiTextView_mode);
 		this.obiColor = a.getColor(R.styleable.ObiTextView_color, Color.LTGRAY);
+		this.fontSizeRate = a.getFloat(R.styleable.ObiTextView_fontSizeRate, 0.06F);
 		a.recycle();
 	}
 
@@ -32,6 +35,8 @@ public class ObiTextView extends TextView {
 		int sc = canvas.save();
 
 		Paint p = getPaint();
+		p.setTextSize(getWidth() * this.fontSizeRate);
+		p.setTypeface(Typeface.DEFAULT_BOLD);
 		FontMetrics fontMetrics = p.getFontMetrics();
 		String text = getText().toString();
 		float textWidth = p.measureText(text);
