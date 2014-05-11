@@ -12,35 +12,66 @@
         frfl:aspectRate="1.0" >
 
         <com.example.andtoidtesthandler.ObiTextView
-            frfl:mode="left"
-             frfl:color="#fff000"
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="TextView" />
+            android:text="TextView"
+            frfl:mode="left"
+            frfl:color="#fff000" />
     </com.example.andtoidtesthandler.FixedAspectFrameLayout>
 
     <com.example.andtoidtesthandler.FixedAspectFrameLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:background="#000ff0"
+        android:background="#ffffff"
         frfl:aspectRate="1.0" >
-       <com.example.andtoidtesthandler.ObiTextView
-            frfl:mode="left"
-             frfl:color="#fff000"
-            android:id="@+id/textView2"
+
+        <com.example.andtoidtesthandler.RoundImageView
+            android:id="@+id/imageView1"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="TextView" />
-        
+            android:layout_height="wrap_content"
+            android:scaleType="centerCrop"
+            android:layout_margin="8dp"
+            android:src="@drawable/test_image" />
+
         <com.example.andtoidtesthandler.ObiTextView
-             frfl:mode="right"
-             frfl:color="#ff0000"
+            android:id="@+id/textView2"
+             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView"
+            frfl:mode="left"
+            frfl:color="#88fff000" />
+
+        <com.example.andtoidtesthandler.ObiTextView
             android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:text="TextView"
+            frfl:mode="right"
+            frfl:color="#88ff0000" />
+
+
+        <LinearLayout
+            android:gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+                    <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/top_content_bg"
             android:text="TextView" />
+                    <TextView
+            android:id="@+id/textView4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#aaffffff"
+            android:text="TextView" />
+                    
+        </LinearLayout>
+
     </com.example.andtoidtesthandler.FixedAspectFrameLayout>
 
 </LinearLayout>
