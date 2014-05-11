@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:frfl="http://schemas.android.com/apk/res/com.example.andtoidtesthandler"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <com.example.andtoidtesthandler.FixedAspectFrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="#00ff00"
+        frfl:aspectRate="1.0" >
+
+        <com.example.andtoidtesthandler.ObiTextView
+            frfl:mode="left"
+             frfl:color="#fff000"
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView" />
+    </com.example.andtoidtesthandler.FixedAspectFrameLayout>
+
+    <com.example.andtoidtesthandler.FixedAspectFrameLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="#000ff0"
+        frfl:aspectRate="1.0" >
+       <com.example.andtoidtesthandler.ObiTextView
+            frfl:mode="left"
+             frfl:color="#fff000"
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView" />
+        
+        <com.example.andtoidtesthandler.ObiTextView
+             frfl:mode="right"
+             frfl:color="#ff0000"
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="TextView" />
+    </com.example.andtoidtesthandler.FixedAspectFrameLayout>
+
+</LinearLayout>
