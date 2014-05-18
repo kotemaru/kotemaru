@@ -59,6 +59,10 @@ public class MainActivity extends Activity {
 		ListView listView = (ListView) this.findViewById(R.id.listView1);
 		listView.setAdapter(new TestBaseAdapter(this));
 		
+		String[] tabs = new String[] {
+				"TOP", "無料連載", "コミック", "週刊少年ジャンプ"
+		};
+		((CustomTabView) this.findViewById(R.id.tabView)).setTabs(tabs);
 	}
 
 	@Override
