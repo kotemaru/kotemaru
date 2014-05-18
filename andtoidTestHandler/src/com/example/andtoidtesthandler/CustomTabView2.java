@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.FontMetrics;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -86,6 +87,13 @@ public class CustomTabView2 extends TextView {
 		drawTabs(canvas, p, x, 0, true);
 		drawTabs(canvas, p, x - mTabsWidth, 1, true);
 		drawTabs(canvas, p, x + mTabsWidth, 2, true);
+		
+		p.setColor(Color.RED);
+		p.setXfermode(new PorterDuffXfermode(Mode.XOR));
+
+		int rw = mTabRectAbs[mSelectedIndex].width()/2;
+		int ox =  this.getWidth() / 2;
+		canvas.drawRect(ox-rw, 0, ox+rw, 40, p);
 		canvas.restoreToCount(sc);
 	}
 
@@ -106,6 +114,12 @@ public class CustomTabView2 extends TextView {
 		}
 		return x;
 	}
+	
+	public void selectTab(int idx) {
+		mSelectedIndex = idx;
+		setCenter(mTabRectAbs[idx].centerX());
+	}
+
 	private void setCenter(int x) {
 		mCenterX = x;
 		invalidate();
@@ -154,6 +168,7 @@ public class CustomTabView2 extends TextView {
 					//Rect rect = mTabRectAbs[i % mTabs.length];
 					Rect rect = mTabRect[i];
 					int x = rect.centerX();
+					mSelectedIndex = i % mTabs.length;
 					Log.e("DEBUG",mTabs[i % mTabs.length]+":"+x);
 					mAnimeManager.startDest(mTabRect[i].centerX(), mTabRectAbs[i % mTabs.length].centerX());
 				}
