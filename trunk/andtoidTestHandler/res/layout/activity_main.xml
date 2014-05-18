@@ -41,4 +41,12 @@
         android:layout_marginTop="55dp" >
     </ListView>
 
+    <com.example.andtoidtesthandler.CustomTabView
+        android:id="@+id/tabView"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/button1"
+        android:layout_centerHorizontal="true" >
+    </com.example.andtoidtesthandler.CustomTabView>
+
 </RelativeLayout>
