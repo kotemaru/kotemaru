@@ -87,13 +87,7 @@ public class CustomTabView2 extends TextView {
 		drawTabs(canvas, p, x, 0, true);
 		drawTabs(canvas, p, x - mTabsWidth, 1, true);
 		drawTabs(canvas, p, x + mTabsWidth, 2, true);
-		
-		p.setColor(Color.RED);
-		p.setXfermode(new PorterDuffXfermode(Mode.XOR));
-
-		int rw = mTabRectAbs[mSelectedIndex].width()/2;
-		int ox =  this.getWidth() / 2;
-		canvas.drawRect(ox-rw, 0, ox+rw, 40, p);
+		drawMark(canvas, p);
 		canvas.restoreToCount(sc);
 	}
 
@@ -114,6 +108,16 @@ public class CustomTabView2 extends TextView {
 		}
 		return x;
 	}
+	private void drawMark(Canvas canvas, Paint p) {
+		p.setColor(Color.RED);
+		p.setXfermode(new PorterDuffXfermode(Mode.XOR));
+
+		int idx = getCenterTabIndex();
+		mSelectedIndex = idx;
+		int rw = mTabRectAbs[idx].width()/2;
+		int ox =  this.getWidth() / 2;
+		canvas.drawRect(ox-rw, 0, ox+rw, 40, p);
+	}
 	
 	public void selectTab(int idx) {
 		mSelectedIndex = idx;
@@ -132,6 +136,15 @@ public class CustomTabView2 extends TextView {
 			mCenterX = mTabsWidth - mCenterX;
 		}
 		invalidate();
+	}
+	private int getCenterTabIndex() {
+		for (int i = 0; i < mTabRectAbs.length; i++) {
+			Rect rect = mTabRectAbs[i];
+			if (rect.left < mCenterX && mCenterX < rect.right) {
+				return i;
+			}
+		}
+		return mSelectedIndex;
 	}
 
 	@Override
