@@ -64,13 +64,6 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		handler.postDelayed(new Runnable(){
-			@Override
-			public void run() {
-				CustomTabView tabView = (CustomTabView) MainActivity.this.findViewById(R.id.tabView);
-				tabView.setCenter(0);
-			}
-		}, 1000);
 	}
 	
 	private static class TestBaseAdapter extends BaseAdapter {
