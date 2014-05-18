@@ -19,10 +19,11 @@ public class CustomTabView extends HorizontalScrollView {
 	private LinearLayout mLayout;
 	private TextView[][] mTextViews = new TextView[3][];
 	private int mSelectedIndex = 0;
-
-	private final Runnable onUpdateHandler = new Runnable() {
-		public void run() {
-			onUpdate();
+	private AnimeManager mAnimeManager = new AnimeManager();
+	private OnClickListener tagOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View v) {
+			selectTab(v);
 		}
 	};
 
@@ -40,7 +41,7 @@ public class CustomTabView extends HorizontalScrollView {
 	public void setTabs(String[] tabs) {
 		this.removeAllViews();
 
-		mLayout = new LinearLayout(getContext());
+		mLayout = new InnerLayout(getContext());
 		mLayout.setOrientation(LinearLayout.HORIZONTAL);
 		for (int j = 0; j < 3; j++) {
 			mTextViews[j] = new TextView[tabs.length];
@@ -48,7 +49,7 @@ public class CustomTabView extends HorizontalScrollView {
 				TextView view = new TextView(this.getContext());
 				view.setText(tabs[i]);
 				view.setPadding(30, 0, 30, 0);
-				view.setOnClickListener(new TagOnClickListener(i));
+				view.setOnClickListener(tagOnClickListener);
 				mLayout.addView(view);
 				mTextViews[j][i] = view;
 			}
@@ -58,29 +59,38 @@ public class CustomTabView extends HorizontalScrollView {
 
 	@Override
 	public void onWindowFocusChanged(boolean hasFocus) {
+		Log.d(TAG, "onWindowFocusChanged:" + hasFocus);
 		super.onWindowFocusChanged(hasFocus);
-		if (this.getWidth() > mLayout.getWidth() / 3) {
+		if (this.getWidth() > mLayout.getWidth() / 3 + 50) {
 			int gap = this.getWidth() - mLayout.getWidth() / 3;
-			int margin = (gap / mTextViews[0].length-1) / 2;
-			
+			int margin = (gap / mTextViews[0].length - 1) / 2 + 10;
+
 			for (int j = 0; j < 3; j++) {
 				for (int i = 0; i < mTextViews[j].length; i++) {
-					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mTextViews[j][i].getLayoutParams();;
+					LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) mTextViews[j][i].getLayoutParams();
 					params.setMargins(margin, 0, margin, 0);
 				}
 			}
 		}
 	}
+	@Override
+	protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+		int viewWidth = mLayout.getWidth() / 3;
+		int maxPosition = viewWidth * 2;
+		int minPosition = viewWidth - this.getWidth();
+		// Log.e("DEBUG", "onScrollChanged:"+l+","+viewWidth+","+maxPosition);
 
-	public int getCenterX() {
-		int curX = computeHorizontalScrollOffset();
-		return curX + this.getWidth() / 2;
+		if (l > maxPosition) {
+			scrollTo(l - viewWidth, 0);
+		} else if (l < minPosition) {
+			scrollTo(viewWidth + l, 0);
+		}
 	}
 
-	public void setCenter(int idx) {
-		setCenter(mTextViews[1][idx]);
+	public void selectTab(int idx) {
+		selectTab(mTextViews[1][idx]);
 	}
-	public void setCenter(View view) {
+	public void selectTab(View view) {
 		int index = 0;
 		for (int j = 0; j < 3; j++) {
 			for (int i = 0; i < mTextViews[j].length; i++) {
@@ -90,23 +100,15 @@ public class CustomTabView extends HorizontalScrollView {
 			}
 		}
 		mSelectedIndex = index;
-
-		// Log.e("DEBUTG",view.getLeft()+","+view.getWidth()+","+this.getWidth());
 		int dest = view.getLeft() + view.getWidth() / 2 - this.getWidth() / 2;
-		startDest(dest, 5.0F);
-		// postScrollTo(center, 0);
+		mAnimeManager.startDest(dest);
 	}
-
-	private class TagOnClickListener implements OnClickListener {
-		private int index;
-
-		public TagOnClickListener(int index) {
-			this.index = index;
-		}
-
-		@Override
-		public void onClick(View v) {
-			setCenter(v);
+	public void refreshSelected() {
+		// Log.e("DEBUG", "onProgressAnime:"+percent);
+		for (int j = 0; j < 3; j++) {
+			for (int i = 0; i < mTextViews[j].length; i++) {
+				mTextViews[j][i].setBackgroundColor((i == mSelectedIndex) ? Color.RED : Color.WHITE);
+			}
 		}
 	}
 
@@ -130,108 +132,105 @@ public class CustomTabView extends HorizontalScrollView {
 		@Override
 		public boolean onScroll(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			// Log.d(TAG, "onScroll:" + velocityX);
-			postScrollBy((int) velocityX, 0);
+			final int x = (int) velocityX;
+			getHandler().postDelayed(new Runnable() {
+				public void run() {
+					scrollBy(x, 0);
+				}
+			}, 1);
 			return true;
 		}
 		@Override
 		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
 			Log.d(TAG, "onFling:" + velocityX);
-			startFling(-velocityX / 100);
+			mAnimeManager.startFling(-velocityX / 100);
 			return false;
 		}
 		@Override
 		public boolean onDown(MotionEvent e) {
 			Log.d(TAG, "onDown:" + e);
-			stopAnime();
+			mAnimeManager.stop();
 			return false;
 		}
-
 	};
 
-	@Override
-	protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-		int viewWidth = mLayout.getWidth() / 3;
-		int maxPosition = viewWidth * 2;
-		int minPosition = viewWidth - this.getWidth();
-
-		if (l > maxPosition) {
-			scrollTo(l - viewWidth, 0);
-		} else if (l < minPosition) {
-			scrollTo(viewWidth + l, 0);
+	private class InnerLayout extends LinearLayout {
+		public InnerLayout(Context context) {
+			super(context);
+			super.setOrientation(LinearLayout.HORIZONTAL);
+		}
+		@Override
+		public void onSizeChanged(int w, int h, int oldw, int oldh) {
+			Log.d(TAG, "onSizeChanged:" + w);
+			super.onSizeChanged(w, h, oldw, oldh);
+			getHandler().postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					selectTab(mSelectedIndex);
+				};
+			}, 1);
 		}
 	}
 
-	private void postScrollTo(final int x, final int y) {
-		getHandler().postDelayed(new Runnable() {
+	private class AnimeManager {
+		private static final int ANIME_INTERVAL = 50; // ms
+		private static final int ANIME_NONE = 0;
+		private static final int ANIME_FLING = 1;
+		private static final int ANIME_DEST = 2;
+		private int mAnimeMode = ANIME_NONE;
+		private float mDelta = 0;
+		private int mRemainOrg = 0;
+		private int mRemain = 0;
+
+		private final Runnable onUpdateHandler = new Runnable() {
 			public void run() {
-				scrollTo(x, y);
+				onUpdate();
 			}
-		}, 1);
-	}
-	private void postScrollBy(final int x, final int y) {
-		getHandler().postDelayed(new Runnable() {
-			public void run() {
-				scrollBy(x, y);
-			}
-		}, 1);
-	}
+		};
 
-	private static final int ANIME_NONE = 0;
-	private static final int ANIME_FLING = 1;
-	private static final int ANIME_DEST = 2;
-	private int mAnimeMode = ANIME_NONE;
-	private float mDelta = 0;
-	private int mRemainOrg = 0;
-	private int mRemain = 0;
-	private int ANIME_INTERVAL = 50;
+		private void startFling(float delta) {
+			mAnimeMode = ANIME_FLING;
+			mDelta = delta;
+			getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
+		}
+		private void startDest(int dest) {
+			mAnimeMode = ANIME_DEST;
+			mRemainOrg = mRemain = dest - computeHorizontalScrollOffset();
+			getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
+		}
+		private void stop() {
+			mAnimeMode = ANIME_NONE;
+		}
 
-	private void startFling(float delta) {
-		mAnimeMode = ANIME_FLING;
-		mDelta = delta;
-		getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
-	}
-	private void startDest(int dest, float delta) {
-		mAnimeMode = ANIME_DEST;
-		mRemainOrg = mRemain = dest - computeHorizontalScrollOffset();
-		mDelta = delta;
-		getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
-	}
-	private void stopAnime() {
-		mAnimeMode = ANIME_NONE;
-	}
-
-	private void onUpdate() {
-		if (mAnimeMode == ANIME_FLING) {
-			if (Math.abs(mDelta) > 1.0F) {
-				scrollBy((int) mDelta, 0);
-				mDelta = mDelta * 0.95F;
-				getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
-			} else {
-				onProgressAnime(1.0F);
-				mAnimeMode = ANIME_NONE;
-			}
-		} else if (mAnimeMode == ANIME_DEST) {
-			int delta = mRemain / 5;
-			if (Math.abs(delta) > 1.0F) {
-				scrollBy(delta, 0);
-				mRemain -= delta;
-				getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
-				onProgressAnime(1.0F - ((float) mRemain / mRemainOrg));
-			} else {
-				// scrollTo(mDestPosition, 0);
-				onProgressAnime(1.0F);
-				mAnimeMode = ANIME_NONE;
+		private void onUpdate() {
+			if (mAnimeMode == ANIME_FLING) {
+				if (Math.abs(mDelta) > 1.0F) {
+					scrollBy((int) mDelta, 0);
+					mDelta = mDelta * 0.95F;
+					getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
+				} else {
+					onProgressAnime(1.0F);
+					mAnimeMode = ANIME_NONE;
+				}
+			} else if (mAnimeMode == ANIME_DEST) {
+				int delta = mRemain / 5;
+				if (Math.abs(delta) > 1.0F) {
+					scrollBy(delta, 0);
+					mRemain -= delta;
+					getHandler().postDelayed(onUpdateHandler, ANIME_INTERVAL);
+					onProgressAnime(1.0F - ((float) mRemain / mRemainOrg));
+				} else {
+					// scrollTo(mDestPosition, 0);
+					onProgressAnime(1.0F);
+					mAnimeMode = ANIME_NONE;
+				}
 			}
 		}
-	}
 
-	private void onProgressAnime(float percent) {
-		// Log.e("DEBUG", "onProgressAnime:"+percent);
-		if (percent < 0.9F) return;
-		for (int j = 0; j < 3; j++) {
-			for (int i = 0; i < mTextViews[j].length; i++) {
-				mTextViews[j][i].setBackgroundColor((i == mSelectedIndex) ? Color.RED : Color.WHITE);
-			}
+		private void onProgressAnime(float percent) {
+			// Log.e("DEBUG", "onProgressAnime:"+percent);
+			if (percent < 0.9F) return;
+			refreshSelected();
 		}
 	}
 }
