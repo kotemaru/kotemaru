@@ -15,7 +15,7 @@ import android.widget.TextView;
 public class CustomTabView extends HorizontalScrollView {
 	public static final String TAG = CustomTabView.class.getSimpleName();
 
-	private GestureDetector gestureDetector;
+	private GestureDetector mGestureDetector;
 	private LinearLayout mLayout;
 	private TextView[][] mTextViews = new TextView[3][];
 	private int mSelectedIndex = 0;
@@ -29,13 +29,8 @@ public class CustomTabView extends HorizontalScrollView {
 
 	public CustomTabView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		this.gestureDetector = new GestureDetector(context, onGestureListener);
-		super.setSmoothScrollingEnabled(true);
+		this.mGestureDetector = new GestureDetector(context, onGestureListener);
 
-		String[] tabs = new String[] {
-				"TOP", "無料連載", "コミック", "週刊少年ジャンプ"
-		};
-		setTabs(tabs);
 	}
 
 	public void setTabs(String[] tabs) {
@@ -115,7 +110,7 @@ public class CustomTabView extends HorizontalScrollView {
 	@Override
 	public boolean onTouchEvent(MotionEvent ev) {
 		// Log.d(TAG, "onTouchEvent:" + ev);
-		gestureDetector.onTouchEvent(ev);
+		mGestureDetector.onTouchEvent(ev);
 		return true;
 	}
 
