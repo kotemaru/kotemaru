@@ -43,7 +43,7 @@ public class CustomTabView extends HorizontalScrollView {
 			for (int i = 0; i < tabs.length; i++) {
 				TextView view = new TextView(this.getContext());
 				view.setText(tabs[i]);
-				view.setPadding(30, 0, 30, 0);
+				view.setPadding(20, 0, 20, 0);
 				view.setOnClickListener(tagOnClickListener);
 				mLayout.addView(view);
 				mTextViews[j][i] = view;
