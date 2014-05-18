@@ -3,6 +3,7 @@ package com.example.andtoidtesthandler;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,8 @@ import android.widget.Button;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
+	
+	Handler handler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,18 @@ public class MainActivity extends Activity {
 		
 	}
 
+	@Override
+	protected void onResume() {
+		super.onResume();
+		handler.postDelayed(new Runnable(){
+			@Override
+			public void run() {
+				CustomTabView tabView = (CustomTabView) MainActivity.this.findViewById(R.id.tabView);
+				tabView.setCenter(0);
+			}
+		}, 1000);
+	}
+	
 	private static class TestBaseAdapter extends BaseAdapter {
 		private Context context;
 		private LayoutInflater mInflater;
