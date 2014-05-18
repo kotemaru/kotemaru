@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
-	
+
 	Handler handler = new Handler();
 
 	@Override
@@ -55,21 +55,21 @@ public class MainActivity extends Activity {
 				});
 			}
 		});
-		
+
 		ListView listView = (ListView) this.findViewById(R.id.listView1);
 		listView.setAdapter(new TestBaseAdapter(this));
-		
+
 		String[] tabs = new String[] {
 				"TOP", "無料連載", "コミック", "週刊少年ジャンプ"
 		};
-		((CustomTabView) this.findViewById(R.id.tabView)).setTabs(tabs);
+		((CustomTabView2) this.findViewById(R.id.tabView)).setTabs(tabs);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 	}
-	
+
 	private static class TestBaseAdapter extends BaseAdapter {
 		private Context context;
 		private LayoutInflater mInflater;

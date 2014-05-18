@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class ObiTextView extends TextView {
 	private static final String LEFT = "left";
 	private static final String RIGHT = "right";
-	
+
 	private int obiColor;
 	private Object mode;
 	private Path path = new Path();
@@ -22,7 +22,7 @@ public class ObiTextView extends TextView {
 
 	public ObiTextView(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		
+
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ObiTextView);
 		this.mode = a.getString(R.styleable.ObiTextView_mode);
 		this.obiColor = a.getColor(R.styleable.ObiTextView_color, Color.LTGRAY);
@@ -40,50 +40,49 @@ public class ObiTextView extends TextView {
 		FontMetrics fontMetrics = p.getFontMetrics();
 		String text = getText().toString();
 		float textWidth = p.measureText(text);
-		
-		//canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
+
+		// canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
 		if (LEFT.equals(mode)) {
 			// 左上斜め
-			float baseX = getWidth()/2-textWidth/2;
-			float baseY = getHeight()*0.05F;
-			canvas.rotate(-45, getWidth()/2, getHeight()/2);
+			float baseX = getWidth() / 2 - textWidth / 2;
+			float baseY = getHeight() * 0.05F;
+			canvas.rotate(-45, getWidth() / 2, getHeight() / 2);
 			p.setColor(obiColor);
-			canvas.drawRect(0, baseY+fontMetrics.top, getWidth(), baseY+fontMetrics.bottom, p);
+			canvas.drawRect(0, baseY + fontMetrics.top, getWidth(), baseY + fontMetrics.bottom, p);
 			p.setColor(this.getCurrentTextColor());
 			canvas.drawText(text, baseX, baseY, p);
 		} else if (RIGHT.equals(mode)) {
 			// 右上
 			final float scale = getContext().getResources().getDisplayMetrics().density;
 			float paddX = (4.0F * scale);
-			float baseX = getWidth()-textWidth-paddX * 3;
-			float baseY = getHeight()*0.3F;
+			float baseX = getWidth() - textWidth - paddX * 3;
+			float baseY = getHeight() * 0.3F;
 			p.setColor(obiColor);
-			canvas.drawRect(baseX-paddX, baseY+fontMetrics.top, getWidth()-paddX, baseY+fontMetrics.bottom, p);
+			canvas.drawRect(baseX - paddX, baseY + fontMetrics.top, getWidth() - paddX, baseY + fontMetrics.bottom, p);
 
 			// 折り返しの三角形。
 			p.setColor(toDarkColor(obiColor));
 			p.setStyle(Paint.Style.FILL);
 			path.reset();
-			path.moveTo(getWidth()-paddX, baseY+fontMetrics.bottom);
-			path.lineTo(getWidth()-paddX*2, baseY+fontMetrics.bottom);
-			path.lineTo(getWidth()-paddX*2, baseY+fontMetrics.bottom+paddX);
-			canvas.drawPath(path,p);
-			
+			path.moveTo(getWidth() - paddX, baseY + fontMetrics.bottom);
+			path.lineTo(getWidth() - paddX * 2, baseY + fontMetrics.bottom);
+			path.lineTo(getWidth() - paddX * 2, baseY + fontMetrics.bottom + paddX);
+			canvas.drawPath(path, p);
+
 			p.setColor(this.getCurrentTextColor());
 			canvas.drawText(text, baseX, baseY, p);
 		}
-		
+
 		canvas.restoreToCount(sc);
 	}
-	
+
 	private int toDarkColor(int color) {
 		int a = (color >> 24) & 0x0ff;
-		int r = (int)(((color >> 16) & 0x0ff) * 0.7);
-		int g = (int)(((color >> 8) & 0x0ff)  * 0.7);
-		int b = (int)(((color >> 0) & 0x0ff) * 0.7);
-		
-		return a<<24 | r<<16 | g << 8 | b;
+		int r = (int) (((color >> 16) & 0x0ff) * 0.7);
+		int g = (int) (((color >> 8) & 0x0ff) * 0.7);
+		int b = (int) (((color >> 0) & 0x0ff) * 0.7);
+
+		return a << 24 | r << 16 | g << 8 | b;
 	}
-	
 
 }
