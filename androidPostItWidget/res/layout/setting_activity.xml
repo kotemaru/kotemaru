@@ -37,7 +37,7 @@
         android:layout_marginTop="@dimen/base_margin"
         android:text="@string/ctrl_action" />
 
-    <org.kotemaru.android.postit.widget.CustomRadioGroup
+    <org.kotemaru.android.postit.widget.RadioLayout
         android:id="@+id/ctrl_action_radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/double_tap" />
         </org.kotemaru.android.postit.widget.RadioItem>
-    </org.kotemaru.android.postit.widget.CustomRadioGroup>
+    </org.kotemaru.android.postit.widget.RadioLayout>
 
     <TextView
         android:layout_width="wrap_content"

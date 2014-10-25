@@ -55,15 +55,15 @@ public class RadioItem extends FrameLayout {
 	}
 
 	private void selectMe() {
-		CustomRadioGroup group = getRadioGroup();
+		RadioLayout group = getRadioGroup();
 		if (group == null) return;
 		group.onSelect(this);
 	}
-	private CustomRadioGroup getRadioGroup() {
+	private RadioLayout getRadioGroup() {
 		ViewParent parent = this.getParent();
 		while (parent != null) {
-			if (parent instanceof CustomRadioGroup) {
-				return (CustomRadioGroup) parent;
+			if (parent instanceof RadioLayout) {
+				return (RadioLayout) parent;
 			}
 			parent = parent.getParent();
 		}

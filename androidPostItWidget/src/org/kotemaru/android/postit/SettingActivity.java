@@ -1,7 +1,7 @@
 package org.kotemaru.android.postit;
 
 import org.kotemaru.android.postit.util.Util;
-import org.kotemaru.android.postit.widget.CustomRadioGroup;
+import org.kotemaru.android.postit.widget.RadioLayout;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +20,7 @@ public class SettingActivity extends Activity {
 	private WallpaperManager mWallpaperManager;
 	private Button mChoosePictue;
 	private Button mChoosePictue2;
-	private CustomRadioGroup mCtrlActionRadioGroup;
+	private RadioLayout mCtrlActionRadioGroup;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,7 +49,7 @@ public class SettingActivity extends Activity {
 				Launcher.startChoosePicture2(SettingActivity.this);
 			}
 		});
-		mCtrlActionRadioGroup = (CustomRadioGroup) findViewById(R.id.ctrl_action_radio_group);
+		mCtrlActionRadioGroup = (RadioLayout) findViewById(R.id.ctrl_action_radio_group);
 	}
 
 	private void fiastBootInitialize() {

@@ -16,7 +16,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 
 public class PostItWallpaper extends WallpaperService {
@@ -24,7 +23,7 @@ public class PostItWallpaper extends WallpaperService {
 
 	private int mStatusBarHeight;
 	private Rect mBounds;
-	private CtrlPanel mCtrlPanel;
+	private PostItTray mPostItTray;
 	private PostItViewManager mPostItViewManager;
 	private Settings mSettings;
 	private DrawEngine mEngine;
@@ -35,15 +34,15 @@ public class PostItWallpaper extends WallpaperService {
 		super.onCreate();
 		mStatusBarHeight = Util.getStatusBarHeight(this);
 		Point size = Util.getDisplaySize(this);
-		mBounds = new Rect(0,  0, size.x, size.y - mStatusBarHeight);
+		mBounds = new Rect(0, 0, size.x, size.y - mStatusBarHeight);
 
-		mCtrlPanel = CtrlPanel.create(this);
+		mPostItTray = PostItTray.create(this);
 		mPostItViewManager = new PostItViewManager(this);
 		mSettings = new Settings(this).load();
 
-		mCtrlPanel.hide();
+		mPostItTray.hide();
 	}
-	
+
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null) return super.onStartCommand(intent, flags, startId);
@@ -67,10 +66,13 @@ public class PostItWallpaper extends WallpaperService {
 		mEngine = new DrawEngine();
 		return mEngine;
 	}
-	
-	
-	public CtrlPanel getCtrlPanel() {
-		return this.mCtrlPanel;
+
+	public Rect getBounds() {
+		return mBounds;
+	}
+
+	public PostItTray getPostItTray() {
+		return mPostItTray;
 	}
 
 	public PostItViewManager getPostItViewManager() {
@@ -86,6 +88,7 @@ public class PostItWallpaper extends WallpaperService {
 
 	public void setRaisePostIt(boolean b) {
 		this.mIsRaisePostIt = b;
+		if (mEngine == null) return;
 		mEngine.update();
 	}
 	public boolean isRaisePostIt() {
@@ -96,12 +99,8 @@ public class PostItWallpaper extends WallpaperService {
 		return mEngine.mVisible;
 	}
 	public void update() {
-		if (mEngine == null) return ;
+		if (mEngine == null) return;
 		mEngine.update();
-	}
-
-	public Rect getBounds() {
-		return mBounds;
 	}
 
 	class DrawEngine extends Engine {
@@ -114,31 +113,6 @@ public class PostItWallpaper extends WallpaperService {
 		private long mLastTapTime = -1;
 
 		DrawEngine() {
-		}
-
-		public Bitmap getBackgroundBitmap() {
-			String uri = mSettings.getBackgroundUri(System.currentTimeMillis());
-			if (uri == null) return null;
-			if (uri.equals(mBackgroundUri)) return mBackground;
-			mBackgroundUri = uri;
-			
-			mBackground = null;
-			try {
-				Point size = Util.getDisplaySize(PostItWallpaper.this);
-				size.y -= mStatusBarHeight;
-				Bitmap bitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
-				if (bitmap == null) return null;
-				// TODO:crop			
-				//Bitmap.createBitmap(bitmap,0,0, width, height);
-				float aspect = (float)bitmap.getWidth()/(float)bitmap.getHeight();
-				int w = (int) (size.y * aspect);
-				int h = size.y;
-				mBackground = Bitmap.createScaledBitmap(bitmap, w, h, true);
-				bitmap.recycle();
-			} catch (IOException e) {
-				Log.e(TAG,"setBackgroundUri:"+e);
-			}
-			return mBackground;
 		}
 
 		public void update() {
@@ -169,29 +143,23 @@ public class PostItWallpaper extends WallpaperService {
 		}
 
 		@Override
-		public void onTouchEvent(MotionEvent ev) {
-			// Log.e("DEBIG","onTouchEvent:"+ev);
-		}
-
-		@Override
 		public Bundle onCommand(String action, int x, int y, int z, Bundle extras, boolean resultRequested) {
 			if (mSettings.isDoubleTapCtrlAction()) {
 				if (mLastTapTime > 0) {
 					long time = System.currentTimeMillis() - mLastTapTime;
 					if (time < 400) {
-						mCtrlPanel.toggle();
+						mPostItTray.toggle();
 					}
 				}
 				mLastTapTime = System.currentTimeMillis();
 			} else {
-				mCtrlPanel.toggle();
+				mPostItTray.toggle();
 			}
 
 			return super.onCommand(action, x, y, z, extras, resultRequested);
 		}
 
-
-		void drawFrame() {
+		private void drawFrame() {
 			final SurfaceHolder holder = getSurfaceHolder();
 
 			Canvas canvas = null;
@@ -203,7 +171,7 @@ public class PostItWallpaper extends WallpaperService {
 					canvas.translate(0.0F, (float) mStatusBarHeight);
 					Bitmap bgBitmap = getBackgroundBitmap();
 					if (bgBitmap != null) {
-						int rx = (bgBitmap.getWidth() - canvas.getWidth())/2;
+						int rx = (bgBitmap.getWidth() - canvas.getWidth()) / 2;
 						canvas.drawBitmap(bgBitmap, -rx, 0, mPaint);
 					}
 					canvas.saveLayerAlpha(0, 0, canvas.getWidth(), canvas.getHeight(), ALPHA, Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
@@ -227,6 +195,31 @@ public class PostItWallpaper extends WallpaperService {
 				postItView.draw(canvas);
 				canvas.restoreToCount(save);
 			}
+		}
+
+		private Bitmap getBackgroundBitmap() {
+			String uri = mSettings.getBackgroundUri(System.currentTimeMillis());
+			if (uri == null) return null;
+			if (uri.equals(mBackgroundUri)) return mBackground;
+			mBackgroundUri = uri;
+
+			mBackground = null;
+			try {
+				Point size = Util.getDisplaySize(PostItWallpaper.this);
+				size.y -= mStatusBarHeight;
+				Bitmap bitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
+				if (bitmap == null) return null;
+				// TODO:crop
+				// Bitmap.createBitmap(bitmap,0,0, width, height);
+				float aspect = (float) bitmap.getWidth() / (float) bitmap.getHeight();
+				int w = (int) (size.y * aspect);
+				int h = size.y;
+				mBackground = Bitmap.createScaledBitmap(bitmap, w, h, true);
+				bitmap.recycle();
+			} catch (IOException e) {
+				Log.e(TAG, "setBackgroundUri:" + e);
+			}
+			return mBackground;
 		}
 
 	}
