@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="RadioItem">
+        <attr name="value" format="string" />
+        <attr name="value_int" format="integer" />
+        <attr name="value_float" format="float" />
+        <attr name="value_bool" format="boolean" />
+    </declare-styleable>
+
+</resources>

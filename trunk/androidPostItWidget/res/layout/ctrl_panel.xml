@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#44000000" >
+
+    <LinearLayout
+        android:id="@+id/inner_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:background="@drawable/ctrl_panel_bg"
+        android:orientation="horizontal"
+        android:padding="4dp" >
+
+        <ImageView
+            android:id="@+id/post_it_blue"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/post_it_blue" />
+
+        <ImageView
+            android:id="@+id/post_it_green"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/post_it_green" />
+
+        <ImageView
+            android:id="@+id/post_it_yellow"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/post_it_yellow" />
+
+        <ImageView
+            android:id="@+id/post_it_pink"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/post_it_pink" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:id="@+id/layer"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:padding="4dp"
+            android:scaleType="fitXY"
+            android:src="@drawable/layer_1" />
+
+        <ImageView
+            android:id="@+id/trash"
+            android:layout_width="@dimen/icon_size"
+            android:layout_height="@dimen/icon_size"
+            android:layout_margin="4dp"
+            android:contentDescription="@null"
+            android:scaleType="fitXY"
+            android:src="@drawable/trash_white" />
+    </LinearLayout>
+
+</FrameLayout>
