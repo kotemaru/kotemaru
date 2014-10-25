@@ -3,6 +3,7 @@ package org.kotemaru.android.postit;
 import org.kotemaru.android.postit.AnimFactory.AnimEndListener;
 import org.kotemaru.android.postit.util.Util;
 
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.Context;
 import android.graphics.Point;
@@ -17,79 +18,88 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.widget.ImageView;
 
-public class CtrlPanel {
+/**
+ * 付箋制御用の画面。
+ * <li>ホーム画面にオーバレイ表示する。必要のない時は非表示。
+ * <li>付箋の新規作成、削除、表示モード変更を行うアイコンを配置する。
+ * <li>タッチイベントを受け取るためサイズは全画面となる。
+ * <li>何も表示していない部分も半透明にして暗くする。（ユーザが混乱しないように）
+ * <li>
+ * @author kotemaru.org
+ */
+public class PostItTray {
 	private PostItWallpaper mPostItWallpaper;
-	private View mFrame;
-	private View mInnerLayout;
+	private View mFullScreenFrame;
+	private View mTrayLayout;
+	private ImageView mLayer;
 	private ImageView mTrash;
-	private Animation mFadeOut;
-	private Animation mFadeIn;
+	private Animation mFadeOutAnim;
+	private Animation mFadeInAnim;
 
-	public static CtrlPanel create(PostItWallpaper postItWallpaper) {
-		CtrlPanel ctrlPanel = new CtrlPanel(postItWallpaper);
+	public static PostItTray create(PostItWallpaper postItWallpaper) {
+		PostItTray postItTray = new PostItTray(postItWallpaper);
 		WindowManager.LayoutParams params = Util.geWindowLayoutParams();
 		params.width = WindowManager.LayoutParams.MATCH_PARENT;
 		params.height = WindowManager.LayoutParams.MATCH_PARENT;
 		params.x = 0;
 		params.y = 0;
 		WindowManager wm = (WindowManager) postItWallpaper.getSystemService(Context.WINDOW_SERVICE);
-		wm.addView(ctrlPanel.getView(), params);
-		return ctrlPanel;
+		wm.addView(postItTray.getView(), params);
+		return postItTray;
 	}
 
-	public CtrlPanel(PostItWallpaper postItWallpaper) {
+	public PostItTray(PostItWallpaper postItWallpaper) {
 		final Context context = postItWallpaper;
 		mPostItWallpaper = postItWallpaper;
 		LayoutInflater inflater = LayoutInflater.from(context);
-		mFrame = inflater.inflate(R.layout.ctrl_panel, null);
-		mInnerLayout = mFrame.findViewById(R.id.inner_layout);
-		
-		mFadeOut = AnimFactory.getFedeOut(context, new AnimEndListener(){
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				mFrame.setVisibility(View.GONE);
-			}
-		});
-		mFadeIn = AnimFactory.getFedeIn(context, new AnimEndListener(){
-			@Override
-			public void onAnimationEnd(Animation animation) {
-				if (!mPostItWallpaper.isVisible()) {
-					mFrame.setVisibility(View.GONE);
-				}
-			}
-		});
+		mFullScreenFrame = inflater.inflate(R.layout.post_it_tray, null);
+		mTrayLayout = mFullScreenFrame.findViewById(R.id.tray);
 
-		mFrame.setOnClickListener(new OnClickListener() {
+		mFullScreenFrame.setOnClickListener(new OnClickListener() {
 			// @Override
 			public void onClick(View view) {
 				hide();
 			}
 		});
+		mFullScreenFrame.setOnDragListener(mNewPostItDropListener);
 
-		final ImageView layer = (ImageView) mFrame.findViewById(R.id.layer);
-		layer.setOnClickListener(new OnClickListener() {
+		setupNewPostItDragStartListener(R.id.post_it_blue, PostItColor.BLUE);
+		setupNewPostItDragStartListener(R.id.post_it_green, PostItColor.GREEN);
+		setupNewPostItDragStartListener(R.id.post_it_yellow, PostItColor.YELLOW);
+		setupNewPostItDragStartListener(R.id.post_it_pink, PostItColor.PINK);
+
+		mLayer = (ImageView) mFullScreenFrame.findViewById(R.id.layer);
+		mLayer.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				boolean isRaise = mPostItWallpaper.isRaisePostIt();
 				mPostItWallpaper.setRaisePostIt(!isRaise);
-				layer.setImageResource(isRaise ? R.drawable.layer_0 : R.drawable.layer_1);
+				mLayer.setImageResource(isRaise ? R.drawable.layer_0 : R.drawable.layer_1);
 				hide();
 			}
 		});
-		mTrash = (ImageView) mFrame.findViewById(R.id.trash);
 
-		ImageView postit = (ImageView) mFrame.findViewById(R.id.post_it_blue);
-		postit.setOnTouchListener(new NewPostItDragStartListener(PostItColor.BLUE));
-		postit = (ImageView) mFrame.findViewById(R.id.post_it_green);
-		postit.setOnTouchListener(new NewPostItDragStartListener(PostItColor.GREEN));
-		postit = (ImageView) mFrame.findViewById(R.id.post_it_yellow);
-		postit.setOnTouchListener(new NewPostItDragStartListener(PostItColor.YELLOW));
-		postit = (ImageView) mFrame.findViewById(R.id.post_it_pink);
-		postit.setOnTouchListener(new NewPostItDragStartListener(PostItColor.PINK));
+		mTrash = (ImageView) mFullScreenFrame.findViewById(R.id.trash);
 		
-		
-		
-		mFrame.setOnDragListener(mNewPostItDropListener);
+		mFadeOutAnim = AnimFactory.getFedeOut(context, new AnimEndListener(){
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mFullScreenFrame.setVisibility(View.GONE);
+			}
+		});
+		mFadeInAnim = AnimFactory.getFedeIn(context, new AnimEndListener(){
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				if (!mPostItWallpaper.isVisible()) {
+					mFullScreenFrame.setVisibility(View.GONE);
+				}
+			}
+		});
+	}
+	
+	private void setupNewPostItDragStartListener(int resId, int color) {
+		ImageView postit = (ImageView) mFullScreenFrame.findViewById(resId);
+		postit.setOnTouchListener(new NewPostItDragStartListener(color));
 	}
 
 	private class NewPostItDragStartListener implements OnTouchListener {
@@ -99,6 +109,7 @@ public class CtrlPanel {
 			mColor = Integer.toString(color);
 		}
 
+		@SuppressLint("ClickableViewAccessibility")
 		@Override
 		public boolean onTouch(View view, MotionEvent ev) {
 			int action = ev.getAction();
@@ -129,7 +140,7 @@ public class CtrlPanel {
 	};
 
 	public View getView() {
-		return mFrame;
+		return mFullScreenFrame;
 	}
 
 	public Point getTrashPoint() {
@@ -159,21 +170,21 @@ public class CtrlPanel {
 	}
 
 	public void toggle() {
-		if (mFrame.getVisibility() == View.VISIBLE) {
+		if (mFullScreenFrame.getVisibility() == View.VISIBLE) {
 			hide();
 		} else {
 			show();
 		}
 	}
 	public void show() {
-		mFrame.setVisibility(View.VISIBLE);
-		mInnerLayout.startAnimation(mFadeIn);
+		mFullScreenFrame.setVisibility(View.VISIBLE);
+		mTrayLayout.startAnimation(mFadeInAnim);
 	}
 	public void hide() {
-		mInnerLayout.startAnimation(mFadeOut);
+		mTrayLayout.startAnimation(mFadeOutAnim);
 	}
 	public void gone() {
-		mFrame.setVisibility(View.GONE);
+		mFullScreenFrame.setVisibility(View.GONE);
 	}
 
 }

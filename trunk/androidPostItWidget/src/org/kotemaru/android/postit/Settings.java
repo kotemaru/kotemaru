@@ -28,12 +28,12 @@ public class Settings {
 	public Settings(Context context) {
 		mSharedPref = PreferenceManager.getDefaultSharedPreferences(context);
 	}
-	
+
 	public Settings autoUpdate() {
-		mSharedPref.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener(){
+		mSharedPref.registerOnSharedPreferenceChangeListener(new OnSharedPreferenceChangeListener() {
 			@Override
 			public void onSharedPreferenceChanged(SharedPreferences paramSharedPreferences, String paramString) {
-				Log.d("Settings","onSharedPreferenceChanged:"+paramString);
+				Log.d("Settings", "onSharedPreferenceChanged:" + paramString);
 				mSharedPref = paramSharedPreferences;
 				load();
 			}
@@ -47,13 +47,13 @@ public class Settings {
 		setBackgroundUri("12:00", "assets:///default_bg_1.jpg");
 		setBackgroundUri("00:00", "assets:///default_bg_2.jpg");
 		save();
-		
+
 		SharedPreferences.Editor editor = mSharedPref.edit();
 		editor.putBoolean(Key.IS_INITIALIZED.name(), true);
 		editor.apply();
 		return true;
 	}
-	
+
 	public Settings load() {
 		setBackgroundUriSet(getPrefSet(Key.BACKGROUND_URI_SET, null));
 		setCtrlAction(getPrefValue(Key.CTRL_ACTION, Value.SINGLE_TAP));
@@ -88,11 +88,11 @@ public class Settings {
 			mBackgroundUriSet = new HashSet<String>();
 		}
 		Iterator<String> ite = mBackgroundUriSet.iterator();
-		while(ite.hasNext()) {
+		while (ite.hasNext()) {
 			String item = ite.next();
-			if (item.startsWith(time)) ite.remove(); 
+			if (item.startsWith(time)) ite.remove();
 		}
-		mBackgroundUriSet.add(time+"|"+uri);
+		mBackgroundUriSet.add(time + "|" + uri);
 	}
 	public String getBackgroundUri(long time) {
 		if (mBackgroundUriSet == null || mBackgroundUriSet.isEmpty()) return null;
@@ -100,23 +100,21 @@ public class Settings {
 		Calendar cal = Calendar.getInstance();
 		cal.setTimeInMillis(time);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);
-		boolean isDayTime = ( 6 <= hour && hour <= 17 );
+		boolean isDayTime = (6 <= hour && hour <= 17);
 		for (String uri : mBackgroundUriSet) {
 			if (isDayTime) {
-				if (uri.startsWith("12:00|")) return uri.substring(6); 
+				if (uri.startsWith("12:00|")) return uri.substring(6);
 			} else {
-				if (uri.startsWith("00:00|")) return uri.substring(6); 
+				if (uri.startsWith("00:00|")) return uri.substring(6);
 			}
 		}
 		for (String uri : mBackgroundUriSet) {
-			return uri.substring(6); 
+			return uri.substring(6);
 		}
 		return null;
 	}
-	
-	
-	//-------------------------------------------------------
-	
+
+	// -------------------------------------------------------
 
 	public boolean isDoubleTapCtrlAction() {
 		return mIsDoubleTapCtrlAction;
@@ -136,6 +134,5 @@ public class Settings {
 	public void setBackgroundUriSet(Set<String> pBackgroundUriSet) {
 		this.mBackgroundUriSet = pBackgroundUriSet;
 	}
-
 
 }

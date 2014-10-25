@@ -24,14 +24,14 @@ public class PostItViewManager {
 		mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		mLayoutInflater = LayoutInflater.from(context);
 	}
-	
+
 	public PostItWallpaper getPostItWallpaper() {
 		return mPostItWallpaper;
 	}
 	public WindowManager getWindowManager() {
 		return mWindowManager;
 	}
-	
+
 	public void show(boolean isShow) {
 		for (PostItView postItView : mPostItViewList) {
 			postItView.setVisibility(isShow ? View.VISIBLE : View.GONE);
@@ -98,5 +98,4 @@ public class PostItViewManager {
 		return view;
 	}
 
-	
 }

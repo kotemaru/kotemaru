@@ -1,7 +1,7 @@
 package org.kotemaru.android.postit;
 
 import org.kotemaru.android.postit.util.IntIntMap;
-import org.kotemaru.android.postit.widget.CustomRadioGroup;
+import org.kotemaru.android.postit.widget.RadioLayout;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -33,9 +33,9 @@ public class PostItSettingActivity extends Activity {
 
 	private PostItData mPostItData;
 	private EditText mMemo;
-	private CustomRadioGroup mShapeRadioGroup;
+	private RadioLayout mShapeRadioGroup;
 	private RadioGroup mFontRadioGroup;
-	private CustomRadioGroup mColorRadioGroup;
+	private RadioLayout mColorRadioGroup;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -47,9 +47,9 @@ public class PostItSettingActivity extends Activity {
 		mPostItData = PostItDataProvider.getPostItData(this, postItId);
 
 		mMemo = (EditText) findViewById(R.id.memo);
-		mShapeRadioGroup = (CustomRadioGroup) findViewById(R.id.shape_radio_group);
+		mShapeRadioGroup = (RadioLayout) findViewById(R.id.shape_radio_group);
 		mFontRadioGroup = (RadioGroup) findViewById(R.id.font_radio_group);
-		mColorRadioGroup = (CustomRadioGroup) findViewById(R.id.color_radio_group);
+		mColorRadioGroup = (RadioLayout) findViewById(R.id.color_radio_group);
 	}
 
 	@Override
@@ -60,7 +60,7 @@ public class PostItSettingActivity extends Activity {
 		// restore settings.
 		mShapeRadioGroup.check(sShapeRadioMap.getFirst(mPostItData.getWidth(), mPostItData.getHeight()));
 		mFontRadioGroup.check(sFontRadioMap.getFirst(mPostItData.getFontSize()));
-		mColorRadioGroup.setValueInt(mPostItData.getColor());
+		mColorRadioGroup.check(sColorRadioMap.getFirst(mPostItData.getColor()));
 	}
 
 	@Override
@@ -76,7 +76,8 @@ public class PostItSettingActivity extends Activity {
 		int fontResId = mFontRadioGroup.getCheckedRadioButtonId();
 		mPostItData.setFontSize(sFontRadioMap.getSecond(fontResId));
 		
-		mPostItData.setColor(mColorRadioGroup.getValueInt(PostItColor.BLUE));
+		int colorResId = mFontRadioGroup.getCheckedRadioButtonId();
+		mPostItData.setColor(sColorRadioMap.getSecond(colorResId));
 
 		PostItDataProvider.updatePostItData(this, mPostItData);
 		super.onPause();

@@ -3,11 +3,11 @@
     android:background="#44000000" >
 
     <LinearLayout
-        android:id="@+id/inner_layout"
+        android:id="@+id/tray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:background="@drawable/ctrl_panel_bg"
+        android:background="@drawable/post_it_tray_bg"
         android:orientation="horizontal"
         android:padding="4dp" >
 

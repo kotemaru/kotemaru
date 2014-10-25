@@ -5,9 +5,9 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
 
-public class CustomRadioGroup extends LinearLayout {
+public class RadioLayout extends LinearLayout {
 
-	public CustomRadioGroup(Context context, AttributeSet attrs) {
+	public RadioLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
 	
@@ -36,6 +36,8 @@ public class CustomRadioGroup extends LinearLayout {
 		return null;
 	}
 
+	
+	
 	public String getValue() {
 		RadioItem item = getSelectedItem();
 		if (item == null) return null;
