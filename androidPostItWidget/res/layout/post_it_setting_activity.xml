@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/org.kotemaru.android.postit"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    android:orientation="vertical" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/memo" />
+
+    <EditText
+        android:id="@+id/memo"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:ems="10"
+        android:gravity="left|top"
+        android:inputType="textMultiLine"
+        android:textSize="14sp" >
+
+        <requestFocus />
+    </EditText>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/shape" />
+
+    <org.kotemaru.android.postit.widget.CustomRadioGroup
+        android:id="@+id/shape_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin"
+        android:orientation="horizontal"
+        android:padding="@dimen/base_margin" >
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/shape_shot"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin" >
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_blue" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/shape_long"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin" >
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="20dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_blue" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/shape_lage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin" >
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="40dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_blue" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+    </org.kotemaru.android.postit.widget.CustomRadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/font" />
+
+    <RadioGroup
+        android:id="@+id/font_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <RadioButton
+            android:id="@+id/font_small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_radio_sp"
+            android:text="@string/font_small" />
+
+        <RadioButton
+            android:id="@+id/font_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_radio_sp"
+            android:text="@string/font_middle" />
+
+        <RadioButton
+            android:id="@+id/font_lage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_radio_sp"
+            android:text="@string/font_lage" />
+
+        <RadioButton
+            android:id="@+id/font_huge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_radio_sp"
+            android:text="@string/font_huge" />
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/base_margin"
+        android:text="@string/color" />
+
+    <org.kotemaru.android.postit.widget.CustomRadioGroup
+        android:id="@+id/color_radio_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/base_margin"
+        android:orientation="horizontal"
+        android:padding="@dimen/base_margin" >
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/color_blue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin"
+            custom:value_int="0" >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_blue" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/color_green"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin"
+            custom:value_int="1" >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_green" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/color_yellow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin"
+            custom:value_int="2" >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_yellow" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/color_pink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin"
+            custom:value_int="3" >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_pink" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+
+        <org.kotemaru.android.postit.widget.RadioItem
+            android:id="@+id/color_red"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/radio_selector"
+            android:padding="@dimen/base_margin"
+            custom:value_int="4" >
+
+            <ImageView
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@drawable/post_it_red" />
+        </org.kotemaru.android.postit.widget.RadioItem>
+    </org.kotemaru.android.postit.widget.CustomRadioGroup>
+
+</LinearLayout>

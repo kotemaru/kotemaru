@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<org.kotemaru.android.postit.PostItView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="top"
+    android:layout_margin="0dp"
+    android:padding="0dp" >
+
+    <TextView
+        android:id="@+id/textBody"
+        android:layout_width="100sp"
+        android:layout_height="32sp"
+        android:layout_margin="0dp"
+        android:background="@drawable/post_it_green"
+        android:paddingBottom="0sp"
+        android:paddingLeft="2sp"
+        android:paddingRight="2sp"
+        android:paddingTop="0sp"
+        android:textColor="#000000" />
+
+</org.kotemaru.android.postit.PostItView>

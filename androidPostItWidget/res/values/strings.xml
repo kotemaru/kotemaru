@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PostItMemo</string>
+    <!-- settings -->
+    <string name="settings">Settings</string>
+    <string name="background_image">Background image:</string>
+    <string name="choose_picture">Choose picture</string>
+    <string name="choose_picture_day">Choose picture(Day time)</string>
+    <string name="choose_picture_night">Choose picture(Night time)</string>
+    <string name="ctrl_action">Start application action:</string>
+    <string name="ctrl_action_comment">Action on wallpaper to launch the application. \n* Double tap is required due to a bug in Android/4.4.4.</string>
+    <string name="single_tap">Single Tap</string>
+    <string name="double_tap">Double Tap</string>
+    <string name="dialog_init_title">Set Live Wallpaper</string>
+    <string name="dialog_init_msg">This application must be set as a Live Wallpaper. You can not co-exist with other Live Wallpaper. \nPlease tap to \'Set wallpaper\' on the next screen.</string>
+    <string name="dialog_init_ok">Next</string>
+    <string name="dialog_init_cancel">Cancel</string>
+    <!-- post it data settings -->
+    <string name="edit_memo">Edit memo</string>
+    <string name="memo">Memo:</string>
+    <string name="shape">Shape:</string>
+    <string name="font">Font size:</string>
+    <string name="color">Color:</string>
+    <string name="font_small">Small</string>
+    <string name="font_middle">Middle</string>
+    <string name="font_lage">Lage</string>
+    <string name="font_huge">Huge</string>
+
+</resources>
