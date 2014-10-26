@@ -1,4 +1,7 @@
-package org.kotemaru.android.postit;
+package org.kotemaru.android.postit.util;
+
+import org.kotemaru.android.postit.PostItSettingActivity;
+import org.kotemaru.android.postit.data.PostItData;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

@@ -1,8 +1,18 @@
-package org.kotemaru.android.postit;
+package org.kotemaru.android.postit.widget;
 
-import org.kotemaru.android.postit.AnimFactory.AnimEndListener;
+import org.kotemaru.android.postit.PostItViewManager;
+import org.kotemaru.android.postit.PostItWallpaper;
+import org.kotemaru.android.postit.R;
+import org.kotemaru.android.postit.R.drawable;
+import org.kotemaru.android.postit.R.id;
+import org.kotemaru.android.postit.data.PostItColor;
+import org.kotemaru.android.postit.data.PostItData;
+import org.kotemaru.android.postit.data.PostItDataProvider;
+import org.kotemaru.android.postit.util.AnimFactory;
 import org.kotemaru.android.postit.util.IntIntMap;
+import org.kotemaru.android.postit.util.Launcher;
 import org.kotemaru.android.postit.util.Util;
+import org.kotemaru.android.postit.util.AnimFactory.AnimEndListener;
 
 import android.annotation.SuppressLint;
 import android.content.Context;

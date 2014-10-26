@@ -1,4 +1,4 @@
-package org.kotemaru.android.postit;
+package org.kotemaru.android.postit.data;
 
 /**
  * 付箋背景色の定義。

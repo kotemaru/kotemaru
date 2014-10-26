@@ -2,7 +2,13 @@ package org.kotemaru.android.postit;
 
 import java.util.List;
 
+import org.kotemaru.android.postit.data.PostItData;
+import org.kotemaru.android.postit.data.PostItDataProvider;
+import org.kotemaru.android.postit.data.Settings;
+import org.kotemaru.android.postit.util.Launcher;
 import org.kotemaru.android.postit.util.Util;
+import org.kotemaru.android.postit.widget.PostItTray;
+import org.kotemaru.android.postit.widget.PostItView;
 
 import android.content.Intent;
 import android.graphics.Bitmap;

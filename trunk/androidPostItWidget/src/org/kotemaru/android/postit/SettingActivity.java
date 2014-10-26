@@ -1,5 +1,10 @@
 package org.kotemaru.android.postit;
 
+import org.kotemaru.android.postit.data.PostItColor;
+import org.kotemaru.android.postit.data.PostItData;
+import org.kotemaru.android.postit.data.PostItDataProvider;
+import org.kotemaru.android.postit.data.Settings;
+import org.kotemaru.android.postit.util.Launcher;
 import org.kotemaru.android.postit.util.Util;
 import org.kotemaru.android.postit.widget.RadioLayout;
 

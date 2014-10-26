@@ -1,4 +1,7 @@
-package org.kotemaru.android.postit;
+package org.kotemaru.android.postit.util;
+
+import org.kotemaru.android.postit.R;
+import org.kotemaru.android.postit.R.anim;
 
 import android.content.Context;
 import android.view.animation.Animation;

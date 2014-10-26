@@ -1,4 +1,4 @@
-package org.kotemaru.android.postit;
+package org.kotemaru.android.postit.data;
 
 import java.util.ArrayList;
 import java.util.List;
