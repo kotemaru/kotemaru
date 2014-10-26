@@ -76,7 +76,7 @@ public class PostItSettingActivity extends Activity {
 		int fontResId = mFontRadioGroup.getCheckedRadioButtonId();
 		mPostItData.setFontSize(sFontRadioMap.getSecond(fontResId));
 
-		int colorResId = mFontRadioGroup.getCheckedRadioButtonId();
+		int colorResId = mColorRadioGroup.getCheckedRadioButtonId();
 		mPostItData.setColor(sColorRadioMap.getSecond(colorResId));
 
 		PostItDataProvider.updatePostItData(this, mPostItData);
