@@ -29,21 +29,21 @@ public class SettingActivity extends Activity {
 		setTitle(R.string.settings);
 		mSettings = new Settings(this);
 		mWallpaperManager = WallpaperManager.getInstance(this);
-		if (mSettings.fiastBootInitialize()){
+		if (mSettings.fiastBootInitialize()) {
 			this.fiastBootInitialize();
 		}
 		mSettings.load();
 
 		// Views setting.
 		mChoosePictue = (Button) findViewById(R.id.choose_picture);
-		mChoosePictue.setOnClickListener(new OnClickListener(){
+		mChoosePictue.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Launcher.startChoosePicture(SettingActivity.this);
 			}
 		});
 		mChoosePictue2 = (Button) findViewById(R.id.choose_picture2);
-		mChoosePictue2.setOnClickListener(new OnClickListener(){
+		mChoosePictue2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Launcher.startChoosePicture2(SettingActivity.this);
@@ -85,7 +85,6 @@ public class SettingActivity extends Activity {
 		super.onPause();
 	}
 
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent returnedIntent) {
 		super.onActivityResult(requestCode, resultCode, returnedIntent);
@@ -102,7 +101,6 @@ public class SettingActivity extends Activity {
 			}
 		}
 	}
-
 
 	/**
 	 * TODO: 手抜きDialog.

@@ -10,9 +10,9 @@ public class RadioLayout extends LinearLayout {
 	public RadioLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	}
-	
+
 	public void check(int resId) {
-		RadioItem item = (RadioItem)findViewById(resId);
+		RadioItem item = (RadioItem) findViewById(resId);
 		if (item == null) return;
 		onSelect(item);
 	}
@@ -22,22 +22,20 @@ public class RadioLayout extends LinearLayout {
 		return item.getId();
 	}
 	public void onSelect(RadioItem item) {
-		for (int i=0 ; i<getChildCount(); i++) {
+		for (int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
 			child.setSelected(false);
 		}
 		item.setSelected(true);
 	}
 	public RadioItem getSelectedItem() {
-		for (int i=0 ; i<getChildCount(); i++) {
+		for (int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
 			if (child.isSelected()) return (RadioItem) child;
 		}
 		return null;
 	}
 
-	
-	
 	public String getValue() {
 		RadioItem item = getSelectedItem();
 		if (item == null) return null;
@@ -61,46 +59,46 @@ public class RadioLayout extends LinearLayout {
 		if (item == null) return defo;
 		return item.isValueBool();
 	}
-	
-	
+
 	private interface ValueMatcher {
 		boolean isMatch(RadioItem item);
 	}
+
 	public void setValue(final String value) {
 		if (value == null) return;
-		setValueGeneric(new ValueMatcher(){
+		setValueGeneric(new ValueMatcher() {
 			public boolean isMatch(RadioItem item) {
 				return value.equals(item.getValue());
 			}
 		});
 	}
 	public void setValueInt(final int value) {
-		setValueGeneric(new ValueMatcher(){
+		setValueGeneric(new ValueMatcher() {
 			public boolean isMatch(RadioItem item) {
 				return value == item.getValueInt();
 			}
 		});
 	}
 	public void setValueFloat(final float value) {
-		setValueGeneric(new ValueMatcher(){
+		setValueGeneric(new ValueMatcher() {
 			public boolean isMatch(RadioItem item) {
 				return value == item.getValueFloat();
 			}
 		});
 	}
 	public void setValueBool(final boolean value) {
-		setValueGeneric(new ValueMatcher(){
+		setValueGeneric(new ValueMatcher() {
 			public boolean isMatch(RadioItem item) {
 				return value == item.isValueBool();
 			}
 		});
 	}
-	
+
 	private void setValueGeneric(ValueMatcher matcher) {
-		for (int i=0 ; i<getChildCount(); i++) {
+		for (int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
 			if (child instanceof RadioItem) {
-				RadioItem item = (RadioItem)child;
+				RadioItem item = (RadioItem) child;
 				if (matcher.isMatch(item)) {
 					onSelect(item);
 					return;

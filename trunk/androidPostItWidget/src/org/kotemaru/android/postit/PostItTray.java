@@ -19,12 +19,9 @@ import android.view.animation.Animation;
 import android.widget.ImageView;
 
 /**
- * 付箋制御用の画面。
- * <li>ホーム画面にオーバレイ表示する。必要のない時は非表示。
- * <li>付箋の新規作成、削除、表示モード変更を行うアイコンを配置する。
- * <li>タッチイベントを受け取るためサイズは全画面となる。
- * <li>何も表示していない部分も半透明にして暗くする。（ユーザが混乱しないように）
- * <li>
+ * 付箋制御用の画面。 <li>ホーム画面にオーバレイ表示する。必要のない時は非表示。 <li>付箋の新規作成、削除、表示モード変更を行うアイコンを配置する。 <li>タッチイベントを受け取るためサイズは全画面となる。 <li>
+ * 何も表示していない部分も半透明にして暗くする。（ユーザが混乱しないように） <li>
+ * 
  * @author kotemaru.org
  */
 public class PostItTray {
@@ -80,14 +77,14 @@ public class PostItTray {
 		});
 
 		mTrash = (ImageView) mFullScreenFrame.findViewById(R.id.trash);
-		
-		mFadeOutAnim = AnimFactory.getFedeOut(context, new AnimEndListener(){
+
+		mFadeOutAnim = AnimFactory.getFedeOut(context, new AnimEndListener() {
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				mFullScreenFrame.setVisibility(View.GONE);
 			}
 		});
-		mFadeInAnim = AnimFactory.getFedeIn(context, new AnimEndListener(){
+		mFadeInAnim = AnimFactory.getFedeIn(context, new AnimEndListener() {
 			@Override
 			public void onAnimationEnd(Animation animation) {
 				if (!mPostItWallpaper.isVisible()) {
@@ -96,7 +93,7 @@ public class PostItTray {
 			}
 		});
 	}
-	
+
 	private void setupNewPostItDragStartListener(int resId, int color) {
 		ImageView postit = (ImageView) mFullScreenFrame.findViewById(resId);
 		postit.setOnTouchListener(new NewPostItDragStartListener(color));
@@ -144,12 +141,11 @@ public class PostItTray {
 	}
 
 	public Point getTrashPoint() {
-		int x = mTrash.getLeft() + mTrash.getWidth()/2;
-		int y = mTrash.getTop() + mTrash.getHeight()/2;
-		return new Point(x,y);
+		int x = mTrash.getLeft() + mTrash.getWidth() / 2;
+		int y = mTrash.getTop() + mTrash.getHeight() / 2;
+		return new Point(x, y);
 	}
-	
-	
+
 	private boolean isOnTrash(int x, int y) {
 		int left = mTrash.getLeft();
 		int right = mTrash.getRight();
