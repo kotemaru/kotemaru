@@ -224,7 +224,7 @@ public class PostItWallpaper extends WallpaperService {
 					x = srcBitmap.getWidth() / 2 - w / 2;
 					y = 0;
 				}
-				Log.d(TAG, "image size=" + dispAspect+","+imgAspect + "," + x + "," + y + "," + w + "," + h);
+				Log.d(TAG, "image size=" + dispAspect + "," + imgAspect + "," + x + "," + y + "," + w + "," + h);
 				Bitmap cropBitmap = Bitmap.createBitmap(srcBitmap, x, y, w, h);
 				mBackground = Bitmap.createScaledBitmap(cropBitmap, size.x, size.y, true);
 				cropBitmap.recycle();

@@ -104,8 +104,6 @@ public class PostItView extends FrameLayout {
 		}
 	};
 
-	
-	
 	public void onClick(MotionEvent ev, int rx, int ry) {
 		PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		PostItTray postItTray = postItWallpaper.getPostItTray();
@@ -169,6 +167,5 @@ public class PostItView extends FrameLayout {
 		PostItDataProvider.updatePostItData(postItWallpaper, mPostItData);
 		postItTray.hide();
 	}
-
 
 }

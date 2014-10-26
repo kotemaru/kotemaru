@@ -38,14 +38,14 @@ public class RadioItem extends FrameLayout {
 			mRadioButton.setChecked(isSelected());
 		}
 	}
+
 	private OnClickListener mOnClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View view) {
 			selectMe();
 		}
 	};
-	
-	
+
 	private RadioButton findRadioButton() {
 		for (int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
@@ -76,7 +76,6 @@ public class RadioItem extends FrameLayout {
 			mRadioButton.setChecked(b);
 		}
 	}
-
 
 	public String getValue() {
 		return mValue;
