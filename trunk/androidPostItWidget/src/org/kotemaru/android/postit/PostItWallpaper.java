@@ -1,6 +1,5 @@
 package org.kotemaru.android.postit;
 
-import java.io.IOException;
 import java.util.List;
 
 import org.kotemaru.android.postit.util.Util;
@@ -133,12 +132,14 @@ public class PostItWallpaper extends WallpaperService {
 		@Override
 		public void onSurfaceChanged(SurfaceHolder holder, int format, int width, int height) {
 			super.onSurfaceChanged(holder, format, width, height);
+			mBackgroundUri = null;
 			drawFrame();
 		}
 
 		@Override
 		public void onOffsetsChanged(float xOffset, float yOffset,
 				float xStep, float yStep, int xPixels, int yPixels) {
+			mBackgroundUri = null;
 			drawFrame();
 		}
 
@@ -207,16 +208,28 @@ public class PostItWallpaper extends WallpaperService {
 			try {
 				Point size = Util.getDisplaySize(PostItWallpaper.this);
 				size.y -= mStatusBarHeight;
-				Bitmap bitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
-				if (bitmap == null) return null;
-				// TODO:crop
-				// Bitmap.createBitmap(bitmap,0,0, width, height);
-				float aspect = (float) bitmap.getWidth() / (float) bitmap.getHeight();
-				int w = (int) (size.y * aspect);
-				int h = size.y;
-				mBackground = Bitmap.createScaledBitmap(bitmap, w, h, true);
-				bitmap.recycle();
-			} catch (IOException e) {
+				Bitmap srcBitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
+				if (srcBitmap == null) return null;
+				float dispAspect = (float) size.x / (float) size.y;
+				float imgAspect = (float) srcBitmap.getWidth() / (float) srcBitmap.getHeight();
+				int x, y, w, h;
+				if (dispAspect > imgAspect) {
+					w = srcBitmap.getWidth();
+					h = (int) (srcBitmap.getWidth() / dispAspect);
+					x = 0;
+					y = srcBitmap.getHeight() / 2 - h / 2;
+				} else {
+					w = (int) (srcBitmap.getHeight() * dispAspect);
+					h = srcBitmap.getHeight();
+					x = srcBitmap.getWidth() / 2 - w / 2;
+					y = 0;
+				}
+				Log.d(TAG, "image size=" + dispAspect+","+imgAspect + "," + x + "," + y + "," + w + "," + h);
+				Bitmap cropBitmap = Bitmap.createBitmap(srcBitmap, x, y, w, h);
+				mBackground = Bitmap.createScaledBitmap(cropBitmap, size.x, size.y, true);
+				cropBitmap.recycle();
+				srcBitmap.recycle();
+			} catch (Exception e) {
 				Log.e(TAG, "setBackgroundUri:" + e);
 			}
 			return mBackground;
