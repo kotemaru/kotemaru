@@ -79,6 +79,9 @@ public class PostItView extends FrameLayout {
 		} else {
 			mMemo.setBackgroundResource(sColorResourceMap.getFirst(mPostItData.getColor()));
 		}
+		// Need seting padding this timing.
+		int pad = Util.dp2px(getContext(), 2);
+		mMemo.setPadding(pad, 0, pad, 0);
 	}
 
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
