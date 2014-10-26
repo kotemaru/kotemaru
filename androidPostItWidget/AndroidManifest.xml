@@ -27,7 +27,7 @@
 			android:screenOrientation="behind">
 		</activity>
 
-		<provider android:name=".PostItDataProvider"
+		<provider android:name="org.kotemaru.android.postit.data.PostItDataProvider"
 			android:authorities="org.kotemaru.android.postit.postitdataprovider"
 			android:exported="true" />
 
