@@ -33,7 +33,7 @@ public class Util {
 		display.getSize(point);
 		return point;
 	}
-	
+
 	public static InputStream openUri(Context context, Uri uri) throws IOException {
 		String scheme = uri.getScheme();
 		if ("assets".equals(scheme)) {
@@ -67,8 +67,8 @@ public class Util {
 			if (realSize == null) return null;
 			int scaleW = realSize.outWidth / size.x + 1;
 			int scaleH = realSize.outHeight / size.y + 1;
-			int scale =  Math.max(scaleW, scaleH);
-			
+			int scale = Math.max(scaleW, scaleH);
+
 			BitmapFactory.Options option = new BitmapFactory.Options();
 			option.inSampleSize = scale;
 			in = openUri(context, uri);
@@ -93,7 +93,7 @@ public class Util {
 						| WindowManager.LayoutParams.FLAG_FULLSCREEN
 						| WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
 				PixelFormat.TRANSLUCENT);
-		params.gravity = Gravity.START;
+		params.gravity = Gravity.TOP | Gravity.START;
 		return params;
 	}
 	public static int sp2px(Context context, int dp) {
