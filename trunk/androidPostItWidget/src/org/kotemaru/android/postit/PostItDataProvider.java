@@ -30,14 +30,14 @@ public class PostItDataProvider extends ContentProvider {
 	}
 
 	public enum POST_IT_COLS implements Column {
-		ID("integer primary key autoincrement"),
-		ENABLED("integer"),
-		COLOR("integer"),
-		POS_X("integer"),
-		POS_Y("integer"),
-		WIDTH("integer"),
-		HEIGHT("integer"),
-		FONT_SIZE("integer"),
+		_ID("integer primary key autoincrement"),
+		ENABLED("integer"), // 0=false, 1=true
+		COLOR("integer"), // PostItColor class
+		POS_X("integer"), // px
+		POS_Y("integer"), // px
+		WIDTH("integer"), // dp
+		HEIGHT("integer"), // dp
+		FONT_SIZE("integer"), // sp
 		TIMER_IS_REPEATE("integer"),
 		TIMER_PATTERN("text"),
 		TIMER("integer"),
@@ -148,7 +148,7 @@ public class PostItDataProvider extends ContentProvider {
 
 	public static PostItData toPostItData(Cursor cursor) {
 		PostItData data = new PostItData(
-				POST_IT_COLS.ID.getLong(cursor),
+				POST_IT_COLS._ID.getLong(cursor),
 				POST_IT_COLS.ENABLED.getInt(cursor),
 				POST_IT_COLS.COLOR.getInt(cursor),
 				POST_IT_COLS.POS_X.getInt(cursor),
@@ -162,7 +162,7 @@ public class PostItDataProvider extends ContentProvider {
 	}
 	public static ContentValues fromPostItData(ContentValues values, PostItData data) {
 		if (values == null) values = new ContentValues();
-		POST_IT_COLS.ID.put(values, data.getId());
+		POST_IT_COLS._ID.put(values, data.getId());
 		POST_IT_COLS.ENABLED.put(values, data.getEnabled());
 		POST_IT_COLS.COLOR.put(values, data.getColor());
 		POST_IT_COLS.POS_X.put(values, data.getPosX());
@@ -176,7 +176,7 @@ public class PostItDataProvider extends ContentProvider {
 
 	public static PostItData getPostItData(Context context, long id) {
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null,
-				POST_IT_COLS.ID.where(), new String[] { Long.toString(id) }, null);
+				POST_IT_COLS._ID.where(), new String[] { Long.toString(id) }, null);
 		if (cursor.moveToNext()) {
 			PostItData data = PostItDataProvider.toPostItData(cursor);
 			return data;
@@ -222,7 +222,7 @@ public class PostItDataProvider extends ContentProvider {
 	public static long createPostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
 		ContentValues values = PostItDataProvider.fromPostItData(null, data);
-		values.remove(POST_IT_COLS.ID.name());
+		values.remove(POST_IT_COLS._ID.name());
 		Uri uri = content.insert(PostItDataProvider.CONTENT_URI, values);
 		long id = Long.parseLong(uri.getLastPathSegment());
 		return id;
@@ -233,7 +233,7 @@ public class PostItDataProvider extends ContentProvider {
 	}
 	public static void removePostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
-		content.delete(PostItDataProvider.CONTENT_URI, POST_IT_COLS.ID.where(),
+		content.delete(PostItDataProvider.CONTENT_URI, POST_IT_COLS._ID.where(),
 				new String[] { Long.toString(data.getId()) });
 	}
 

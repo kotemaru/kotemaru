@@ -1,6 +1,6 @@
 package org.kotemaru.android.postit;
 
-public class PostItColor {
+public interface PostItColor {
 	public static final int BLUE = 0;
 	public static final int GREEN = 1;
 	public static final int YELLOW = 2;
