@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.kotemaru.android.postit.data.PostItData;
+import org.kotemaru.android.postit.data.PostItDataProvider;
 import org.kotemaru.android.postit.util.Util;
+import org.kotemaru.android.postit.widget.PostItView;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
