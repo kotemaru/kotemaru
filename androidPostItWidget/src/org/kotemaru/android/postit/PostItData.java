@@ -1,5 +1,10 @@
 package org.kotemaru.android.postit;
 
+
+/**
+ * 付箋データBean。
+ * @author kotemaru.org
+ */
 public class PostItData {
 	public static final int W_SHORT = 90;
 	public static final int W_LONG = 160;

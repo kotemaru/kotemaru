@@ -6,8 +6,9 @@ import java.util.List;
 
 import org.kotemaru.android.postit.util.Util;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.util.LongSparseArray;
+import android.support.v4.util.LongSparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -89,10 +90,11 @@ public class PostItViewManager {
 	}
 
 	private PostItView createPostItView(PostItData data) {
+		@SuppressLint("InflateParams")
 		PostItView view = (PostItView) mLayoutInflater.inflate(R.layout.post_it_view, null);
 		view.onCreate(this);
 
-		WindowManager.LayoutParams params = Util.geWindowLayoutParams();
+		WindowManager.LayoutParams params = Util.getWindowLayoutParams();
 		mWindowManager.addView(view, params);
 		view.setPostItData(data);
 		return view;

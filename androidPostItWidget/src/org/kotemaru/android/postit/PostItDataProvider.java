@@ -12,8 +12,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
-import android.util.LongSparseArray;
+import android.support.v4.util.LongSparseArray;
 
+/**
+ * 付箋データDB。
+ * <li>ContentProviderになっているが公開はしていない。
+ * <li>テーブルは１つだけで新規作成、更新、削除、一覧取得の基本動作を行う。
+ * <li>
+ * @author kotemaru.org
+ */
 public class PostItDataProvider extends ContentProvider {
 	private static final String CONTENT_URI_BASE = "content://"
 			+ PostItDataProvider.class.getCanonicalName().toLowerCase(Locale.US);
@@ -79,6 +86,12 @@ public class PostItDataProvider extends ContentProvider {
 			db.execSQL(getCreateTableDDL(MAIN_TABLE, POST_IT_COLS.values()));
 		}
 
+		/**
+		 * カラム定義から CREATE TABLE 文を生成する。
+		 * @param table テーブル名
+		 * @param columns カラム定義
+		 * @return SQL文
+		 */
 		private String getCreateTableDDL(String table, Column[] columns) {
 			StringBuilder sbuf = new StringBuilder();
 			sbuf.append("CREATE TABLE ").append(table).append('(');
@@ -112,6 +125,7 @@ public class PostItDataProvider extends ContentProvider {
 		long id = db.replace(MAIN_TABLE, null, values);
 		return Uri.parse(CONTENT_URI_BASE + '/' + MAIN_TABLE + '/' + id);
 	}
+	
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 			String[] selectionArgs) {
@@ -146,6 +160,14 @@ public class PostItDataProvider extends ContentProvider {
 		}
 	}
 
+	// --------------------------------------------------------------------------------------------
+	// 以下、コンビニメソッド。
+
+	/**
+	 * DBレコードからBeanに変換する。
+	 * @param cursor
+	 * @return 付箋データBean
+	 */
 	public static PostItData toPostItData(Cursor cursor) {
 		PostItData data = new PostItData(
 				POST_IT_COLS._ID.getLong(cursor),
@@ -160,6 +182,12 @@ public class PostItDataProvider extends ContentProvider {
 				);
 		return data;
 	}
+	/**
+	 * BeanからDBレコードに変換する。
+	 * @param values DBレコード。nullならば内部で生成。
+	 * @param data 付箋データBean
+	 * @return DBレコード
+	 */
 	public static ContentValues fromPostItData(ContentValues values, PostItData data) {
 		if (values == null) values = new ContentValues();
 		POST_IT_COLS._ID.put(values, data.getId());
@@ -174,6 +202,12 @@ public class PostItDataProvider extends ContentProvider {
 		return values;
 	}
 
+	/**
+	 * IDから付箋データを取得する。
+	 * @param context
+	 * @param id 付箋ID
+	 * @return 付箋データ
+	 */
 	public static PostItData getPostItData(Context context, long id) {
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null,
 				POST_IT_COLS._ID.where(), new String[] { Long.toString(id) }, null);
@@ -184,6 +218,11 @@ public class PostItDataProvider extends ContentProvider {
 		return null;
 	}
 
+	/**
+	 * すべての付箋データを取得する。
+	 * @param context
+	 * @return 付箋データのリスト。nullは無い。
+	 */
 	public static List<PostItData> getAllPostItData(Context context) {
 		List<PostItData> list = new ArrayList<PostItData>();
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null, null, null, null);
@@ -197,6 +236,12 @@ public class PostItDataProvider extends ContentProvider {
 		}
 		return list;
 	}
+
+	/**
+	 * すべての付箋データをマップで取得する。
+	 * @param context
+	 * @return 付箋IDをキーとする付箋データのマップ。nullは無い。
+	 */
 	public static LongSparseArray<PostItData> getPostItDataMap(Context context) {
 		LongSparseArray<PostItData> map = new LongSparseArray<PostItData>();
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null, null, null, null);
@@ -211,6 +256,11 @@ public class PostItDataProvider extends ContentProvider {
 		return map;
 	}
 
+	/**
+	 * 付箋データの一覧から一括更新。
+	 * @param context
+	 * @param list 付箋データの一覧
+	 */
 	public static void setAllPostItData(Context context, List<PostItData> list) {
 		ContentResolver content = context.getContentResolver();
 		ContentValues values = new ContentValues();
@@ -219,6 +269,12 @@ public class PostItDataProvider extends ContentProvider {
 		}
 	}
 
+	/**
+	 * 付箋データの新規作成。
+	 * @param context
+	 * @param data 元になる付箋データ。IDは無視。
+	 * @return 生成された付箋ID
+	 */
 	public static long createPostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
 		ContentValues values = PostItDataProvider.fromPostItData(null, data);
@@ -227,10 +283,21 @@ public class PostItDataProvider extends ContentProvider {
 		long id = Long.parseLong(uri.getLastPathSegment());
 		return id;
 	}
+
+	/**
+	 * 付箋データの更新。
+	 * @param context
+	 * @param data 付箋データ
+	 */
 	public static void updatePostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
 		content.insert(PostItDataProvider.CONTENT_URI, PostItDataProvider.fromPostItData(null, data));
 	}
+	/**
+	 * 付箋データの削除。
+	 * @param context
+	 * @param data 付箋データ。使うのはIDだけ。
+	 */
 	public static void removePostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
 		content.delete(PostItDataProvider.CONTENT_URI, POST_IT_COLS._ID.where(),

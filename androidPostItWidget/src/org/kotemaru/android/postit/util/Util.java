@@ -14,9 +14,20 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.WindowManager;
 
+
+/**
+ * 雑多なユーティリティ。
+ * @author kotemaru.org
+ */
 public class Util {
 	private static final String TAG = Util.class.getSimpleName();
 
+	
+	/**
+	 * システムのステータスバーの高さを得る。
+	 * @param context
+	 * @return ステータスバーの高さpx値
+	 */
 	public static int getStatusBarHeight(Context context) {
 		int result = 0;
 		int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
@@ -26,6 +37,12 @@ public class Util {
 		return result;
 	}
 
+	/**
+	 * ディスプレイサイズを得る。
+	 * ステータスバーは含むがナビゲーションバーは含まない。
+	 * @param context
+	 * @return
+	 */
 	public static Point getDisplaySize(Context context) {
 		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 		Display display = wm.getDefaultDisplay();
@@ -34,6 +51,14 @@ public class Util {
 		return point;
 	}
 
+	/**
+	 * URIからストリームを開く。
+	 * <li>サポートスキーマは現在のところ "content://" と "assets://" のみ。
+	 * @param context
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
 	public static InputStream openUri(Context context, Uri uri) throws IOException {
 		String scheme = uri.getScheme();
 		if ("assets".equals(scheme)) {
@@ -43,6 +68,13 @@ public class Util {
 		}
 	}
 
+	/**
+	 * URIから画像のサイズを得る。
+	 * @param context
+	 * @param uri
+	 * @return
+	 * @throws IOException
+	 */
 	public static BitmapFactory.Options loadBitmapSize(Context context, Uri uri) throws IOException {
 		if (uri == null) return null;
 		InputStream in = null;
@@ -59,6 +91,16 @@ public class Util {
 			if (in != null) in.close();
 		}
 	}
+	
+	/**
+	 * URIから画像を得る。サイズの調整も行う。
+	 * <li>要求サイズ丁度では無い。画像の劣化が起こらない最小サイズ。
+	 * @param context
+	 * @param uri
+	 * @param size 要求サイズ。
+	 * @return サイズ補正済Bitmap。
+	 * @throws IOException
+	 */
 	public static Bitmap loadBitmap(Context context, Uri uri, Point size) throws IOException {
 		if (uri == null) return null;
 		InputStream in = null;
@@ -82,7 +124,11 @@ public class Util {
 		}
 	}
 
-	public static WindowManager.LayoutParams geWindowLayoutParams() {
+	/**
+	 * オーバレイ・レイヤ用のパラメータを返す。
+	 * @return
+	 */
+	public static WindowManager.LayoutParams getWindowLayoutParams() {
 		WindowManager.LayoutParams params = new WindowManager.LayoutParams(
 				WindowManager.LayoutParams.WRAP_CONTENT,
 				WindowManager.LayoutParams.WRAP_CONTENT,
@@ -96,11 +142,12 @@ public class Util {
 		params.gravity = Gravity.TOP | Gravity.START;
 		return params;
 	}
-	public static int sp2px(Context context, int dp) {
-		final float scale = context.getResources().getDisplayMetrics().scaledDensity;
-		return (int) (dp * scale + 0.5f);
-	}
+	
 
+	public static int sp2px(Context context, int sp) {
+		final float scale = context.getResources().getDisplayMetrics().scaledDensity;
+		return (int) (sp * scale + 0.5f);
+	}
 	public static int dp2px(Context context, int dp) {
 		final float scale = context.getResources().getDisplayMetrics().density;
 		return (int) (dp * scale + 0.5f);
