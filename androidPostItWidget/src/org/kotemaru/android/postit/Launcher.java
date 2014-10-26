@@ -1,10 +1,12 @@
 package org.kotemaru.android.postit;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.service.wallpaper.WallpaperService;
 
 public class Launcher {
@@ -32,12 +34,17 @@ public class Launcher {
 		Intent intent = new Intent(ACTION_CHANGE_SETTENGS);
 		context.startService(intent);
 	}
-	public static  void setupLiveWallpaper(Activity context, Class<? extends WallpaperService> liveWallpaper) {
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+	public static void setupLiveWallpaper(Activity context, Class<? extends WallpaperService> liveWallpaper) {
 		Intent intent = new Intent();
-		intent.setAction(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
-		String pkgName = liveWallpaper.getPackage().getName();
-		String clsName = liveWallpaper.getCanonicalName();
-		intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, new ComponentName(pkgName, clsName));
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			String pkgName = liveWallpaper.getPackage().getName();
+			String clsName = liveWallpaper.getCanonicalName();
+			intent.setAction(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+			intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT, new ComponentName(pkgName, clsName));
+		} else {
+			intent.setAction(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER);
+		}
 		context.startActivityForResult(intent, 0);
 	}
 

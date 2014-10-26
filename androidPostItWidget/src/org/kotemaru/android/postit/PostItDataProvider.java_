@@ -22,50 +22,36 @@ public class PostItDataProvider extends ContentProvider {
 
 	public static final Uri CONTENT_URI = Uri.parse(CONTENT_URI_BASE);
 
+	public static class Columns {
+		public static final String ID = "ID";
+		public static final String ENABLED = "ENABLED";
+		public static final String COLOR = "COLOR";
+		public static final String POS_X = "POS_X";
+		public static final String POS_Y = "POS_Y";
+		public static final String WIDTH = "WIDTH";
+		public static final String HEIGHT = "HEIGHT";
+		public static final String FONT_SIZE = "FONT_SIZE";
+		public static final String TIMER_IS_REPEATE = "TIMER_IS_REPEATE";
+		public static final String TIMER_PATTERN = "TIMER_PATTERN";
+		public static final String TIMER = "TIMER";
+		public static final String MEMO = "MEMO";
+	}
+
 	private static final String MAIN_TABLE = "POST_IT_MAIN";
-
-	public interface Column {
-		public String name();
-		public String type();
-	}
-
-	public enum POST_IT_COLS implements Column {
-		ID("integer primary key autoincrement"),
-		ENABLED("integer"),
-		COLOR("integer"),
-		POS_X("integer"),
-		POS_Y("integer"),
-		WIDTH("integer"),
-		HEIGHT("integer"),
-		FONT_SIZE("integer"),
-		TIMER_IS_REPEATE("integer"),
-		TIMER_PATTERN("text"),
-		TIMER("integer"),
-		MEMO("text"), ;
-
-		private String mType;
-		private String mWhere;
-
-		POST_IT_COLS(String type) {
-			mType = type;
-			mWhere = name() + "=?";
-		}
-		@Override
-		public String type() {
-			return mType;
-		}
-		public String where() {
-			return mWhere;
-		}
-		// @formatter:off
-		public long getLong(Cursor cursor) {return cursor.getLong(cursor.getColumnIndex(name()));}
-		public int getInt(Cursor cursor) {return cursor.getInt(cursor.getColumnIndex(name()));}
-		public String getString(Cursor cursor) {return cursor.getString(cursor.getColumnIndex(name()));}
-		public void put(ContentValues values, long val) {values.put(name(), val);}
-		public void put(ContentValues values, int val) {values.put(name(), val);}
-		public void put(ContentValues values, String val) {values.put(name(), val);}
-        // @formatter:on
-	}
+	private static String[][] COLUMNS_POST_IT_MAIN = {
+			{ Columns.ID, "integer primary key autoincrement" },
+			{ Columns.ENABLED, "integer" },
+			{ Columns.COLOR, "integer" },
+			{ Columns.POS_X, "integer" },
+			{ Columns.POS_Y, "integer" },
+			{ Columns.WIDTH, "integer" },
+			{ Columns.HEIGHT, "integer" },
+			{ Columns.FONT_SIZE, "integer" },
+			{ Columns.TIMER_IS_REPEATE, "integer" },
+			{ Columns.TIMER_PATTERN, "text" },
+			{ Columns.TIMER, "integer" },
+			{ Columns.MEMO, "text" }
+	};
 
 	private static class SqlHelper extends SQLiteOpenHelper {
 		static final String DB_NAME = "post_it.db";
@@ -76,14 +62,14 @@ public class PostItDataProvider extends ContentProvider {
 		}
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(getCreateTableDDL(MAIN_TABLE, POST_IT_COLS.values()));
+			db.execSQL(getCreateTableDDL(MAIN_TABLE, COLUMNS_POST_IT_MAIN));
 		}
 
-		private String getCreateTableDDL(String table, Column[] columns) {
+		private String getCreateTableDDL(String table, String[][] colsDef) {
 			StringBuilder sbuf = new StringBuilder();
 			sbuf.append("CREATE TABLE ").append(table).append('(');
-			for (Column column : columns) {
-				sbuf.append(column.name()).append(' ').append(column.type()).append(',');
+			for (String[] colDef : colsDef) {
+				sbuf.append(colDef[0].toString()).append(' ').append(colDef[1]).append(',');
 			}
 			sbuf.setLength(sbuf.length() - 1);
 			sbuf.append(");");
@@ -148,42 +134,42 @@ public class PostItDataProvider extends ContentProvider {
 
 	public static PostItData toPostItData(Cursor cursor) {
 		PostItData data = new PostItData(
-				POST_IT_COLS.ID.getLong(cursor),
-				POST_IT_COLS.ENABLED.getInt(cursor),
-				POST_IT_COLS.COLOR.getInt(cursor),
-				POST_IT_COLS.POS_X.getInt(cursor),
-				POST_IT_COLS.POS_Y.getInt(cursor),
-				POST_IT_COLS.WIDTH.getInt(cursor),
-				POST_IT_COLS.HEIGHT.getInt(cursor),
-				POST_IT_COLS.FONT_SIZE.getInt(cursor),
-				POST_IT_COLS.MEMO.getString(cursor)
+				cursor.getLong(cursor.getColumnIndex(Columns.ID)),
+				cursor.getInt(cursor.getColumnIndex(Columns.ENABLED)),
+				cursor.getInt(cursor.getColumnIndex(Columns.COLOR)),
+				cursor.getInt(cursor.getColumnIndex(Columns.POS_X)),
+				cursor.getInt(cursor.getColumnIndex(Columns.POS_Y)),
+				cursor.getInt(cursor.getColumnIndex(Columns.WIDTH)),
+				cursor.getInt(cursor.getColumnIndex(Columns.HEIGHT)),
+				cursor.getInt(cursor.getColumnIndex(Columns.FONT_SIZE)),
+				cursor.getString(cursor.getColumnIndex(Columns.MEMO))
 				);
 		return data;
 	}
 	public static ContentValues fromPostItData(ContentValues values, PostItData data) {
 		if (values == null) values = new ContentValues();
-		POST_IT_COLS.ID.put(values, data.getId());
-		POST_IT_COLS.ENABLED.put(values, data.getEnabled());
-		POST_IT_COLS.COLOR.put(values, data.getColor());
-		POST_IT_COLS.POS_X.put(values, data.getPosX());
-		POST_IT_COLS.POS_Y.put(values, data.getPosY());
-		POST_IT_COLS.WIDTH.put(values, data.getWidth());
-		POST_IT_COLS.HEIGHT.put(values, data.getHeight());
-		POST_IT_COLS.FONT_SIZE.put(values, data.getFontSize());
-		POST_IT_COLS.MEMO.put(values, data.getMemo());
+		values.put(Columns.ID, data.getId());
+		values.put(Columns.ENABLED, data.getEnabled());
+		values.put(Columns.COLOR, data.getColor());
+		values.put(Columns.POS_X, data.getPosX());
+		values.put(Columns.POS_Y, data.getPosY());
+		values.put(Columns.WIDTH, data.getWidth());
+		values.put(Columns.HEIGHT, data.getHeight());
+		values.put(Columns.FONT_SIZE, data.getFontSize());
+		values.put(Columns.MEMO, data.getMemo());
 		return values;
 	}
-
+	
 	public static PostItData getPostItData(Context context, long id) {
-		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null,
-				POST_IT_COLS.ID.where(), new String[] { Long.toString(id) }, null);
+		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null, 
+				Columns.ID + "=?",	new String[] { Long.toString(id) }, null);
 		if (cursor.moveToNext()) {
 			PostItData data = PostItDataProvider.toPostItData(cursor);
 			return data;
 		}
 		return null;
 	}
-
+	
 	public static List<PostItData> getAllPostItData(Context context) {
 		List<PostItData> list = new ArrayList<PostItData>();
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null, null, null, null);
@@ -210,7 +196,8 @@ public class PostItDataProvider extends ContentProvider {
 		}
 		return map;
 	}
-
+	
+	
 	public static void setAllPostItData(Context context, List<PostItData> list) {
 		ContentResolver content = context.getContentResolver();
 		ContentValues values = new ContentValues();
@@ -221,8 +208,8 @@ public class PostItDataProvider extends ContentProvider {
 
 	public static long createPostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
-		ContentValues values = PostItDataProvider.fromPostItData(null, data);
-		values.remove(POST_IT_COLS.ID.name());
+		ContentValues values =PostItDataProvider.fromPostItData(null, data);
+		values.remove(Columns.ID);
 		Uri uri = content.insert(PostItDataProvider.CONTENT_URI, values);
 		long id = Long.parseLong(uri.getLastPathSegment());
 		return id;
@@ -233,7 +220,7 @@ public class PostItDataProvider extends ContentProvider {
 	}
 	public static void removePostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
-		content.delete(PostItDataProvider.CONTENT_URI, POST_IT_COLS.ID.where(),
+		content.delete(PostItDataProvider.CONTENT_URI, Columns.ID + "=?",
 				new String[] { Long.toString(data.getId()) });
 	}
 

@@ -1,13 +1,11 @@
 package org.kotemaru.android.postit;
 
-
 public class PostItData {
 	public static final int W_SHORT = 90;
-	public static final int W_LONG  = 160;
+	public static final int W_LONG = 160;
 	public static final int H_SMALL = 32;
 	public static final int H_LAGE = 64;
-	
-	
+
 	private long id;
 	private int enabled;
 	private int color; // 1-5
@@ -18,12 +16,13 @@ public class PostItData {
 	private int fontSize; // sp
 	private String memo;
 
-	public PostItData() {}
-	
+	public PostItData() {
+	}
+
 	public PostItData(long id, int color, int posX, int posY) {
 		this(id, 1, color, posX, posY, W_LONG, H_SMALL, 12, "");
 	}
-	
+
 	public PostItData(long id, int enabled, int color, int posX, int posY, int width, int height, int fontSize, String memo) {
 		this.id = id;
 		this.enabled = enabled;
@@ -49,7 +48,7 @@ public class PostItData {
 		return enabled != 0;
 	}
 	public void setEnabled(boolean enabled) {
-		this.enabled = enabled ? 1:0;
+		this.enabled = enabled ? 1 : 0;
 	}
 
 	public int getColor() {
@@ -100,6 +99,5 @@ public class PostItData {
 	public void setFontSize(int fontSize) {
 		this.fontSize = fontSize;
 	}
-	
-	
+
 }
