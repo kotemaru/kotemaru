@@ -39,14 +39,14 @@ public class SettingActivity extends Activity {
 		mChoosePictue.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Launcher.startChoosePicture(SettingActivity.this);
+				Launcher.startChoosePicture(SettingActivity.this, Launcher.CHOOSE_PICTURE_DAY);
 			}
 		});
 		mChoosePictue2 = (Button) findViewById(R.id.choose_picture2);
 		mChoosePictue2.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				Launcher.startChoosePicture2(SettingActivity.this);
+				Launcher.startChoosePicture(SettingActivity.this, Launcher.CHOOSE_PICTURE_NIGHT);
 			}
 		});
 		mCtrlActionRadioGroup = (RadioLayout) findViewById(R.id.ctrl_action_radio_group);
@@ -88,13 +88,13 @@ public class SettingActivity extends Activity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent returnedIntent) {
 		super.onActivityResult(requestCode, resultCode, returnedIntent);
-		if (requestCode == Launcher.CHOOSE_PICTURE) {
+		if (requestCode == Launcher.CHOOSE_PICTURE_DAY) {
 			if (resultCode == RESULT_OK) {
 				Uri uri = returnedIntent.getData();
 				mSettings.setBackgroundUri("12:00", uri.toString());
 			}
 		}
-		if (requestCode == Launcher.CHOOSE_PICTURE2) {
+		if (requestCode == Launcher.CHOOSE_PICTURE_NIGHT) {
 			if (resultCode == RESULT_OK) {
 				Uri uri = returnedIntent.getData();
 				mSettings.setBackgroundUri("00:00", uri.toString());

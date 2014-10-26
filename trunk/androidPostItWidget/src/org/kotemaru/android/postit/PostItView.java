@@ -108,7 +108,7 @@ public class PostItView extends FrameLayout {
 		PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		PostItTray postItTray = postItWallpaper.getPostItTray();
 		postItTray.hide();
-		Launcher.startPostItEditActivity(postItWallpaper, mPostItData);
+		Launcher.startPostItSettingsActivity(postItWallpaper, mPostItData);
 	}
 
 	private void onDrag(MotionEvent ev, int rx, int ry) {

@@ -9,31 +9,54 @@ import android.content.Intent;
 import android.os.Build;
 import android.service.wallpaper.WallpaperService;
 
+
+/**
+ * 各種 Intent 発行ユーティリティ
+ * @author kotemaru.org
+ */
 public class Launcher {
-	public static final int CHOOSE_PICTURE = 1000;
-	public static final int CHOOSE_PICTURE2 = 1002;
+	public static final int CHOOSE_PICTURE_DAY = 1000;
+	public static final int CHOOSE_PICTURE_NIGHT = 1002;
 	public static String ACTION_CHANGE_SETTENGS = "org.kotemaru.android.postit.ACTION_CHANGE_SETTENGS";
 
-	public static void startPostItEditActivity(Context context, PostItData postItData) {
+	/**
+	 * 各付箋の編集Activityの起動。
+	 * @param context
+	 * @param postItData 付箋データ。
+	 */
+	public static void startPostItSettingsActivity(Context context, PostItData postItData) {
 		Intent intent = new Intent(context, PostItSettingActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		intent.putExtra(PostItSettingActivity.POST_IT_ID, postItData.getId());
 		context.startActivity(intent);
 	}
-	public static void startChoosePicture(Activity context) {
+	
+	/**
+	 * 画像選択の開始。
+	 * @param context
+	 * @param code リクエストコード
+	 */
+	public static void startChoosePicture(Activity context, int code) {
 		Intent intent = new Intent(Intent.ACTION_PICK);
 		intent.setType("image/*");
-		context.startActivityForResult(intent, CHOOSE_PICTURE);
+		context.startActivityForResult(intent, code);
 	}
-	public static void startChoosePicture2(Activity context) {
-		Intent intent = new Intent(Intent.ACTION_PICK);
-		intent.setType("image/*");
-		context.startActivityForResult(intent, CHOOSE_PICTURE2);
-	}
+	
+	/**
+	 * Live壁紙に設定の変更を通知。
+	 * @param context
+	 */
 	public static void notifyChangeSettings(Context context) {
 		Intent intent = new Intent(ACTION_CHANGE_SETTENGS);
 		context.startService(intent);
 	}
+	
+	/**
+	 * ライブ壁紙を設定。
+	 * <li>API-15以前は選択画面を表示。
+	 * @param context
+	 * @param liveWallpaper ライブ壁紙
+	 */
 	@TargetApi(Build.VERSION_CODES.JELLY_BEAN)
 	public static void setupLiveWallpaper(Activity context, Class<? extends WallpaperService> liveWallpaper) {
 		Intent intent = new Intent();

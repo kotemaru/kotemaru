@@ -10,6 +10,16 @@ import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 
+/**
+ * カスタムのラジオボタン。
+ * <li>RadioLayout の子要素で有ることが必須。
+ * <li>内包するViewがそのまま選択可能なボタンとなる。
+ * <li>選択されると selected=true になるので適当に背景を設定して置く。
+ * <li>XML定義のサンプルは RadioLayout 参照。
+ * <li>カスタム属性として value を持つ。使い方はアプリ依存。
+ * @author kotemaru.org
+ */
+
 public class RadioItem extends FrameLayout {
 	private RadioButton mRadioButton;
 	private String mValue;
@@ -29,6 +39,7 @@ public class RadioItem extends FrameLayout {
 			a.recycle();
 		}
 	}
+	
 	@Override
 	public void onAttachedToWindow() {
 		setOnClickListener(mOnClickListener);
@@ -38,14 +49,11 @@ public class RadioItem extends FrameLayout {
 			mRadioButton.setChecked(isSelected());
 		}
 	}
-
-	private OnClickListener mOnClickListener = new OnClickListener() {
-		@Override
-		public void onClick(View view) {
-			selectMe();
-		}
-	};
-
+	
+	/**
+	 * 子要素の標準Radioボタン検索。
+	 * @return 標準Radioボタン。なければnull。
+	 */
 	private RadioButton findRadioButton() {
 		for (int i = 0; i < getChildCount(); i++) {
 			View child = getChildAt(i);
@@ -54,11 +62,30 @@ public class RadioItem extends FrameLayout {
 		return null;
 	}
 
+	/**
+	 * クリックリスナ。
+	 * <li>タップされたら自分を選択するだけ。
+	 */
+	private OnClickListener mOnClickListener = new OnClickListener() {
+		@Override
+		public void onClick(View view) {
+			selectMe();
+		}
+	};
+
+	/**
+	 * 自分を選択する。グループ内の他の項目は選択解除される。
+	 */
 	private void selectMe() {
 		RadioLayout group = getRadioGroup();
 		if (group == null) return;
 		group.onSelect(this);
 	}
+	
+	/**
+	 * 自分の所属するグループの取得。
+	 * @return
+	 */
 	private RadioLayout getRadioGroup() {
 		ViewParent parent = this.getParent();
 		while (parent != null) {
@@ -69,6 +96,11 @@ public class RadioItem extends FrameLayout {
 		}
 		return null;
 	}
+	
+	/**
+	 * 子要素の標準Radioボタンがあれば選択状態を変更する。
+	 * @param b
+	 */
 	@Override
 	public void setSelected(boolean b) {
 		super.setSelected(b);

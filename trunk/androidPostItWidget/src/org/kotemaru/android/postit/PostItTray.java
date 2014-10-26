@@ -39,7 +39,7 @@ public class PostItTray {
 
 	public static PostItTray create(PostItWallpaper postItWallpaper) {
 		PostItTray postItTray = new PostItTray(postItWallpaper);
-		WindowManager.LayoutParams params = Util.geWindowLayoutParams();
+		WindowManager.LayoutParams params = Util.getWindowLayoutParams();
 		params.width = WindowManager.LayoutParams.MATCH_PARENT;
 		params.height = WindowManager.LayoutParams.MATCH_PARENT;
 		params.x = 0;
@@ -133,7 +133,7 @@ public class PostItTray {
 				PostItData data = new PostItData(-1, color, (int) ev.getX(), (int) ev.getY());
 				PostItView postItView = mPostItWallpaper.createPostIt(data);
 				data = postItView.getPostItData();
-				Launcher.startPostItEditActivity(mPostItWallpaper, data);
+				Launcher.startPostItSettingsActivity(mPostItWallpaper, data);
 				hide();
 			}
 			return false;
