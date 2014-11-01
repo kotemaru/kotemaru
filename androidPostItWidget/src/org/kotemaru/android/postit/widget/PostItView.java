@@ -1,9 +1,9 @@
 package org.kotemaru.android.postit.widget;
 
+import org.kotemaru.android.postit.PostItConst.PostItColor;
 import org.kotemaru.android.postit.PostItViewManager;
 import org.kotemaru.android.postit.PostItWallpaper;
 import org.kotemaru.android.postit.R;
-import org.kotemaru.android.postit.data.PostItColor;
 import org.kotemaru.android.postit.data.PostItData;
 import org.kotemaru.android.postit.data.PostItDataProvider;
 import org.kotemaru.android.postit.util.AnimFactory;
@@ -24,7 +24,17 @@ import android.view.animation.Animation;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+
+/**
+ * 付箋用のカスタムView。
+ * <li>WindowManagerの子となる。
+ * <li>ドラッグ＆ドロップ処理はすべて自力で行う。
+ * @author kotemaru.org
+ */
+
 public class PostItView extends FrameLayout {
+	
+	/** 付箋の色と対応する画像リソースのマップ */
 	private static final IntIntMap sColorResourceMap = new IntIntMap(new int[][] {
 			{ R.drawable.post_it_blue, PostItColor.BLUE, },
 			{ R.drawable.post_it_green, PostItColor.GREEN, },
@@ -33,6 +43,7 @@ public class PostItView extends FrameLayout {
 			{ R.drawable.post_it_red, PostItColor.RED, },
 	});
 
+	
 	private PostItViewManager mManager;
 	private PostItData mPostItData;
 	private TextView mMemo;
@@ -56,6 +67,11 @@ public class PostItView extends FrameLayout {
 		return mPostItData;
 	}
 
+	/**
+	 * 付箋データの設定。
+	 * <li>データの内容をViewの状態に反映させる。
+	 * @param postItData 付箋データ
+	 */
 	public void setPostItData(PostItData postItData) {
 		this.mPostItData = postItData;
 		setBackground(false);
@@ -73,6 +89,13 @@ public class PostItView extends FrameLayout {
 		mManager.getWindowManager().updateViewLayout(this, params);
 	}
 
+	/**
+	 * 背景設定。
+	 * <li>通常は付箋データから背景色を設定する。
+	 * <li>ゴミ箱の上にいる場合は赤の背景になる。
+	 * <li>9.pngを設定すると勝手にPaddingが設定されるのでリセットが必要。
+	 * @param isOnTrash true=ゴミ箱の上
+	 */
 	private void setBackground(boolean isOnTrash) {
 		if (isOnTrash) {
 			mMemo.setBackgroundResource(R.drawable.post_it_remove);
@@ -84,6 +107,10 @@ public class PostItView extends FrameLayout {
 		mMemo.setPadding(pad, 0, pad, 0);
 	}
 
+	/**
+	 * ドラッグ処理用のリスナ。
+	 * <li>WindowManagerの子となるので通常のドラッグ処理は使えないので自力で処理。
+	 */
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
 		private PostItView self = PostItView.this;
 		private boolean isClick = false;
@@ -115,6 +142,12 @@ public class PostItView extends FrameLayout {
 		}
 	};
 
+	/**
+	 * クリック処理。編集画面を起動する。
+	 * @param ev
+	 * @param rx
+	 * @param ry
+	 */
 	public void onClick(MotionEvent ev, int rx, int ry) {
 		PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		PostItTray postItTray = postItWallpaper.getPostItTray();
@@ -122,6 +155,13 @@ public class PostItView extends FrameLayout {
 		Launcher.startPostItSettingsActivity(postItWallpaper, mPostItData);
 	}
 
+	/**
+	 * ドラッグ処理。
+	 * <li>自力で座標変更する。
+	 * @param ev
+	 * @param rx
+	 * @param ry
+	 */
 	private void onDrag(MotionEvent ev, int rx, int ry) {
 		PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		PostItTray postItTray = postItWallpaper.getPostItTray();
@@ -135,6 +175,14 @@ public class PostItView extends FrameLayout {
 		boolean isOnTrash = postItTray.noticeDrag(this, params.x + rx, params.y + ry);
 		setBackground(isOnTrash);
 	}
+	
+	/**
+	 * ドロップ処理。
+	 * <li>ゴミ箱かどうかで処理の振り分け。
+	 * @param ev
+	 * @param rx
+	 * @param ry
+	 */
 	private void onDrop(MotionEvent ev, int rx, int ry) {
 		final PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		final PostItTray postItTray = postItWallpaper.getPostItTray();
@@ -147,6 +195,11 @@ public class PostItView extends FrameLayout {
 		}
 	}
 
+	/**
+	 * ゴミ箱行き処理。
+	 * <li>データ削除してゴミ箱に吸い込まれるアニメーション開始。
+	 * @param params
+	 */
 	private void doTrash(WindowManager.LayoutParams params) {
 		final PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		final PostItTray postItTray = postItWallpaper.getPostItTray();
@@ -164,6 +217,12 @@ public class PostItView extends FrameLayout {
 		});
 		mMemo.startAnimation(removeAnim);
 	}
+	/**
+	 * 移動確定処理。
+	 * <li>移動先座標をDBに保存する。
+	 * <li>画面の外にはみ出さないように座標は補正する。
+	 * @param params
+	 */
 	private void doMove(WindowManager.LayoutParams params) {
 		final PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		final PostItTray postItTray = postItWallpaper.getPostItTray();

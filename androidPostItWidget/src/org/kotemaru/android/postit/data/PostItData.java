@@ -1,16 +1,13 @@
 package org.kotemaru.android.postit.data;
 
+import org.kotemaru.android.postit.PostItConst.PostItShape;
+
 
 /**
  * 付箋データBean。
  * @author kotemaru.org
  */
 public class PostItData {
-	public static final int W_SHORT = 90;
-	public static final int W_LONG = 160;
-	public static final int H_SMALL = 32;
-	public static final int H_LAGE = 64;
-
 	private long id;
 	private int enabled;
 	private int color; // 1-5
@@ -25,7 +22,7 @@ public class PostItData {
 	}
 
 	public PostItData(long id, int color, int posX, int posY) {
-		this(id, 1, color, posX, posY, W_LONG, H_SMALL, 12, "");
+		this(id, 1, color, posX, posY, PostItShape.W_LONG, PostItShape.H_SMALL, 12, "");
 	}
 
 	public PostItData(long id, int enabled, int color, int posX, int posY, int width, int height, int fontSize, String memo) {

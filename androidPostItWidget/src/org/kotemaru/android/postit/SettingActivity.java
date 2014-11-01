@@ -1,6 +1,6 @@
 package org.kotemaru.android.postit;
 
-import org.kotemaru.android.postit.data.PostItColor;
+import org.kotemaru.android.postit.PostItConst.PostItColor;
 import org.kotemaru.android.postit.data.PostItData;
 import org.kotemaru.android.postit.data.PostItDataProvider;
 import org.kotemaru.android.postit.data.Settings;
@@ -20,11 +20,18 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
+/**
+ * アプリメイン＆設定画面。
+ * <li>初回起動時の初期化を行う。
+ * <li>PostItWallpaperが壁紙に設定されていなければダイアログを出して設定画面に遷移する。
+ * <li>背景画像、付箋トレイ表示アクションの設定を行う。
+ * @author kotemaru.org
+ */
 public class SettingActivity extends Activity {
 	private Settings mSettings;
 	private WallpaperManager mWallpaperManager;
-	private Button mChoosePictue;
-	private Button mChoosePictue2;
+	private Button mChoosePictueDay;
+	private Button mChoosePictueNight;
 	private RadioLayout mCtrlActionRadioGroup;
 
 	@Override
@@ -40,15 +47,15 @@ public class SettingActivity extends Activity {
 		mSettings.load();
 
 		// Views setting.
-		mChoosePictue = (Button) findViewById(R.id.choose_picture);
-		mChoosePictue.setOnClickListener(new OnClickListener() {
+		mChoosePictueDay = (Button) findViewById(R.id.choose_picture);
+		mChoosePictueDay.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Launcher.startChoosePicture(SettingActivity.this, Launcher.CHOOSE_PICTURE_DAY);
 			}
 		});
-		mChoosePictue2 = (Button) findViewById(R.id.choose_picture2);
-		mChoosePictue2.setOnClickListener(new OnClickListener() {
+		mChoosePictueNight = (Button) findViewById(R.id.choose_picture2);
+		mChoosePictueNight.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
 				Launcher.startChoosePicture(SettingActivity.this, Launcher.CHOOSE_PICTURE_NIGHT);
@@ -57,6 +64,10 @@ public class SettingActivity extends Activity {
 		mCtrlActionRadioGroup = (RadioLayout) findViewById(R.id.ctrl_action_radio_group);
 	}
 
+	/**
+	 * 初回起動時の初期化処理。
+	 * <li>サンプルの付箋を登録する。
+	 */
 	private void fiastBootInitialize() {
 		PostItData data = new PostItData(-1, PostItColor.BLUE, Util.dp2px(this, 100), Util.dp2px(this, 50));
 		data.setMemo("Sample-1");
@@ -68,20 +79,32 @@ public class SettingActivity extends Activity {
 		PostItDataProvider.createPostItData(this, data);
 	}
 
+	/**
+	 * PostItWallpaperが壁紙でなければダイアログを表示する。
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
 		if (!hasPostItWallpaper()) {
-			showAlertDialog();
+			showSetWallpaperDialog();
 		}
 		mCtrlActionRadioGroup.setValue(mSettings.getCtrlAction());
 	}
+
+	/**
+	 * PostItWallpaperが壁紙になっているか確認。
+	 * @return true=なっている。
+	 */
 	private boolean hasPostItWallpaper() {
 		WallpaperInfo winfo = mWallpaperManager.getWallpaperInfo();
 		if (winfo == null) return false;
 		return PostItWallpaper.class.getCanonicalName().equals(winfo.getServiceName());
 	}
 
+	/**
+	 * Viewの値からアプリ設定を更新。
+	 * <li>PostItWallpaperに設定変更を通知する。
+	 */
 	@Override
 	public void onPause() {
 		mSettings.setCtrlAction(mCtrlActionRadioGroup.getValue());
@@ -90,6 +113,9 @@ public class SettingActivity extends Activity {
 		super.onPause();
 	}
 
+	/**
+	 * 画像選択画面から選択画像の戻り値を受け取る。
+	 */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent returnedIntent) {
 		super.onActivityResult(requestCode, resultCode, returnedIntent);
@@ -108,9 +134,10 @@ public class SettingActivity extends Activity {
 	}
 
 	/**
-	 * TODO: 手抜きDialog.
+	 * PostItWallpaperを壁紙に設定する旨のダイアログ表示。
+	 * <li>注意: 手抜きDialogなので落ちるかもしれないが初回だけなのでこのまま。
 	 */
-	private void showAlertDialog() {
+	private void showSetWallpaperDialog() {
 		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
 		alertDialogBuilder.setTitle(R.string.dialog_init_title);
 		alertDialogBuilder.setMessage(R.string.dialog_init_msg);
