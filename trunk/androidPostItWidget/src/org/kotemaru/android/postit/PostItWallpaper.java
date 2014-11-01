@@ -221,7 +221,8 @@ public class PostItWallpaper extends WallpaperService {
 
 		/**
 		 * 壁紙の描画。
-		 * <li>
+		 * <li>壁紙はステータスバーとナビゲーションバーを含まない領域に描画する。
+		 * <li>付箋が壁紙描画になっていれば付箋を半透明で上書きする。
 		 */
 		private void drawFrame() {
 			final SurfaceHolder holder = getSurfaceHolder();
