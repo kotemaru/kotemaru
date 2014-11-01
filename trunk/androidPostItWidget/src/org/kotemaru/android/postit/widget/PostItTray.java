@@ -1,8 +1,8 @@
 package org.kotemaru.android.postit.widget;
 
+import org.kotemaru.android.postit.PostItConst.PostItColor;
 import org.kotemaru.android.postit.PostItWallpaper;
 import org.kotemaru.android.postit.R;
-import org.kotemaru.android.postit.data.PostItColor;
 import org.kotemaru.android.postit.data.PostItData;
 import org.kotemaru.android.postit.util.AnimFactory;
 import org.kotemaru.android.postit.util.AnimFactory.AnimEndListener;
@@ -29,6 +29,7 @@ import android.widget.ImageView;
  * <li>ホーム画面にオーバレイ表示する。必要のない時は非表示。
  * <li>付箋の新規作成、削除、表示モード変更を行うアイコンを配置する。
  * <li>タッチイベントを受け取るためサイズは全画面となる。
+ * <li>- ※レイヤはViewの無いところにはイベントが上がらない。ドラッグできない。
  * <li>何も表示していない部分も半透明にして暗くする。（ユーザが混乱しないように）
  * <li>
  * 
@@ -38,11 +39,16 @@ public class PostItTray {
 	private PostItWallpaper mPostItWallpaper;
 	private View mFullScreenFrame;
 	private View mTrayLayout;
-	private ImageView mLayer;
+	private ImageView mLayerBtn;
 	private ImageView mTrash;
 	private Animation mFadeOutAnim;
 	private Animation mFadeInAnim;
 
+	/**
+	 * 生成メソッド。オーバレイ・レイヤに配置して返す。
+	 * @param postItWallpaper
+	 * @return 付箋トレイ
+	 */
 	public static PostItTray create(PostItWallpaper postItWallpaper) {
 		PostItTray postItTray = new PostItTray(postItWallpaper);
 		WindowManager.LayoutParams params = Util.getWindowLayoutParams();
@@ -55,7 +61,8 @@ public class PostItTray {
 		return postItTray;
 	}
 
-	public PostItTray(PostItWallpaper postItWallpaper) {
+	@SuppressLint("InflateParams")
+	private PostItTray(PostItWallpaper postItWallpaper) {
 		final Context context = postItWallpaper;
 		mPostItWallpaper = postItWallpaper;
 		LayoutInflater inflater = LayoutInflater.from(context);
@@ -75,13 +82,13 @@ public class PostItTray {
 		setupNewPostItDragStartListener(R.id.post_it_yellow, PostItColor.YELLOW);
 		setupNewPostItDragStartListener(R.id.post_it_pink, PostItColor.PINK);
 
-		mLayer = (ImageView) mFullScreenFrame.findViewById(R.id.layer);
-		mLayer.setOnClickListener(new OnClickListener() {
+		mLayerBtn = (ImageView) mFullScreenFrame.findViewById(R.id.layer);
+		mLayerBtn.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				boolean isRaise = mPostItWallpaper.isRaisePostIt();
 				mPostItWallpaper.setRaisePostIt(!isRaise);
-				mLayer.setImageResource(isRaise ? R.drawable.layer_0 : R.drawable.layer_1);
+				mLayerBtn.setImageResource(isRaise ? R.drawable.layer_0 : R.drawable.layer_1);
 				hide();
 			}
 		});
@@ -109,6 +116,9 @@ public class PostItTray {
 		postit.setOnTouchListener(new NewPostItDragStartListener(color));
 	}
 
+	/**
+	 * 付箋束がタッチされた場合に新規付箋のドラッグ処理を開始するリスナ。
+	 */
 	private class NewPostItDragStartListener implements OnTouchListener {
 		private String mColor;
 
@@ -116,7 +126,7 @@ public class PostItTray {
 			mColor = Integer.toString(color);
 		}
 
-		@SuppressLint("ClickableViewAccessibility")
+		@SuppressLint("ClickableViewAccessibility") // Overlay layer event handling.
 		@Override
 		public boolean onTouch(View view, MotionEvent ev) {
 			int action = ev.getAction();
@@ -129,6 +139,10 @@ public class PostItTray {
 		}
 	};
 
+	/**
+	 * 新規付箋がドロップされた時のリスナ。
+	 * <li>付箋を新規作成して編集画面を起動する。
+	 */
 	private View.OnDragListener mNewPostItDropListener = new View.OnDragListener() {
 		@Override
 		public boolean onDrag(View view, DragEvent ev) {
@@ -146,16 +160,28 @@ public class PostItTray {
 		};
 	};
 
+	/**
+	 * @return 付箋トレイのViewを返す。
+	 */
 	public View getView() {
 		return mFullScreenFrame;
 	}
 
+	/**
+	 * @return ゴミ箱の中心座業を返す。
+	 */
 	public Point getTrashPoint() {
 		int x = mTrash.getLeft() + mTrash.getWidth() / 2;
 		int y = mTrash.getTop() + mTrash.getHeight() / 2;
 		return new Point(x, y);
 	}
 
+	/**
+	 * 座標がゴミ箱の内側か否か返す。
+	 * @param x
+	 * @param y
+	 * @return true=内側
+	 */
 	private boolean isOnTrash(int x, int y) {
 		int left = mTrash.getLeft();
 		int right = mTrash.getRight();
@@ -164,17 +190,34 @@ public class PostItTray {
 		return (left < x && x < right && top < y && y < bottom);
 	}
 
+	/**
+	 * 付箋のドラッグ位置の通知
+	 * @param view 付箋
+	 * @param x
+	 * @param y
+	 * @return true=ゴミ箱の上
+	 */
 	public boolean noticeDrag(View view, int x, int y) {
 		boolean isOnTrash = isOnTrash(x, y);
 		mTrash.setImageResource(isOnTrash ? R.drawable.trash_red : R.drawable.trash_white);
 		return isOnTrash;
 	}
+	/**
+	 * 付箋のドロップ位置の通知
+	 * @param view 付箋
+	 * @param x
+	 * @param y
+	 * @return true=ゴミ箱の上
+	 */
 	public boolean noticeDrop(View view, int x, int y) {
 		boolean isOnTrash = isOnTrash(x, y);
 		mTrash.setImageResource(R.drawable.trash_white);
 		return isOnTrash;
 	}
 
+	/**
+	 * 付箋トレイの表示・非表示切り替え。
+	 */
 	public void toggle() {
 		if (mFullScreenFrame.getVisibility() == View.VISIBLE) {
 			hide();
@@ -188,9 +231,6 @@ public class PostItTray {
 	}
 	public void hide() {
 		mTrayLayout.startAnimation(mFadeOutAnim);
-	}
-	public void gone() {
-		mFullScreenFrame.setVisibility(View.GONE);
 	}
 
 }

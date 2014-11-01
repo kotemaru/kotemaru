@@ -17,6 +17,7 @@ import android.widget.RadioButton;
  * <li>選択されると selected=true になるので適当に背景を設定して置く。
  * <li>XML定義のサンプルは RadioLayout 参照。
  * <li>カスタム属性として value を持つ。使い方はアプリ依存。
+ * <li>RadioButtonが内包されている場合は選択状態と checked を同期させる。
  * @author kotemaru.org
  */
 
@@ -29,14 +30,14 @@ public class RadioItem extends FrameLayout {
 
 	public RadioItem(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		TypedArray a = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RadioItem, 0, 0);
+		TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.RadioItem, 0, 0);
 		try {
-			mValue = a.getString(R.styleable.RadioItem_value);
-			mValueInt = a.getInteger(R.styleable.RadioItem_value_int, 0);
-			mValueFloat = a.getFloat(R.styleable.RadioItem_value_float, 0.0F);
-			mValueBool = a.getBoolean(R.styleable.RadioItem_value_bool, false);
+			mValue = typedArray.getString(R.styleable.RadioItem_value);
+			mValueInt = typedArray.getInteger(R.styleable.RadioItem_value_int, 0);
+			mValueFloat = typedArray.getFloat(R.styleable.RadioItem_value_float, 0.0F);
+			mValueBool = typedArray.getBoolean(R.styleable.RadioItem_value_bool, false);
 		} finally {
-			a.recycle();
+			typedArray.recycle();
 		}
 	}
 	
@@ -51,7 +52,7 @@ public class RadioItem extends FrameLayout {
 	}
 	
 	/**
-	 * 子要素の標準Radioボタン検索。
+	 * 子要素の標準Radioボタン検索。ネストはしない。
 	 * @return 標準Radioボタン。なければnull。
 	 */
 	private RadioButton findRadioButton() {

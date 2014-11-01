@@ -35,7 +35,10 @@ public class PostItDataProvider extends ContentProvider {
 		public String name();
 		public String type();
 	}
-
+	
+	/**
+	 * テーブル定義。typeはSQL型。
+	 */
 	public enum POST_IT_COLS implements Column {
 		_ID("integer primary key autoincrement"),
 		ENABLED("integer"), // 0=false, 1=true

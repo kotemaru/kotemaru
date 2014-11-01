@@ -21,6 +21,7 @@ public class Launcher {
 	public static final int CHOOSE_PICTURE_DAY = 1000;
 	public static final int CHOOSE_PICTURE_NIGHT = 1002;
 	public static String ACTION_CHANGE_SETTENGS = "org.kotemaru.android.postit.ACTION_CHANGE_SETTENGS";
+	public static final String POST_IT_ID = "POST_IT_ID";
 
 	/**
 	 * 各付箋の編集Activityの起動。
@@ -30,7 +31,7 @@ public class Launcher {
 	public static void startPostItSettingsActivity(Context context, PostItData postItData) {
 		Intent intent = new Intent(context, PostItSettingActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		intent.putExtra(PostItSettingActivity.POST_IT_ID, postItData.getId());
+		intent.putExtra(POST_IT_ID, postItData.getId());
 		context.startActivity(intent);
 	}
 	

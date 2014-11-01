@@ -59,7 +59,7 @@ public class RadioLayout extends LinearLayout {
 		if (item == null) return;
 		onSelect(item);
 	}
-	
+
 	/**
 	 * 選択項目の取得。RadioGroup互換。
 	 * @return RadioItem のリソースID
@@ -93,7 +93,7 @@ public class RadioLayout extends LinearLayout {
 		return null;
 	}
 
-	//--------------------------------------------------------------------
+	// --------------------------------------------------------------------
 	// 以下、選択項目の value 属性値取得メソット。
 	public String getValue() {
 		RadioItem item = getSelectedItem();

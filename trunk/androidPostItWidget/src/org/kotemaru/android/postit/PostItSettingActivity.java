@@ -1,20 +1,28 @@
 package org.kotemaru.android.postit;
 
-import org.kotemaru.android.postit.data.PostItColor;
+import org.kotemaru.android.postit.PostItConst.PostItColor;
+import org.kotemaru.android.postit.PostItConst.PostItFontSize;
+import org.kotemaru.android.postit.PostItConst.PostItShape;
 import org.kotemaru.android.postit.data.PostItData;
 import org.kotemaru.android.postit.data.PostItDataProvider;
 import org.kotemaru.android.postit.util.IntIntMap;
+import org.kotemaru.android.postit.util.Launcher;
 import org.kotemaru.android.postit.widget.RadioLayout;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 
+/**
+ * 付箋データの編集画面。
+ * <li>メモ、形状、フォントサイズ、色の編集。
+ * <li>Activityを終了すると自動的にデータを保存する。キャンセルはできない。
+ * @author kotemaru.org
+ */
 public class PostItSettingActivity extends Activity {
-	public static final String POST_IT_ID = "POST_IT_ID";
+	/** ラジオボタンと色コードのマップ。 */
 	private static final IntIntMap sColorRadioMap = new IntIntMap(new int[][] {
 			{ R.id.color_blue, PostItColor.BLUE, },
 			{ R.id.color_green, PostItColor.GREEN, },
@@ -22,16 +30,18 @@ public class PostItSettingActivity extends Activity {
 			{ R.id.color_pink, PostItColor.PINK, },
 			{ R.id.color_red, PostItColor.RED, },
 	});
+	/** ラジオボタンとフォントサイズのマップ */
 	private static final IntIntMap sFontRadioMap = new IntIntMap(new int[][] {
-			{ R.id.font_small, 8, },
-			{ R.id.font_middle, 12, },
-			{ R.id.font_lage, 16, },
-			{ R.id.font_huge, 24, },
+			{ R.id.font_small, PostItFontSize.SMALL, },
+			{ R.id.font_middle, PostItFontSize.MIDDLE, },
+			{ R.id.font_lage, PostItFontSize.LAGE, },
+			{ R.id.font_huge, PostItFontSize.HUGE, },
 	});
+	/** ラジオボタンと付箋サイズのマップ */
 	private static final IntIntMap sShapeRadioMap = new IntIntMap(new int[][] {
-			{ R.id.shape_shot, PostItData.W_SHORT, PostItData.H_SMALL },
-			{ R.id.shape_long, PostItData.W_LONG, PostItData.H_SMALL },
-			{ R.id.shape_lage, PostItData.W_LONG, PostItData.H_LAGE },
+			{ R.id.shape_shot, PostItShape.W_SHORT, PostItShape.H_SMALL },
+			{ R.id.shape_long, PostItShape.W_LONG, PostItShape.H_SMALL },
+			{ R.id.shape_lage, PostItShape.W_LONG, PostItShape.H_LAGE },
 	});
 
 	private PostItData mPostItData;
@@ -40,13 +50,17 @@ public class PostItSettingActivity extends Activity {
 	private RadioGroup mFontRadioGroup;
 	private RadioLayout mColorRadioGroup;
 
+	/**
+	 * intetntパラメータ
+	 * <li>| POST_IT_ID | long型 | 必須 | 付箋ID。|
+	 */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.post_it_setting_activity);
 
 		Intent intent = getIntent();
-		long postItId = intent.getLongExtra(POST_IT_ID, -1);
+		long postItId = intent.getLongExtra(Launcher.POST_IT_ID, -1);
 		mPostItData = PostItDataProvider.getPostItData(this, postItId);
 
 		mMemo = (EditText) findViewById(R.id.memo);
@@ -55,23 +69,28 @@ public class PostItSettingActivity extends Activity {
 		mColorRadioGroup = (RadioLayout) findViewById(R.id.color_radio_group);
 	}
 
+	/**
+	 * 付箋データから各Viewの値を設定。
+	 */
 	@Override
 	public void onResume() {
 		super.onResume();
-		mMemo.setText(mPostItData.getMemo());
 
 		// restore settings.
+		mMemo.setText(mPostItData.getMemo());
 		mShapeRadioGroup.check(sShapeRadioMap.getFirst(mPostItData.getWidth(), mPostItData.getHeight()));
 		mFontRadioGroup.check(sFontRadioMap.getFirst(mPostItData.getFontSize()));
 		mColorRadioGroup.check(sColorRadioMap.getFirst(mPostItData.getColor()));
 	}
 
+	/**
+	 * 各Viewの値から付箋データを更新。
+	 */
 	@Override
 	public void onPause() {
-		Log.e("DEBUG", "onPause()");
+		// save settings.
 		mPostItData.setMemo(mMemo.getText().toString());
 
-		// save settings.
 		int shapeResId = mShapeRadioGroup.getCheckedRadioButtonId();
 		mPostItData.setWidth(sShapeRadioMap.getSecond(shapeResId));
 		mPostItData.setHeight(sShapeRadioMap.getThird(shapeResId));
@@ -82,7 +101,9 @@ public class PostItSettingActivity extends Activity {
 		int colorResId = mColorRadioGroup.getCheckedRadioButtonId();
 		mPostItData.setColor(sColorRadioMap.getSecond(colorResId));
 
+		// DBに保存
 		PostItDataProvider.updatePostItData(this, mPostItData);
+
 		super.onPause();
 	}
 
