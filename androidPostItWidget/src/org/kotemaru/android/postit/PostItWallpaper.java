@@ -11,12 +11,15 @@ import org.kotemaru.android.postit.widget.PostItTray;
 import org.kotemaru.android.postit.widget.PostItView;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.service.wallpaper.WallpaperService;
@@ -274,19 +277,24 @@ public class PostItWallpaper extends WallpaperService {
 		 * 背景画像の取得。
 		 * <li>背景は時間で変わるので背景URIが変更になったら画像を読み込み直す。
 		 * <li>画像はアスペクト比をそのままでかつ画面サイズピッタリになるように補正したものを返す。
+		 * <li>背景画像未設定の場合はシステムのデフォルト。
 		 * @return 背景画像
 		 */
 		private Bitmap getBackgroundBitmap() {
 			String uri = mSettings.getBackgroundUri(System.currentTimeMillis());
-			if (uri == null) return null;
-			if (uri.equals(mBackgroundUri)) return mBackground;
+			if (uri != null && uri.equals(mBackgroundUri)) return mBackground;
 			mBackgroundUri = uri;
 
 			mBackground = null;
 			try {
 				Point size = Util.getDisplaySize(PostItWallpaper.this);
 				size.y -= mStatusBarHeight;
-				Bitmap srcBitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
+				Bitmap srcBitmap;
+				if (uri != null) {
+					srcBitmap = Util.loadBitmap(PostItWallpaper.this, Uri.parse(uri), size);
+				} else {
+					srcBitmap = getSystemDefaultWallpaper();
+				}
 				if (srcBitmap == null) return null;
 				float dispAspect = (float) size.x / (float) size.y;
 				float imgAspect = (float) srcBitmap.getWidth() / (float) srcBitmap.getHeight();
@@ -312,6 +320,10 @@ public class PostItWallpaper extends WallpaperService {
 			}
 			return mBackground;
 		}
-
+		private Bitmap getSystemDefaultWallpaper() {
+			int resId = Resources.getSystem().getIdentifier("default_wallpaper", "drawable", "android");
+			Drawable drawable = getResources().getDrawable(resId);
+			return ((BitmapDrawable) drawable).getBitmap();
+		}
 	}
 }
