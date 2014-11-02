@@ -113,8 +113,8 @@ public class PostItView extends FrameLayout {
 	 */
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
 		private PostItView self = PostItView.this;
-		private boolean isClick = false;
 		private int rx, ry;
+		private long touchDownTime = -1;
 
 		@SuppressLint("ClickableViewAccessibility")
 		@Override
@@ -125,13 +125,13 @@ public class PostItView extends FrameLayout {
 			int action = ev.getAction();
 			if (action == MotionEvent.ACTION_DOWN) {
 				postItTray.show();
-				isClick = true;
 				rx = (int) ev.getX();
 				ry = (int) ev.getY();
+				touchDownTime = System.currentTimeMillis();
 			} else if (action == MotionEvent.ACTION_MOVE) {
-				isClick = false;
 				self.onDrag(ev, rx, ry);
 			} else if (action == MotionEvent.ACTION_UP) {
+				boolean isClick = (System.currentTimeMillis() - touchDownTime) < 200; // ms
 				if (isClick) {
 					self.onClick(ev, rx, ry);
 				} else {
