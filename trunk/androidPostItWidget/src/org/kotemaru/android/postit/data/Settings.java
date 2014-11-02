@@ -65,8 +65,8 @@ public class Settings {
 	public boolean fiastBootInitialize() {
 		boolean isInitialized = mSharedPref.getBoolean(Key.IS_INITIALIZED.name(), false);
 		if (isInitialized) return false;
-		setBackgroundUri("12:00", "assets:///default_bg_1.jpg");
-		setBackgroundUri("00:00", "assets:///default_bg_2.jpg");
+		//setBackgroundUri("12:00", "assets:///default_bg_1.jpg");
+		//setBackgroundUri("00:00", "assets:///default_bg_2.jpg");
 		save();
 
 		SharedPreferences.Editor editor = mSharedPref.edit();
