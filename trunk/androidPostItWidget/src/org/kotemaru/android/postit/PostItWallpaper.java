@@ -127,6 +127,9 @@ public class PostItWallpaper extends WallpaperService {
 	public Rect getBounds() {
 		return mBounds;
 	}
+	public int getStatusBarHeight() {
+		return mStatusBarHeight;
+	}
 
 	public PostItTray getPostItTray() {
 		return mPostItTray;
