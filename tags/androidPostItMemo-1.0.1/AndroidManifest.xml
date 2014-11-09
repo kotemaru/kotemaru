@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="org.kotemaru.android.postit" android:versionCode="2"
+	android:versionName="1.0.1">
+
+	<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
+	<uses-permission android:name="android.permission.SET_WALLPAPER" />
+	<uses-permission android:name="android.permission.SET_WALLPAPER_HINT" />
+	<uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+	<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+	<application android:allowBackup="true" android:icon="@drawable/icon"
+		android:label="@string/app_name">
+		<activity android:name=".SettingActivity"
+			android:configChanges="orientation|keyboardHidden" android:label="@string/app_name"
+			android:screenOrientation="behind">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".PostItSettingActivity"
+			android:configChanges="orientation|keyboardHidden" android:label="@string/edit_memo"
+			android:screenOrientation="behind">
+		</activity>
+
+		<provider android:name="org.kotemaru.android.postit.data.PostItDataProvider"
+			android:authorities="org.kotemaru.android.postit.data.postitdataprovider"
+			android:exported="true" />
+
+		<service android:name=".PostItWallpaper" android:label="PostItWallpaper"
+			android:permission="android.permission.BIND_WALLPAPER">
+			<intent-filter>
+				<action android:name="android.service.wallpaper.WallpaperService" />
+				<action
+					android:name="org.kotemaru.android.postit.ACTION_CHANGE_SETTENGS" />
+			</intent-filter>
+
+			<meta-data android:name="android.service.wallpaper"
+				android:resource="@xml/wallpaper" />
+		</service>
+	</application>
+
+</manifest>
