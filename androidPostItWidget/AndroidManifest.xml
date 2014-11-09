@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="org.kotemaru.android.postit" android:versionCode="1"
-	android:versionName="1.0.0">
+	package="org.kotemaru.android.postit" android:versionCode="2"
+	android:versionName="1.0.1">
 
 	<uses-sdk android:minSdkVersion="14" android:targetSdkVersion="19" />
 	<uses-permission android:name="android.permission.SET_WALLPAPER" />

@@ -163,12 +163,15 @@ public class PostItView extends FrameLayout {
 	 * @param ry
 	 */
 	private void onDrag(MotionEvent ev, int rx, int ry) {
+		//Log.d("DEBUG","==>"+ev.getY()+":"+ev.getRawY()+":"+ev.getAxisValue(MotionEvent.AXIS_RY));
 		PostItWallpaper postItWallpaper = mManager.getPostItWallpaper();
 		PostItTray postItTray = postItWallpaper.getPostItTray();
 		setAlpha(0.7F);
 		WindowManager.LayoutParams params = (WindowManager.LayoutParams) getLayoutParams();
-		params.x += (int) ev.getX() - rx;
-		params.y += (int) ev.getY() - ry;
+		//params.x += (int) ev.getX() - rx;
+		//params.y += (int) ev.getY() - ry;
+		params.x = (int) ev.getRawX() - rx;
+		params.y = (int) ev.getRawY() - (ry + postItWallpaper.getStatusBarHeight()); // TODO: 暫定対応
 		mManager.getWindowManager().updateViewLayout(this, params);
 		mPostItData.setPosX(params.x);
 		mPostItData.setPosY(params.y);
