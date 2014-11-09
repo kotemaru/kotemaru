@@ -1,0 +1,49 @@
+Subject: Android SDKでjavadoc生成
+Content-type: markdown/text
+Tags: Android, メモ
+Date: 2014/11/09
+Public: yes 
+
+Android の開発環境で eclipse から javadoc を生成しようとすると例外が出たり文字化けしたりでうまく行かない。
+
+単純に eclipse のメニューから実行するとこうなる。
+
+	java.lang.ClassCastException: com.sun.tools.javadoc.ClassDocImpl cannot be cast to com.sun.javadoc.AnnotationTypeDoc
+
+android.jar を bootclasspath に入れたりする必要が有り結局、
+専用の build.xml 作って ant で動かすのが一番面倒が無さそう。
+
+忘れると思うのでメモっとく。
+
+#### build-javadoc.xml:
+
+	<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+	<project default="javadoc">
+		<property file="local.properties" />
+		<property file="project.properties" />
+	
+		<target name="javadoc">
+			<javadoc access="private" 
+				additionalparam="-encoding UTF-8 -charset UTF-8 "
+				bootclasspath="${sdk.dir}/platforms/${target}/android.jar" 
+				classpath="libs/android-support-v4.jar"
+				destdir="doc" 
+				source="1.6" 
+				sourcepath="src" >
+				<packageset dir="src" defaultexcludes="yes">
+					<include name="{パッケージパス}/**" />
+				</packageset>
+				<link href="file:/${sdk.dir}/docs/reference" />
+			</javadoc>
+		</target>
+	</project>
+
+#### local.properties:
+
+	sdk.dir={android-sdksのパス}
+
+#### project.properties: 
+
+	target=android-{APIレベル}
+
+
