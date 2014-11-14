@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Point;
 import android.graphics.PorterDuff.Mode;
 import android.graphics.Rect;
@@ -255,11 +256,28 @@ public class PostItWallpaper extends WallpaperService {
 							drawPostItView(canvas, view);
 						}
 					}
+					if (isPreview()) drawPreview(canvas);
 				}
 			} finally {
 				if (canvas != null) holder.unlockCanvasAndPost(canvas);
 			}
 		}
+		
+		private void drawPreview(Canvas canvas) {
+			int save = canvas.save();
+			float x = canvas.getWidth()/2;
+			float y = canvas.getHeight()/2;
+			mPaint.setTextAlign(Align.CENTER);
+			mPaint.setColor(0x88888888);
+			mPaint.setTextSize(canvas.getWidth()/7);
+			canvas.drawText("Preview", x, y, mPaint);
+			
+			mPaint.setTextSize(canvas.getWidth()/15);
+			y = canvas.getHeight() - Util.dp2px(getBaseContext(), 80);
+			canvas.drawText("↓Click this", x, y, mPaint);
+			canvas.restoreToCount(save);
+		}
+		
 
 		/**
 		 * 壁紙へ付箋を描画する。
