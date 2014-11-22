@@ -21,6 +21,7 @@ public class Launcher {
 	public static final int CHOOSE_PICTURE_DAY = 1000;
 	public static final int CHOOSE_PICTURE_NIGHT = 1002;
 	public static String ACTION_CHANGE_SETTENGS = "org.kotemaru.android.postit.ACTION_CHANGE_SETTENGS";
+	public static String ACTION_CHANGE_DATA = "org.kotemaru.android.postit.ACTION_CHANGE_DATA";
 	public static final String POST_IT_ID = "POST_IT_ID";
 
 	/**
@@ -40,10 +41,19 @@ public class Launcher {
 	 * @param context
 	 * @param code リクエストコード
 	 */
+	@TargetApi(Build.VERSION_CODES.KITKAT)
 	public static void startChoosePicture(Activity context, int code) {
-		Intent intent = new Intent(Intent.ACTION_PICK);
-		intent.setType("image/*");
-		context.startActivityForResult(intent, code);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+			intent.addCategory(Intent.CATEGORY_OPENABLE);
+			intent.setType("image/*");
+			context.startActivityForResult(intent, code);
+		} else {
+			Intent intent = new Intent(Intent.ACTION_PICK);
+			intent.setAction(Intent.ACTION_GET_CONTENT);
+			intent.setType("image/*");
+			context.startActivityForResult(intent, code);
+		}
 	}
 	
 	/**
@@ -52,6 +62,14 @@ public class Launcher {
 	 */
 	public static void notifyChangeSettings(Context context) {
 		Intent intent = new Intent(ACTION_CHANGE_SETTENGS);
+		context.startService(intent);
+	}
+	/**
+	 * Live壁紙にデータの変更を通知。
+	 * @param context
+	 */
+	public static void notifyChangeData(Context context) {
+		Intent intent = new Intent(ACTION_CHANGE_DATA);
 		context.startService(intent);
 	}
 	

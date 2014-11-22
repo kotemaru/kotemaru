@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -28,6 +29,8 @@ import android.widget.Button;
  * @author kotemaru.org
  */
 public class SettingActivity extends Activity {
+	public static final String TAG = SettingActivity.class.getSimpleName();
+	
 	private Settings mSettings;
 	private WallpaperManager mWallpaperManager;
 	private Button mChoosePictueDay;
@@ -97,6 +100,7 @@ public class SettingActivity extends Activity {
 	 */
 	private boolean hasPostItWallpaper() {
 		WallpaperInfo winfo = mWallpaperManager.getWallpaperInfo();
+		Log.i(TAG,"Current wallpaper="+winfo);
 		if (winfo == null) return false;
 		return PostItWallpaper.class.getCanonicalName().equals(winfo.getServiceName());
 	}

@@ -23,6 +23,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.service.wallpaper.WallpaperService;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -47,6 +49,7 @@ public class PostItWallpaper extends WallpaperService {
 	private PostItViewManager mPostItViewManager;
 	private Settings mSettings;
 	private DrawEngine mEngine;
+	private Handler mUiHandler;
 
 	@Override
 	public void onCreate() {
@@ -58,6 +61,7 @@ public class PostItWallpaper extends WallpaperService {
 		mPostItTray = PostItTray.create(this);
 		mPostItViewManager = new PostItViewManager(this);
 		mSettings = new Settings(this).load();
+		mUiHandler = new Handler(Looper.getMainLooper());
 
 		mPostItTray.hide();
 	}
@@ -76,6 +80,11 @@ public class PostItWallpaper extends WallpaperService {
 		if (Launcher.ACTION_CHANGE_SETTENGS.equals(action)) {
 			mSettings.load();
 			update();
+		} else if (Launcher.ACTION_CHANGE_DATA.equals(action)) {
+			mUiHandler.postDelayed(new Runnable(){
+				@Override
+				public void run() {update();}
+			}, 1000); // TODO: タイミング依存でバグる。確実にPostitViewの描画後にupdateしたい。
 		}
 		return super.onStartCommand(intent, flags, startId);
 	}
@@ -233,10 +242,10 @@ public class PostItWallpaper extends WallpaperService {
 		 */
 		private void drawFrame() {
 			final SurfaceHolder holder = getSurfaceHolder();
-
 			Canvas canvas = null;
 			try {
 				canvas = holder.lockCanvas();
+				//Log.d(TAG,"drawFrame:"+canvas);
 				if (canvas != null) {
 					// 初期化
 					canvas.drawColor(0, Mode.CLEAR);
@@ -250,12 +259,12 @@ public class PostItWallpaper extends WallpaperService {
 					}
 					// 付箋の描画。半透明。
 					canvas.saveLayerAlpha(0, 0, canvas.getWidth(), canvas.getHeight(), ALPHA, Canvas.HAS_ALPHA_LAYER_SAVE_FLAG);
-					if (!mIsRaisePostIt) {
+					//if (!mIsRaisePostIt) { // 常に背景にも表示
 						List<PostItView> list = mPostItViewManager.getPostItViewList();
 						for (PostItView view : list) {
 							drawPostItView(canvas, view);
 						}
-					}
+					//}
 					if (isPreview()) drawPreview(canvas);
 				}
 			} finally {
