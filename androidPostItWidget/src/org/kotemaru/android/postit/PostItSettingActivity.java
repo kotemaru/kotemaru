@@ -103,6 +103,7 @@ public class PostItSettingActivity extends Activity {
 
 		// DBに保存
 		PostItDataProvider.updatePostItData(this, mPostItData);
+		Launcher.notifyChangeData(this);
 
 		super.onPause();
 	}

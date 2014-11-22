@@ -239,6 +239,7 @@ public class PostItView extends FrameLayout {
 		this.setPostItData(mPostItData);
 		PostItDataProvider.updatePostItData(postItWallpaper, mPostItData);
 		postItTray.hide();
+		postItWallpaper.update();
 	}
 
 }
