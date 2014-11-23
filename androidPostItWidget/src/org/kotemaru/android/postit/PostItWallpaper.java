@@ -170,6 +170,7 @@ public class PostItWallpaper extends WallpaperService {
 		private String mBackgroundUri = null;
 		/** 現在の背景Bitmap */
 		private Bitmap mBackground = null;
+		private boolean mIsBackgroundFailedByPermission = false;
 		/** ダブルタップ検知用タイムスタンプ */
 		private long mLastTapTime = -1;
 
@@ -312,10 +313,13 @@ public class PostItWallpaper extends WallpaperService {
 		 */
 		private Bitmap getBackgroundBitmap() {
 			String uri = mSettings.getBackgroundUri(System.currentTimeMillis());
-			if (uri != null && uri.equals(mBackgroundUri)) return mBackground;
+			if (uri != null && uri.equals(mBackgroundUri) && !mIsBackgroundFailedByPermission) {
+				return mBackground;
+			}
 			mBackgroundUri = uri;
 
 			mBackground = null;
+			mIsBackgroundFailedByPermission = false;
 			try {
 				Point size = Util.getDisplaySize(PostItWallpaper.this);
 				size.y -= mStatusBarHeight;
@@ -345,8 +349,11 @@ public class PostItWallpaper extends WallpaperService {
 				mBackground = Bitmap.createScaledBitmap(cropBitmap, size.x, size.y, true);
 				cropBitmap.recycle();
 				srcBitmap.recycle();
+			} catch (SecurityException e) {
+				Log.e(TAG, "setBackgroundUri:" + mBackgroundUri, e);
+				mIsBackgroundFailedByPermission = true;
 			} catch (Exception e) {
-				Log.e(TAG, "setBackgroundUri:" + e);
+				Log.e(TAG, "setBackgroundUri:" + mBackgroundUri, e);
 			}
 			return mBackground;
 		}

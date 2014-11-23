@@ -125,13 +125,13 @@ public class SettingActivity extends Activity {
 		super.onActivityResult(requestCode, resultCode, returnedIntent);
 		if (requestCode == Launcher.CHOOSE_PICTURE_DAY) {
 			if (resultCode == RESULT_OK) {
-				Uri uri = returnedIntent.getData();
+				Uri uri = Launcher.getResultChoosePictureUri(this, requestCode, resultCode, returnedIntent);
 				mSettings.setBackgroundUri("12:00", uri.toString());
 			}
 		}
 		if (requestCode == Launcher.CHOOSE_PICTURE_NIGHT) {
 			if (resultCode == RESULT_OK) {
-				Uri uri = returnedIntent.getData();
+				Uri uri = Launcher.getResultChoosePictureUri(this, requestCode, resultCode, returnedIntent);
 				mSettings.setBackgroundUri("00:00", uri.toString());
 			}
 		}

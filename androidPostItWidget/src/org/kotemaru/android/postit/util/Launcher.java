@@ -9,6 +9,7 @@ import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.service.wallpaper.WallpaperService;
 
@@ -54,6 +55,25 @@ public class Launcher {
 			intent.setType("image/*");
 			context.startActivityForResult(intent, code);
 		}
+	}
+	/**
+	 * startChoosePicture()の結果を処理して選択画像のURIを取得する。
+	 * <li>永続的パーミッションを取得しないとOS再起動後にパーミッションエラーになる。
+	 * @param context
+	 * @param requestCode
+	 * @param resultCode
+	 * @param returnedIntent
+	 * @return 画像URI
+	 */
+	@TargetApi(Build.VERSION_CODES.KITKAT)
+	public static Uri getResultChoosePictureUri(Context context, int requestCode, int resultCode, Intent returnedIntent) {
+		if (resultCode != Activity.RESULT_OK) return null;
+		Uri uri = returnedIntent.getData();
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+			final int takeFlags = returnedIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
+			context.getContentResolver().takePersistableUriPermission(uri, takeFlags);
+		}
+		return uri;
 	}
 	
 	/**
