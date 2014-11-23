@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+	<property file="local.properties" />
+	<property file="project.properties" />
+
+	<target name="javadoc">
+		<javadoc access="private" 
+			additionalparam="-encoding UTF-8 -charset UTF-8 "
+			bootclasspath="${sdk.dir}/platforms/${target}/android.jar" 
+			classpath="libs/android-support-v4.jar"
+			destdir="doc" 
+			source="1.6" 
+			sourcepath="src" >
+			<packageset dir="src" defaultexcludes="yes">
+				<include name="org/kotemaru/android/postit/**" />
+			</packageset>
+			<link href="file:/${sdk.dir}/docs/reference" />
+		</javadoc>
+	</target>
+</project>
