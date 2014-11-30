@@ -1,8 +1,0 @@
-http://sound-search.com/se/
-	all.mp3
-	bon.mp3
-	boon.mp3
-	kan.mp3
-
-http://www.yen-soft.com/
-	nori_ge_puropera02.mp3
