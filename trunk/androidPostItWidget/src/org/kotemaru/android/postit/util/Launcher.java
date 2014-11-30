@@ -44,14 +44,14 @@ public class Launcher {
 	 */
 	@TargetApi(Build.VERSION_CODES.KITKAT)
 	public static void startChoosePicture(Activity context, int code) {
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
 			intent.addCategory(Intent.CATEGORY_OPENABLE);
 			intent.setType("image/*");
 			context.startActivityForResult(intent, code);
 		} else {
 			Intent intent = new Intent(Intent.ACTION_PICK);
-			intent.setAction(Intent.ACTION_GET_CONTENT);
+			//intent.setAction(Intent.ACTION_GET_CONTENT);
 			intent.setType("image/*");
 			context.startActivityForResult(intent, code);
 		}
@@ -69,7 +69,7 @@ public class Launcher {
 	public static Uri getResultChoosePictureUri(Context context, int requestCode, int resultCode, Intent returnedIntent) {
 		if (resultCode != Activity.RESULT_OK) return null;
 		Uri uri = returnedIntent.getData();
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			final int takeFlags = returnedIntent.getFlags() & Intent.FLAG_GRANT_READ_URI_PERMISSION;
 			context.getContentResolver().takePersistableUriPermission(uri, takeFlags);
 		}
