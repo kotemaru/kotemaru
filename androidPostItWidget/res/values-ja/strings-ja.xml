@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">付箋メモ</string>
+    <!-- settings -->
+    <string name="settings">設定</string>
+    <string name="background_image">背景画像:</string>
+    <string name="choose_picture">画像選択</string>
+    <string name="choose_picture_day">画像選択(昼景)</string>
+    <string name="choose_picture_night">画像選択(夜景)</string>
+    <string name="ctrl_action">アプリ起動操作:</string>
+    <string name="ctrl_action_comment">アプリを起動するための壁紙に対する操作です。\n※Android/4.4.4ではバグによりダブルタップが必須です。</string>
+    <string name="single_tap">シングル タップ</string>
+    <string name="double_tap">ダブル タップ</string>
+    <string name="dialog_init_title">壁紙設定</string>
+    <string name="dialog_init_msg">このアプリはLive壁紙として設定が必要です。他のLive壁紙との共存はできません。\n次の画面で「壁紙に設定」をタップしてください。</string>
+    <string name="dialog_init_ok">次へ</string>
+    <string name="dialog_init_cancel">止める</string>
+    <!-- post it data settings -->
+    <string name="edit_memo">メモ編集</string>
+    <string name="memo">メモ:</string>
+    <string name="shape">形状:</string>
+    <string name="font">フォント:</string>
+    <string name="color">カラー:</string>
+    <string name="font_small">小</string>
+    <string name="font_middle">中</string>
+    <string name="font_lage">大</string>
+    <string name="font_huge">特大</string>
+    
+
+</resources>
