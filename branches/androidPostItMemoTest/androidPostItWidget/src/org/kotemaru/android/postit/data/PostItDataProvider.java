@@ -34,12 +34,13 @@ public class PostItDataProvider extends ContentProvider {
 	public interface Column {
 		public String name();
 		public String type();
+		public String where();
 	}
 	
 	/**
 	 * テーブル定義。typeはSQL型。
 	 */
-	public enum POST_IT_COLS implements Column {
+	public enum PostItCols implements Column {
 		_ID("integer primary key autoincrement"),
 		ENABLED("integer"), // 0=false, 1=true
 		COLOR("integer"), // PostItColor class
@@ -53,10 +54,11 @@ public class PostItDataProvider extends ContentProvider {
 		TIMER("integer"),
 		MEMO("text"), ;
 
+		// --- 以下、定形 ---
 		private String mType;
 		private String mWhere;
 
-		POST_IT_COLS(String type) {
+		PostItCols(String type) {
 			mType = type;
 			mWhere = name() + "=?";
 		}
@@ -64,6 +66,7 @@ public class PostItDataProvider extends ContentProvider {
 		public String type() {
 			return mType;
 		}
+		@Override
 		public String where() {
 			return mWhere;
 		}
@@ -86,7 +89,7 @@ public class PostItDataProvider extends ContentProvider {
 		}
 		@Override
 		public void onCreate(SQLiteDatabase db) {
-			db.execSQL(getCreateTableDDL(MAIN_TABLE, POST_IT_COLS.values()));
+			db.execSQL(getCreateTableDDL(MAIN_TABLE, PostItCols.values()));
 		}
 
 		/**
@@ -173,15 +176,15 @@ public class PostItDataProvider extends ContentProvider {
 	 */
 	public static PostItData toPostItData(Cursor cursor) {
 		PostItData data = new PostItData(
-				POST_IT_COLS._ID.getLong(cursor),
-				POST_IT_COLS.ENABLED.getInt(cursor),
-				POST_IT_COLS.COLOR.getInt(cursor),
-				POST_IT_COLS.POS_X.getInt(cursor),
-				POST_IT_COLS.POS_Y.getInt(cursor),
-				POST_IT_COLS.WIDTH.getInt(cursor),
-				POST_IT_COLS.HEIGHT.getInt(cursor),
-				POST_IT_COLS.FONT_SIZE.getInt(cursor),
-				POST_IT_COLS.MEMO.getString(cursor)
+				PostItCols._ID.getLong(cursor),
+				PostItCols.ENABLED.getInt(cursor),
+				PostItCols.COLOR.getInt(cursor),
+				PostItCols.POS_X.getInt(cursor),
+				PostItCols.POS_Y.getInt(cursor),
+				PostItCols.WIDTH.getInt(cursor),
+				PostItCols.HEIGHT.getInt(cursor),
+				PostItCols.FONT_SIZE.getInt(cursor),
+				PostItCols.MEMO.getString(cursor)
 				);
 		return data;
 	}
@@ -193,15 +196,15 @@ public class PostItDataProvider extends ContentProvider {
 	 */
 	public static ContentValues fromPostItData(ContentValues values, PostItData data) {
 		if (values == null) values = new ContentValues();
-		POST_IT_COLS._ID.put(values, data.getId());
-		POST_IT_COLS.ENABLED.put(values, data.getEnabled());
-		POST_IT_COLS.COLOR.put(values, data.getColor());
-		POST_IT_COLS.POS_X.put(values, data.getPosX());
-		POST_IT_COLS.POS_Y.put(values, data.getPosY());
-		POST_IT_COLS.WIDTH.put(values, data.getWidth());
-		POST_IT_COLS.HEIGHT.put(values, data.getHeight());
-		POST_IT_COLS.FONT_SIZE.put(values, data.getFontSize());
-		POST_IT_COLS.MEMO.put(values, data.getMemo());
+		PostItCols._ID.put(values, data.getId());
+		PostItCols.ENABLED.put(values, data.getEnabled());
+		PostItCols.COLOR.put(values, data.getColor());
+		PostItCols.POS_X.put(values, data.getPosX());
+		PostItCols.POS_Y.put(values, data.getPosY());
+		PostItCols.WIDTH.put(values, data.getWidth());
+		PostItCols.HEIGHT.put(values, data.getHeight());
+		PostItCols.FONT_SIZE.put(values, data.getFontSize());
+		PostItCols.MEMO.put(values, data.getMemo());
 		return values;
 	}
 
@@ -213,7 +216,7 @@ public class PostItDataProvider extends ContentProvider {
 	 */
 	public static PostItData getPostItData(Context context, long id) {
 		Cursor cursor = context.getContentResolver().query(PostItDataProvider.CONTENT_URI, null,
-				POST_IT_COLS._ID.where(), new String[] { Long.toString(id) }, null);
+				PostItCols._ID.where(), new String[] { Long.toString(id) }, null);
 		if (cursor.moveToNext()) {
 			PostItData data = PostItDataProvider.toPostItData(cursor);
 			return data;
@@ -281,7 +284,7 @@ public class PostItDataProvider extends ContentProvider {
 	public static long createPostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
 		ContentValues values = PostItDataProvider.fromPostItData(null, data);
-		values.remove(POST_IT_COLS._ID.name());
+		values.remove(PostItCols._ID.name());
 		Uri uri = content.insert(PostItDataProvider.CONTENT_URI, values);
 		long id = Long.parseLong(uri.getLastPathSegment());
 		return id;
@@ -303,7 +306,7 @@ public class PostItDataProvider extends ContentProvider {
 	 */
 	public static void removePostItData(Context context, PostItData data) {
 		ContentResolver content = context.getContentResolver();
-		content.delete(PostItDataProvider.CONTENT_URI, POST_IT_COLS._ID.where(),
+		content.delete(PostItDataProvider.CONTENT_URI, PostItCols._ID.where(),
 				new String[] { Long.toString(data.getId()) });
 	}
 
