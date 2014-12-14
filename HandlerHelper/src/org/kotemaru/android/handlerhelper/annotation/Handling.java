@@ -17,4 +17,5 @@ public @interface Handling {
 	Thread thread() default Thread.WORKER;
 	boolean exception() default false;
 	int delay() default 0;
+	int retry() default 0;
 }
