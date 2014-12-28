@@ -2,8 +2,8 @@ package org.kotemaru.android.async.http;
 
 import java.nio.ByteBuffer;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHttpResponse;
 
 import android.util.Log;
 
@@ -11,22 +11,22 @@ public abstract class AsyncHttpListenerBase implements AsyncHttpListener {
 	private static final String TAG = AsyncHttpListenerBase.class.getSimpleName();
 
 	@Override
-	public void onConnect() {
+	public void onConnect(HttpRequest httpRequest) {
 		Log.v(TAG, "onConnect");
 	}
 
 	@Override
-	public void onRequest() {
-		Log.v(TAG, "onRequest");
+	public void onRequestHeader(HttpRequest httpRequest) {
+		Log.v(TAG, "onRequestHeader");
 	}
 
 	@Override
-	public void onResponseWait() {
-		Log.v(TAG, "onResponseWait");
+	public void onRequestBody(HttpRequest httpRequest) {
+		Log.v(TAG, "onResponseBody");
 	}
 
 	@Override
-	public void onResponseHeader(BasicHttpResponse httpResponse) {
+	public void onResponseHeader(HttpResponse httpResponse) {
 		Log.v(TAG, "onResponseHeader");
 	}
 

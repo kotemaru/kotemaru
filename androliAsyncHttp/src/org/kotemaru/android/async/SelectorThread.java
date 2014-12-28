@@ -92,7 +92,6 @@ public class SelectorThread extends Thread {
 			for (SelectionKey key : keys) {
 				keys.remove(key);
 				if (!key.isValid()) continue;
-				int ops = key.readyOps();
 				Log.e("DEBUG", "===>" + key.readyOps());
 				SelectorListener listener = ((OpenRequest) key.attachment()).mListener;
 				if (key.isAcceptable()) listener.onAccept(key);
