@@ -123,7 +123,7 @@ public abstract class AsyncHttpRequest
 		}
 
 		setState(State.CONNECT);
-		mAsyncHttpListener.onConnect();
+		mAsyncHttpListener.onConnect(this);
 
 		mBuffer.clear();
 		HttpEntity entity = getHttpEntity();
@@ -138,7 +138,6 @@ public abstract class AsyncHttpRequest
 		mBuffer.flip();
 
 		setState(State.REQUEST_HEADER);
-		mAsyncHttpListener.onRequest();
 	}
 
 	@Override
@@ -152,6 +151,7 @@ public abstract class AsyncHttpRequest
 					e.printStackTrace();
 				}
 			} else {
+				mAsyncHttpListener.onRequestHeader(this);
 				if (getHttpEntity() != null) {
 					setState(State.REQUSET_BODY);
 					try {
@@ -163,7 +163,7 @@ public abstract class AsyncHttpRequest
 					mBuffer.clear();
 					setState(State.RESPONSE_WAIT);
 					key.interestOps(SelectionKey.OP_READ);
-					mAsyncHttpListener.onResponseWait();
+					mAsyncHttpListener.onRequestBody(this);
 				}
 			}
 		} else if (mState == State.REQUSET_BODY) {
@@ -176,7 +176,7 @@ public abstract class AsyncHttpRequest
 						mBuffer.clear();
 						setState(State.RESPONSE_WAIT);
 						key.interestOps(SelectionKey.OP_READ);
-						mAsyncHttpListener.onResponseWait();
+						mAsyncHttpListener.onRequestBody(this);
 					}
 				} else {
 					mBuffer.clear();
@@ -192,7 +192,7 @@ public abstract class AsyncHttpRequest
 						mBuffer.clear();
 						setState(State.RESPONSE_WAIT);
 						key.interestOps(SelectionKey.OP_READ);
-						mAsyncHttpListener.onResponseWait();
+						mAsyncHttpListener.onRequestBody(this);
 					}
 				}
 			} catch (Exception e) {

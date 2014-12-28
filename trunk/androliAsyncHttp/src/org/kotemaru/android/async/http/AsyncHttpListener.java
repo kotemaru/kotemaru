@@ -2,14 +2,25 @@ package org.kotemaru.android.async.http;
 
 import java.nio.ByteBuffer;
 
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.apache.http.message.BasicHttpResponse;
 
 public interface AsyncHttpListener {
-	public void onConnect();
-	public void onRequest();
-	public void onResponseWait();
-	public void onResponseHeader(BasicHttpResponse httpResponse);
+	/**
+	 * 接続完了後。
+	 */
+	public void onConnect(HttpRequest httpRequest);
+	/**
+	 * リクエストヘッダが送信された。
+	 */
+	public void onRequestHeader(HttpRequest httpRequest);
+	/**
+	 * リクエストボディーが送信された。（ボディがある場合のみ）
+	 */
+	public void onRequestBody(HttpRequest httpRequest);
+
+	
+	public void onResponseHeader(HttpResponse httpResponse);
 	public void onResponseBody(HttpResponse httpResponse);
 	public void onError(Throwable t);
 	public void onAbort();

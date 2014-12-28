@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import java.util.Map;
 
 public class ChannelPool {
-	private static final String TAG = ChannelPool.class.getSimpleName();
+	public static final String TAG = ChannelPool.class.getSimpleName();
 	private static volatile ChannelPool sInstance;
 
 	public static ChannelPool getInstance() {
