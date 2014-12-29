@@ -199,6 +199,7 @@ public abstract class AsyncHttpRequest
 			if (mBuffer.hasRemaining()) {
 				writeFromBuffer(mBuffer);
 			} else {
+				debugLogHeader("Http-Request", "\n>>> ");
 				doRequestBody(key);
 			}
 		} else if (mState == State.REQUSET_BODY) {
@@ -222,6 +223,7 @@ public abstract class AsyncHttpRequest
 			readIntoBuffer(mBuffer);
 			mHttpResponse = HttpUtil.parseResponseHeader(mBuffer);
 			if (mHttpResponse != null) {
+				debugLogHeader("Http-Response", "\n<<< ");
 				doResponseBody(key);
 			}
 		} else if (mState == State.RESPONSE_BODY) {
@@ -439,6 +441,14 @@ public abstract class AsyncHttpRequest
 			doError("Write fail:", e);
 			return -1;
 		}
+	}
+
+	private void debugLogHeader(String tag, String mark) {
+		if (!IS_DEBUG) return;
+		byte[] buff = mBuffer.array();
+		int len = mBuffer.position();
+		String header = new String(buff, 0, len).replaceAll("\n", mark);
+		Log.d(tag, mark + header);
 	}
 
 }

@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
 		try {
 			///AsyncHttpClient client = new AsyncHttpClient();
 			if (request == null) {
-			 request = new AsyncHttpGet("http://www.gopppogle.co.jp/");
+			 request = new AsyncHttpGet("http://www.google.co.jp/");
 			}
 			//AsyncHttpPost request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
 			HttpEntity httpEntity = new StringEntity("Test data");
