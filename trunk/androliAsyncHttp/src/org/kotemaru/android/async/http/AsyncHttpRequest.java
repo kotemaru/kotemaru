@@ -247,12 +247,12 @@ public abstract class AsyncHttpRequest
 		mBuffer.clear();
 		HttpEntity entity = getHttpEntity();
 		if (entity != null) {
-			addRequestHeader(entity.getContentEncoding());
-			addRequestHeader(entity.getContentType());
+			setRequestHeader(entity.getContentEncoding());
+			setRequestHeader(entity.getContentType());
 			if (entity.getContentLength() >= 0) {
-				addRequestHeader(new BasicHeader(HttpHeaders.CONTENT_LENGTH, Long.toString(entity.getContentLength())));
+				setRequestHeader(new BasicHeader(HttpHeaders.CONTENT_LENGTH, Long.toString(entity.getContentLength())));
 			} else {
-				addRequestHeader(new BasicHeader(HttpHeaders.TRANSFER_ENCODING, HttpUtil.CHUNKED));
+				setRequestHeader(new BasicHeader(HttpHeaders.TRANSFER_ENCODING, HttpUtil.CHUNKED));
 			}
 		}
 		HttpUtil.formatRequestHeader(mBuffer, getMethodType(), mUri, this, mHttpClient);
@@ -323,10 +323,10 @@ public abstract class AsyncHttpRequest
 		if (!mAsyncHttpListener.isResponseBodyPart()) {
 			mResponseBodyStream = new PartByteArrayInputStream();
 		}
+		setState(State.RESPONSE_BODY, key, SelectionKey.OP_READ);
 		if (mBuffer.remaining() > 0) {
 			doResponseBodyPart();
 		}
-		setState(State.RESPONSE_BODY, key, SelectionKey.OP_READ);
 	}
 
 	private final PartReaderListener mPartReaderListener = new PartReaderListener() {
@@ -419,9 +419,9 @@ public abstract class AsyncHttpRequest
 		mRequestContent = null;
 	}
 
-	private void addRequestHeader(Header header) {
-		if (header != null) return;
-		this.addHeader(header);
+	private void setRequestHeader(Header header) {
+		if (header == null) return;
+		this.setHeader(header);
 	}
 
 	private int readIntoBuffer(ByteBuffer buffer) {

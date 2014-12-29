@@ -9,6 +9,8 @@ import org.apache.http.HttpResponse;
 /**
  * 非同期HTTP通信のリスナ。
  * - 各種タイミングでコールバックされる。
+ * - 実行スレッドは全て SelectorThread となる。
+ * -- 長時間実行すると他の通信処理が止まるので注意。
  * @author kotemaru.org
  */
 public interface AsyncHttpListener {

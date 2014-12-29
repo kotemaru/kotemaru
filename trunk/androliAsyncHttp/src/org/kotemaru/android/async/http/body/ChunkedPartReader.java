@@ -72,7 +72,6 @@ public class ChunkedPartReader implements PartReader {
 			mState = State.DATA;
 		}
 		postPart(buffer, nextOffset, nextLength);
-
 	}
 
 	private void doData(byte[] buffer, int offset, int length) {

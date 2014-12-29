@@ -32,17 +32,18 @@ public class MainActivity extends Activity {
 		});
 	}
 	AsyncHttpClient client = new AsyncHttpClient();
-	AsyncHttpGet request = null;
-	
+	//AsyncHttpGet request = null;
+	AsyncHttpPost request = null;
+
 	protected void doSend() {
 		try {
 			///AsyncHttpClient client = new AsyncHttpClient();
 			if (request == null) {
-			 request = new AsyncHttpGet("http://www.google.co.jp/");
+			 //request = new AsyncHttpGet("http://www.google.co.jp/");
+			 request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
 			}
-			//AsyncHttpPost request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
 			HttpEntity httpEntity = new StringEntity("Test data");
-			//request.setHttpEntity(httpEntity);
+			request.setHttpEntity(httpEntity);
 			
 			client.execute(request, new AsyncHttpListenerBase(){
 				@Override
