@@ -10,6 +10,7 @@ import java.nio.channels.SocketChannel;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.BasicHttpEntity;
@@ -20,31 +21,37 @@ import org.apache.http.message.BasicHttpResponse;
 import org.kotemaru.android.async.ChannelPool;
 import org.kotemaru.android.async.SelectorListener;
 import org.kotemaru.android.async.SelectorThread;
-import org.kotemaru.android.async.http.HttpUtil.MethodType;
 import org.kotemaru.android.async.http.body.ChunkedPartReader;
 import org.kotemaru.android.async.http.body.ChunkedPartWriter;
-import org.kotemaru.android.async.http.body.PartByteArrayInputStream;
 import org.kotemaru.android.async.http.body.PartReader;
 import org.kotemaru.android.async.http.body.PartReader.PartReaderListener;
 import org.kotemaru.android.async.http.body.PartWriter;
 import org.kotemaru.android.async.http.body.PartWriter.PartWriterListener;
 import org.kotemaru.android.async.http.body.StreamPartReader;
 import org.kotemaru.android.async.http.body.StreamPartWriter;
+import org.kotemaru.android.async.util.PartByteArrayInputStream;
 
 import android.util.Log;
 
+/**
+ * HTTPリスエストの共通部。
+ * @author kotemaru.org
+ */
 public abstract class AsyncHttpRequest
 		extends AbstractHttpMessage
 		implements SelectorListener, HttpUriRequest {
 	private static final String TAG = AsyncHttpRequest.class.getSimpleName();
+	private static final boolean IS_DEBUG = BuildConfig.DEBUG;
 
+	public enum MethodType {
+		GET, POST
+	}
 	public enum State {
 		PREPARE, CONNECT,
 		REQUEST_HEADER, REQUSET_BODY,
 		RESPONSE_HEADER, RESPONSE_BODY,
 		DONE, ERROR
 	}
-
 	
 	private AsyncHttpClient mHttpClient;
 	private AsyncHttpListener mAsyncHttpListener;
@@ -69,10 +76,18 @@ public abstract class AsyncHttpRequest
 		mUri = uri;
 	}
 	
-
-	public void execute(AsyncHttpClient httpClient) throws IOException {
+	/**
+	 * リクエスト開始。
+	 * - 開始要求するだけで通信は行わない。
+	 * @param httpClient 親クライアント
+	 * @param listener
+	 * @throws IOException 初期化に失敗。
+	 */
+	public void execute(AsyncHttpClient httpClient, AsyncHttpListener listener) throws IOException {
 		initState();
 		mHttpClient = httpClient;
+		mAsyncHttpListener = listener;
+		
 		SelectorThread selector = SelectorThread.getInstance();
 		String host = mUri.getHost();
 		int port = (mUri.getPort() == -1) ? 80 : mUri.getPort();
@@ -80,6 +95,10 @@ public abstract class AsyncHttpRequest
 		selector.openClient(host, port, this);
 	}
 
+	/**
+	 * 内部状態の取得。エラー処理のヒントに使用。
+	 * @return 内部状態。
+	 */
 	public State getState() {
 		return mState;
 	}
@@ -94,14 +113,14 @@ public abstract class AsyncHttpRequest
 	public int getBufferSize() {
 		return mBufferSize;
 	}
+	/**
+	 * 内部バッファのサイズを設定。
+	 * - 初期値は 4096。
+	 * - 送受信共にHTTPヘッダはこのサイズに制限される。
+	 * @param bufferSize
+	 */
 	public void setBufferSize(int bufferSize) {
 		mBufferSize = bufferSize;
-	}
-	public AsyncHttpListener getAsyncHttpListener() {
-		return mAsyncHttpListener;
-	}
-	public void setAsyncHttpListener(AsyncHttpListener asyncHttpListener) {
-		mAsyncHttpListener = asyncHttpListener;
 	}
 	
 	// -----------------------------------------------------------------------------
@@ -149,7 +168,7 @@ public abstract class AsyncHttpRequest
 
 	@Override
 	public void onRegister(SocketChannel channel) {
-		Log.v(TAG, "onRegister:" + channel);
+		if (IS_DEBUG) Log.v(TAG, "onRegister:" + channel);
 		mChannel = channel;
 		if (mIsAborted) {
 			abort();
@@ -158,7 +177,7 @@ public abstract class AsyncHttpRequest
 
 	@Override
 	public void onConnect(SelectionKey key) {
-		Log.v(TAG, "onConnect:" + key);
+		if (IS_DEBUG) Log.v(TAG, "onConnect:" + key);
 		setState(State.CONNECT, null, 0);
 		try {
 			if (mChannel.isConnectionPending()) {
@@ -174,7 +193,7 @@ public abstract class AsyncHttpRequest
 
 	@Override
 	public void onWritable(SelectionKey key) {
-		Log.v(TAG, "onWritable:" + key + ":" + mState);
+		if (IS_DEBUG) Log.v(TAG, "onWritable:" + key + ":" + mState);
 		if (mState == State.REQUEST_HEADER) {
 			if (mBuffer.hasRemaining()) {
 				writeFromBuffer(mBuffer);
@@ -197,7 +216,7 @@ public abstract class AsyncHttpRequest
 
 	@Override
 	public void onReadable(SelectionKey key) {
-		Log.v(TAG, "onReadable:" + key + ":" + mState);
+		if (IS_DEBUG) Log.v(TAG, "onReadable:" + key + ":" + mState);
 		if (mState == State.RESPONSE_HEADER) {
 			readIntoBuffer(mBuffer);
 			mHttpResponse = HttpUtil.parseResponseHeader(mBuffer);
@@ -223,9 +242,9 @@ public abstract class AsyncHttpRequest
 			addRequestHeader(entity.getContentEncoding());
 			addRequestHeader(entity.getContentType());
 			if (entity.getContentLength() >= 0) {
-				addRequestHeader(new BasicHeader("Content-Length", Long.toString(entity.getContentLength())));
+				addRequestHeader(new BasicHeader(HttpHeaders.CONTENT_LENGTH, Long.toString(entity.getContentLength())));
 			} else {
-				addRequestHeader(new BasicHeader(HttpUtil.TRANSFER_ENCODING, HttpUtil.CHUNKED));
+				addRequestHeader(new BasicHeader(HttpHeaders.TRANSFER_ENCODING, HttpUtil.CHUNKED));
 			}
 		}
 		HttpUtil.formatRequestHeader(mBuffer, getMethodType(), mUri, this, mHttpClient);
@@ -293,7 +312,7 @@ public abstract class AsyncHttpRequest
 			long contentLength = HttpUtil.getContentLength(mHttpResponse);
 			mResponseBodyReader = new StreamPartReader(mPartReaderListener, contentLength);
 		}
-		if (mAsyncHttpListener.isResponseBodyPart()) {
+		if (!mAsyncHttpListener.isResponseBodyPart()) {
 			mResponseBodyStream = new PartByteArrayInputStream();
 		}
 		if (mBuffer.remaining() > 0) {
@@ -342,15 +361,17 @@ public abstract class AsyncHttpRequest
 		Log.e(TAG, msg, err);
 		mState = State.ERROR;
 		abort();
+		mAsyncHttpListener.onError(msg, err);
 	}
 	private void doFinish(boolean isDisconnect) {
 		Selector selector = SelectorThread.getInstance().getSelector();
 		SelectionKey key = mChannel.keyFor(selector);
 		setState(State.DONE, key, 0);
-		key.cancel();
+		key.attach(null);
 		if (isDisconnect) {
 			try {
 				mChannel.close();
+				key.cancel();
 			} catch (IOException e) {
 				Log.e(TAG, "Channel close error. ignore.", e);
 			}

@@ -9,45 +9,41 @@ import android.util.Log;
 
 public abstract class AsyncHttpListenerBase implements AsyncHttpListener {
 	private static final String TAG = AsyncHttpListenerBase.class.getSimpleName();
+	private static final boolean IS_DEBUG = BuildConfig.DEBUG;
 
 	@Override
 	public void onConnect(HttpRequest httpRequest) {
-		Log.v(TAG, "onConnect");
+		if (IS_DEBUG) Log.v(TAG, "onConnect");
 	}
 
 	@Override
 	public void onRequestHeader(HttpRequest httpRequest) {
-		Log.v(TAG, "onRequestHeader");
+		if (IS_DEBUG) Log.v(TAG, "onRequestHeader");
 	}
 
 	@Override
 	public void onRequestBody(HttpRequest httpRequest) {
-		Log.v(TAG, "onResponseBody");
+		if (IS_DEBUG) Log.v(TAG, "onResponseBody");
 	}
 
 	@Override
 	public void onResponseHeader(HttpResponse httpResponse) {
-		Log.v(TAG, "onResponseHeader");
+		if (IS_DEBUG) Log.v(TAG, "onResponseHeader");
 	}
 
 	@Override
 	public void onResponseBodyPart(byte[] buffer, int offset, int length) {
-		Log.v(TAG, "onResponseBodyPart");
+		if (IS_DEBUG) Log.v(TAG, "onResponseBodyPart");
 	}
 
 	@Override
 	public abstract void onResponseBody(HttpResponse httpResponse);
 
 	@Override
-	public void onError(Throwable t) {
-		Log.e(TAG, "AsyncHttp failed:" + t.getMessage(), t);
+	public void onError(String msg, Throwable t) {
+		Log.e(TAG, "AsyncHttp failed:" + msg, t);
 	}
 
-	@Override
-	public void onAbort() {
-		Log.v(TAG, "onAbort");
-	}
-	
 	@Override
 	public boolean isRequestBodyPart() {
 		return false;
