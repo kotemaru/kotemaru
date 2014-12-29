@@ -6,6 +6,7 @@ import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -105,7 +106,13 @@ public class SelectorThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			mainLoop();
+			while (true) {
+				try {
+					mainLoop();
+				} catch (ConcurrentModificationException e) {
+					Log.w(TAG, "Selector fail:ignore:" + e, e);
+				}
+			}
 		} catch (IOException e) {
 			Log.e(TAG, "Selector fail:" + e, e);
 			throw new Error(e);

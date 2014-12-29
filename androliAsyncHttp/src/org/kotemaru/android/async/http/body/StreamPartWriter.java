@@ -27,11 +27,12 @@ public class StreamPartWriter implements PartWriter {
 
 	public int doWrite() throws IOException {
 		if (mState == State.PREPARE) onNextBuffer();
-		if (mState == State.DATA) return -1;
+		if (mState == State.DONE) return -1;
 
 		if (mBuffer.hasRemaining()) {
 			return mChannel.write(mBuffer);
 		}
+		onNextBuffer();
 		return doWrite();
 	}
 	private void onNextBuffer() throws IOException {

@@ -23,7 +23,7 @@ public abstract class AsyncHttpListenerBase implements AsyncHttpListener {
 
 	@Override
 	public void onRequestBody(HttpRequest httpRequest) {
-		if (IS_DEBUG) Log.v(TAG, "onResponseBody");
+		if (IS_DEBUG) Log.v(TAG, "onRequestBody");
 	}
 
 	@Override
