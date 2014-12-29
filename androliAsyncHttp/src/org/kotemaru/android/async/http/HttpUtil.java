@@ -38,6 +38,7 @@ public class HttpUtil {
 	public static final String TRANSFER_ENCODING = "Transfer-Encoding";
 	public static final String CHUNKED = "chunked";
 	public static final String SET_COOKIE = "Set-Cookie";
+	public static final String CONTENT_LENGTH = "Content-Length";
 
 	public enum MethodType {
 		GET, POST
@@ -51,6 +52,15 @@ public class HttpUtil {
 			if (val.startsWith(CHUNKED)) return true;
 		}
 		return false;
+	}
+	public static long getContentLength(HttpMessage httpMessage) {
+		Header header = httpMessage.getFirstHeader(CONTENT_LENGTH);
+		if (header == null || header.getValue() == null) return -1;
+		try {
+			return Long.parseLong(header.getValue());
+		} catch (NumberFormatException e) {
+			return -1;
+		}
 	}
 
 	public static void formatRequestHeader(ByteBuffer byteBuffer, MethodType type, URI uri, HttpMessage message,
@@ -178,5 +188,6 @@ public class HttpUtil {
 			cookieStore.addCookie(cookie);
 		}
 	}
+
 
 }

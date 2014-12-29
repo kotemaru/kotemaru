@@ -53,6 +53,9 @@ public class SelectorThread extends Thread {
 		sInstance.interrupt();
 		sInstance = null;
 	}
+	public Selector getSelector() {
+		return mSelector;
+	}
 
 	public synchronized void openClient(String host, int port, SelectorListener listener) throws IOException {
 		mOpenQueue.add(new OpenRequest(host, port, listener));
