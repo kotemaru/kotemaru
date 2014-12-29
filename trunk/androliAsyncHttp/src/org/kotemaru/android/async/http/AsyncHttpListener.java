@@ -1,9 +1,8 @@
 package org.kotemaru.android.async.http;
 
-import java.nio.ByteBuffer;
-
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.kotemaru.android.async.BufferTransferConsumer;
 
 /**
  * 非同期HTTP通信のリスナ。
@@ -64,17 +63,15 @@ public interface AsyncHttpListener {
 	 * - isRequestBodyPart()がtrueの場合のみ呼ばれる。
 	 * - HttpEntity.getContentLength()が設定されている場合は合計の長さが合っていること。
 	 * - HttpEntity.getContentLength()が設定されていない場合は Chunked で送信される。
-	 * @param buffer ライブラリの内部バッファ。戻り値にして良い。使用は任意。
-	 * @return 読込状態のバッファ。終端にnullを返す。
+	 * @param consumer データの書き込み先
 	 */
-	public ByteBuffer onRequestBodyPart(ByteBuffer buffer);
+	public void onRequestBodyPart(BufferTransferConsumer consumer);
 
 	/**
-	 * 分割されたレスポンス本文の一部を受け取る。
+	 * 分割されたレスポンス本文の一部を読み込み可能となったことの通知。
 	 * - 分割位置は予測不能。極端な場合、1byteつづのこともある。
-	 * @param buffer ライブラリ内の内部バッファ。内容はこのメソッド呼出中のみ保証される。
-	 * @param offset
-	 * @param length
+	 * @param consumer データの読み込み先
 	 */
-	public void onResponseBodyPart(byte[] buffer, int offset, int length);
+	public void onResponseBodyPart(BufferTransferConsumer consumer);
+
 }

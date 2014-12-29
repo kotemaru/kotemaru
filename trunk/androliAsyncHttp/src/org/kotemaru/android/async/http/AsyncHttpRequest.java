@@ -18,6 +18,7 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
+import org.kotemaru.android.async.BufferTransferConsumer;
 import org.kotemaru.android.async.ChannelPool;
 import org.kotemaru.android.async.SelectorListener;
 import org.kotemaru.android.async.SelectorThread;
@@ -93,7 +94,7 @@ public abstract class AsyncHttpRequest
 		String host = mUri.getHost();
 		int port = (mUri.getPort() == -1) ? 80 : mUri.getPort();
 		this.setHeader(new BasicHeader("Host", host + ":" + port));
-		selector.openClient(host, port, this);
+		selector.openSocketClient(host, port, this);
 	}
 
 	/**
@@ -200,14 +201,14 @@ public abstract class AsyncHttpRequest
 		if (IS_DEBUG) Log.v(TAG, "onWritable:" + key + ":" + mState);
 		if (mState == State.REQUEST_HEADER) {
 			if (mBuffer.hasRemaining()) {
-				writeFromBuffer(mBuffer);
+				writeFromBuffer(mBuffer, true);
 			} else {
 				debugLogHeader("Http-Request", "\n>>> ");
 				doRequestBody(key);
 			}
 		} else if (mState == State.REQUSET_BODY) {
 			try {
-				int n = mRequestBodyWriter.doWrite();
+				int n = mRequestBodyWriter.onWritable();
 				if (n < 0) {
 					doResponseHeader(key);
 				}
@@ -223,16 +224,16 @@ public abstract class AsyncHttpRequest
 	public void onReadable(SelectionKey key) {
 		if (IS_DEBUG) Log.v(TAG, "onReadable:" + key + ":" + mState);
 		if (mState == State.RESPONSE_HEADER) {
-			readIntoBuffer(mBuffer);
+			readIntoBuffer(mBuffer, true);
 			mHttpResponse = HttpUtil.parseResponseHeader(mBuffer);
 			if (mHttpResponse != null) {
 				debugLogHeader("Http-Response", "\n<<< ");
 				doResponseBody(key);
 			}
 		} else if (mState == State.RESPONSE_BODY) {
-			readIntoBuffer(mBuffer);
+			int n = readIntoBuffer(mBuffer, false);
 			mBuffer.flip();
-			doResponseBodyPart();
+			doResponseBodyPart(n);
 		} else {
 			doError("Bad state " + mState + " onReadable().", null);
 		}
@@ -273,10 +274,14 @@ public abstract class AsyncHttpRequest
 			} catch (Exception e) {
 				doError("Post entity fail", e);
 			}
-			if (entity.getContentLength() >= 0) {
-				mRequestBodyWriter = new StreamPartWriter(mChannel, mPartWriterListener);
-			} else {
-				mRequestBodyWriter = new ChunkedPartWriter(mChannel, mPartWriterListener);
+			try {
+				if (entity.getContentLength() >= 0) {
+					mRequestBodyWriter = new StreamPartWriter(mChannel, mPartWriterListener);
+				} else {
+					mRequestBodyWriter = new ChunkedPartWriter(mChannel, mPartWriterListener);
+				}
+			} catch (IOException e) {
+				doError("PartWriter init fail.", e);
 			}
 			mBuffer.clear();
 			setState(State.REQUSET_BODY, key, SelectionKey.OP_WRITE);
@@ -287,19 +292,19 @@ public abstract class AsyncHttpRequest
 
 	private final PartWriterListener mPartWriterListener = new PartWriterListener() {
 		@Override
-		public ByteBuffer onNextBuffer() throws IOException {
+		public void onNextBuffer(BufferTransferConsumer consumer) throws IOException {
 			mBuffer.clear();
 			if (mAsyncHttpListener.isRequestBodyPart()) {
-				return mAsyncHttpListener.onRequestBodyPart(mBuffer);  // do Callback.
+				mAsyncHttpListener.onRequestBodyPart(consumer);  // do Callback.
 			} else {
 				byte[] buff = mBuffer.array();
 				int readSize = mRequestContent.read(buff);
 				if (readSize > 0) {
 					mBuffer.position(readSize);
 					mBuffer.flip();
-					return mBuffer;
+					consumer.write(mBuffer);
 				} else {
-					return null;
+					consumer.write(null);
 				}
 			}
 		}
@@ -328,7 +333,7 @@ public abstract class AsyncHttpRequest
 		}
 		setState(State.RESPONSE_BODY, key, SelectionKey.OP_READ);
 		if (mBuffer.remaining() > 0) {
-			doResponseBodyPart();
+			doResponseBodyPart(mBuffer.remaining());
 		}
 	}
 
@@ -336,7 +341,7 @@ public abstract class AsyncHttpRequest
 		@Override
 		public void onPart(byte[] buffer, int offset, int length) {
 			if (mAsyncHttpListener.isResponseBodyPart()) {
-				mAsyncHttpListener.onResponseBodyPart(buffer, offset, length);  // do Callback.
+				mAsyncHttpListener.onResponseBodyPart(mBufferTransferConsumer);  // do Callback.
 			} else {
 				mResponseBodyStream.addPart(buffer, offset, length);
 			}
@@ -347,11 +352,15 @@ public abstract class AsyncHttpRequest
 		}
 	};
 
-	private void doResponseBodyPart() {
-		byte[] buffer = mBuffer.array();
-		int offset = mBuffer.position();
-		int length = mBuffer.limit() - offset;
-		mResponseBodyReader.postPart(buffer, offset, length);
+	private void doResponseBodyPart(int len) {
+		if (len == -1) {
+			mResponseBodyReader.postPart(null, 0, -1);
+		} else {
+			byte[] buffer = mBuffer.array();
+			int offset = mBuffer.position();
+			int length = mBuffer.limit() - offset;
+			mResponseBodyReader.postPart(buffer, offset, length);
+		}
 		mBuffer.clear();
 	}
 	private void doResponseBody() {
@@ -393,9 +402,22 @@ public abstract class AsyncHttpRequest
 		}
 		clearState();
 	}
+
 	// -----------------------------------------------------------------------------
 	// for internal util.
 	// -----------------------------------------------------------------------------
+
+	private final BufferTransferConsumer mBufferTransferConsumer = new BufferTransferConsumer() {
+		@Override
+		public ByteBuffer read() throws IOException {
+			return mBuffer;
+		}
+		@Override
+		public int write(ByteBuffer buffer) throws IOException {
+			return mChannel.write(buffer);
+		}
+	};
+
 	private void setState(State state, SelectionKey key, int ops) {
 		mState = state;
 		if (key != null) {
@@ -427,18 +449,24 @@ public abstract class AsyncHttpRequest
 		this.setHeader(header);
 	}
 
-	private int readIntoBuffer(ByteBuffer buffer) {
+	private int readIntoBuffer(ByteBuffer buffer, boolean isEofError) {
 		try {
 			int n = mChannel.read(buffer);
+			if (isEofError && n == -1) {
+				throw new IOException("EOF");
+			}
 			return n;
 		} catch (IOException e) {
 			doError("Read fail:", e);
 			return -1;
 		}
 	}
-	private int writeFromBuffer(ByteBuffer buffer) {
+	private int writeFromBuffer(ByteBuffer buffer, boolean isEofError) {
 		try {
 			int n = mChannel.write(buffer);
+			if (isEofError && n == -1) {
+				throw new IOException("EOF");
+			}
 			return n;
 		} catch (IOException e) {
 			doError("Write fail:", e);

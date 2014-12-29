@@ -73,7 +73,7 @@ public class SelectorThread extends Thread {
 	 * @param port 接続先ポート。
 	 * @param listener Selectorリスナ
 	 */
-	public synchronized void openClient(String host, int port, SelectorListener listener) {
+	public synchronized void openSocketClient(String host, int port, SelectorListener listener) {
 		mOpenQueue.add(new OpenRequest(host, port, listener));
 		mSelector.wakeup();
 	}
@@ -90,7 +90,7 @@ public class SelectorThread extends Thread {
 				SocketAddress addr = new InetSocketAddress(req.host, req.port);
 				SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
 				channel.configureBlocking(false);
-				channel.register(mSelector, SelectionKey.OP_CONNECT, req);
+				channel.register(mSelector, channel.validOps(), req);
 				req.listener.onRegister(channel);
 				if (channel.isConnected()) {
 					req.listener.onConnect(channel.keyFor(mSelector));

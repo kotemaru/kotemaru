@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import org.kotemaru.android.async.BufferTransferConsumer;
+
 /**
  * 平文 フォーマットのストリームを分割して書き込むためのクラス。
  * - 平文->平文 文のフィルターなので実質なにもしない。
@@ -19,29 +21,45 @@ public class StreamPartWriter implements PartWriter {
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
 	private final PartWriterListener mPartWriterListener;
+	private final BufferTransferConsumer mBufferTransferConsumer = new BufferTransferConsumer() {
+		@Override
+		public ByteBuffer read() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public int write(ByteBuffer buffer) throws IOException {
+			return postBuffer(buffer);
+		}
+	};
 
-	public StreamPartWriter(SocketChannel channel, PartWriterListener partWriterListener) {
+	public StreamPartWriter(SocketChannel channel, PartWriterListener partWriterListener) throws IOException {
 		mChannel = channel;
 		mPartWriterListener = partWriterListener;
 	}
 
-	public int doWrite() throws IOException {
-		if (mState == State.PREPARE) onNextBuffer();
+	@Override
+	public int onWritable() throws IOException {
+		if (mState == State.PREPARE) {
+			mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+			return 0;
+		}
 		if (mState == State.DONE) return -1;
-
-		if (mBuffer.hasRemaining()) {
-			return mChannel.write(mBuffer);
+		if (!mBuffer.hasRemaining()) {
+			mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+			return 0;
 		}
-		onNextBuffer();
-		return doWrite();
+		int n = mChannel.write(mBuffer);
+		return n;
 	}
-	private void onNextBuffer() throws IOException {
-		mBuffer = mPartWriterListener.onNextBuffer();
-		if (mBuffer != null) {
-			mState = State.DATA;
-		} else {
+	
+	private int postBuffer(ByteBuffer buffer) throws IOException {
+		mBuffer = buffer;
+		if (mBuffer == null) {
 			mState = State.DONE;
+			return -1;
 		}
+		mState = State.DATA;
+		return onWritable();
 	}
 
 }

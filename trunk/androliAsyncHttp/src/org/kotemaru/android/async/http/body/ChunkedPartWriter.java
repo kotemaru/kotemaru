@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import org.kotemaru.android.async.BufferTransferConsumer;
 import org.kotemaru.android.async.http.HttpUtil;
 
 /**
@@ -24,15 +25,28 @@ public class ChunkedPartWriter implements PartWriter {
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
 	private final PartWriterListener mPartWriterListener;
+	private final BufferTransferConsumer mBufferTransferConsumer = new BufferTransferConsumer() {
+		@Override
+		public ByteBuffer read() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public int write(ByteBuffer buffer) throws IOException {
+			return postBuffer(buffer);
+		}
+	};
 
-	public ChunkedPartWriter(SocketChannel channel, PartWriterListener partWriterListener) {
+	public ChunkedPartWriter(SocketChannel channel, PartWriterListener partWriterListener) throws IOException {
 		mChannel = channel;
 		mPartWriterListener = partWriterListener;
 	}
 
 	@Override
-	public int doWrite() throws IOException {
-		if (mState == State.PREPARE) onNextBuffer();
+	public int onWritable() throws IOException {
+		if (mState == State.PREPARE) {
+			mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+			return 0;
+		}
 		if (mState == State.DONE) return -1;
 
 		if (mSizeLineBuffer.hasRemaining()) {
@@ -42,14 +56,15 @@ public class ChunkedPartWriter implements PartWriter {
 		} else if (mCrlfBuffer.hasRemaining()) {
 			return mChannel.write(mCrlfBuffer);
 		}
-		return doWrite();
+		mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+		return 0;
 	}
 
-	private void onNextBuffer() throws IOException {
-		mBuffer = mPartWriterListener.onNextBuffer();
+	private int postBuffer(ByteBuffer buffer) throws IOException {
+		mBuffer = buffer;
 		if (mBuffer == null) {
 			mState = State.DONE;
-			return;
+			return -1;
 		}
 		mState = State.DATA;
 
@@ -57,5 +72,7 @@ public class ChunkedPartWriter implements PartWriter {
 		mSizeLineBuffer.clear();
 		mSizeLineBuffer.put(size).put(HttpUtil.CRLF);
 		mCrlfBuffer.rewind();
+		return onWritable();
 	}
+
 }
