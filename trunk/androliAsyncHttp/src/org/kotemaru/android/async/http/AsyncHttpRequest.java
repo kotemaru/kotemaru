@@ -46,22 +46,23 @@ public abstract class AsyncHttpRequest
 	public enum MethodType {
 		GET, POST
 	}
+
 	public enum State {
 		PREPARE, CONNECT,
 		REQUEST_HEADER, REQUSET_BODY,
 		RESPONSE_HEADER, RESPONSE_BODY,
 		DONE, ERROR
 	}
-	
+
 	private AsyncHttpClient mHttpClient;
 	private AsyncHttpListener mAsyncHttpListener;
-	
+
 	private BasicHttpResponse mHttpResponse;
 	private PartByteArrayInputStream mResponseBodyStream;
 	private InputStream mRequestContent;
 	private PartWriter mRequestBodyWriter;
 	private PartReader mResponseBodyReader;
-	
+
 	private int mBufferSize = 4096;
 	private ByteBuffer mBuffer;
 	private SocketChannel mChannel;
@@ -75,7 +76,7 @@ public abstract class AsyncHttpRequest
 	public AsyncHttpRequest(URI uri) {
 		mUri = uri;
 	}
-	
+
 	/**
 	 * リクエスト開始。
 	 * - 開始要求するだけで通信は行わない。
@@ -87,7 +88,7 @@ public abstract class AsyncHttpRequest
 		initState();
 		mHttpClient = httpClient;
 		mAsyncHttpListener = listener;
-		
+
 		SelectorThread selector = SelectorThread.getInstance();
 		String host = mUri.getHost();
 		int port = (mUri.getPort() == -1) ? 80 : mUri.getPort();
@@ -109,7 +110,7 @@ public abstract class AsyncHttpRequest
 	public void setUri(URI uri) {
 		mUri = uri;
 	}
-	
+
 	public int getBufferSize() {
 		return mBufferSize;
 	}
@@ -122,7 +123,7 @@ public abstract class AsyncHttpRequest
 	public void setBufferSize(int bufferSize) {
 		mBufferSize = bufferSize;
 	}
-	
+
 	// -----------------------------------------------------------------------------
 	// abstract methods.
 	// -----------------------------------------------------------------------------
@@ -230,6 +231,11 @@ public abstract class AsyncHttpRequest
 		} else {
 			doError("Bad state " + mState + " onReadable().", null);
 		}
+	}
+
+	@Override
+	public void onError(String msg, Throwable t) {
+		doError(msg, t);
 	}
 
 	// -----------------------------------------------------------------------------
@@ -408,7 +414,7 @@ public abstract class AsyncHttpRequest
 		mHttpResponse = null;
 		mRequestContent = null;
 	}
-	
+
 	private void addRequestHeader(Header header) {
 		if (header != null) return;
 		this.addHeader(header);

@@ -7,15 +7,22 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+/**
+ * SocketChannelのプール。
+ * - シングルトン。クラスが初期化されてもプールされていたChennelが使えないだけ。
+ * @author kotemaru.org
+ */
 public class ChannelPool {
 	public static final String TAG = ChannelPool.class.getSimpleName();
 	private static volatile ChannelPool sInstance;
 
 	public static ChannelPool getInstance() {
-		if (sInstance == null) {
-			sInstance = new ChannelPool();
+		synchronized (ChannelPool.class) {
+			if (sInstance == null) {
+				sInstance = new ChannelPool();
+			}
+			return sInstance;
 		}
-		return sInstance;
 	}
 
 	private Map<SocketAddress, LinkedList<SocketChannel>> mChannelPool =
