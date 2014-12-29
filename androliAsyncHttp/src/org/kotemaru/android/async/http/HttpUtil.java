@@ -32,7 +32,7 @@ public class HttpUtil {
 	public static final byte LF = '\n';
 	public static final byte[] CRLF = "\r\n".getBytes();
 	public static final byte[] HTTP11 = " HTTP/1.1".getBytes();
-	public static final byte[] COOKIE = " Cookie:".getBytes();
+	public static final byte[] COOKIE = "Cookie:".getBytes();
 	public static final String LATIN_1 = "ISO-8859-1";
 
 	public static final String SET_COOKIE = "Set-Cookie";
