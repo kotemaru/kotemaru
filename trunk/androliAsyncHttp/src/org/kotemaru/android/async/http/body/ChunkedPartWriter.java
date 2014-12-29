@@ -6,6 +6,11 @@ import java.nio.channels.SocketChannel;
 
 import org.kotemaru.android.async.http.HttpUtil;
 
+/**
+ * Chunked フォーマットのストリームを分割して書き込むためのクラス。
+ * - 平文->Chunked 文のフィルター。
+ * @author kotemaru.org
+ */
 public class ChunkedPartWriter implements PartWriter {
 
 	private final ByteBuffer mSizeLineBuffer = ByteBuffer.wrap(new byte[10]);
@@ -25,6 +30,7 @@ public class ChunkedPartWriter implements PartWriter {
 		mPartWriterListener = partWriterListener;
 	}
 
+	@Override
 	public int doWrite() throws IOException {
 		if (mState == State.PREPARE) onNextBuffer();
 		if (mState == State.DONE) return -1;

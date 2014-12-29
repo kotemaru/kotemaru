@@ -10,6 +10,7 @@ import java.util.Locale;
 
 import org.apache.http.Header;
 import org.apache.http.HeaderIterator;
+import org.apache.http.HttpHeaders;
 import org.apache.http.HttpMessage;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.StatusLine;
@@ -23,8 +24,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicLineParser;
 import org.apache.http.message.ParserCursor;
 import org.apache.http.util.CharArrayBuffer;
-
-import android.util.Log;
+import org.kotemaru.android.async.http.AsyncHttpRequest.MethodType;
 
 public class HttpUtil {
 	public static final ProtocolVersion PROTOCOL_VERSION = new ProtocolVersion("HTTP", 1, 1);
@@ -35,17 +35,12 @@ public class HttpUtil {
 	public static final byte[] COOKIE = " Cookie:".getBytes();
 	public static final String LATIN_1 = "ISO-8859-1";
 
-	public static final String TRANSFER_ENCODING = "Transfer-Encoding";
-	public static final String CHUNKED = "chunked";
 	public static final String SET_COOKIE = "Set-Cookie";
-	public static final String CONTENT_LENGTH = "Content-Length";
+	public static final String CHUNKED = "chunked";
 
-	public enum MethodType {
-		GET, POST
-	}
 
 	public static boolean hasChunkedTransferHeader(HttpMessage httpMessage) {
-		Header[] headers = httpMessage.getHeaders(TRANSFER_ENCODING);
+		Header[] headers = httpMessage.getHeaders(HttpHeaders.TRANSFER_ENCODING);
 		for (Header header : headers) {
 			if (header.getValue() == null) continue;
 			String val = header.getValue().toLowerCase(Locale.US).trim();
@@ -54,7 +49,7 @@ public class HttpUtil {
 		return false;
 	}
 	public static long getContentLength(HttpMessage httpMessage) {
-		Header header = httpMessage.getFirstHeader(CONTENT_LENGTH);
+		Header header = httpMessage.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
 		if (header == null || header.getValue() == null) return -1;
 		try {
 			return Long.parseLong(header.getValue());
@@ -90,11 +85,9 @@ public class HttpUtil {
 				byteBuffer.put(header.getName().getBytes(LATIN_1)).put((byte) ':')
 						.put(header.getValue().getBytes(LATIN_1)).put(CRLF);
 			}
-			
 
 			List<Cookie> cookies = httpClient.getCookies(uri);
 			for (Cookie cookie : cookies) {
-				Log.e("DEBUG","Cookie:"+cookie.getName()+"="+cookie.getValue());
 				byteBuffer.put(COOKIE).put(cookie.getName().getBytes(LATIN_1)).put((byte) '=')
 						.put(cookie.getValue().getBytes(LATIN_1)).put(CRLF);
 			}
@@ -142,7 +135,6 @@ public class HttpUtil {
 	private static int getHeaderEndLength(ByteBuffer byteBuffer) {
 		int pos = byteBuffer.position();
 		byte[] rawBuffer = byteBuffer.array();
-		Log.e("DEBUG", "===>" + new String(rawBuffer));
 		for (int i = 0; i < pos - 3; i++) {
 			if (rawBuffer[i + 0] == CR
 					&& rawBuffer[i + 1] == LF
@@ -155,13 +147,7 @@ public class HttpUtil {
 	}
 
 	public static List<Cookie> getCookies(CookieSpec cookieSpec, CookieStore cookieStore, URI uri) {
-		// TODO: path,scheme,port
-		final CookieOrigin cookieOrigin = new CookieOrigin(
-				uri.getHost(),
-				uri.getPort() >= 0 ? uri.getPort() : 80,
-				uri.getPath() != null ? uri.getPath() : "/",
-				uri.getScheme().equals("https"));
-
+		final CookieOrigin cookieOrigin = getCookieOrigin(uri);
 		final List<Cookie> cookies = new ArrayList<Cookie>(cookieStore.getCookies());
 		final List<Cookie> matchedCookies = new ArrayList<Cookie>();
 		final Date now = new Date();
@@ -174,20 +160,25 @@ public class HttpUtil {
 		}
 		return matchedCookies;
 	}
-	public static void setCookie(CookieSpec cookieSpec, CookieStore cookieStore, Header header, URI uri) throws MalformedCookieException {
-		final CookieOrigin cookieOrigin = new CookieOrigin(
-				uri.getHost(),
-				uri.getPort() >= 0 ? uri.getPort() : 80,
-				uri.getPath() != null ? uri.getPath() : "/",
-				uri.getScheme().equals("https"));
+	public static void setCookie(CookieSpec cookieSpec, CookieStore cookieStore, Header header, URI uri)
+			throws MalformedCookieException {
+		final CookieOrigin cookieOrigin = getCookieOrigin(uri);
 		List<Cookie> cookies = cookieSpec.parse(header, cookieOrigin);
 		for (Cookie cookie : cookies) {
-			if (cookie.getDomain().length()<4) {
-				((SetCookie)cookie).setDomain(uri.getHost());
+			if (cookie.getDomain().length() < 4) {
+				((SetCookie) cookie).setDomain(uri.getHost());
 			}
 			cookieStore.addCookie(cookie);
 		}
 	}
 
-
+	public static CookieOrigin getCookieOrigin(URI uri) {
+		// TODO: path,scheme,port
+		final CookieOrigin cookieOrigin = new CookieOrigin(
+				uri.getHost(),
+				uri.getPort() >= 0 ? uri.getPort() : 80,
+				uri.getPath() != null ? uri.getPath() : "/",
+				uri.getScheme().equals("https"));
+		return cookieOrigin;
+	}
 }

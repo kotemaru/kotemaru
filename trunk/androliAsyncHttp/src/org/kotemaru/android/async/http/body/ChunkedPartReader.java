@@ -3,33 +3,35 @@ package org.kotemaru.android.async.http.body;
 import java.nio.ByteBuffer;
 
 import org.kotemaru.android.async.http.HttpUtil;
+import org.kotemaru.android.async.util.PartPatternMatcher;
 
-import android.util.Log;
 
+/**
+ * Chunked フォーマットのストームを分割して読み込むためのクラス。
+ * - Chunked -> 平文のフィルター。
+ * @author kotemaru.org
+ */
 public class ChunkedPartReader implements PartReader {
-
-	private static final int BUFFER_SIZE = 4096;
+	private static final int BUFFER_SIZE = 1024;
 
 	private enum State {
 		PREPARE, SIZE_LINE, DATA, DATA_END, DONE
 	}
 
 	private State mState = State.PREPARE;
-
 	private ByteBuffer mSizeLineBuffer = ByteBuffer.wrap(new byte[100]);
 	private int mChunkSize = -1;
 	private ByteBuffer mBuffer = ByteBuffer.wrap(new byte[BUFFER_SIZE]);
-	private PatternMatcher mCrlfMatcher = new PatternMatcher(HttpUtil.CRLF);
-
+	private PartPatternMatcher mCrlfMatcher = new PartPatternMatcher(HttpUtil.CRLF);
 	private PartReaderListener mPartReaderListener;
 
 	public ChunkedPartReader(PartReaderListener chunkedListener) {
 		mPartReaderListener = chunkedListener;
 	}
 
+	@Override
 	public void postPart(byte[] buffer, int offset, int length) {
 		if (length <= 0) return;
-		Log.e("DEBUG", "===>chunk:" + mState);
 		switch (mState) {
 		case PREPARE:
 		case SIZE_LINE:
@@ -56,7 +58,6 @@ public class ChunkedPartReader implements PartReader {
 		int len = pos + 1;
 		mSizeLineBuffer.put(buffer, offset, len);
 		mChunkSize = parseChunkSize(mSizeLineBuffer);
-		Log.e("DEBUG", "===>chunk-size:" + mChunkSize);
 
 		if (mChunkSize > mBuffer.capacity()) {
 			mBuffer = ByteBuffer.wrap(new byte[mChunkSize]);
@@ -105,7 +106,6 @@ public class ChunkedPartReader implements PartReader {
 	private int parseChunkSize(ByteBuffer sizeLineBuffer) {
 		String chunkLine = new String(sizeLineBuffer.array(), 0, sizeLineBuffer.position());
 		sizeLineBuffer.clear();
-		Log.e("DEBUG", "===>chunkLine:" + chunkLine);
 		int idx = chunkLine.indexOf(';');
 		if (idx == -1) {
 			idx = chunkLine.indexOf(HttpUtil.CR);

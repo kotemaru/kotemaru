@@ -6,10 +6,16 @@ import java.net.URISyntaxException;
 import org.apache.http.HttpEntity;
 import org.apache.http.RequestLine;
 import org.apache.http.message.BasicRequestLine;
-import org.kotemaru.android.async.http.HttpUtil.MethodType;
 
+/**
+ * GETリクエスト。
+ * - 再利用可能。
+ * @author kotemaru.org
+ */
 public class AsyncHttpGet extends AsyncHttpRequest {
 
+	public AsyncHttpGet() {
+	}
 	public AsyncHttpGet(URI uri) {
 		super(uri);
 	}

@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+/**
+ * 平文 フォーマットのストリームを分割して書き込むためのクラス。
+ * - 平文->平文 文のフィルターなので実質なにもしない。
+ * @author kotemaru.org
+ */
 public class StreamPartWriter implements PartWriter {
 	private ByteBuffer mBuffer;
 

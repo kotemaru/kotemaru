@@ -57,7 +57,7 @@ public class SelectorThread extends Thread {
 		return mSelector;
 	}
 
-	public synchronized void openClient(String host, int port, SelectorListener listener) throws IOException {
+	public synchronized void openClient(String host, int port, SelectorListener listener)  {
 		mOpenQueue.add(new OpenRequest(host, port, listener));
 		mSelector.wakeup();
 	}
@@ -95,12 +95,18 @@ public class SelectorThread extends Thread {
 			for (SelectionKey key : keys) {
 				keys.remove(key);
 				if (!key.isValid()) continue;
-				Log.e("DEBUG", "===>" + key.readyOps());
-				SelectorListener listener = ((OpenRequest) key.attachment()).mListener;
+				OpenRequest attach = (OpenRequest) key.attachment();
+				if (attach == null) {
+					key.channel().close();
+					key.cancel();
+					Log.e("DEBUG","===>"+key.channel().isOpen());
+					continue;
+				}
+				SelectorListener listener = attach.mListener;
 				if (key.isAcceptable()) listener.onAccept(key);
 				if (key.isConnectable()) listener.onConnect(key);
-				if (key.isReadable()) listener.onReadable(key);
-				if (key.isWritable()) listener.onWritable(key);
+				if (key.isValid() && key.isReadable()) listener.onReadable(key);
+				if (key.isValid() && key.isWritable()) listener.onWritable(key);
 			}
 		}
 	}

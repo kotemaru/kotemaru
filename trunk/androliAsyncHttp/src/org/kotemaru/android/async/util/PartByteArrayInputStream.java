@@ -1,8 +1,14 @@
-package org.kotemaru.android.async.http.body;
+package org.kotemaru.android.async.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * 分割式のByteArrayInputStream実装。
+ * - レスポンス本文をInputStreamで扱うためのクラス。
+ * - ByteArray{In/Out}putStreamが非効率なため代替用。
+ * @author kotemaru.org
+ */
 public class PartByteArrayInputStream extends InputStream {
 	protected static class Part {
 		Part next;
