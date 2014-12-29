@@ -14,12 +14,18 @@ import org.kotemaru.android.async.http.BuildConfig;
 
 import android.util.Log;
 
+/**
+ * Selector実行スレッド。
+ * - シングルトン。
+ * - クラスが初期化されると長時間通信してやつが誤動作とかあるかなー？
+ * @author kotemaru.org
+ */
 public class SelectorThread extends Thread {
 	private static final String TAG = SelectorThread.class.getSimpleName();
-	private static final int TIMEOUT = 5 * 1000; // ms
+	private static final int TIMEOUT = 10 * 1000; // ms
 	private Selector mSelector;
 	private volatile boolean mIsRunnable;
-	private LinkedList<OpenRequest> mOpenQueue = new LinkedList<OpenRequest>();
+	private final LinkedList<OpenRequest> mOpenQueue = new LinkedList<OpenRequest>();
 
 	static {
 		if (BuildConfig.DEBUG) {
@@ -31,16 +37,18 @@ public class SelectorThread extends Thread {
 	private static volatile SelectorThread sInstance;
 
 	public static SelectorThread getInstance() {
-		if (sInstance == null) {
-			try {
-				sInstance = new SelectorThread();
-				sInstance.start();
-			} catch (IOException e) {
-				Log.e(TAG, "Fatal: Bad start SelectorThread:" + e, e);
-				throw new Error("Bad start SelectorThread", e);
+		synchronized (SelectorThread.class) {
+			if (sInstance == null) {
+				try {
+					sInstance = new SelectorThread();
+					sInstance.start();
+				} catch (IOException e) {
+					Log.e(TAG, "Fatal: Bad start SelectorThread:" + e, e);
+					throw new Error("Bad start SelectorThread", e);
+				}
 			}
+			return sInstance;
 		}
-		return sInstance;
 	}
 
 	private SelectorThread() throws IOException {
@@ -57,23 +65,38 @@ public class SelectorThread extends Thread {
 		return mSelector;
 	}
 
-	public synchronized void openClient(String host, int port, SelectorListener listener)  {
+	/**
+	 * 通信開始要求。
+	 * @param host 接続先ホスト。
+	 * @param port 接続先ポート。
+	 * @param listener Selectorリスナ
+	 */
+	public synchronized void openClient(String host, int port, SelectorListener listener) {
 		mOpenQueue.add(new OpenRequest(host, port, listener));
 		mSelector.wakeup();
 	}
-	private synchronized void doOpenRequest() throws IOException {
+
+	/**
+	 * 通信開始要求の消化。
+	 * - プールにChannelがあれば再利用する。
+	 */
+	private synchronized void doOpenRequest() {
 		Iterator<OpenRequest> ite = mOpenQueue.iterator();
 		while (ite.hasNext()) {
 			OpenRequest req = ite.next();
-			SocketAddress addr = new InetSocketAddress(req.host, req.port);
-			SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
-			channel.configureBlocking(false);
-			channel.register(mSelector, channel.validOps(), req);
-			req.mListener.onRegister(channel);
-			if (channel.isConnected()) {
-				req.mListener.onConnect(null);
-			} else {
-				channel.connect(addr);
+			try {
+				SocketAddress addr = new InetSocketAddress(req.host, req.port);
+				SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
+				channel.configureBlocking(false);
+				channel.register(mSelector, channel.validOps(), req);
+				req.mListener.onRegister(channel);
+				if (channel.isConnected()) {
+					req.mListener.onConnect(null);
+				} else {
+					channel.connect(addr);
+				}
+			} catch (IOException e){
+				req.mListener.onError("Open fail.", e);
 			}
 			ite.remove();
 		}
@@ -85,8 +108,14 @@ public class SelectorThread extends Thread {
 			mainLoop();
 		} catch (IOException e) {
 			Log.e(TAG, "Selector fail:" + e, e);
+			throw new Error(e);
 		}
 	}
+
+	/**
+	 * Selectorループ。
+	 * @throws IOException
+	 */
 	public void mainLoop() throws IOException {
 		while (mIsRunnable) {
 			doOpenRequest();
@@ -99,7 +128,6 @@ public class SelectorThread extends Thread {
 				if (attach == null) {
 					key.channel().close();
 					key.cancel();
-					Log.e("DEBUG","===>"+key.channel().isOpen());
 					continue;
 				}
 				SelectorListener listener = attach.mListener;
