@@ -1,4 +1,4 @@
-package org.kotemaru.android.async.http;
+package org.kotemaru.android.async.http.body;
 
 import java.io.IOException;
 import java.io.InputStream;

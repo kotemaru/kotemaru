@@ -1,10 +1,12 @@
-package org.kotemaru.android.async.http;
+package org.kotemaru.android.async.http.body;
 
 import java.nio.ByteBuffer;
 
+import org.kotemaru.android.async.http.HttpUtil;
+
 import android.util.Log;
 
-public class ChunkedPartProcessor {
+public class ChunkedPartReader implements PartReader {
 
 	private static final int BUFFER_SIZE = 4096;
 
@@ -19,24 +21,15 @@ public class ChunkedPartProcessor {
 	private ByteBuffer mBuffer = ByteBuffer.wrap(new byte[BUFFER_SIZE]);
 	private PatternMatcher mCrlfMatcher = new PatternMatcher(HttpUtil.CRLF);
 
-	public interface ChunkedListener {
-		public void onChunkedBlock(byte[] buffer, int offset, int length);
-		public void onChunkedFinish();
+	private PartReaderListener mPartReaderListener;
+
+	public ChunkedPartReader(PartReaderListener chunkedListener) {
+		mPartReaderListener = chunkedListener;
 	}
 
-	private ChunkedListener mChunkedListener;
-
-	public ChunkedPartProcessor(ChunkedListener chunkedListener) {
-		mChunkedListener = chunkedListener;
-	}
-
-	public void addPart(byte[] buffer, int offset, int length) {
-		postPart(buffer, offset, length);
-	}
-
-	private void postPart(byte[] buffer, int offset, int length) {
+	public void postPart(byte[] buffer, int offset, int length) {
 		if (length <= 0) return;
-Log.e("DEBUG","===>chunk:"+mState);
+		Log.e("DEBUG", "===>chunk:" + mState);
 		switch (mState) {
 		case PREPARE:
 		case SIZE_LINE:
@@ -52,7 +45,7 @@ Log.e("DEBUG","===>chunk:"+mState);
 			break;
 		}
 	}
-	
+
 	private void doSizeLine(byte[] buffer, int offset, int length) {
 		int pos = mCrlfMatcher.find(buffer, offset, length);
 		if (pos == -1) {
@@ -63,13 +56,13 @@ Log.e("DEBUG","===>chunk:"+mState);
 		int len = pos + 1;
 		mSizeLineBuffer.put(buffer, offset, len);
 		mChunkSize = parseChunkSize(mSizeLineBuffer);
-		Log.e("DEBUG","===>chunk-size:"+mChunkSize);
+		Log.e("DEBUG", "===>chunk-size:" + mChunkSize);
 
 		if (mChunkSize > mBuffer.capacity()) {
 			mBuffer = ByteBuffer.wrap(new byte[mChunkSize]);
 		}
 		mBuffer.clear().limit(mChunkSize);
-		
+
 		int nextOffset = offset + len;
 		int nextLength = length - len;
 		if (mChunkSize == 0) {
@@ -86,7 +79,7 @@ Log.e("DEBUG","===>chunk:"+mState);
 		mBuffer.put(buffer, offset, len);
 
 		if (!mBuffer.hasRemaining()) {
-			mChunkedListener.onChunkedBlock(mBuffer.array(), 0, mChunkSize);
+			mPartReaderListener.onPart(mBuffer.array(), 0, mChunkSize);
 			int nextOffset = offset + len;
 			int nextLength = length - len;
 			mState = State.DATA_END;
@@ -102,7 +95,7 @@ Log.e("DEBUG","===>chunk:"+mState);
 		int nextLength = length - subOffset;
 		if (mChunkSize == 0) {
 			mState = State.DONE;
-			mChunkedListener.onChunkedFinish();
+			mPartReaderListener.onFinish();
 			return;
 		}
 		mState = State.SIZE_LINE;
@@ -110,9 +103,9 @@ Log.e("DEBUG","===>chunk:"+mState);
 	}
 
 	private int parseChunkSize(ByteBuffer sizeLineBuffer) {
-		String chunkLine = new String(sizeLineBuffer.array(),0,sizeLineBuffer.position());
+		String chunkLine = new String(sizeLineBuffer.array(), 0, sizeLineBuffer.position());
 		sizeLineBuffer.clear();
-		Log.e("DEBUG","===>chunkLine:"+chunkLine);
+		Log.e("DEBUG", "===>chunkLine:" + chunkLine);
 		int idx = chunkLine.indexOf(';');
 		if (idx == -1) {
 			idx = chunkLine.indexOf(HttpUtil.CR);

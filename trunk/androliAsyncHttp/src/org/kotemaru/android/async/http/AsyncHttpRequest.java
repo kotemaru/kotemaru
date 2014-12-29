@@ -5,12 +5,14 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicHeader;
@@ -18,8 +20,16 @@ import org.apache.http.message.BasicHttpResponse;
 import org.kotemaru.android.async.ChannelPool;
 import org.kotemaru.android.async.SelectorListener;
 import org.kotemaru.android.async.SelectorThread;
-import org.kotemaru.android.async.http.ChunkedPartProcessor.ChunkedListener;
 import org.kotemaru.android.async.http.HttpUtil.MethodType;
+import org.kotemaru.android.async.http.body.ChunkedPartReader;
+import org.kotemaru.android.async.http.body.ChunkedPartWriter;
+import org.kotemaru.android.async.http.body.PartByteArrayInputStream;
+import org.kotemaru.android.async.http.body.PartReader;
+import org.kotemaru.android.async.http.body.PartReader.PartReaderListener;
+import org.kotemaru.android.async.http.body.PartWriter;
+import org.kotemaru.android.async.http.body.PartWriter.PartWriterListener;
+import org.kotemaru.android.async.http.body.StreamPartReader;
+import org.kotemaru.android.async.http.body.StreamPartWriter;
 
 import android.util.Log;
 
@@ -31,68 +41,107 @@ public abstract class AsyncHttpRequest
 	public enum State {
 		PREPARE, CONNECT,
 		REQUEST_HEADER, REQUSET_BODY,
-		RESPONSE_WAIT, RESPONSE_HEADER, RESPONSE_BODY_PART, RESPONSE_BODY,
+		RESPONSE_HEADER, RESPONSE_BODY,
 		DONE, ERROR
 	}
 
-	private static final int BUFFER_SIZE = 4096;
-
-	private final byte[] mRawBuffer = new byte[BUFFER_SIZE];
-	private final ByteBuffer mBuffer = ByteBuffer.wrap(mRawBuffer);
-	private final PartByteArrayInputStream mResponseBodyStream = new PartByteArrayInputStream();
-	private final ChunkedListener mChunkedListener = new ChunkedListener() {
-		@Override
-		public void onChunkedBlock(byte[] buffer, int offset, int length) {
-			onResponseBodyPart(buffer, offset, length);
-		}
-		@Override
-		public void onChunkedFinish() {
-			onResponseBody();
-		}
-	};
-	private final ChunkedPartProcessor mChunkedPartProcessor = new ChunkedPartProcessor(mChunkedListener);
+	
+	private AsyncHttpClient mHttpClient;
+	private AsyncHttpListener mAsyncHttpListener;
+	
+	private BasicHttpResponse mHttpResponse;
+	private PartByteArrayInputStream mResponseBodyStream;
+	private InputStream mRequestContent;
+	private PartWriter mRequestBodyWriter;
+	private PartReader mResponseBodyReader;
+	
+	private int mBufferSize = 4096;
+	private ByteBuffer mBuffer;
+	private SocketChannel mChannel;
 
 	private State mState = State.PREPARE;
 	private boolean mIsAborted;
-	private SocketChannel mChannel;
 	private URI mUri;
 
-	private AsyncHttpListener mAsyncHttpListener;
-	private BasicHttpResponse mHttpResponse;
-	private InputStream mRequestContent;
-
-	private boolean mIsChunkedMode;
-	private AsyncHttpClient mHttpClient;
-
+	public AsyncHttpRequest() {
+	}
 	public AsyncHttpRequest(URI uri) {
 		mUri = uri;
 	}
-	public abstract MethodType getMethodType();
-	public abstract HttpEntity getHttpEntity();
+	
 
-	void execute(AsyncHttpClient httpClient) throws IOException {
+	public void execute(AsyncHttpClient httpClient) throws IOException {
+		initState();
 		mHttpClient = httpClient;
 		SelectorThread selector = SelectorThread.getInstance();
 		String host = mUri.getHost();
 		int port = (mUri.getPort() == -1) ? 80 : mUri.getPort();
 		this.setHeader(new BasicHeader("Host", host + ":" + port));
-		// this.setHeader(new BasicHeader("Connection", "keep-alive"));
 		selector.openClient(host, port, this);
 	}
+
 	public State getState() {
 		return mState;
 	}
-	public void setState(State state) {
-		mState = state;
-	}
 
+	public URI getUri() {
+		return mUri;
+	}
+	public void setUri(URI uri) {
+		mUri = uri;
+	}
+	
+	public int getBufferSize() {
+		return mBufferSize;
+	}
+	public void setBufferSize(int bufferSize) {
+		mBufferSize = bufferSize;
+	}
 	public AsyncHttpListener getAsyncHttpListener() {
 		return mAsyncHttpListener;
 	}
 	public void setAsyncHttpListener(AsyncHttpListener asyncHttpListener) {
 		mAsyncHttpListener = asyncHttpListener;
 	}
-	// ---------------------------------
+	
+	// -----------------------------------------------------------------------------
+	// abstract methods.
+	// -----------------------------------------------------------------------------
+	public abstract MethodType getMethodType();
+	public abstract HttpEntity getHttpEntity();
+
+	// -----------------------------------------------------------------------------
+	// for implements org.apache.http.message.SelectorListener
+	// -----------------------------------------------------------------------------
+	@Override
+	public ProtocolVersion getProtocolVersion() {
+		return HttpUtil.PROTOCOL_VERSION;
+	}
+
+	@Override
+	public void abort() throws UnsupportedOperationException {
+		mIsAborted = true;
+		if (mChannel != null) {
+			doFinish(true);
+		}
+	}
+	@Override
+	public boolean isAborted() {
+		return mIsAborted;
+	}
+
+	@Override
+	public String getMethod() {
+		return getMethodType().name();
+	}
+	@Override
+	public URI getURI() {
+		return mUri;
+	}
+
+	// -----------------------------------------------------------------------------
+	// for implements org.kotemaru.android.async.HttpMessage
+	// -----------------------------------------------------------------------------
 	@Override
 	public void onAccept(SelectionKey key) {
 		// not use.
@@ -110,34 +159,17 @@ public abstract class AsyncHttpRequest
 	@Override
 	public void onConnect(SelectionKey key) {
 		Log.v(TAG, "onConnect:" + key);
+		setState(State.CONNECT, null, 0);
 		try {
 			if (mChannel.isConnectionPending()) {
 				mChannel.finishConnect();
 			}
-			if (key != null) {
-				key.interestOps(SelectionKey.OP_WRITE);
-			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			doError("Connection fail:", e);
 			return;
 		}
-
-		setState(State.CONNECT);
-		mAsyncHttpListener.onConnect(this);
-
-		mBuffer.clear();
-		HttpEntity entity = getHttpEntity();
-		if (entity != null) {
-			addRequestHeader(entity.getContentEncoding());
-			addRequestHeader(entity.getContentType());
-			if (entity.getContentLength() >= 0) {
-				addRequestHeader(new BasicHeader("Content-Length", Long.toString(entity.getContentLength())));
-			}
-		}
-		HttpUtil.formatRequestHeader(mBuffer, getMethodType(), mUri, this, mHttpClient);
-		mBuffer.flip();
-
-		setState(State.REQUEST_HEADER);
+		mAsyncHttpListener.onConnect(this);  // do Callback.
+		doRequestHeader(key);
 	}
 
 	@Override
@@ -145,172 +177,239 @@ public abstract class AsyncHttpRequest
 		Log.v(TAG, "onWritable:" + key + ":" + mState);
 		if (mState == State.REQUEST_HEADER) {
 			if (mBuffer.hasRemaining()) {
-				try {
-					mChannel.write(mBuffer);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				writeFromBuffer(mBuffer);
 			} else {
-				mAsyncHttpListener.onRequestHeader(this);
-				if (getHttpEntity() != null) {
-					setState(State.REQUSET_BODY);
-					try {
-						mRequestContent = getHttpEntity().getContent();
-					} catch (Exception e) {
-						doError("Post entity fail", e);
-					}
-				} else {
-					mBuffer.clear();
-					setState(State.RESPONSE_WAIT);
-					key.interestOps(SelectionKey.OP_READ);
-					mAsyncHttpListener.onRequestBody(this);
-				}
+				doRequestBody(key);
 			}
 		} else if (mState == State.REQUSET_BODY) {
 			try {
-				if (mAsyncHttpListener.isRequestBodyPart()) {
-					ByteBuffer buffer = mAsyncHttpListener.onRequestBodyPart(mBuffer);
-					if (buffer != null) {
-						int n = mChannel.write(mBuffer);
-					} else {
-						mBuffer.clear();
-						setState(State.RESPONSE_WAIT);
-						key.interestOps(SelectionKey.OP_READ);
-						mAsyncHttpListener.onRequestBody(this);
-					}
-				} else {
-					mBuffer.clear();
-					byte[] buff = mBuffer.array();
-					int n = mRequestContent.read(buff);
-					if (n > 0) {
-						mBuffer.position(n);
-						mBuffer.flip();
-						n = mChannel.write(mBuffer);
-						Log.e("DEBUG", "====>write size=" + n);
-					}
-					if (n == -1) {
-						mBuffer.clear();
-						setState(State.RESPONSE_WAIT);
-						key.interestOps(SelectionKey.OP_READ);
-						mAsyncHttpListener.onRequestBody(this);
-					}
+				int n = mRequestBodyWriter.doWrite();
+				if (n < 0) {
+					doResponseHeader(key);
 				}
 			} catch (Exception e) {
 				doError("Post entity fail", e);
 			}
+		} else {
+			doError("Bad state " + mState + " onWritable().", null);
 		}
 	}
 
-	private void addRequestHeader(Header header) {
-		if (header != null) return;
-		this.addHeader(header);
-	}
 	@Override
 	public void onReadable(SelectionKey key) {
 		Log.v(TAG, "onReadable:" + key + ":" + mState);
-		if (mState == State.RESPONSE_WAIT || mState == State.RESPONSE_HEADER) {
-			setState(State.RESPONSE_HEADER);
-			int n = readIntoBuffer();
-			if (n <= 0) {
-				doError("Header reading fail", null);
-				return;
-			}
+		if (mState == State.RESPONSE_HEADER) {
+			readIntoBuffer(mBuffer);
 			mHttpResponse = HttpUtil.parseResponseHeader(mBuffer);
 			if (mHttpResponse != null) {
-				setState(State.RESPONSE_BODY);
-				mIsChunkedMode = HttpUtil.hasChunkedTransferHeader(mHttpResponse);
-				mAsyncHttpListener.onResponseHeader(mHttpResponse);
-				mHttpClient.setCookies(mHttpResponse, mUri);
-				if (mBuffer.remaining() > 0) {
-					processBodyPart(key, n);
-				}
+				doResponseBody(key);
 			}
 		} else if (mState == State.RESPONSE_BODY) {
-			int n = readIntoBuffer();
+			readIntoBuffer(mBuffer);
 			mBuffer.flip();
-			processBodyPart(key, n);
+			doResponseBodyPart();
 		} else {
 			doError("Bad state " + mState + " onReadable().", null);
 		}
 	}
 
-	private void doError(String msg, Throwable err) {
-		Log.e(TAG, msg, err);
-		abort();
+	// -----------------------------------------------------------------------------
+	// for internal logic
+	// -----------------------------------------------------------------------------
+	private void doRequestHeader(SelectionKey key) {
+		mBuffer.clear();
+		HttpEntity entity = getHttpEntity();
+		if (entity != null) {
+			addRequestHeader(entity.getContentEncoding());
+			addRequestHeader(entity.getContentType());
+			if (entity.getContentLength() >= 0) {
+				addRequestHeader(new BasicHeader("Content-Length", Long.toString(entity.getContentLength())));
+			} else {
+				addRequestHeader(new BasicHeader(HttpUtil.TRANSFER_ENCODING, HttpUtil.CHUNKED));
+			}
+		}
+		HttpUtil.formatRequestHeader(mBuffer, getMethodType(), mUri, this, mHttpClient);
+		mBuffer.flip();
+		setState(State.REQUEST_HEADER, key, SelectionKey.OP_WRITE);
 	}
-	private void processBodyPart(SelectionKey key, int readSize) {
+
+	private void doRequestBody(SelectionKey key) {
+		mAsyncHttpListener.onRequestHeader(this);  // do Callback.
+
+		HttpEntity entity = getHttpEntity();
+		if (entity != null) {
+			try {
+				mRequestContent = getHttpEntity().getContent();
+			} catch (Exception e) {
+				doError("Post entity fail", e);
+			}
+			if (entity.getContentLength() >= 0) {
+				mRequestBodyWriter = new StreamPartWriter(mChannel, mPartWriterListener);
+			} else {
+				mRequestBodyWriter = new ChunkedPartWriter(mChannel, mPartWriterListener);
+			}
+			mBuffer.clear();
+			setState(State.REQUSET_BODY, key, SelectionKey.OP_WRITE);
+		} else {
+			doResponseHeader(key);
+		}
+	}
+
+	private final PartWriterListener mPartWriterListener = new PartWriterListener() {
+		@Override
+		public ByteBuffer onNextBuffer() throws IOException {
+			mBuffer.clear();
+			if (mAsyncHttpListener.isRequestBodyPart()) {
+				return mAsyncHttpListener.onRequestBodyPart(mBuffer);  // do Callback.
+			} else {
+				byte[] buff = mBuffer.array();
+				int readSize = mRequestContent.read(buff);
+				if (readSize > 0) {
+					mBuffer.position(readSize);
+					mBuffer.flip();
+					return mBuffer;
+				} else {
+					return null;
+				}
+			}
+		}
+	};
+
+	private void doResponseHeader(SelectionKey key) {
+		if (mRequestContent != null) {
+			mAsyncHttpListener.onRequestBody(this);  // do Callback.
+		}
+		mBuffer.clear();
+		setState(State.RESPONSE_HEADER, key, SelectionKey.OP_READ);
+	}
+	private void doResponseBody(SelectionKey key) {
+		mAsyncHttpListener.onResponseHeader(mHttpResponse);  // do Callback.
+
+		mHttpClient.setCookies(mHttpResponse, mUri);
+		boolean isChunked = HttpUtil.hasChunkedTransferHeader(mHttpResponse);
+		if (isChunked) {
+			mResponseBodyReader = new ChunkedPartReader(mPartReaderListener);
+		} else {
+			long contentLength = HttpUtil.getContentLength(mHttpResponse);
+			mResponseBodyReader = new StreamPartReader(mPartReaderListener, contentLength);
+		}
+		if (mAsyncHttpListener.isResponseBodyPart()) {
+			mResponseBodyStream = new PartByteArrayInputStream();
+		}
+		if (mBuffer.remaining() > 0) {
+			doResponseBodyPart();
+		}
+		setState(State.RESPONSE_BODY, key, SelectionKey.OP_READ);
+	}
+
+	private final PartReaderListener mPartReaderListener = new PartReaderListener() {
+		@Override
+		public void onPart(byte[] buffer, int offset, int length) {
+			if (mAsyncHttpListener.isResponseBodyPart()) {
+				mAsyncHttpListener.onResponseBodyPart(buffer, offset, length);  // do Callback.
+			} else {
+				mResponseBodyStream.addPart(buffer, offset, length);
+			}
+		}
+		@Override
+		public void onFinish() {
+			doResponseBody();
+		}
+	};
+
+	private void doResponseBodyPart() {
 		byte[] buffer = mBuffer.array();
 		int offset = mBuffer.position();
 		int length = mBuffer.limit() - offset;
-
-		if (length > 0) {
-			if (mIsChunkedMode) {
-				mChunkedPartProcessor.addPart(buffer, offset, length);
-			} else {
-				onResponseBodyPart(buffer, offset, length);
-			}
-		}
-		if (readSize == -1) { // EOF
-			onResponseBody();
-			key.interestOps(0);
-		}
+		mResponseBodyReader.postPart(buffer, offset, length);
 		mBuffer.clear();
 	}
-	private void onResponseBodyPart(byte[] buffer, int offset, int length) {
-		if (mAsyncHttpListener.isResponseBodyPart()) {
-			mAsyncHttpListener.onResponseBodyPart(buffer, offset, length);
-		} else {
-			mResponseBodyStream.addPart(buffer, offset, length);
+	private void doResponseBody() {
+		BasicHttpEntity entity = new BasicHttpEntity();
+		entity.setContent(mResponseBodyStream);
+		if (mResponseBodyStream != null) {
+			entity.setContentLength(mResponseBodyStream.getLength());
 		}
-	}
-	private void onResponseBody() {
-		setState(State.DONE);
+		entity.setContentEncoding(mHttpResponse.getFirstHeader("Content-Encoding"));
+		entity.setContentType(mHttpResponse.getFirstHeader("Content-Type"));
+
 		mHttpResponse.setEntity(new InputStreamEntity(mResponseBodyStream, mResponseBodyStream.getLength()));
-		mAsyncHttpListener.onResponseBody(mHttpResponse);
-		onFinish();
-	}
-	private void onFinish() {
-		ChannelPool.getInstance().releaseChannel(mChannel);
+		mAsyncHttpListener.onResponseBody(mHttpResponse);  // do Callback.
+		doFinish(false);
 	}
 
-	private int readIntoBuffer() {
+	private void doError(String msg, Throwable err) {
+		Log.e(TAG, msg, err);
+		mState = State.ERROR;
+		abort();
+	}
+	private void doFinish(boolean isDisconnect) {
+		Selector selector = SelectorThread.getInstance().getSelector();
+		SelectionKey key = mChannel.keyFor(selector);
+		setState(State.DONE, key, 0);
+		key.cancel();
+		if (isDisconnect) {
+			try {
+				mChannel.close();
+			} catch (IOException e) {
+				Log.e(TAG, "Channel close error. ignore.", e);
+			}
+		} else {
+			ChannelPool.getInstance().releaseChannel(mChannel);
+		}
+		clearState();
+	}
+	// -----------------------------------------------------------------------------
+	// for internal util.
+	// -----------------------------------------------------------------------------
+	private void setState(State state, SelectionKey key, int ops) {
+		mState = state;
+		if (key != null) {
+			key.interestOps(ops);
+		}
+	}
+	private void initState() throws IOException {
+		if (mState != State.PREPARE && mState != State.DONE && mState != State.ERROR) {
+			throw new IOException("Can not reuse. Bad status " + mState);
+		}
+		mState = State.PREPARE;
+		mIsAborted = false;
+		if (mBuffer == null || mBuffer.capacity() != mBufferSize) {
+			mBuffer = ByteBuffer.wrap(new byte[mBufferSize]);
+		}
+		clearState();
+	}
+	private void clearState() {
+		mHttpClient = null;
+		mResponseBodyStream = null;
+		mChannel = null;
+		mAsyncHttpListener = null;
+		mHttpResponse = null;
+		mRequestContent = null;
+	}
+	
+	private void addRequestHeader(Header header) {
+		if (header != null) return;
+		this.addHeader(header);
+	}
+
+	private int readIntoBuffer(ByteBuffer buffer) {
 		try {
-			int n = mChannel.read(mBuffer);
-			Log.e("DEBUG", "===>read=" + n + ":" + mBuffer.remaining());
+			int n = mChannel.read(buffer);
 			return n;
 		} catch (IOException e) {
-			e.printStackTrace();
+			doError("Read fail:", e);
+			return -1;
+		}
+	}
+	private int writeFromBuffer(ByteBuffer buffer) {
+		try {
+			int n = mChannel.write(buffer);
+			return n;
+		} catch (IOException e) {
+			doError("Write fail:", e);
 			return -1;
 		}
 	}
 
-	@Override
-	public ProtocolVersion getProtocolVersion() {
-		return HttpUtil.PROTOCOL_VERSION;
-	}
-
-	@Override
-	public void abort() throws UnsupportedOperationException {
-		mIsAborted = true;
-		if (mChannel != null) {
-			try {
-				mChannel.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	@Override
-	public boolean isAborted() {
-		return mIsAborted;
-	}
-
-	@Override
-	public String getMethod() {
-		return getMethodType().name();
-	}
-	@Override
-	public URI getURI() {
-		return mUri;
-	}
 }
