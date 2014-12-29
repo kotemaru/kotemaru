@@ -89,14 +89,14 @@ public class SelectorThread extends Thread {
 				SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
 				channel.configureBlocking(false);
 				channel.register(mSelector, channel.validOps(), req);
-				req.mListener.onRegister(channel);
+				req.listener.onRegister(channel);
 				if (channel.isConnected()) {
-					req.mListener.onConnect(null);
+					req.listener.onConnect(null);
 				} else {
 					channel.connect(addr);
 				}
-			} catch (IOException e){
-				req.mListener.onError("Open fail.", e);
+			} catch (Exception e){
+				req.listener.onError("Open fail. "+req.host+":"+req.port, e);
 			}
 			ite.remove();
 		}
@@ -130,7 +130,7 @@ public class SelectorThread extends Thread {
 					key.cancel();
 					continue;
 				}
-				SelectorListener listener = attach.mListener;
+				SelectorListener listener = attach.listener;
 				if (key.isAcceptable()) listener.onAccept(key);
 				if (key.isConnectable()) listener.onConnect(key);
 				if (key.isValid() && key.isReadable()) listener.onReadable(key);
@@ -142,12 +142,12 @@ public class SelectorThread extends Thread {
 	private static class OpenRequest {
 		String host;
 		int port;
-		SelectorListener mListener;
+		SelectorListener listener;
 
 		public OpenRequest(String host, int port, SelectorListener listener) {
 			this.host = host;
 			this.port = port;
-			this.mListener = listener;
+			this.listener = listener;
 		}
 	}
 }

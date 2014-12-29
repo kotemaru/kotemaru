@@ -364,10 +364,12 @@ public abstract class AsyncHttpRequest
 	}
 
 	private void doError(String msg, Throwable err) {
-		Log.e(TAG, msg, err);
+		Log.w(TAG, msg, err);
+		if (mAsyncHttpListener != null) {
+			mAsyncHttpListener.onError(msg, err);
+		}
 		mState = State.ERROR;
 		abort();
-		mAsyncHttpListener.onError(msg, err);
 	}
 	private void doFinish(boolean isDisconnect) {
 		Selector selector = SelectorThread.getInstance().getSelector();
