@@ -182,7 +182,10 @@ public abstract class AsyncHttpRequest
 		setState(State.CONNECT, null, 0);
 		try {
 			if (mChannel.isConnectionPending()) {
-				mChannel.finishConnect();
+				if (!mChannel.finishConnect()) {
+					// TODO:本当はリトライが必要。でもSelectorからだから大丈夫なのかも。
+					throw new IOException("finishConnect() fail");
+				}
 			}
 		} catch (IOException e) {
 			doError("Connection fail:", e);

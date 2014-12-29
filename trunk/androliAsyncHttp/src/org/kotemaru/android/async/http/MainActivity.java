@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		
+
 		View hello = this.findViewById(R.id.hello);
 		hello.setOnClickListener(new OnClickListener() {
 			@Override
@@ -31,32 +31,33 @@ public class MainActivity extends Activity {
 			}
 		});
 	}
+
 	AsyncHttpClient client = new AsyncHttpClient();
-	//AsyncHttpGet request = null;
+	// AsyncHttpGet request = null;
 	AsyncHttpPost request = null;
 
 	protected void doSend() {
 		try {
-			///AsyncHttpClient client = new AsyncHttpClient();
+			// /AsyncHttpClient client = new AsyncHttpClient();
 			if (request == null) {
-			 //request = new AsyncHttpGet("http://www.google.co.jp/");
-			 request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
+				// request = new AsyncHttpGet("http://www.google.co.jp/");
+				request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
 			}
 			HttpEntity httpEntity = new StringEntity("Test data");
 			request.setHttpEntity(httpEntity);
-			
-			client.execute(request, new AsyncHttpListenerBase(){
+
+			client.execute(request, new AsyncHttpListenerBase() {
 				@Override
 				public void onResponseBody(HttpResponse httpResponse) {
-					Log.e("DEBUG","->onResponseBody:"+httpResponse);
+					Log.e("DEBUG", "->onResponseBody:" + httpResponse);
 					InputStream is;
 					try {
 						is = httpResponse.getEntity().getContent();
-						Log.e("DEBUG","->onResponseBody:"+is);
-						BufferedReader br = new BufferedReader( new InputStreamReader(is));
+						Log.e("DEBUG", "->onResponseBody:" + is);
+						BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						String line;
 						while ((line = br.readLine()) != null) {
-							Log.e("DEBUG","->"+line);
+							Log.e("DEBUG", "->" + line);
 						}
 						br.close();
 					} catch (Exception e) {

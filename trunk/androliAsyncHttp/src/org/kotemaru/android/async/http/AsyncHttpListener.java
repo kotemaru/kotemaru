@@ -5,7 +5,6 @@ import java.nio.ByteBuffer;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 
-
 /**
  * 非同期HTTP通信のリスナ。
  * - 各種タイミングでコールバックされる。
@@ -41,7 +40,7 @@ public interface AsyncHttpListener {
 	 * 通信中にエラーが発生した。
 	 * - 以降の通信は行われない。
 	 * @param msg エラーメッセージ
-	 * @param t   原因の例外。null もある。
+	 * @param t 原因の例外。null もある。
 	 */
 	public void onError(String msg, Throwable t);
 
@@ -59,7 +58,7 @@ public interface AsyncHttpListener {
 	 * @return true=分割モード
 	 */
 	public boolean isResponseBodyPart();
-	
+
 	/**
 	 * 分割されたリクエスト本文の一部を返す。
 	 * - isRequestBodyPart()がtrueの場合のみ呼ばれる。
@@ -69,7 +68,7 @@ public interface AsyncHttpListener {
 	 * @return 読込状態のバッファ。終端にnullを返す。
 	 */
 	public ByteBuffer onRequestBodyPart(ByteBuffer buffer);
-	
+
 	/**
 	 * 分割されたレスポンス本文の一部を受け取る。
 	 * - 分割位置は予測不能。極端な場合、1byteつづのこともある。

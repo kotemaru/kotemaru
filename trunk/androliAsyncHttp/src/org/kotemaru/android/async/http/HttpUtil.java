@@ -38,7 +38,6 @@ public class HttpUtil {
 	public static final String SET_COOKIE = "Set-Cookie";
 	public static final String CHUNKED = "chunked";
 
-
 	public static boolean hasChunkedTransferHeader(HttpMessage httpMessage) {
 		Header[] headers = httpMessage.getHeaders(HttpHeaders.TRANSFER_ENCODING);
 		for (Header header : headers) {
