@@ -1,5 +1,4 @@
-package org.kotemaru.android.async
-;
+package org.kotemaru.android.async;
 
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -14,7 +13,7 @@ public interface SelectorListener {
 	 * @param channel
 	 */
 	public void onRegister(SocketChannel channel);
-	
+
 	public void onAccept(SelectionKey key);
 	public void onConnect(SelectionKey key);
 	public void onWritable(SelectionKey key);

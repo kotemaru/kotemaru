@@ -57,8 +57,9 @@ public class SelectorThread extends Thread {
 		mSelector = Selector.open();
 		mIsRunnable = true;
 	}
-	public void close() {
+	public void close() throws IOException {
 		mIsRunnable = false;
+		mSelector.close();
 		sInstance.interrupt();
 		sInstance = null;
 	}
@@ -89,15 +90,15 @@ public class SelectorThread extends Thread {
 				SocketAddress addr = new InetSocketAddress(req.host, req.port);
 				SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
 				channel.configureBlocking(false);
-				channel.register(mSelector, channel.validOps(), req);
+				channel.register(mSelector, SelectionKey.OP_CONNECT, req);
 				req.listener.onRegister(channel);
 				if (channel.isConnected()) {
-					req.listener.onConnect(null);
+					req.listener.onConnect(channel.keyFor(mSelector));
 				} else {
 					channel.connect(addr);
 				}
-			} catch (Exception e){
-				req.listener.onError("Open fail. "+req.host+":"+req.port, e);
+			} catch (Exception e) {
+				req.listener.onError("Open fail. " + req.host + ":" + req.port, e);
 			}
 			ite.remove();
 		}
@@ -106,10 +107,11 @@ public class SelectorThread extends Thread {
 	@Override
 	public void run() {
 		try {
-			while (true) {
+			while (mIsRunnable) {
 				try {
 					mainLoop();
 				} catch (ConcurrentModificationException e) {
+					// Note: NIO bug?
 					Log.w(TAG, "Selector fail:ignore:" + e, e);
 				}
 			}

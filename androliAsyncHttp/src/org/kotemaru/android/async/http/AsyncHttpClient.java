@@ -31,8 +31,10 @@ public class AsyncHttpClient {
 	 * - 処理はすぐに終わる。
 	 * - 通信は発生しないのでUIスレッドで実行可能。
 	 * - 結果は listener に返される。
-	 * @param request    HTTPリクエスト。GET or POST。
-	 * @param listener   非同期リスナ。
+	 * - listenerの実行スレッドは全て SelectorThread となる。
+	 * -- 長時間実行すると他の通信処理が止まるので注意。
+	 * @param request HTTPリクエスト。GET or POST。
+	 * @param listener 非同期リスナ。
 	 */
 	public void execute(AsyncHttpRequest request, AsyncHttpListener listener) {
 		try {
@@ -51,13 +53,12 @@ public class AsyncHttpClient {
 			try {
 				HttpUtil.setCookie(mCookieSpec, mCookieStore, header, uri);
 			} catch (MalformedCookieException e) {
-				Log.w(TAG,"Ignore Set-Cookie:"+e);
+				Log.w(TAG, "Ignore Set-Cookie:" + e);
 			}
 		}
 	}
 
-	
-	//---------------------------------------------------------------------------
+	// ---------------------------------------------------------------------------
 	// Setter/Getter
 	public CookieSpec getCookieSpec() {
 		return mCookieSpec;
