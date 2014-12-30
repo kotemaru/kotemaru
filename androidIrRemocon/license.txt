@@ -1,3 +1,0 @@
-source code: license kotemaru.org (Apache License/2.0)
-remote_control.png : license http://VistaIcons.com (http://www.proicons.com/faq.htm)
-asserts/remocon/img : license http://adamwhitcroft.com/batch/license/
