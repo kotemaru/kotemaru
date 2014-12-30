@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.BufferTransferConsumer;
+import org.kotemaru.android.async.BufferTranspoter;
 
 /**
  * 平文 フォーマットのストリームを分割して書き込むためのクラス。
@@ -21,9 +21,13 @@ public class StreamPartWriter implements PartWriter {
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
 	private final PartWriterListener mPartWriterListener;
-	private final BufferTransferConsumer mBufferTransferConsumer = new BufferTransferConsumer() {
+	private final BufferTranspoter mBufferTranspoter = new BufferTranspoter() {
 		@Override
 		public ByteBuffer read() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+		@Override
+		public void release(ByteBuffer buffer) {
 			throw new UnsupportedOperationException();
 		}
 		@Override
@@ -40,12 +44,12 @@ public class StreamPartWriter implements PartWriter {
 	@Override
 	public int onWritable() throws IOException {
 		if (mState == State.PREPARE) {
-			mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+			mPartWriterListener.onNextBuffer(mBufferTranspoter);
 			return 0;
 		}
 		if (mState == State.DONE) return -1;
 		if (!mBuffer.hasRemaining()) {
-			mPartWriterListener.onNextBuffer(mBufferTransferConsumer);
+			mPartWriterListener.onNextBuffer(mBufferTranspoter);
 			return 0;
 		}
 		int n = mChannel.write(mBuffer);

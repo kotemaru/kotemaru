@@ -2,7 +2,8 @@ package org.kotemaru.android.async.http;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.kotemaru.android.async.BufferTransferConsumer;
+import org.kotemaru.android.async.BufferTranspoter;
+import org.kotemaru.android.async.BuildConfig;
 
 import android.util.Log;
 
@@ -31,7 +32,7 @@ public abstract class AsyncHttpListenerBase implements AsyncHttpListener {
 	}
 
 	@Override
-	public void onResponseBodyPart(BufferTransferConsumer consumer) {
+	public void onResponseBodyPart(BufferTranspoter transpoter) {
 		if (IS_DEBUG) Log.v(TAG, "onResponseBodyPart");
 	}
 
@@ -54,6 +55,6 @@ public abstract class AsyncHttpListenerBase implements AsyncHttpListener {
 	}
 
 	@Override
-	public void onRequestBodyPart(BufferTransferConsumer consumer) {
+	public void onRequestBodyPart(BufferTranspoter transpoter) {
 	}
 }

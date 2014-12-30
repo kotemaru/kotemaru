@@ -2,7 +2,7 @@ package org.kotemaru.android.async.http.body;
 
 import java.io.IOException;
 
-import org.kotemaru.android.async.BufferTransferConsumer;
+import org.kotemaru.android.async.BufferTranspoter;
 /**
  * リクエスト本文を分割して書き込むためのインターフェース。
  * - Chenkedと平文の処理を共通化するためのもの。
@@ -14,7 +14,7 @@ public interface PartWriter {
 		 * 書き込みデータがなくなると呼び出される。
 		 * @throws IOException 入力側のIOエラー
 		 */
-		public void onNextBuffer(BufferTransferConsumer consumer) throws IOException;
+		public void onNextBuffer(BufferTranspoter transpoter) throws IOException;
 	}
 	
 	/**

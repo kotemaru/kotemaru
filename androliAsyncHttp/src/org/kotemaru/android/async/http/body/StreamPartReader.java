@@ -1,5 +1,7 @@
 package org.kotemaru.android.async.http.body;
 
+import java.nio.ByteBuffer;
+
 /**
  * 平文のストリームを分割して読み込むためのクラス。
  * - 平文 -> 平文のフィルターなので実質なにもしない。
@@ -17,10 +19,10 @@ public class StreamPartReader implements PartReader {
 	}
 
 	@Override
-	public void postPart(byte[] buffer, int offset, int length) {
-		if (length >= 0) {
-			mPartReaderListener.onPart(buffer, offset, length);
-			readingCount += length;
+	public void postPart(ByteBuffer buffer) {
+		if (buffer != null) {
+			mPartReaderListener.onPart(buffer);
+			readingCount += buffer.remaining();
 			if (mContentLength > 0 && readingCount >= mContentLength) {
 				mPartReaderListener.onFinish();
 			}
