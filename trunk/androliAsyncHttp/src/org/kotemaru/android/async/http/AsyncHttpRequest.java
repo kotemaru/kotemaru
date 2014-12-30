@@ -17,7 +17,7 @@ import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
-import org.kotemaru.android.async.BufferTranspoter;
+import org.kotemaru.android.async.BufferTransporter;
 import org.kotemaru.android.async.BuildConfig;
 import org.kotemaru.android.async.ChannelPool;
 import org.kotemaru.android.async.SelectorListener;
@@ -223,8 +223,8 @@ public abstract class AsyncHttpRequest
 	@Override
 	public void onReadable(SelectionKey key) {
 		if (IS_DEBUG) Log.v(TAG, "onReadable:" + key + ":" + mState);
-		if (mBufferTranspoter.isLocked()) {
-			mBufferTranspoter.onReadable(key);
+		if (mBufferTransporter.isLocked()) {
+			mBufferTransporter.onReadable(key);
 			return;
 		}
 		if (mState == State.RESPONSE_HEADER) {
@@ -296,19 +296,19 @@ public abstract class AsyncHttpRequest
 
 	private final PartWriterListener mPartWriterListener = new PartWriterListener() {
 		@Override
-		public void onNextBuffer(BufferTranspoter transpoter) throws IOException {
+		public void onNextBuffer(BufferTransporter transporter) throws IOException {
 			mBuffer.clear();
 			if (mAsyncHttpListener.isRequestBodyPart()) {
-				mAsyncHttpListener.onRequestBodyPart(transpoter);  // do Callback.
+				mAsyncHttpListener.onRequestBodyPart(transporter);  // do Callback.
 			} else {
 				byte[] buff = mBuffer.array();
 				int readSize = mRequestContent.read(buff);
 				if (readSize > 0) {
 					mBuffer.position(readSize);
 					mBuffer.flip();
-					transpoter.write(mBuffer);
+					transporter.write(mBuffer);
 				} else {
-					transpoter.write(null);
+					transporter.write(null);
 				}
 			}
 		}
@@ -345,8 +345,8 @@ public abstract class AsyncHttpRequest
 		@Override
 		public void onPart(ByteBuffer buffer) {
 			if (mAsyncHttpListener.isResponseBodyPart()) {
-				mBufferTranspoter.setBuffer(buffer);
-				mAsyncHttpListener.onResponseBodyPart(mBufferTranspoter);  // do Callback.
+				mBufferTransporter.setBuffer(buffer);
+				mAsyncHttpListener.onResponseBodyPart(mBufferTransporter);  // do Callback.
 			} else {
 				byte[] array = buffer.array();
 				int offset = buffer.position();
@@ -357,8 +357,8 @@ public abstract class AsyncHttpRequest
 		@Override
 		public void onFinish() {
 			if (mAsyncHttpListener.isResponseBodyPart()) {
-				mBufferTranspoter.setBuffer(null);
-				mAsyncHttpListener.onResponseBodyPart(mBufferTranspoter);  // do Callback.
+				mBufferTransporter.setBuffer(null);
+				mAsyncHttpListener.onResponseBodyPart(mBufferTransporter);  // do Callback.
 				doFinish(false);
 			} else {
 				doResponseBody();
@@ -418,8 +418,8 @@ public abstract class AsyncHttpRequest
 	// for internal util.
 	// -----------------------------------------------------------------------------
 
-	private final BufferTranspoterImpl mBufferTranspoter = new BufferTranspoterImpl();
-	private class BufferTranspoterImpl implements BufferTranspoter {
+	private final BufferTransporterImpl mBufferTransporter = new BufferTransporterImpl();
+	private class BufferTransporterImpl implements BufferTransporter {
 		private volatile boolean mIsBufferLocked;
 		private ByteBuffer mBuffer;
 		

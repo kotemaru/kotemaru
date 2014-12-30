@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.BufferTranspoter;
+import org.kotemaru.android.async.BufferTransporter;
 import org.kotemaru.android.async.http.HttpUtil;
 
 /**
@@ -25,7 +25,7 @@ public class ChunkedPartWriter implements PartWriter {
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
 	private final PartWriterListener mPartWriterListener;
-	private final BufferTranspoter mBufferTranspoter = new BufferTranspoter() {
+	private final BufferTransporter mBufferTransporter = new BufferTransporter() {
 		@Override
 		public ByteBuffer read() throws IOException {
 			throw new UnsupportedOperationException();
@@ -48,7 +48,7 @@ public class ChunkedPartWriter implements PartWriter {
 	@Override
 	public int onWritable() throws IOException {
 		if (mState == State.PREPARE) {
-			mPartWriterListener.onNextBuffer(mBufferTranspoter);
+			mPartWriterListener.onNextBuffer(mBufferTransporter);
 			return 0;
 		}
 		if (mState == State.DONE) return -1;
@@ -60,7 +60,7 @@ public class ChunkedPartWriter implements PartWriter {
 		} else if (mCrlfBuffer.hasRemaining()) {
 			return mChannel.write(mCrlfBuffer);
 		}
-		mPartWriterListener.onNextBuffer(mBufferTranspoter);
+		mPartWriterListener.onNextBuffer(mBufferTransporter);
 		return 0;
 	}
 
