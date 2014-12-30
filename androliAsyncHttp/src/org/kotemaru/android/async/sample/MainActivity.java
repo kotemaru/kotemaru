@@ -61,7 +61,7 @@ public class MainActivity extends Activity {
 						BufferedReader br = new BufferedReader(new InputStreamReader(is));
 						String line;
 						while ((line = br.readLine()) != null) {
-							Log.e("DEBUG", "->" + line);
+							Log.i("DEBUG", "->" + line);
 						}
 						br.close();
 					} catch (Exception e) {
