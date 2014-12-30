@@ -14,11 +14,11 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.BasicHttpEntity;
-import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.message.AbstractHttpMessage;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicHttpResponse;
-import org.kotemaru.android.async.BufferTransferConsumer;
+import org.kotemaru.android.async.BufferTranspoter;
+import org.kotemaru.android.async.BuildConfig;
 import org.kotemaru.android.async.ChannelPool;
 import org.kotemaru.android.async.SelectorListener;
 import org.kotemaru.android.async.SelectorThread;
@@ -223,6 +223,10 @@ public abstract class AsyncHttpRequest
 	@Override
 	public void onReadable(SelectionKey key) {
 		if (IS_DEBUG) Log.v(TAG, "onReadable:" + key + ":" + mState);
+		if (mBufferTranspoter.isLocked()) {
+			mBufferTranspoter.onReadable(key);
+			return;
+		}
 		if (mState == State.RESPONSE_HEADER) {
 			readIntoBuffer(mBuffer, true);
 			mHttpResponse = HttpUtil.parseResponseHeader(mBuffer);
@@ -292,19 +296,19 @@ public abstract class AsyncHttpRequest
 
 	private final PartWriterListener mPartWriterListener = new PartWriterListener() {
 		@Override
-		public void onNextBuffer(BufferTransferConsumer consumer) throws IOException {
+		public void onNextBuffer(BufferTranspoter transpoter) throws IOException {
 			mBuffer.clear();
 			if (mAsyncHttpListener.isRequestBodyPart()) {
-				mAsyncHttpListener.onRequestBodyPart(consumer);  // do Callback.
+				mAsyncHttpListener.onRequestBodyPart(transpoter);  // do Callback.
 			} else {
 				byte[] buff = mBuffer.array();
 				int readSize = mRequestContent.read(buff);
 				if (readSize > 0) {
 					mBuffer.position(readSize);
 					mBuffer.flip();
-					consumer.write(mBuffer);
+					transpoter.write(mBuffer);
 				} else {
-					consumer.write(null);
+					transpoter.write(null);
 				}
 			}
 		}
@@ -339,27 +343,34 @@ public abstract class AsyncHttpRequest
 
 	private final PartReaderListener mPartReaderListener = new PartReaderListener() {
 		@Override
-		public void onPart(byte[] buffer, int offset, int length) {
+		public void onPart(ByteBuffer buffer) {
 			if (mAsyncHttpListener.isResponseBodyPart()) {
-				mAsyncHttpListener.onResponseBodyPart(mBufferTransferConsumer);  // do Callback.
+				mBufferTranspoter.setBuffer(buffer);
+				mAsyncHttpListener.onResponseBodyPart(mBufferTranspoter);  // do Callback.
 			} else {
-				mResponseBodyStream.addPart(buffer, offset, length);
+				byte[] array = buffer.array();
+				int offset = buffer.position();
+				int length = buffer.limit() - offset;
+				mResponseBodyStream.addPart(array, offset, length);
 			}
 		}
 		@Override
 		public void onFinish() {
-			doResponseBody();
+			if (mAsyncHttpListener.isResponseBodyPart()) {
+				mBufferTranspoter.setBuffer(null);
+				mAsyncHttpListener.onResponseBodyPart(mBufferTranspoter);  // do Callback.
+				doFinish(false);
+			} else {
+				doResponseBody();
+			}
 		}
 	};
 
 	private void doResponseBodyPart(int len) {
 		if (len == -1) {
-			mResponseBodyReader.postPart(null, 0, -1);
+			mResponseBodyReader.postPart(null);
 		} else {
-			byte[] buffer = mBuffer.array();
-			int offset = mBuffer.position();
-			int length = mBuffer.limit() - offset;
-			mResponseBodyReader.postPart(buffer, offset, length);
+			mResponseBodyReader.postPart(mBuffer);
 		}
 		mBuffer.clear();
 	}
@@ -372,7 +383,7 @@ public abstract class AsyncHttpRequest
 		entity.setContentEncoding(mHttpResponse.getFirstHeader("Content-Encoding"));
 		entity.setContentType(mHttpResponse.getFirstHeader("Content-Type"));
 
-		mHttpResponse.setEntity(new InputStreamEntity(mResponseBodyStream, mResponseBodyStream.getLength()));
+		mHttpResponse.setEntity(entity);
 		mAsyncHttpListener.onResponseBody(mHttpResponse);  // do Callback.
 		doFinish(false);
 	}
@@ -407,10 +418,36 @@ public abstract class AsyncHttpRequest
 	// for internal util.
 	// -----------------------------------------------------------------------------
 
-	private final BufferTransferConsumer mBufferTransferConsumer = new BufferTransferConsumer() {
+	private final BufferTranspoterImpl mBufferTranspoter = new BufferTranspoterImpl();
+	private class BufferTranspoterImpl implements BufferTranspoter {
+		private volatile boolean mIsBufferLocked;
+		private ByteBuffer mBuffer;
+		
+		public void setBuffer(ByteBuffer buffer) {
+			mBuffer = buffer;
+		}
+		public void onReadable(SelectionKey key) {
+			if (mIsBufferLocked) {
+				SelectorThread.getInstance().pause(mChannel);
+			}
+		}
+		
+		public boolean isLocked() {
+			return mIsBufferLocked;
+		}
+		
 		@Override
 		public ByteBuffer read() throws IOException {
+			mIsBufferLocked = true;
 			return mBuffer;
+		}
+		@Override
+		public void release(ByteBuffer buffer) {
+			if (buffer != mBuffer) {
+				throw new RuntimeException("Unknown buffer."+buffer);
+			}
+			mIsBufferLocked = false;
+			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
 		}
 		@Override
 		public int write(ByteBuffer buffer) throws IOException {

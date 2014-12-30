@@ -9,9 +9,6 @@ import java.nio.channels.SocketChannel;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Set;
-
-import org.kotemaru.android.async.http.BuildConfig;
 
 import android.util.Log;
 
@@ -27,6 +24,7 @@ public class SelectorThread extends Thread {
 	private Selector mSelector;
 	private volatile boolean mIsRunnable;
 	private final LinkedList<OpenRequest> mOpenQueue = new LinkedList<OpenRequest>();
+	private final LinkedList<SocketChannel> mPauseQueue = new LinkedList<SocketChannel>();
 
 	static {
 		if (BuildConfig.DEBUG) {
@@ -103,6 +101,25 @@ public class SelectorThread extends Thread {
 			ite.remove();
 		}
 	}
+	
+	public synchronized void pause(SocketChannel channel) {
+		mPauseQueue.add(channel);
+		mSelector.wakeup();
+	}
+	public synchronized void resume(SocketChannel channel, int ops) {
+		SelectionKey key = channel.keyFor(mSelector);
+		key.interestOps(ops);
+		mSelector.wakeup();
+	}
+	private synchronized void doPauseRequest() {
+		Iterator<SocketChannel> ite = mPauseQueue.iterator();
+		while (ite.hasNext()) {
+			SocketChannel channel = ite.next();
+			SelectionKey key = channel.keyFor(mSelector);
+			key.interestOps(0);
+			ite.remove();
+		}
+	}
 
 	@Override
 	public void run() {
@@ -128,10 +145,12 @@ public class SelectorThread extends Thread {
 	public void mainLoop() throws IOException {
 		while (mIsRunnable) {
 			doOpenRequest();
+			doPauseRequest();
 			mSelector.select(TIMEOUT);
-			Set<SelectionKey> keys = mSelector.selectedKeys();
-			for (SelectionKey key : keys) {
-				keys.remove(key);
+			Iterator<SelectionKey> keys = mSelector.selectedKeys().iterator();
+			while (keys.hasNext()) {
+				SelectionKey key = keys.next();
+				keys.remove();
 				if (!key.isValid()) continue;
 				OpenRequest attach = (OpenRequest) key.attachment();
 				if (attach == null) {

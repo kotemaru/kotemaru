@@ -30,8 +30,14 @@ public class ChunkedPartReader implements PartReader {
 	}
 
 	@Override
-	public void postPart(byte[] buffer, int offset, int length) {
-		if (length <= 0) return;
+	public void postPart(ByteBuffer buffer) {
+		if (buffer == null) return;
+		byte[] array = buffer.array();
+		int offset = buffer.position();
+		int length = buffer.limit() - offset;
+		postPart(array, offset, length);
+	}
+	private void postPart(byte[] buffer, int offset, int length) {
 		switch (mState) {
 		case PREPARE:
 		case SIZE_LINE:
@@ -79,7 +85,9 @@ public class ChunkedPartReader implements PartReader {
 		mBuffer.put(buffer, offset, len);
 
 		if (!mBuffer.hasRemaining()) {
-			mPartReaderListener.onPart(mBuffer.array(), 0, mChunkSize);
+			mBuffer.flip();
+			mPartReaderListener.onPart(mBuffer);
+			mBuffer.clear();
 			int nextOffset = offset + len;
 			int nextLength = length - len;
 			mState = State.DATA_END;
