@@ -3,7 +3,7 @@ package org.kotemaru.android.async;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public interface BufferTranspoter {
+public interface BufferTransporter {
 	/**
 	 * ブロックせずに読み込み可能なデータを返す。
 	 * @return null=すぐに返せるデータが無い。

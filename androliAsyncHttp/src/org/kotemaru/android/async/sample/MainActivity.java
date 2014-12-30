@@ -12,7 +12,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.StringEntity;
-import org.kotemaru.android.async.BufferTranspoter;
+import org.kotemaru.android.async.BufferTransporter;
 import org.kotemaru.android.async.R;
 import org.kotemaru.android.async.http.AsyncHttpClient;
 import org.kotemaru.android.async.http.AsyncHttpGet;
@@ -43,7 +43,6 @@ public class MainActivity extends Activity {
 	}
 
 	AsyncHttpClient mClient = new AsyncHttpClient();
-
 	private void doSend() {
 		try {
 			AsyncHttpPost request = new AsyncHttpPost("http://192.168.0.2/cgi-bin/log.sh");
@@ -84,7 +83,7 @@ public class MainActivity extends Activity {
 					return true;
 				}
 				@Override
-				public void onResponseBodyPart(BufferTranspoter transpoter) {
+				public void onResponseBodyPart(BufferTransporter transporter) {
 					try {
 						if (mFileChannel == null) {
 							@SuppressWarnings("resource")
@@ -92,7 +91,7 @@ public class MainActivity extends Activity {
 							mFileChannel = file.getChannel();
 						}
 
-						ByteBuffer buffer = transpoter.read();
+						ByteBuffer buffer = transporter.read();
 						if (buffer != null) {
 							while (buffer.hasRemaining()) {
 								if (mFileChannel.write(buffer) == -1) break;
@@ -100,7 +99,7 @@ public class MainActivity extends Activity {
 						} else {
 							mFileChannel.close();
 						}
-						transpoter.release(buffer);
+						transporter.release(buffer);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
