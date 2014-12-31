@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.BufferTransporter;
+import org.kotemaru.android.async.ByteBufferWriter;
+import org.kotemaru.android.async.helper.PartProducer;
+import org.kotemaru.android.async.helper.WritableListener;
 
 /**
  * 平文 フォーマットのストリームを分割して書き込むためのクラス。
  * - 平文->平文 文のフィルターなので実質なにもしない。
  * @author kotemaru.org
  */
-public class StreamPartWriter implements PartWriter {
+public class StreamWriteFilter implements WritableListener, ByteBufferWriter {
 	private ByteBuffer mBuffer;
 
 	enum State {
@@ -20,43 +22,30 @@ public class StreamPartWriter implements PartWriter {
 
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
-	private final PartWriterListener mPartWriterListener;
-	private final BufferTransporter mBufferTransporter = new BufferTransporter() {
-		@Override
-		public ByteBuffer read() throws IOException {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public void release(ByteBuffer buffer) {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public int write(ByteBuffer buffer) throws IOException {
-			return postBuffer(buffer);
-		}
-	};
+	private final PartProducer mPartProducer;
 
-	public StreamPartWriter(SocketChannel channel, PartWriterListener partWriterListener) throws IOException {
+	public StreamWriteFilter(SocketChannel channel, PartProducer partProducer) throws IOException {
 		mChannel = channel;
-		mPartWriterListener = partWriterListener;
+		mPartProducer = partProducer;
 	}
 
 	@Override
 	public int onWritable() throws IOException {
 		if (mState == State.PREPARE) {
-			mPartWriterListener.onNextBuffer(mBufferTransporter);
+			mPartProducer.requestNextPart(this);
 			return 0;
 		}
 		if (mState == State.DONE) return -1;
 		if (!mBuffer.hasRemaining()) {
-			mPartWriterListener.onNextBuffer(mBufferTransporter);
+			mPartProducer.requestNextPart(this);
 			return 0;
 		}
 		int n = mChannel.write(mBuffer);
 		return n;
 	}
-	
-	private int postBuffer(ByteBuffer buffer) throws IOException {
+
+	@Override
+	public int write(ByteBuffer buffer) throws IOException {
 		mBuffer = buffer;
 		if (mBuffer == null) {
 			mState = State.DONE;

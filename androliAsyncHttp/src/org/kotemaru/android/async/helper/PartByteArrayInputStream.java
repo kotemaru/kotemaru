@@ -1,7 +1,7 @@
-package org.kotemaru.android.async.util;
+package org.kotemaru.android.async.helper;
 
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.ByteBuffer;
 
 /**
  * 分割式のByteArrayInputStream実装。
@@ -9,12 +9,12 @@ import java.io.InputStream;
  * - ByteArray{In/Out}putStreamが非効率なため代替用。
  * @author kotemaru.org
  */
-public class PartByteArrayInputStream extends InputStream {
+public class PartByteArrayInputStream extends PartInputStream {
 	protected static class Part {
 		Part next;
 		byte[] buffer;
 	}
-	
+
 	protected Part mRoot;
 	protected Part mBottom;
 	protected Part mCurrent;
@@ -25,7 +25,7 @@ public class PartByteArrayInputStream extends InputStream {
 	public PartByteArrayInputStream() {
 		clear();
 	}
-	
+
 	public void clear() {
 		mRoot = new Part();
 		mBottom = mRoot;
@@ -33,10 +33,14 @@ public class PartByteArrayInputStream extends InputStream {
 		mOffset = 0;
 		mLength = 0;
 	}
-	public void addPart(byte[] buffer, int offset, int length) {
+
+	@Override
+	public int write(ByteBuffer buffer) {
+		if (buffer == null) return -1;
+
 		Part part = new Part();
-		part.buffer = new byte[length];
-		System.arraycopy(buffer, offset, part.buffer, 0, length);
+		part.buffer = new byte[buffer.remaining()];
+		buffer.get(part.buffer);
 
 		mBottom.next = part;
 		mBottom = part;
@@ -44,11 +48,12 @@ public class PartByteArrayInputStream extends InputStream {
 		if (mCurrent == mRoot) {
 			mCurrent = mRoot.next;
 		}
+		return part.buffer.length;
 	}
-	public int getLength() {
+	public long getLength() {
 		return mLength;
 	}
-	
+
 	public void rewind() {
 		mCurrent = mRoot.next;
 		mOffset = 0;
@@ -68,9 +73,9 @@ public class PartByteArrayInputStream extends InputStream {
 	}
 	@Override
 	public int read() throws IOException {
-		int n = read(mSingleReadBuffer,0,1);
+		int n = read(mSingleReadBuffer, 0, 1);
 		if (n == -1) return -1;
-		return (int)mSingleReadBuffer[0];
+		return (int) mSingleReadBuffer[0];
 	}
 	@Override
 	public int available() {
@@ -78,4 +83,10 @@ public class PartByteArrayInputStream extends InputStream {
 		int avail = mCurrent.buffer.length - mOffset;
 		return avail;
 	}
+
+	@Override
+	public void writeClose() {
+		// ignore.
+	}
+
 }

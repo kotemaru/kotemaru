@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.BufferTransporter;
+import org.kotemaru.android.async.ByteBufferWriter;
+import org.kotemaru.android.async.helper.PartProducer;
+import org.kotemaru.android.async.helper.WritableListener;
 import org.kotemaru.android.async.http.HttpUtil;
 
 /**
@@ -12,7 +14,7 @@ import org.kotemaru.android.async.http.HttpUtil;
  * - 平文->Chunked 文のフィルター。
  * @author kotemaru.org
  */
-public class ChunkedPartWriter implements PartWriter {
+public class ChunkedWriteFilter implements WritableListener, ByteBufferWriter {
 
 	private final ByteBuffer mSizeLineBuffer = ByteBuffer.wrap(new byte[10]);
 	private ByteBuffer mBuffer;
@@ -24,31 +26,17 @@ public class ChunkedPartWriter implements PartWriter {
 
 	private State mState = State.PREPARE;
 	private final SocketChannel mChannel;
-	private final PartWriterListener mPartWriterListener;
-	private final BufferTransporter mBufferTransporter = new BufferTransporter() {
-		@Override
-		public ByteBuffer read() throws IOException {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public void release(ByteBuffer buffer) {
-			throw new UnsupportedOperationException();
-		}
-		@Override
-		public int write(ByteBuffer buffer) throws IOException {
-			return postBuffer(buffer);
-		}
-	};
+	private final PartProducer mPartProducer;
 
-	public ChunkedPartWriter(SocketChannel channel, PartWriterListener partWriterListener) throws IOException {
+	public ChunkedWriteFilter(SocketChannel channel, PartProducer partProducer) throws IOException {
 		mChannel = channel;
-		mPartWriterListener = partWriterListener;
+		mPartProducer = partProducer;
 	}
 
 	@Override
 	public int onWritable() throws IOException {
 		if (mState == State.PREPARE) {
-			mPartWriterListener.onNextBuffer(mBufferTransporter);
+			mPartProducer.requestNextPart(this);
 			return 0;
 		}
 		if (mState == State.DONE) return -1;
@@ -60,11 +48,11 @@ public class ChunkedPartWriter implements PartWriter {
 		} else if (mCrlfBuffer.hasRemaining()) {
 			return mChannel.write(mCrlfBuffer);
 		}
-		mPartWriterListener.onNextBuffer(mBufferTransporter);
+		mPartProducer.requestNextPart(this);
 		return 0;
 	}
 
-	private int postBuffer(ByteBuffer buffer) throws IOException {
+	public int write(ByteBuffer buffer) throws IOException {
 		mBuffer = buffer;
 		if (mBuffer == null) {
 			mState = State.DONE;

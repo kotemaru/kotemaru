@@ -3,7 +3,7 @@ package org.kotemaru.android.async;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public interface BufferTransporter {
+public interface ByteBufferReader {
 	/**
 	 * ブロックせずに読み込み可能なデータを返す。
 	 * @return null=すぐに返せるデータが無い。
@@ -16,12 +16,4 @@ public interface BufferTransporter {
 	 * @param buffer read()で取得したバッファ
 	 */
 	public void release(ByteBuffer buffer);
-
-	/**
-	 * ブロックせずに書き込み可能なデータをかきこむ。
-	 * @param buffer 書き込みデータ。nullは終了。
-	 * @return 書き込んだサイズ。0=すぐに書き込めない。
-	 * @throws IOException
-	 */
-	public int write(ByteBuffer buffer) throws IOException;
 }
