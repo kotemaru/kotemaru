@@ -2,7 +2,8 @@ package org.kotemaru.android.async.http;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
-import org.kotemaru.android.async.BufferTransporter;
+import org.kotemaru.android.async.ByteBufferReader;
+import org.kotemaru.android.async.ByteBufferWriter;
 
 /**
  * 非同期HTTP通信のリスナ。
@@ -35,6 +36,9 @@ public interface AsyncHttpListener {
 	 * @param httpResponse レスポンス。
 	 */
 	public void onResponseBody(HttpResponse httpResponse);
+
+	public void onClose(HttpRequest httpRequest);
+
 	/**
 	 * 通信中にエラーが発生した。
 	 * - 以降の通信は行われない。
@@ -65,13 +69,13 @@ public interface AsyncHttpListener {
 	 * - HttpEntity.getContentLength()が設定されていない場合は Chunked で送信される。
 	 * @param transporter データの書き込み先
 	 */
-	public void onRequestBodyPart(BufferTransporter transporter);
+	public void onRequestBodyPart(ByteBufferWriter transporter);
 
 	/**
 	 * 分割されたレスポンス本文の一部を読み込み可能となったことの通知。
 	 * - 分割位置は予測不能。極端な場合、1byteつづのこともある。
 	 * @param transporter データの読み込み先
 	 */
-	public void onResponseBodyPart(BufferTransporter transporter);
+	public void onResponseBodyPart(ByteBufferReader transporter);
 
 }

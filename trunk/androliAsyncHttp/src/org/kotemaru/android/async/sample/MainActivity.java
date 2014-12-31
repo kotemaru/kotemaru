@@ -12,7 +12,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.entity.StringEntity;
-import org.kotemaru.android.async.BufferTransporter;
+import org.kotemaru.android.async.ByteBufferReader;
 import org.kotemaru.android.async.R;
 import org.kotemaru.android.async.http.AsyncHttpClient;
 import org.kotemaru.android.async.http.AsyncHttpGet;
@@ -83,7 +83,7 @@ public class MainActivity extends Activity {
 					return true;
 				}
 				@Override
-				public void onResponseBodyPart(BufferTransporter transporter) {
+				public void onResponseBodyPart(ByteBufferReader transporter) {
 					try {
 						if (mFileChannel == null) {
 							@SuppressWarnings("resource")

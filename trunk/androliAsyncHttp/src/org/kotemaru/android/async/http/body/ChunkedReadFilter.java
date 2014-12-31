@@ -2,16 +2,16 @@ package org.kotemaru.android.async.http.body;
 
 import java.nio.ByteBuffer;
 
+import org.kotemaru.android.async.helper.PartConsumer;
+import org.kotemaru.android.async.helper.PartPatternMatcher;
 import org.kotemaru.android.async.http.HttpUtil;
-import org.kotemaru.android.async.util.PartPatternMatcher;
-
 
 /**
  * Chunked フォーマットのストームを分割して読み込むためのクラス。
  * - Chunked -> 平文のフィルター。
  * @author kotemaru.org
  */
-public class ChunkedPartReader implements PartReader {
+public class ChunkedReadFilter implements PartConsumer {
 	private static final int BUFFER_SIZE = 1024;
 
 	private enum State {
@@ -23,10 +23,10 @@ public class ChunkedPartReader implements PartReader {
 	private int mChunkSize = -1;
 	private ByteBuffer mBuffer = ByteBuffer.wrap(new byte[BUFFER_SIZE]);
 	private PartPatternMatcher mCrlfMatcher = new PartPatternMatcher(HttpUtil.CRLF);
-	private PartReaderListener mPartReaderListener;
+	private PartConsumer mPartConsumer;
 
-	public ChunkedPartReader(PartReaderListener chunkedListener) {
-		mPartReaderListener = chunkedListener;
+	public ChunkedReadFilter(PartConsumer partConsumer) {
+		mPartConsumer = partConsumer;
 	}
 
 	@Override
@@ -86,7 +86,7 @@ public class ChunkedPartReader implements PartReader {
 
 		if (!mBuffer.hasRemaining()) {
 			mBuffer.flip();
-			mPartReaderListener.onPart(mBuffer);
+			mPartConsumer.postPart(mBuffer);
 			mBuffer.clear();
 			int nextOffset = offset + len;
 			int nextLength = length - len;
@@ -103,7 +103,7 @@ public class ChunkedPartReader implements PartReader {
 		int nextLength = length - subOffset;
 		if (mChunkSize == 0) {
 			mState = State.DONE;
-			mPartReaderListener.onFinish();
+			mPartConsumer.postPart(null);
 			return;
 		}
 		mState = State.SIZE_LINE;

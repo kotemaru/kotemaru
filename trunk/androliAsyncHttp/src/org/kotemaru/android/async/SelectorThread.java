@@ -101,7 +101,7 @@ public class SelectorThread extends Thread {
 			ite.remove();
 		}
 	}
-	
+
 	public synchronized void pause(SocketChannel channel) {
 		mPauseQueue.add(channel);
 		mSelector.wakeup();

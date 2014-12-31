@@ -172,12 +172,21 @@ public class HttpUtil {
 	}
 
 	public static CookieOrigin getCookieOrigin(URI uri) {
-		// TODO: path,scheme,port
 		final CookieOrigin cookieOrigin = new CookieOrigin(
 				uri.getHost(),
-				uri.getPort() >= 0 ? uri.getPort() : 80,
+				getPort(uri),
 				uri.getPath() != null ? uri.getPath() : "/",
 				uri.getScheme().equals("https"));
 		return cookieOrigin;
 	}
+
+	public static int getPort(URI uri) {
+		int port = uri.getPort();
+		if (port >= 0) return port;
+		String scheme = uri.getScheme().toLowerCase(Locale.US);
+		if ("http".equals(scheme)) return 80;
+		if ("https".equals(scheme)) return 443;
+		return port;
+	}
+
 }
