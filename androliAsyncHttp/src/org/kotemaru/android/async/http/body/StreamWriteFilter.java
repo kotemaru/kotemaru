@@ -2,11 +2,11 @@ package org.kotemaru.android.async.http.body;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 import org.kotemaru.android.async.ByteBufferWriter;
 import org.kotemaru.android.async.helper.PartProducer;
 import org.kotemaru.android.async.helper.WritableListener;
+import org.kotemaru.android.async.ssl.SelectorItem;
 
 /**
  * 平文 フォーマットのストリームを分割して書き込むためのクラス。
@@ -21,11 +21,11 @@ public class StreamWriteFilter implements WritableListener, ByteBufferWriter {
 	}
 
 	private State mState = State.PREPARE;
-	private final SocketChannel mChannel;
+	private final SelectorItem mSelectorItem;
 	private final PartProducer mPartProducer;
 
-	public StreamWriteFilter(SocketChannel channel, PartProducer partProducer) throws IOException {
-		mChannel = channel;
+	public StreamWriteFilter(SelectorItem channel, PartProducer partProducer) throws IOException {
+		mSelectorItem = channel;
 		mPartProducer = partProducer;
 	}
 
@@ -40,7 +40,7 @@ public class StreamWriteFilter implements WritableListener, ByteBufferWriter {
 			mPartProducer.requestNextPart(this);
 			return 0;
 		}
-		int n = mChannel.write(mBuffer);
+		int n = mSelectorItem.write(mBuffer);
 		return n;
 	}
 

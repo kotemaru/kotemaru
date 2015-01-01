@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -20,8 +18,7 @@ import org.apache.http.message.BasicHttpResponse;
 import org.kotemaru.android.async.BuildConfig;
 import org.kotemaru.android.async.ByteBufferReader;
 import org.kotemaru.android.async.ByteBufferWriter;
-import org.kotemaru.android.async.ChannelPool;
-import org.kotemaru.android.async.SelectorListener;
+import org.kotemaru.android.async.SelectorItemPool;
 import org.kotemaru.android.async.SelectorThread;
 import org.kotemaru.android.async.helper.PartByteArrayInputStream;
 import org.kotemaru.android.async.helper.PartConsumer;
@@ -32,6 +29,8 @@ import org.kotemaru.android.async.http.body.ChunkedReadFilter;
 import org.kotemaru.android.async.http.body.ChunkedWriteFilter;
 import org.kotemaru.android.async.http.body.StreamReadFilter;
 import org.kotemaru.android.async.http.body.StreamWriteFilter;
+import org.kotemaru.android.async.ssl.SelectorItem;
+import org.kotemaru.android.async.ssl.SelectorItem.SelectorItemListener;
 
 import android.util.Log;
 
@@ -41,7 +40,7 @@ import android.util.Log;
  */
 public abstract class AsyncHttpRequest
 		extends AbstractHttpMessage
-		implements SelectorListener, HttpUriRequest {
+		implements SelectorItemListener, HttpUriRequest {
 	private static final String TAG = AsyncHttpRequest.class.getSimpleName();
 	private static final boolean IS_DEBUG = BuildConfig.DEBUG;
 
@@ -67,7 +66,7 @@ public abstract class AsyncHttpRequest
 
 	private int mBufferSize = 4096;
 	private ByteBuffer mBuffer;
-	private SocketChannel mChannel;
+	private SelectorItem mSelectorItem;
 
 	private State mState = State.PREPARE;
 	private boolean mIsAborted;
@@ -93,8 +92,9 @@ public abstract class AsyncHttpRequest
 		SelectorThread selector = SelectorThread.getInstance();
 		String host = mUri.getHost();
 		int port = HttpUtil.getPort(mUri);
+		boolean isSsl = HttpUtil.isHttps(mUri);
 		this.setHeader(new BasicHeader("Host", host + ":" + port));
-		selector.openSocketClient(host, port, this);
+		selector.openSocketClient(host, port, isSsl, this);
 	}
 
 	/**
@@ -135,7 +135,7 @@ public abstract class AsyncHttpRequest
 	@Override
 	public void abort() throws UnsupportedOperationException {
 		mIsAborted = true;
-		if (mChannel != null) {
+		if (mSelectorItem != null) {
 			doFinish(true);
 		}
 	}
@@ -157,52 +157,34 @@ public abstract class AsyncHttpRequest
 	}
 
 	// -----------------------------------------------------------------------------
-	// for implements org.apache.http.message.SelectorListener
+	// for implements SelectorItemListener
 	// -----------------------------------------------------------------------------
 	@Override
-	public void onAccept(SelectionKey key) {
-		// not use.
+	public void onRegister(SelectorItem item) {
+		if (IS_DEBUG) Log.v(TAG, "onRegister:");
+		mSelectorItem = item;
+		mSelectorItem.setListener(this);
 	}
-
 	@Override
-	public void onRegister(SocketChannel channel) {
-		if (IS_DEBUG) Log.v(TAG, "onRegister:" + channel);
-		mChannel = channel;
-		mSingleBufferReader = new SingleByteBufferReader(channel);
-		if (mIsAborted) {
-			abort();
-		}
-	}
+	public void onConnect() {
+		if (IS_DEBUG) Log.v(TAG, "onConnect:");
+		mSingleBufferReader = new SingleByteBufferReader(mSelectorItem);
 
-	@Override
-	public void onConnect(SelectionKey key) {
-		if (IS_DEBUG) Log.v(TAG, "onConnect:" + key);
-		setState(State.CONNECT, null, 0);
-		try {
-			if (mChannel.isConnectionPending()) {
-				if (!mChannel.finishConnect()) {
-					// TODO:本当はリトライが必要。でもSelectorからだから大丈夫なのかも。
-					throw new IOException("finishConnect() fail");
-				}
-			}
-		} catch (IOException e) {
-			doError("Connection fail:", e);
-			return;
-		}
+		setState(State.CONNECT, SelectorItem.OP_NONE);
 		mAsyncHttpListener.onConnect(this);  // do Callback.
-		startRequestHeader(key);
+		startRequestHeader();
 	}
 
 	@Override
-	public void onWritable(SelectionKey key) {
-		if (IS_DEBUG) Log.v(TAG, "onWritable:" + key + ":" + mState);
+	public void onWritable() {
+		if (IS_DEBUG) Log.v(TAG, "onWritable:" + mState);
 		if (mState == State.REQUEST_HEADER) {
 			if (mBuffer.hasRemaining()) {
 				writeFromBuffer(mBuffer, true);
 			} else {
 				debugLogHeader("Http-Request", "\n>>> ");
 				mAsyncHttpListener.onRequestHeader(this);  // do Callback.
-				startRequestBody(key);
+				startRequestBody();
 			}
 		} else if (mState == State.REQUSET_BODY) {
 			try {
@@ -211,7 +193,7 @@ public abstract class AsyncHttpRequest
 					if (getHttpEntity() != null) {
 						mAsyncHttpListener.onRequestBody(this);  // do Callback.
 					}
-					startResponseHeader(key);
+					startResponseHeader();
 				}
 			} catch (Exception e) {
 				doError("Post entity fail", e);
@@ -222,10 +204,10 @@ public abstract class AsyncHttpRequest
 	}
 
 	@Override
-	public void onReadable(SelectionKey key) {
-		if (IS_DEBUG) Log.v(TAG, "onReadable:" + key + ":" + mState);
+	public void onReadable() {
+		if (IS_DEBUG) Log.v(TAG, "onReadable:" + ":" + mState);
 		if (mSingleBufferReader.isLocked()) {
-			mSingleBufferReader.onReadable(key);
+			mSingleBufferReader.onReadable();
 			return;
 		}
 		if (mState == State.RESPONSE_HEADER) {
@@ -235,7 +217,7 @@ public abstract class AsyncHttpRequest
 				debugLogHeader("Http-Response", "\n<<< ");
 				mAsyncHttpListener.onResponseHeader(mHttpResponse);  // do Callback.
 				mHttpClient.setCookies(mHttpResponse, mUri);
-				startResponseBody(key);
+				startResponseBody();
 			}
 		} else if (mState == State.RESPONSE_BODY) {
 			int n = readIntoBuffer(mBuffer, false);
@@ -254,7 +236,7 @@ public abstract class AsyncHttpRequest
 	// -----------------------------------------------------------------------------
 	// for internal logic
 	// -----------------------------------------------------------------------------
-	private void startRequestHeader(SelectionKey key) {
+	private void startRequestHeader() {
 		mBuffer.clear();
 		HttpEntity entity = getHttpEntity();
 		if (entity != null) {
@@ -268,10 +250,10 @@ public abstract class AsyncHttpRequest
 		}
 		HttpUtil.formatRequestHeader(mBuffer, getMethodType(), mUri, this, mHttpClient);
 		mBuffer.flip();
-		setState(State.REQUEST_HEADER, key, SelectionKey.OP_WRITE);
+		setState(State.REQUEST_HEADER, SelectionKey.OP_WRITE);
 	}
 
-	private void startRequestBody(SelectionKey key) {
+	private void startRequestBody() {
 
 		HttpEntity entity = getHttpEntity();
 		if (entity != null) {
@@ -289,17 +271,17 @@ public abstract class AsyncHttpRequest
 			}
 			try {
 				if (entity.getContentLength() >= 0) {
-					mRequestBodyWriter = new StreamWriteFilter(mChannel, endPointProducer);
+					mRequestBodyWriter = new StreamWriteFilter(mSelectorItem, endPointProducer);
 				} else {
-					mRequestBodyWriter = new ChunkedWriteFilter(mChannel, endPointProducer);
+					mRequestBodyWriter = new ChunkedWriteFilter(mSelectorItem, endPointProducer);
 				}
 			} catch (IOException e) {
 				doError("PartWriter init fail.", e);
 			}
 			mBuffer.clear();
-			setState(State.REQUSET_BODY, key, SelectionKey.OP_WRITE);
+			setState(State.REQUSET_BODY, SelectionKey.OP_WRITE);
 		} else {
-			startResponseHeader(key);
+			startResponseHeader();
 		}
 	}
 
@@ -332,11 +314,11 @@ public abstract class AsyncHttpRequest
 		}
 	};
 
-	private void startResponseHeader(SelectionKey key) {
+	private void startResponseHeader() {
 		mBuffer.clear();
-		setState(State.RESPONSE_HEADER, key, SelectionKey.OP_READ);
+		setState(State.RESPONSE_HEADER, SelectionKey.OP_READ);
 	}
-	private void startResponseBody(SelectionKey key) {
+	private void startResponseBody() {
 		PartConsumer endPointConsumer;
 		if (mAsyncHttpListener.isResponseBodyPart()) {
 			endPointConsumer = new ResponseBodyPartConsumer();
@@ -351,7 +333,7 @@ public abstract class AsyncHttpRequest
 			long contentLength = HttpUtil.getContentLength(mHttpResponse);
 			mResponseBodyConsumer = new StreamReadFilter(endPointConsumer, contentLength);
 		}
-		setState(State.RESPONSE_BODY, key, SelectionKey.OP_READ);
+		setState(State.RESPONSE_BODY, SelectionKey.OP_READ);
 		if (mBuffer.remaining() > 0) {
 			doResponseBodyPart(mBuffer.remaining());
 		}
@@ -414,19 +396,12 @@ public abstract class AsyncHttpRequest
 		abort();
 	}
 	private void doFinish(boolean isDisconnect) {
-		Selector selector = SelectorThread.getInstance().getSelector();
-		SelectionKey key = mChannel.keyFor(selector);
-		setState(State.DONE, key, 0);
-		key.attach(null);
+		setState(State.DONE, SelectorItem.OP_NONE);
+		mSelectorItem.release();
 		if (isDisconnect) {
-			try {
-				mChannel.close();
-				key.cancel();
-			} catch (IOException e) {
-				Log.e(TAG, "Channel close error. ignore.", e);
-			}
+			mSelectorItem.close();
 		} else {
-			ChannelPool.getInstance().releaseChannel(mChannel);
+			SelectorItemPool.getInstance().releaseSelectorItem(mSelectorItem);
 		}
 		mAsyncHttpListener.onClose(this);
 		clearState();
@@ -438,20 +413,20 @@ public abstract class AsyncHttpRequest
 
 	private static class SingleByteBufferReader implements ByteBufferReader {
 		private volatile boolean mIsBufferLocked;
-		private SocketChannel mChannel;
+		private SelectorItem mSelectorItem;
 		private ByteBuffer mBuffer;
 
-		public SingleByteBufferReader(SocketChannel channel) {
-			mChannel = channel;
+		public SingleByteBufferReader(SelectorItem channel) {
+			mSelectorItem = channel;
 		}
 
 		public void setBuffer(ByteBuffer buffer) {
 			mBuffer = buffer;
 		}
 
-		public void onReadable(SelectionKey key) {
+		public void onReadable() {
 			if (mIsBufferLocked) {
-				SelectorThread.getInstance().pause(mChannel);
+				mSelectorItem.requireOn(SelectorItem.OP_NONE);
 			}
 		}
 
@@ -470,14 +445,14 @@ public abstract class AsyncHttpRequest
 				throw new RuntimeException("Unknown buffer." + buffer);
 			}
 			mIsBufferLocked = false;
-			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
+			mSelectorItem.requireOn(SelectorItem.OP_READ);
 		}
 	};
 
-	private void setState(State state, SelectionKey key, int ops) {
+	private void setState(State state, int ops) {
 		mState = state;
-		if (key != null) {
-			key.interestOps(ops);
+		if (mSelectorItem != null) {
+			mSelectorItem.requireOn(ops);
 		}
 	}
 	private void initState() throws IOException {
@@ -493,7 +468,7 @@ public abstract class AsyncHttpRequest
 	}
 	private void clearState() {
 		mHttpClient = null;
-		mChannel = null;
+		mSelectorItem = null;
 		mAsyncHttpListener = null;
 		mHttpResponse = null;
 	}
@@ -505,7 +480,10 @@ public abstract class AsyncHttpRequest
 
 	private int readIntoBuffer(ByteBuffer buffer, boolean isEofError) {
 		try {
-			int n = mChannel.read(buffer);
+			int n = mSelectorItem.read(buffer);
+			if (n == 0) {
+				Log.w(TAG,"read fail: size=0");
+			}
 			if (isEofError && n == -1) {
 				throw new IOException("EOF");
 			}
@@ -517,7 +495,10 @@ public abstract class AsyncHttpRequest
 	}
 	private int writeFromBuffer(ByteBuffer buffer, boolean isEofError) {
 		try {
-			int n = mChannel.write(buffer);
+			int n = mSelectorItem.write(buffer);
+			if (n == 0) {
+				Log.w(TAG,"write fail: size=0");
+			}
 			if (isEofError && n == -1) {
 				throw new IOException("EOF");
 			}

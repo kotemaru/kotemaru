@@ -11,8 +11,8 @@ public class PartPipedInputStream extends PartInputStream {
 	protected byte[] mSingleReadBuffer = new byte[1];
 	private PartProducer mPartProducer;
 
-	public PartPipedInputStream(PartProducer listener) {
-		mPartProducer = listener;
+	public PartPipedInputStream(PartProducer produser) {
+		mPartProducer = produser;
 	}
 
 	@Override

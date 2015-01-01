@@ -3,12 +3,16 @@ package org.kotemaru.android.async;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import org.kotemaru.android.async.ssl.SelectorItem;
+import org.kotemaru.android.async.ssl.SelectorItem.SelectorItemListener;
 
 import android.util.Log;
 
@@ -71,8 +75,8 @@ public class SelectorThread extends Thread {
 	 * @param port 接続先ポート。
 	 * @param listener Selectorリスナ
 	 */
-	public synchronized void openSocketClient(String host, int port, SelectorListener listener) {
-		mOpenQueue.add(new OpenRequest(host, port, listener));
+	public synchronized void openSocketClient(String host, int port, boolean isSsl, SelectorItemListener listener) {
+		mOpenQueue.add(new OpenRequest(host, port, isSsl, listener));
 		mSelector.wakeup();
 	}
 
@@ -86,10 +90,12 @@ public class SelectorThread extends Thread {
 			OpenRequest req = ite.next();
 			try {
 				SocketAddress addr = new InetSocketAddress(req.host, req.port);
-				SocketChannel channel = ChannelPool.getInstance().getChannel(addr);
+				SelectorItem selectorItem = SelectorItemPool.getInstance().getSelectorItem(addr,req.isSsl);
+				SocketChannel channel = selectorItem.getChannel();
+				req.listener = selectorItem;
 				channel.configureBlocking(false);
-				channel.register(mSelector, channel.validOps(), req);
-				req.listener.onRegister(channel);
+				channel.register(mSelector, SelectionKey.OP_CONNECT, req);
+				req.itemListener.onRegister(selectorItem);
 				if (channel.isConnected()) {
 					req.listener.onConnect(channel.keyFor(mSelector));
 				} else {
@@ -102,13 +108,31 @@ public class SelectorThread extends Thread {
 		}
 	}
 
-	public synchronized void pause(SocketChannel channel) {
-		mPauseQueue.add(channel);
+	public synchronized void release(SocketChannel channel) {
+		SelectionKey key = channel.keyFor(mSelector);
+		key.attach(null);
+		key.interestOps(0);
+		mSelector.wakeup();
+	}
+
+	public synchronized void pause(SocketChannel channel, int ops) {
+		//mPauseQueue.add(channel);
+		SelectionKey key = channel.keyFor(mSelector);
+		key.interestOps(key.interestOps() & ~ops);
+		Log.d(TAG,"pause="+key.interestOps());
 		mSelector.wakeup();
 	}
 	public synchronized void resume(SocketChannel channel, int ops) {
 		SelectionKey key = channel.keyFor(mSelector);
-		key.interestOps(ops);
+		key.interestOps(key.interestOps() | ops);
+		if (key.interestOps() != 0) {
+			try {
+				channel.register(mSelector, key.interestOps(), key.attachment());
+			} catch (ClosedChannelException e) {
+				// TODO 自動生成された catch ブロック
+				e.printStackTrace();
+			}
+		}
 		mSelector.wakeup();
 	}
 	private synchronized void doPauseRequest() {
@@ -146,11 +170,17 @@ public class SelectorThread extends Thread {
 		while (mIsRunnable) {
 			doOpenRequest();
 			doPauseRequest();
-			mSelector.select(TIMEOUT);
+			int n = mSelector.select(TIMEOUT);
+			if (BuildConfig.DEBUG) {
+				Log.v(TAG,"select:count="+n);
+			}
 			Iterator<SelectionKey> keys = mSelector.selectedKeys().iterator();
 			while (keys.hasNext()) {
 				SelectionKey key = keys.next();
 				keys.remove();
+				if (BuildConfig.DEBUG) {
+					Log.v(TAG,"select:radyOps="+key.readyOps()+",attach="+key.attachment());
+				}
 				if (!key.isValid()) continue;
 				OpenRequest attach = (OpenRequest) key.attachment();
 				if (attach == null) {
@@ -170,12 +200,15 @@ public class SelectorThread extends Thread {
 	private static class OpenRequest {
 		String host;
 		int port;
+		boolean isSsl;
 		SelectorListener listener;
+		SelectorItemListener itemListener;
 
-		public OpenRequest(String host, int port, SelectorListener listener) {
+		public OpenRequest(String host, int port, boolean isSsl, SelectorItemListener listener) {
 			this.host = host;
 			this.port = port;
-			this.listener = listener;
+			this.isSsl = isSsl;
+			this.itemListener=listener;
 		}
 	}
 }
