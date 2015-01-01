@@ -37,7 +37,7 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				doSend2();
-				doSend();
+				//doSend();
 			}
 		});
 	}
@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
 	}
 	private void doSend2() {
 		try {
-			AsyncHttpGet request = new AsyncHttpGet("http://www.google.co.jp/");
+			AsyncHttpGet request = new AsyncHttpGet("https://www.nttdocomo.co.jp/");
 			mClient.execute(request, new AsyncHttpListenerBase() {
 				FileChannel mFileChannel;
 

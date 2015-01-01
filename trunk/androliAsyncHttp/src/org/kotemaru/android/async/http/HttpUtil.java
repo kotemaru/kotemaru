@@ -188,5 +188,9 @@ public class HttpUtil {
 		if ("https".equals(scheme)) return 443;
 		return port;
 	}
+	public static boolean isHttps(URI uri) {
+		String scheme = uri.getScheme().toLowerCase(Locale.US);
+		return "https".equals(scheme);
+	}
 
 }

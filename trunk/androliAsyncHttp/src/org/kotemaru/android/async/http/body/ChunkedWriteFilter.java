@@ -2,12 +2,12 @@ package org.kotemaru.android.async.http.body;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.channels.SocketChannel;
 
 import org.kotemaru.android.async.ByteBufferWriter;
 import org.kotemaru.android.async.helper.PartProducer;
 import org.kotemaru.android.async.helper.WritableListener;
 import org.kotemaru.android.async.http.HttpUtil;
+import org.kotemaru.android.async.ssl.SelectorItem;
 
 /**
  * Chunked フォーマットのストリームを分割して書き込むためのクラス。
@@ -25,11 +25,11 @@ public class ChunkedWriteFilter implements WritableListener, ByteBufferWriter {
 	}
 
 	private State mState = State.PREPARE;
-	private final SocketChannel mChannel;
+	private final SelectorItem mSelectorItem;
 	private final PartProducer mPartProducer;
 
-	public ChunkedWriteFilter(SocketChannel channel, PartProducer partProducer) throws IOException {
-		mChannel = channel;
+	public ChunkedWriteFilter(SelectorItem channel, PartProducer partProducer) throws IOException {
+		mSelectorItem = channel;
 		mPartProducer = partProducer;
 	}
 
@@ -42,11 +42,11 @@ public class ChunkedWriteFilter implements WritableListener, ByteBufferWriter {
 		if (mState == State.DONE) return -1;
 
 		if (mSizeLineBuffer.hasRemaining()) {
-			return mChannel.write(mSizeLineBuffer);
+			return mSelectorItem.write(mSizeLineBuffer);
 		} else if (mBuffer.hasRemaining()) {
-			return mChannel.write(mBuffer);
+			return mSelectorItem.write(mBuffer);
 		} else if (mCrlfBuffer.hasRemaining()) {
-			return mChannel.write(mCrlfBuffer);
+			return mSelectorItem.write(mCrlfBuffer);
 		}
 		mPartProducer.requestNextPart(this);
 		return 0;
