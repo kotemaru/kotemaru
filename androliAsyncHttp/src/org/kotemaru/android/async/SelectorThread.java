@@ -11,8 +11,7 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-import org.kotemaru.android.async.ssl.SelectorItem;
-import org.kotemaru.android.async.ssl.SelectorItem.SelectorItemListener;
+import org.kotemaru.android.async.SelectorItem.SelectorItemListener;
 
 import android.util.Log;
 

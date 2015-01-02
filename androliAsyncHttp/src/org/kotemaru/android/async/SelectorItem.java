@@ -1,10 +1,10 @@
-package org.kotemaru.android.async.ssl;
+package org.kotemaru.android.async;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.SelectorListener;
+import org.kotemaru.android.async.helper.ErrorListener;
 
 public interface SelectorItem extends SelectorListener {
 	public static final int OP_ALL = -1;

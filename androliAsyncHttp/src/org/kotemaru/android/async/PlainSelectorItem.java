@@ -1,32 +1,20 @@
-package org.kotemaru.android.async.ssl;
+package org.kotemaru.android.async;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
-import org.kotemaru.android.async.BuildConfig;
-import org.kotemaru.android.async.SelectorListener;
-import org.kotemaru.android.async.SelectorThread;
-
 import android.util.Log;
 
-public class PlainSelectorItem implements SelectorItem, SelectorListener {
+public class PlainSelectorItem extends BaseSelectorItem implements SelectorListener {
 	private static final String TAG = PlainSelectorItem.class.getSimpleName();
-	private static final boolean IS_DEBUG = BuildConfig.DEBUG;
 	
-	private final SocketChannel mChannel;
-	private SelectorItemListener mItemListener;
-	private int mFlag;
-
 	public PlainSelectorItem(SocketChannel channel) {
-		mChannel = channel;
-	}
-	@Override
-	public SocketChannel getChannel() {
-		return mChannel;
+		super(channel);
 	}
 	
+	@Override
 	public int write(ByteBuffer buffer) {
 		try {
 			return mChannel.write(buffer);
@@ -36,6 +24,7 @@ public class PlainSelectorItem implements SelectorItem, SelectorListener {
 		}
 	}
 
+	@Override
 	public int read(ByteBuffer buffer) {
 		try {
 			return mChannel.read(buffer);
@@ -45,44 +34,12 @@ public class PlainSelectorItem implements SelectorItem, SelectorListener {
 		}
 	}
 	
-	public void release() {
-		SelectorThread.getInstance().release(mChannel);
-	}
-
+	@Override
 	public void close() {
 		try {
 			mChannel.close();
 		} catch (IOException e) {
 			doError("close fial.", e);
-		}
-	}
-
-	private void doError(String msg, Throwable err) {
-		Log.w(TAG, msg, err);
-		if (mItemListener != null) {
-			mItemListener.onError(msg, err);
-		}
-	}
-	@Override
-	public void onError(String msg, Throwable t) {
-		doError(msg, t);
-	}
-	@Override
-	public void setListener(SelectorItemListener listener) {
-		mItemListener = listener;
-	}
-	@Override
-	public void requireOn(int flag) {
-		mFlag = flag;
-		if ((mFlag & OP_READ) != 0) {
-			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
-		} else {
-			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_READ);
-		}
-		if ((mFlag & OP_WRITE) != 0) {
-			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_WRITE);
-		} else {
-			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_WRITE);
 		}
 	}
 
@@ -115,7 +72,7 @@ public class PlainSelectorItem implements SelectorItem, SelectorListener {
 	public void onWritable(SelectionKey key) {
 		if (IS_DEBUG) Log.v(TAG, "onWritable:");
 		try {
-			if ((mFlag & OP_WRITE) != 0) {
+			if ((mSelectorFlag & OP_WRITE) != 0) {
 				mItemListener.onWritable();
 			}
 		} catch (IOException e) {
@@ -126,7 +83,7 @@ public class PlainSelectorItem implements SelectorItem, SelectorListener {
 	public void onReadable(SelectionKey key) {
 		if (IS_DEBUG) Log.v(TAG, "onReadable:");
 		try {
-			if ((mFlag & OP_READ) != 0) {
+			if ((mSelectorFlag & OP_READ) != 0) {
 				mItemListener.onReadable();
 			}
 		} catch (IOException e) {

@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import org.kotemaru.android.async.ByteBufferWriter;
+import org.kotemaru.android.async.SelectorItem;
 import org.kotemaru.android.async.helper.PartProducer;
 import org.kotemaru.android.async.helper.WritableListener;
-import org.kotemaru.android.async.ssl.SelectorItem;
 
 /**
  * 平文 フォーマットのストリームを分割して書き込むためのクラス。

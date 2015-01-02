@@ -7,10 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import org.kotemaru.android.async.ssl.PlainSelectorItem;
 import org.kotemaru.android.async.ssl.SSLFactory;
 import org.kotemaru.android.async.ssl.SSLSelectorItem;
-import org.kotemaru.android.async.ssl.SelectorItem;
 
 import android.util.Log;
 
