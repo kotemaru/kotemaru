@@ -18,8 +18,10 @@ import org.apache.http.message.BasicHttpResponse;
 import org.kotemaru.android.async.BuildConfig;
 import org.kotemaru.android.async.ByteBufferReader;
 import org.kotemaru.android.async.ByteBufferWriter;
+import org.kotemaru.android.async.SelectorItem;
 import org.kotemaru.android.async.SelectorItemPool;
 import org.kotemaru.android.async.SelectorThread;
+import org.kotemaru.android.async.SelectorItem.SelectorItemListener;
 import org.kotemaru.android.async.helper.PartByteArrayInputStream;
 import org.kotemaru.android.async.helper.PartConsumer;
 import org.kotemaru.android.async.helper.PartInputStream;
@@ -29,8 +31,6 @@ import org.kotemaru.android.async.http.body.ChunkedReadFilter;
 import org.kotemaru.android.async.http.body.ChunkedWriteFilter;
 import org.kotemaru.android.async.http.body.StreamReadFilter;
 import org.kotemaru.android.async.http.body.StreamWriteFilter;
-import org.kotemaru.android.async.ssl.SelectorItem;
-import org.kotemaru.android.async.ssl.SelectorItem.SelectorItemListener;
 
 import android.util.Log;
 

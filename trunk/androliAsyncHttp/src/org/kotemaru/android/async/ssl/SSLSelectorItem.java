@@ -11,24 +11,21 @@ import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 import javax.net.ssl.SSLSession;
 
+import org.kotemaru.android.async.BaseSelectorItem;
 import org.kotemaru.android.async.SelectorListener;
 import org.kotemaru.android.async.SelectorThread;
 
 import android.annotation.SuppressLint;
 import android.util.Log;
 
-public class SSLSelectorItem implements SelectorItem, SelectorListener {
+public class SSLSelectorItem extends BaseSelectorItem implements SelectorListener {
 	private static final String TAG = SSLSelectorItem.class.getSimpleName();
-	private static final boolean IS_DEBUG = true;
-	
-	private final SocketChannel mChannel;
+
 	private final SSLEngine mEngine;
-	private SelectorItemListener mItemListener;
 	private ByteBuffer mSSLWriteBuffer;
 	private ByteBuffer mSSLReadBuffer;
 	private ByteBuffer mPlainReadBuffer;
 	private ByteBuffer mPlainWriteBuffer;
-	private int mSlectFlag;
 	private boolean mIsHandshaked = false;
 
 	enum IOState {
@@ -39,8 +36,8 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	private IOState mWriteState = IOState.PLAIN;
 
 	public SSLSelectorItem(SSLEngine engine, SocketChannel channel) {
+		super(channel);
 		mEngine = engine;
-		mChannel = channel;
 
 		SSLSession session = mEngine.getSession();
 		mSSLWriteBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
@@ -117,40 +114,8 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 		}
 	}
 
-	private void doError(String msg, Throwable err) {
-		Log.w(TAG, msg, err);
-		if (mItemListener != null) {
-			mItemListener.onError(msg, err);
-		}
-	}
-	@Override
-	public void onError(String msg, Throwable t) {
-		doError(msg, t);
-	}
-	@Override
-	public void setListener(SelectorItemListener listener) {
-		mItemListener = listener;
-	}
-	@Override
-	public void requireOn(int flag) {
-		mSlectFlag = flag;
-		if ((mSlectFlag & OP_READ) != 0) {
-			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
-		} else {
-			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_READ);
-		}
-		if ((mSlectFlag & OP_WRITE) != 0) {
-			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_WRITE);
-		} else {
-			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_WRITE);
-		}
-	}
-	public void release() {
-		SelectorThread.getInstance().release(mChannel);
-	}
-
-	public boolean doReadable() {
-		if ((mSlectFlag & OP_READ) != 0 && mReadState == IOState.PLAIN) {
+	private boolean doReadable() {
+		if ((mSelectorFlag & OP_READ) != 0 && mReadState == IOState.PLAIN) {
 			try {
 				mItemListener.onReadable();
 				return true;
@@ -160,8 +125,8 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 		}
 		return false;
 	}
-	public boolean doWritable() {
-		if ((mSlectFlag & OP_WRITE) != 0 && mWriteState == IOState.PLAIN) {
+	private boolean doWritable() {
+		if ((mSelectorFlag & OP_WRITE) != 0 && mWriteState == IOState.PLAIN) {
 			try {
 				mItemListener.onWritable();
 				return true;
