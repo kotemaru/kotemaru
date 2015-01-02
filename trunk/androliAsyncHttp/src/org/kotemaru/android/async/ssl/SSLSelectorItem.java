@@ -149,23 +149,27 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 		SelectorThread.getInstance().release(mChannel);
 	}
 
-	public void doReadable() {
+	public boolean doReadable() {
 		if ((mSlectFlag & OP_READ) != 0 && mReadState == IOState.PLAIN) {
 			try {
 				mItemListener.onReadable();
+				return true;
 			} catch (IOException e) {
 				doError("doReadable fail.", e);
 			}
 		}
+		return false;
 	}
-	public void doWritable() {
+	public boolean doWritable() {
 		if ((mSlectFlag & OP_WRITE) != 0 && mWriteState == IOState.PLAIN) {
 			try {
 				mItemListener.onWritable();
+				return true;
 			} catch (IOException e) {
 				doError("doWritable fail.", e);
 			}
 		}
+		return false;
 	}
 	// ------------------------------------------------------------------------------------------
 	@Override
@@ -207,6 +211,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	}
 	@Override
 	public void onWritable(SelectionKey key) {
+		Log.v(TAG,"onWritable:"+mReadState+":"+key);
 		try {
 			if (mWriteState == IOState.HANDSHAKE) {
 				doHandshakeWrap();
@@ -223,6 +228,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 			if (!mSSLWriteBuffer.hasRemaining()) {
 				mWriteState = IOState.PLAIN;
 				mSSLWriteBuffer.clear();
+				while (mSSLWriteBuffer.hasRemaining() && doWritable());
 			}
 		} catch (IOException e) {
 			doError("onWritable fail.", e);
@@ -230,8 +236,9 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	}
 	@Override
 	public void onReadable(SelectionKey key) {
+		Log.v(TAG,"onReadable:"+mReadState+":"+key);
 		try {
-			if (mWriteState == IOState.HANDSHAKE) {
+			if (mReadState == IOState.HANDSHAKE) {
 				doHandshakeUnwrap();
 			}
 			if (mReadState != IOState.SSL) {
@@ -247,10 +254,12 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 			mSSLReadBuffer.flip();
 			SSLEngineResult res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
 			SSLEngineResult.Status status = res.getStatus();
+			Log.v(TAG,"onReadable:unwrap="+status);
 			if (status == SSLEngineResult.Status.OK) {
 				mReadState = IOState.PLAIN;
 				mSSLReadBuffer.compact();
 				mPlainReadBuffer.flip();
+				while (mPlainReadBuffer.hasRemaining() && doReadable());
 			} else if (status == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
 				mSSLReadBuffer.compact();
 			} else if (status == SSLEngineResult.Status.CLOSED) {
