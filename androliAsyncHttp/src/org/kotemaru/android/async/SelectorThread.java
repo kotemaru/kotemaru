@@ -3,7 +3,6 @@ package org.kotemaru.android.async;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.nio.channels.ClosedChannelException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
@@ -125,14 +124,14 @@ public class SelectorThread extends Thread {
 		SelectionKey key = channel.keyFor(mSelector);
 		key.interestOps(key.interestOps() | ops);
 		Log.d(TAG, "resume=" + key.interestOps());
-		if (key.interestOps() != 0) {
-			try {
-				channel.register(mSelector, key.interestOps(), key.attachment());
-			} catch (ClosedChannelException e) {
-				// TODO 自動生成された catch ブロック
-				e.printStackTrace();
-			}
-		}
+		//if (key.interestOps() != 0) {
+		//	try {
+		//		channel.register(mSelector, key.interestOps(), key.attachment());
+		//	} catch (ClosedChannelException e) {
+		//		// TODO 自動生成された catch ブロック
+		//		e.printStackTrace();
+		//	}
+		//}
 		mSelector.wakeup();
 	}
 	private synchronized void doPauseRequest() {
@@ -190,9 +189,9 @@ public class SelectorThread extends Thread {
 				}
 				SelectorListener listener = attach.listener;
 				if (key.isAcceptable()) listener.onAccept(key);
-				if (key.isConnectable()) listener.onConnect(key);
-				if (key.isValid() && key.isReadable()) listener.onReadable(key);
-				if (key.isValid() && key.isWritable()) listener.onWritable(key);
+				else if (key.isConnectable()) listener.onConnect(key);
+				else if (key.isReadable()) listener.onReadable(key);
+				else if (key.isWritable()) listener.onWritable(key);
 			}
 		}
 	}

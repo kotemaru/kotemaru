@@ -43,9 +43,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 		mSSLWriteBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
 		mSSLReadBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
 		mPlainWriteBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
-		// mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
-		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize() * 2); // for BUFFER_OVERFLOW
-
+		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
 	}
 	@Override
 	public SocketChannel getChannel() {
@@ -218,22 +216,35 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 				closeRead();
 				return;
 			}
+			if (n == 0) {
+				return;
+			}
 			mSSLReadBuffer.flip();
-			SSLEngineResult res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
-			SSLEngineResult.Status status = res.getStatus();
-			Log.v(TAG, "onReadable:unwrap=" + status);
-			if (status == SSLEngineResult.Status.OK) {
-				mReadState = IOState.PLAIN;
-				mSSLReadBuffer.compact();
-				mPlainReadBuffer.flip();
-				while (mPlainReadBuffer.hasRemaining() && doReadable())
-					;
-			} else if (status == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
-				mSSLReadBuffer.compact();
-			} else if (status == SSLEngineResult.Status.CLOSED) {
-				closeRead();
-			} else {
-				throw new IOException("Bad unwrap status " + status + ":SSL=" + mSSLReadBuffer + ":plain=" + mPlainReadBuffer);
+			while (true) {
+				SSLEngineResult res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
+				SSLEngineResult.Status status = res.getStatus();
+				Log.v(TAG, "onReadable:unwrap=" + status);
+				if (status == SSLEngineResult.Status.OK) {
+					mReadState = IOState.PLAIN;
+					mPlainReadBuffer.flip();
+					while (mPlainReadBuffer.hasRemaining() && doReadable())
+						;
+					if (!mSSLReadBuffer.hasRemaining()) {
+						//mSSLReadBuffer.compact();
+						mSSLReadBuffer.clear();
+						break;
+					}
+				} else if (status == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
+					mSSLReadBuffer.compact();
+					mReadState = IOState.SSL;
+					break;
+				} else if (status == SSLEngineResult.Status.CLOSED) {
+					closeRead();
+					break;
+				} else {
+					throw new IOException("Bad unwrap status " + status + ":SSL=" + mSSLReadBuffer + ":plain="
+							+ mPlainReadBuffer);
+				}
 			}
 		} catch (IOException e) {
 			doError("onReadable fail.", e);
