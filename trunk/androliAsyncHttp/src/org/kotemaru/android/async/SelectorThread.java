@@ -125,6 +125,7 @@ public class SelectorThread extends Thread {
 	public synchronized void resume(SocketChannel channel, int ops) {
 		SelectionKey key = channel.keyFor(mSelector);
 		key.interestOps(key.interestOps() | ops);
+		Log.d(TAG,"resume="+key.interestOps());
 		if (key.interestOps() != 0) {
 			try {
 				channel.register(mSelector, key.interestOps(), key.attachment());
