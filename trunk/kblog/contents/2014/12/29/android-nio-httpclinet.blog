@@ -96,7 +96,7 @@ PipedInputStream を使うオプションが有ってもいいかもしれない
 
 #### ByteBuffer を受け取る GET のサンプルコード。
 
-ByteBuffer を直接で無く BufferTransporter で受け取るのは使い終わった 
+ByteBuffer を直接で無く ByteBufferReader で受け取るのは使い終わった 
 ByteBuffer を返して貰うため。(再利用する)<br>
 この辺り利便性と実行効率を両立させるのが難しいです。
 
@@ -114,7 +114,7 @@ Google さんは Chunked で応答して来ますがアプリに渡すときに�
 				return true;
 			}
 			@Override
-			public void onResponseBodyPart(BufferTransporter transporter) {
+			public void onResponseBodyPart(ByteBufferReader transporter) {
 				try {
 					if (mFileChannel == null) {
 						@SuppressWarnings("resource")
@@ -149,8 +149,17 @@ Google さんは Chunked で応答して来ますがアプリに渡すときに�
 今回作ったライブラリはちゃんとテストを行えば実用になりそうな気がする。<br>
 興味のある人はこちらからどうぞ
 
-  - [https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.1](https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.1)
+  - [https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.2](https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.2)
 
+### 追記
+
+HTTPSも欲しいなと思って作り始めたらどつぼに嵌ったよ。<br>
+JSSE のドキュメントがアバウト過ぎて訳分かんねー。<br>
+でも何とか Selector + SSLEngine の組み合わせで動かすことに成功。<br>
+
+需要は無いと思うけどソースはこちら
+
+  - [https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.3](https://kotemaru.googlecode.com/svn/tags/androidAsyncHttp-0.3)
 
 
 
