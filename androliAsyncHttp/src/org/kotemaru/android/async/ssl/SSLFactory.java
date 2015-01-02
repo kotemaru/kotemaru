@@ -10,6 +10,7 @@ import javax.net.ssl.SSLEngine;
 
 public class SSLFactory {
 	public static SSLFactory sInstance;
+
 	public static SSLFactory getInstance() throws IOException {
 		if (sInstance == null) {
 			try {
@@ -20,7 +21,7 @@ public class SSLFactory {
 		}
 		return sInstance;
 	}
-	
+
 	private final SSLContext mContext;
 
 	public SSLFactory() throws NoSuchAlgorithmException, KeyManagementException {
@@ -33,6 +34,5 @@ public class SSLFactory {
 		engine.setUseClientMode(true);
 		return new SSLSelectorItem(engine, channel);
 	}
-	
 
 }

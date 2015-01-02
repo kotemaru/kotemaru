@@ -482,7 +482,7 @@ public abstract class AsyncHttpRequest
 		try {
 			int n = mSelectorItem.read(buffer);
 			if (n == 0) {
-				Log.w(TAG,"read fail: size=0");
+				Log.w(TAG, "read fail: size=0");
 			}
 			if (isEofError && n == -1) {
 				throw new IOException("EOF");
@@ -497,7 +497,7 @@ public abstract class AsyncHttpRequest
 		try {
 			int n = mSelectorItem.write(buffer);
 			if (n == 0) {
-				Log.w(TAG,"write fail: size=0");
+				Log.w(TAG, "write fail: size=0");
 			}
 			if (isEofError && n == -1) {
 				throw new IOException("EOF");

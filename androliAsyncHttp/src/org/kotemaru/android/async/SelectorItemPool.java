@@ -58,7 +58,7 @@ public class SelectorItemPool {
 	private synchronized SelectorItem getPlainSelectorItem(SocketAddress addr) throws IOException {
 		LinkedList<SelectorItem> list = mPlainPool.get(addr);
 		if (list == null || list.isEmpty()) {
-			Log.d(TAG,"crate Plain session");
+			Log.d(TAG, "crate Plain session");
 			SocketChannel channel = SocketChannel.open();
 			PlainSelectorItem item = new PlainSelectorItem(channel);
 			return item;
@@ -83,7 +83,7 @@ public class SelectorItemPool {
 	private synchronized SelectorItem getSSLSelectorItem(SocketAddress addr) throws IOException {
 		LinkedList<SelectorItem> list = mSslPool.get(addr);
 		if (list == null || list.isEmpty()) {
-			Log.d(TAG,"crate SSL session");
+			Log.d(TAG, "crate SSL session");
 			SocketChannel channel = SocketChannel.open();
 			SSLSelectorItem item = SSLFactory.getInstance().getClient(channel);
 			return item;

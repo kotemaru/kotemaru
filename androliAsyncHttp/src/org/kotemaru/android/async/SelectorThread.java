@@ -89,7 +89,7 @@ public class SelectorThread extends Thread {
 			OpenRequest req = ite.next();
 			try {
 				SocketAddress addr = new InetSocketAddress(req.host, req.port);
-				SelectorItem selectorItem = SelectorItemPool.getInstance().getSelectorItem(addr,req.isSsl);
+				SelectorItem selectorItem = SelectorItemPool.getInstance().getSelectorItem(addr, req.isSsl);
 				SocketChannel channel = selectorItem.getChannel();
 				req.listener = selectorItem;
 				channel.configureBlocking(false);
@@ -115,16 +115,16 @@ public class SelectorThread extends Thread {
 	}
 
 	public synchronized void pause(SocketChannel channel, int ops) {
-		//mPauseQueue.add(channel);
+		// mPauseQueue.add(channel);
 		SelectionKey key = channel.keyFor(mSelector);
 		key.interestOps(key.interestOps() & ~ops);
-		Log.d(TAG,"pause="+key.interestOps());
+		Log.d(TAG, "pause=" + key.interestOps());
 		mSelector.wakeup();
 	}
 	public synchronized void resume(SocketChannel channel, int ops) {
 		SelectionKey key = channel.keyFor(mSelector);
 		key.interestOps(key.interestOps() | ops);
-		Log.d(TAG,"resume="+key.interestOps());
+		Log.d(TAG, "resume=" + key.interestOps());
 		if (key.interestOps() != 0) {
 			try {
 				channel.register(mSelector, key.interestOps(), key.attachment());
@@ -172,14 +172,14 @@ public class SelectorThread extends Thread {
 			doPauseRequest();
 			int n = mSelector.select(TIMEOUT);
 			if (BuildConfig.DEBUG) {
-				Log.v(TAG,"select:count="+n);
+				Log.v(TAG, "select:count=" + n);
 			}
 			Iterator<SelectionKey> keys = mSelector.selectedKeys().iterator();
 			while (keys.hasNext()) {
 				SelectionKey key = keys.next();
 				keys.remove();
 				if (BuildConfig.DEBUG) {
-					Log.v(TAG,"select:radyOps="+key.readyOps()+",attach="+key.attachment());
+					Log.v(TAG, "select:radyOps=" + key.readyOps() + ",attach=" + key.attachment());
 				}
 				if (!key.isValid()) continue;
 				OpenRequest attach = (OpenRequest) key.attachment();
@@ -208,7 +208,7 @@ public class SelectorThread extends Thread {
 			this.host = host;
 			this.port = port;
 			this.isSsl = isSsl;
-			this.itemListener=listener;
+			this.itemListener = listener;
 		}
 	}
 }
