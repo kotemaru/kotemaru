@@ -9,7 +9,7 @@ import android.util.Log;
 public abstract class BaseSelectorItem implements SelectorItem, SelectorListener {
 	private static final String TAG = BaseSelectorItem.class.getSimpleName();
 	protected static final boolean IS_DEBUG = BuildConfig.DEBUG;
-	
+
 	protected final SocketChannel mChannel;
 	protected SelectorItemListener mItemListener;
 	protected int mSelectorFlag;
@@ -21,7 +21,7 @@ public abstract class BaseSelectorItem implements SelectorItem, SelectorListener
 	public SocketChannel getChannel() {
 		return mChannel;
 	}
-	
+
 	@Override
 	public abstract int write(ByteBuffer buffer);
 	@Override

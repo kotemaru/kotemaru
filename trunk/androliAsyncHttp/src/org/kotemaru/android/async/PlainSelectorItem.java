@@ -9,11 +9,11 @@ import android.util.Log;
 
 public class PlainSelectorItem extends BaseSelectorItem implements SelectorListener {
 	private static final String TAG = PlainSelectorItem.class.getSimpleName();
-	
+
 	public PlainSelectorItem(SocketChannel channel) {
 		super(channel);
 	}
-	
+
 	@Override
 	public int write(ByteBuffer buffer) {
 		try {
@@ -33,7 +33,7 @@ public class PlainSelectorItem extends BaseSelectorItem implements SelectorListe
 			return 0;
 		}
 	}
-	
+
 	@Override
 	public void close() {
 		try {

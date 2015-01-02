@@ -43,7 +43,8 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 		mSSLWriteBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
 		mSSLReadBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
 		mPlainWriteBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
-		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
+		// mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
+		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize() * 2); // for BUFFER_OVERFLOW
 
 	}
 	@Override
@@ -147,7 +148,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 	}
 	@Override
 	public void onConnect(SelectionKey key) {
-		Log.v(TAG,"onConnect:"+key);
+		Log.v(TAG, "onConnect:" + key);
 		try {
 			if (mChannel.isConnectionPending()) {
 				if (!mChannel.finishConnect()) {
@@ -164,7 +165,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 		}
 	}
 	public void onHandshakeFinish() {
-		Log.v(TAG,"onHandshakeFinish:");
+		Log.v(TAG, "onHandshakeFinish:");
 		try {
 			SelectorThread.getInstance().pause(mChannel, OP_ALL);
 			mReadState = IOState.SSL;
@@ -176,7 +177,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 	}
 	@Override
 	public void onWritable(SelectionKey key) {
-		Log.v(TAG,"onWritable:"+mReadState+":"+key);
+		Log.v(TAG, "onWritable:" + mReadState + ":" + key);
 		try {
 			if (mWriteState == IOState.HANDSHAKE) {
 				doHandshakeWrap();
@@ -193,7 +194,8 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 			if (!mSSLWriteBuffer.hasRemaining()) {
 				mWriteState = IOState.PLAIN;
 				mSSLWriteBuffer.clear();
-				while (mSSLWriteBuffer.hasRemaining() && doWritable());
+				while (mSSLWriteBuffer.hasRemaining() && doWritable())
+					;
 			}
 		} catch (IOException e) {
 			doError("onWritable fail.", e);
@@ -201,7 +203,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 	}
 	@Override
 	public void onReadable(SelectionKey key) {
-		Log.v(TAG,"onReadable:"+mReadState+":"+key);
+		Log.v(TAG, "onReadable:" + mReadState + ":" + key);
 		try {
 			if (mReadState == IOState.HANDSHAKE) {
 				doHandshakeUnwrap();
@@ -219,18 +221,19 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 			mSSLReadBuffer.flip();
 			SSLEngineResult res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
 			SSLEngineResult.Status status = res.getStatus();
-			Log.v(TAG,"onReadable:unwrap="+status);
+			Log.v(TAG, "onReadable:unwrap=" + status);
 			if (status == SSLEngineResult.Status.OK) {
 				mReadState = IOState.PLAIN;
 				mSSLReadBuffer.compact();
 				mPlainReadBuffer.flip();
-				while (mPlainReadBuffer.hasRemaining() && doReadable());
+				while (mPlainReadBuffer.hasRemaining() && doReadable())
+					;
 			} else if (status == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
 				mSSLReadBuffer.compact();
 			} else if (status == SSLEngineResult.Status.CLOSED) {
 				closeRead();
 			} else {
-				throw new IOException("Bad unwrap status " + status);
+				throw new IOException("Bad unwrap status " + status + ":SSL=" + mSSLReadBuffer + ":plain=" + mPlainReadBuffer);
 			}
 		} catch (IOException e) {
 			doError("onReadable fail.", e);
@@ -241,9 +244,9 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 		return mChannel.isConnected();
 	}
 
-	//-----------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------
 	// Handshake
-	//-----------------------------------------------------------------------------------------------
+	// -----------------------------------------------------------------------------------------------
 	private boolean doHandshake() throws Exception {
 		if (mIsHandshaked) return false;
 		mEngine.beginHandshake();
@@ -264,7 +267,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 		SSLEngineResult result = null;
 		while (mSSLReadBuffer.hasRemaining()) {
 			result = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
-			if(IS_DEBUG) log("client unwrap: ", result);
+			if (IS_DEBUG) log("client unwrap: ", result);
 			hsStatus = result.getHandshakeStatus();
 			if (hsStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
 				break;
@@ -282,7 +285,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 	private void doHandshakeWrap() throws IOException {
 		mSSLWriteBuffer.clear();
 		SSLEngineResult result = mEngine.wrap(mPlainWriteBuffer, mSSLWriteBuffer);
-		if(IS_DEBUG) log("client wrap: ", result);
+		if (IS_DEBUG) log("client wrap: ", result);
 		if (result.getStatus() == SSLEngineResult.Status.OK) {
 			mSSLWriteBuffer.flip();
 			while (mSSLWriteBuffer.hasRemaining()) {
@@ -291,14 +294,14 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 				}
 			}
 		} else {
-			throw new IOException("Hand shake filed:"+result.getStatus());
+			throw new IOException("Hand shake filed:" + result.getStatus());
 		}
 		postNextHandshake(doHandshakeTask());
 	}
 	private SSLEngineResult.HandshakeStatus doHandshakeTask() throws IOException {
 		Runnable runnable;
 		while ((runnable = mEngine.getDelegatedTask()) != null) {
-			if(IS_DEBUG) Log.v(TAG, "doHandshakeTask:" + runnable);
+			if (IS_DEBUG) Log.v(TAG, "doHandshakeTask:" + runnable);
 			runnable.run();
 		}
 		SSLEngineResult.HandshakeStatus hsStatus = mEngine.getHandshakeStatus();
@@ -310,7 +313,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 
 	private void postNextHandshake(SSLEngineResult.HandshakeStatus hsStatus) throws IOException {
 		SelectorThread.getInstance().pause(mChannel, OP_ALL);
-		if(IS_DEBUG) Log.d(TAG, "postNextHandshake=" + hsStatus);
+		if (IS_DEBUG) Log.d(TAG, "postNextHandshake=" + hsStatus);
 		switch (hsStatus) {
 		case NEED_WRAP:
 			mWriteState = IOState.HANDSHAKE;
@@ -325,6 +328,7 @@ public class SSLSelectorItem extends BaseSelectorItem implements SelectorListene
 			postNextHandshake(hsStatus);
 			break;
 		case FINISHED:
+		case NOT_HANDSHAKING: // for Android
 			mIsHandshaked = true;
 			mSSLWriteBuffer.clear();
 			mSSLReadBuffer.clear();
