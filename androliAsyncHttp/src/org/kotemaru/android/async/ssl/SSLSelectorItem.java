@@ -19,6 +19,8 @@ import android.util.Log;
 
 public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	private static final String TAG = SSLSelectorItem.class.getSimpleName();
+	private static final boolean IS_DEBUG = true;
+	
 	private final SocketChannel mChannel;
 	private final SSLEngine mEngine;
 	private SelectorItemListener mItemListener;
@@ -26,7 +28,8 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	private ByteBuffer mSSLReadBuffer;
 	private ByteBuffer mPlainReadBuffer;
 	private ByteBuffer mPlainWriteBuffer;
-	private int mFlag;
+	private int mSlectFlag;
+	private boolean mIsHandshaked = false;
 
 	enum IOState {
 		SSL, PLAIN, CLOSE, HANDSHAKE
@@ -41,9 +44,9 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 
 		SSLSession session = mEngine.getSession();
 		mSSLWriteBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
-		mSSLReadBuffer = ByteBuffer.allocate(session.getPacketBufferSize()*3);
+		mSSLReadBuffer = ByteBuffer.allocate(session.getPacketBufferSize());
 		mPlainWriteBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
-		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize()*3);
+		mPlainReadBuffer = ByteBuffer.allocate(session.getApplicationBufferSize());
 
 	}
 	@Override
@@ -130,13 +133,13 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	}
 	@Override
 	public void requireOn(int flag) {
-		mFlag = flag;
-		if ((mFlag & OP_READ) != 0) {
+		mSlectFlag = flag;
+		if ((mSlectFlag & OP_READ) != 0) {
 			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
 		} else {
 			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_READ);
 		}
-		if ((mFlag & OP_WRITE) != 0) {
+		if ((mSlectFlag & OP_WRITE) != 0) {
 			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_WRITE);
 		} else {
 			SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_WRITE);
@@ -147,7 +150,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	}
 
 	public void doReadable() {
-		if ((mFlag & OP_READ) != 0 && mReadState == IOState.PLAIN) {
+		if ((mSlectFlag & OP_READ) != 0 && mReadState == IOState.PLAIN) {
 			try {
 				mItemListener.onReadable();
 			} catch (IOException e) {
@@ -156,7 +159,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 		}
 	}
 	public void doWritable() {
-		if ((mFlag & OP_WRITE) != 0 && mWriteState == IOState.PLAIN) {
+		if ((mSlectFlag & OP_WRITE) != 0 && mWriteState == IOState.PLAIN) {
 			try {
 				mItemListener.onWritable();
 			} catch (IOException e) {
@@ -175,6 +178,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	}
 	@Override
 	public void onConnect(SelectionKey key) {
+		Log.v(TAG,"onConnect:"+key);
 		try {
 			if (mChannel.isConnectionPending()) {
 				if (!mChannel.finishConnect()) {
@@ -184,8 +188,19 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 			}
 			SelectorThread.getInstance().pause(mChannel, OP_ALL);
 			if (!doHandshake()) {
-				mItemListener.onConnect();
+				onHandshakeFinish();
 			}
+		} catch (Exception e) {
+			doError("Connection fail:", e);
+		}
+	}
+	public void onHandshakeFinish() {
+		Log.v(TAG,"onHandshakeFinish:");
+		try {
+			SelectorThread.getInstance().pause(mChannel, OP_ALL);
+			mReadState = IOState.SSL;
+			mWriteState = IOState.PLAIN;
+			mItemListener.onConnect();
 		} catch (Exception e) {
 			doError("Connection fail:", e);
 		}
@@ -235,6 +250,7 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 			if (status == SSLEngineResult.Status.OK) {
 				mReadState = IOState.PLAIN;
 				mSSLReadBuffer.compact();
+				mPlainReadBuffer.flip();
 			} else if (status == SSLEngineResult.Status.BUFFER_UNDERFLOW) {
 				mSSLReadBuffer.compact();
 			} else if (status == SSLEngineResult.Status.CLOSED) {
@@ -255,55 +271,72 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 	// Handshake
 	//-----------------------------------------------------------------------------------------------
 	private boolean doHandshake() throws Exception {
-		SSLEngineResult.HandshakeStatus hsStatus = mEngine.getHandshakeStatus();
-		Log.v(TAG, "Handshake=" + hsStatus);
-		if (hsStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
-			return false;
-		}
+		if (mIsHandshaked) return false;
 		mEngine.beginHandshake();
 		mSSLReadBuffer.clear();
 		mPlainReadBuffer.clear();
 		mPlainWriteBuffer.clear();
 		mSSLWriteBuffer.clear();
-		postNextHandshake();
+		postNextHandshake(mEngine.getHandshakeStatus());
 		return true;
 	}
 	private void doHandshakeUnwrap() throws IOException {
-		Log.v(TAG, "doHandshakeUnwrap:" + mSSLReadBuffer.remaining());
-
-		//mSSLReadBuffer.clear();
-		//mPlainReadBuffer.clear();
 		int n = mChannel.read(mSSLReadBuffer);
 		if (n < 0) {
-			doError("Hand shake filed: read EOF", new Error());
+			throw new IOException("Hand shake filed: : read EOF");
 		}
 		mSSLReadBuffer.flip();
+		SSLEngineResult.HandshakeStatus hsStatus = null;
+		SSLEngineResult result = null;
 		while (mSSLReadBuffer.hasRemaining()) {
-			Log.v(TAG, "doHandshakeUnwrap:remain=" + mSSLReadBuffer.remaining());
-			SSLEngineResult res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
-			Log.v(TAG, "doHandshakeUnwrap:after remain=" + mSSLReadBuffer.remaining());
-
-			log("client unwrap: ", res);
-			SSLEngineResult.Status state = res.getStatus();
-			//if (state == SSLEngineResult.Status.BUFFER_UNDERFLOW && !mSSLReadBuffer.hasRemaining()) {
-			//	Log.v(TAG, "doHandshakeUnwrap:state=" + state+":"+mSSLReadBuffer.remaining());
-			//	doHandshakeTask();
-			//	break;
-			//}
-			if (state != SSLEngineResult.Status.OK && state != SSLEngineResult.Status.BUFFER_UNDERFLOW) {
+			result = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
+			if(IS_DEBUG) log("client unwrap: ", result);
+			hsStatus = result.getHandshakeStatus();
+			if (hsStatus == SSLEngineResult.HandshakeStatus.FINISHED) {
+				break;
+			}
+			SSLEngineResult.Status state = result.getStatus();
+			if (state == SSLEngineResult.Status.BUFFER_UNDERFLOW) break;
+			if (state != SSLEngineResult.Status.OK) {
 				throw new IOException("Hand shake filed: " + state);
 			}
-			doHandshakeTask();
+			hsStatus = doHandshakeTask();
 		}
 		mSSLReadBuffer.compact();
-		postNextHandshake();
+		postNextHandshake(hsStatus);
+	}
+	private void doHandshakeWrap() throws IOException {
+		mSSLWriteBuffer.clear();
+		SSLEngineResult result = mEngine.wrap(mPlainWriteBuffer, mSSLWriteBuffer);
+		if(IS_DEBUG) log("client wrap: ", result);
+		if (result.getStatus() == SSLEngineResult.Status.OK) {
+			mSSLWriteBuffer.flip();
+			while (mSSLWriteBuffer.hasRemaining()) {
+				if (mChannel.write(mSSLWriteBuffer) < 0) {
+					throw new IOException("Hand shake filed: write EOF");
+				}
+			}
+		} else {
+			throw new IOException("Hand shake filed:"+result.getStatus());
+		}
+		postNextHandshake(doHandshakeTask());
+	}
+	private SSLEngineResult.HandshakeStatus doHandshakeTask() throws IOException {
+		Runnable runnable;
+		while ((runnable = mEngine.getDelegatedTask()) != null) {
+			if(IS_DEBUG) Log.v(TAG, "doHandshakeTask:" + runnable);
+			runnable.run();
+		}
+		SSLEngineResult.HandshakeStatus hsStatus = mEngine.getHandshakeStatus();
+		if (hsStatus == HandshakeStatus.NEED_TASK) {
+			throw new IOException("handshake shouldn't need additional tasks");
+		}
+		return hsStatus;
 	}
 
-	private void postNextHandshake() {
-		SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_READ);
-		SelectorThread.getInstance().pause(mChannel, SelectionKey.OP_WRITE);
-		SSLEngineResult.HandshakeStatus hsStatus = mEngine.getHandshakeStatus();
-		Log.d(TAG, "next=" + hsStatus);
+	private void postNextHandshake(SSLEngineResult.HandshakeStatus hsStatus) throws IOException {
+		SelectorThread.getInstance().pause(mChannel, OP_ALL);
+		if(IS_DEBUG) Log.d(TAG, "postNextHandshake=" + hsStatus);
 		switch (hsStatus) {
 		case NEED_WRAP:
 			mWriteState = IOState.HANDSHAKE;
@@ -313,97 +346,23 @@ public class SSLSelectorItem implements SelectorItem, SelectorListener {
 			mReadState = IOState.HANDSHAKE;
 			SelectorThread.getInstance().resume(mChannel, SelectionKey.OP_READ);
 			break;
+		case NEED_TASK:
+			hsStatus = doHandshakeTask();
+			postNextHandshake(hsStatus);
+			break;
 		case FINISHED:
-			mReadState = IOState.SSL;
-			mWriteState = IOState.PLAIN;
+			mIsHandshaked = true;
+			mSSLWriteBuffer.clear();
+			mSSLReadBuffer.clear();
+			mPlainWriteBuffer.clear();
+			mPlainReadBuffer.clear();
+			onHandshakeFinish();
 		default:
 			break;
 		}
 	}
-	private void doHandshakeWrap() throws IOException {
-		Log.v(TAG, "doHandshakeWrap");
-		mPlainWriteBuffer.clear();
-		mSSLWriteBuffer.clear();
-		SSLEngineResult res = mEngine.wrap(mPlainWriteBuffer, mSSLWriteBuffer);
-		log("client wrap: ", res);
-		if (res.getStatus() == SSLEngineResult.Status.OK) {
-			mSSLWriteBuffer.flip();
-			while (mSSLWriteBuffer.hasRemaining()) {
-				if (mChannel.write(mSSLWriteBuffer) < 0) {
-					throw new IOException("Hand shake filed");
-				}
-			}
-		} else {
-			throw new IOException("Hand shake filed");
-		}
-		doHandshakeTask();
-		postNextHandshake();
-	}
-	private void doHandshakeTask() throws IOException {
-		Runnable runnable;
-		while ((runnable = mEngine.getDelegatedTask()) != null) {
-			Log.v(TAG, "doHandshakeTask:" + runnable);
-			runnable.run();
-		}
-		SSLEngineResult.HandshakeStatus hsStatus = mEngine.getHandshakeStatus();
-		if (hsStatus == HandshakeStatus.NEED_TASK) {
-			throw new IOException("handshake shouldn't need additional tasks");
-		}
-		Log.v(TAG, "doHandshakeTask:end=" + hsStatus);
-	}
-
-	private void doHandshake2() throws Exception {
-		ByteBuffer plainWriteBuffer = ByteBuffer.allocate(mEngine.getSession().getApplicationBufferSize());
-		plainWriteBuffer.put("test".getBytes());
-		while (true) {
-			SSLEngineResult res = mEngine.wrap(plainWriteBuffer, mSSLWriteBuffer);
-			log("client wrap: ", res);
-			runDelegatedTasks(res, mEngine);
-			mSSLWriteBuffer.flip();
-			mChannel.write(mSSLWriteBuffer);
-
-			mSSLReadBuffer.clear();
-			int n = mChannel.read(mSSLReadBuffer);
-			Log.e("DEBUG", "n=" + n);
-			res = mEngine.unwrap(mSSLReadBuffer, mPlainReadBuffer);
-			log("client unwrap: ", res);
-			runDelegatedTasks(res, mEngine);
-
-			mSSLWriteBuffer.compact();
-			mSSLReadBuffer.compact();
-
-			HandshakeStatus hsStatus = res.getHandshakeStatus();
-			if (hsStatus == HandshakeStatus.FINISHED) break;
-		}
-
-	}
-	private static void runDelegatedTasks(SSLEngineResult result,
-			SSLEngine engine) throws Exception {
-
-		if (result.getHandshakeStatus() == HandshakeStatus.NEED_TASK) {
-			Runnable runnable;
-			while ((runnable = engine.getDelegatedTask()) != null) {
-				Log.v(TAG, "\trunning delegated task...");
-				runnable.run();
-			}
-			HandshakeStatus hsStatus = engine.getHandshakeStatus();
-			if (hsStatus == HandshakeStatus.NEED_TASK) {
-				throw new Exception(
-						"handshake shouldn't need additional tasks");
-			}
-			Log.v(TAG, "\tnew HandshakeStatus: " + hsStatus);
-		}
-	}
-
-	private static boolean resultOnce = true;
 
 	private static void log(String str, SSLEngineResult result) {
-		if (resultOnce) {
-			resultOnce = false;
-			System.out.println("The format of the SSLEngineResult is: \n" +
-					"\t\"getStatus() / getHandshakeStatus()\" +\n" +
-					"\t\"bytesConsumed() / bytesProduced()\"\n");
-		}
 		HandshakeStatus hsStatus = result.getHandshakeStatus();
 		Log.v(TAG, str +
 				result.getStatus() + "/" + hsStatus + ", " +
