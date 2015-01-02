@@ -6,6 +6,8 @@ import org.kotemaru.android.async.helper.PartConsumer;
 import org.kotemaru.android.async.helper.PartPatternMatcher;
 import org.kotemaru.android.async.http.HttpUtil;
 
+import android.util.Log;
+
 /**
  * Chunked フォーマットのストームを分割して読み込むためのクラス。
  * - Chunked -> 平文のフィルター。
@@ -38,6 +40,7 @@ public class ChunkedReadFilter implements PartConsumer {
 		postPart(array, offset, length);
 	}
 	private void postPart(byte[] buffer, int offset, int length) {
+		Log.d("DEBUG","===>"+new String(buffer,offset,length));
 		switch (mState) {
 		case PREPARE:
 		case SIZE_LINE:
