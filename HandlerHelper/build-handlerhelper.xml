@@ -50,7 +50,7 @@
 			encoding="utf-8" 
 			classpathref="target-path">
 			<compilerarg line="-processor org.kotemaru.android.handlerhelper.apt.HandlerHelperAp"/>
-			<!--<compilerarg line="-proc:only" />-->
+			<!-- <compilerarg line="-proc:only" /> -->
 			<compilerarg line="-processorpath ${apt-cp}" />
 			<compilerarg line="-s ${target.apt_gen}" />
 		    <src path="${target.source}"/>

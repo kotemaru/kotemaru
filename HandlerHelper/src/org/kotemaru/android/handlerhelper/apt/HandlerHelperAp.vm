@@ -11,9 +11,8 @@ ${classDecl}        : ClassDeclインスタンス
 package ${packageName};
 
 import org.kotemaru.android.handlerhelper.rt.Runner;
+import org.kotemaru.android.handlerhelper.rt.ThreadManager;
 import android.util.Log;
-import android.os.Handler;
-import android.os.Looper;
 
 public class ${className} 
 #foreach( $interface in $classDecl.impl()) )
@@ -22,23 +21,15 @@ public class ${className}
 {
 	private static final String TAG = "${className}";
 	private static final String TRACE_TAG = "HH-Trace";
-	private static final boolean IS_TRACE = Log.isLoggable(TRACE_TAG, Log.VERBOSE);
+	private static final boolean IS_TRACE = ${typeElement.simpleName}.IS_TRACE;
 
 	public ThreadLocal<Runner> mCurrentRunner = new ThreadLocal<Runner>();
 	public final ${typeElement.simpleName} mOrigin;
-	public final Handler mWkHandler;
-	public final Handler mUiHadler ;
+	public final ThreadManager mThreadManager;
 
-	public ${className}(${typeElement.simpleName} origin, Handler uiHandler , Handler handler) {
+	public ${className}(${typeElement.simpleName} origin, ThreadManager threadManager) {
 		this.mOrigin = origin;
-		this.mUiHadler = uiHandler;
-		this.mWkHandler = handler;
-	}
-	public ${className}(${typeElement.simpleName} origin, Looper looper) {
-		this(origin,
-			new Handler(Looper.getMainLooper()),
-			new Handler(looper)
-		);
+		this.mThreadManager = threadManager;
 	}
 
 ## 例外ハンドラメソッド
@@ -47,32 +38,35 @@ public class ${className}
 ## 元クラスのメソッド一覧を取得
 #foreach( $method in $classDecl.getMethods() )
 	public ${method.elem.returnType} ${method.name}(${method.params}) {
-		Runner runner = new Runner(){
+		final Runner runner = new Runner(){
 			@Override public void run() {
 				mCurrentRunner.set(this);
 				try {
 					mOrigin.${method.name}(${method.arguments});
 				} catch (Throwable t) {
-					Log.e(TAG, "${method.name} in handler",t);
-#if( $excepMethod )
-					mOrigin.${excepMethod.name}(t);
+#if( $method.retry > 0)
+					if (this.doRetry()) {
+						mThreadManager.post($method.threadName, this, this.getInterval());
+					} else {
 #end
+#if( $classDecl.hasErrorHandler() )
+						onHandlingError(t, "${method.name}",${method.arguments});
+#else
+						Log.e(TAG, "${method.name} in handler",t);
+#end
+#if( $method.retry > 0)
+					}
+#end
+				} finally {
+					mCurrentRunner.set(null);
 				}
 			}
 		};
 		if (IS_TRACE) {
-			Log.v(TRACE_TAG, runner.toTraceString(mCurrentRunner.get()));
+			Log.v(TRACE_TAG, runner.toTraceString(mCurrentRunner.get(),$method.threadName,"${method.name}",${method.arguments}));
 		}
-#if ($method.isThread("UI")) 
-		Handler handler = mUiHadler;
-#else
-		Handler handler = mWkHandler;
-#end
-#if( $method.delay == 0 )
-		handler.post(runner);
-#else
-		handler.postDelayed(runner, ${method.delay});
-#end
+		runner.setRetryInfo($method.retry, $method.interval, ${method.intervalRate}F);
+		mThreadManager.post($method.threadName, runner, ${method.delay});
 	}
 #end
 }
