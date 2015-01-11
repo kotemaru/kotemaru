@@ -46,6 +46,7 @@ public class ${className}
 				} catch (Throwable t) {
 #if( $method.retry > 0)
 					if (this.doRetry()) {
+						Log.e(TAG, "Retry : ${method.name} in handler:"+t);
 						mThreadManager.post($method.threadName, this, this.getInterval());
 					} else {
 #end

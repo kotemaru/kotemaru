@@ -1,6 +1,5 @@
 package android.os;
 
-import org.kotemaru.android.handlerhelper.rt.Runner;
 
 
 /**
@@ -12,9 +11,11 @@ public class Handler {
 	public Handler(Looper looper) {
 	}
 
-	public void post(Runner runner) {
+	public boolean post(Runnable runner) {
+		return true;
 	}
 
-	public void postDelayed(Runner runner, int delay) {
+	public boolean postDelayed(Runnable runner, long delay) {
+		return true;
 	}
 }

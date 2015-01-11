@@ -27,12 +27,12 @@ public class DefaultThreadManager implements ThreadManager {
 		return null;
 	}
 	@Override
-	public void post(String threadName, Runner runner, int delay) {
+	public boolean post(String threadName, Runner runner, int delay) {
 		final Handler handler = getHandler(threadName);
 		if (delay == 0) {
-			handler.post(runner);
+			return handler.post(runner);
 		} else {
-			handler.postDelayed(runner, delay);
+			return handler.postDelayed(runner, delay);
 		}
 	}
 
