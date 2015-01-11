@@ -13,5 +13,5 @@ public @interface DelegateHandlerClass {
 	/**
 	 * 実装インターフェースの一覧。
 	 */
-	Class<?>[] impl() default {};
+	Class<?>[] implement() default {};
 }
