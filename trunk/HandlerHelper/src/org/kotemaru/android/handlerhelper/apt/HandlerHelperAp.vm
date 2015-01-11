@@ -14,10 +14,7 @@ import org.kotemaru.android.handlerhelper.rt.Runner;
 import org.kotemaru.android.handlerhelper.rt.ThreadManager;
 import android.util.Log;
 
-public class ${className} 
-#foreach( $interface in $classDecl.impl()) )
-			, ${interface.name}
-#end
+public class ${className}  $classDecl.implements
 {
 	private static final String TAG = "${className}";
 	private static final String TRACE_TAG = "HH-Trace";
@@ -31,9 +28,6 @@ public class ${className}
 		this.mOrigin = origin;
 		this.mThreadManager = threadManager;
 	}
-
-## 例外ハンドラメソッド
-#set($excepMethod = ${classDecl.getExceptionMethod()})
 
 ## 元クラスのメソッド一覧を取得
 #foreach( $method in $classDecl.getMethods() )
@@ -49,14 +43,10 @@ public class ${className}
 						Log.e(TAG, "Retry : ${method.name} in handler:"+t);
 						mThreadManager.post($method.threadName, this, this.getInterval());
 					} else {
-#end
-#if( $classDecl.hasErrorHandler() )
-						onHandlingError(t, "${method.name}",${method.arguments});
-#else
-						Log.e(TAG, "${method.name} in handler",t);
-#end
-#if( $method.retry > 0)
+						onDelegateHandlerError(t, "${method.name}",${method.arguments});
 					}
+#else
+					onDelegateHandlerError(t, "${method.name}",${method.arguments});
 #end
 				} finally {
 					mCurrentRunner.set(null);
@@ -66,8 +56,17 @@ public class ${className}
 		if (IS_TRACE) {
 			Log.v(TRACE_TAG, runner.toTraceString(mCurrentRunner.get(),$method.threadName,"${method.name}",${method.arguments}));
 		}
+#if( $method.retry > 0)
 		runner.setRetryInfo($method.retry, $method.interval, ${method.intervalRate}F);
+#end
 		mThreadManager.post($method.threadName, runner, ${method.delay});
+	}
+#end
+
+#if( ! $classDecl.hasErrorHandler() )
+	public void onDelegateHandlerError(Throwable t, String methodName, Object... arguments);
+		Log.e(TAG, "${method.name} in handler",t);
+		throw new DelegateHandlerError(t);
 	}
 #end
 }
