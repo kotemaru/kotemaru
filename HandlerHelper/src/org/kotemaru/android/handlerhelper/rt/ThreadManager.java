@@ -8,5 +8,5 @@ public interface ThreadManager {
 	public static final String NETWORK = "NETWORK";
 	
 	public Handler getHandler(String threadName);
-	public void post(String threadName, Runner runner, int delay);
+	public boolean post(String threadName, Runner runner, int delay);
 }
