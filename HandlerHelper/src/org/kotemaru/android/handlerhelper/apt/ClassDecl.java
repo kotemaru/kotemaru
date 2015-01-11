@@ -14,7 +14,6 @@ import org.kotemaru.android.handlerhelper.rt.OnHandlingErrorListener;
 
 public class ClassDecl extends AptUtil {
 	private TypeElement typeElem;
-	@SuppressWarnings("unused")
 	private ProcessingEnvironment env;
 	private ExecutableElement exceptionHandlerMethod;
 
