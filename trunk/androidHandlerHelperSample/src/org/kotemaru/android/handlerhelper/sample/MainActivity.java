@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements UIAction {
-	
 	private MyLogic logic = new MyLogic(this);
 
 	@Override
@@ -19,11 +18,12 @@ public class MainActivity extends Activity implements UIAction {
 		setContentView(R.layout.activity_main);
 
 		final EditText textUrl = (EditText)findViewById(R.id.text_url);
+		textUrl.setText("http://www.google.co.jp");
 		Button btnGo = (Button)findViewById(R.id.btn_go);
 		btnGo.setOnClickListener(new OnClickListener() {
 			@Override	public void onClick(View btn) {
 				String url = textUrl.getText().toString();
-				//logic.handler.doGetHtml(url);
+				logic.handler.doGetHtml(url);
 			}
 		});
 	}
