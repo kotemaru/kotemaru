@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.TYPE)
 @Documented
-public @interface HandlerHelper {
+public @interface DelegateHandlerClass {
 	/**
 	 * 実装インターフェースの一覧。
 	 */

@@ -9,10 +9,10 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 
 import org.apache.velocity.VelocityContext;
-import org.kotemaru.android.handlerhelper.annotation.HandlerHelper;
+import org.kotemaru.android.handlerhelper.annotation.DelegateHandlerClass;
 
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedAnnotationTypes("org.kotemaru.android.handlerhelper.annotation.HandlerHelper")
+@SupportedAnnotationTypes("org.kotemaru.android.handlerhelper.annotation.DelegateHandlerClass")
 // <-- Chenge it!!
 public class HandlerHelperAp extends ApBase
 {
@@ -25,7 +25,7 @@ public class HandlerHelperAp extends ApBase
 
 	@Override
 	public boolean processClass(TypeElement classDecl) throws Exception {
-		HandlerHelper anno = classDecl.getAnnotation(HandlerHelper.class);
+		DelegateHandlerClass anno = classDecl.getAnnotation(DelegateHandlerClass.class);
 		if (anno == null) return false;
 
 		VelocityContext context = new VelocityContext();
