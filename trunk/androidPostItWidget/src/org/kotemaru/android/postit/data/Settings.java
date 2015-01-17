@@ -67,6 +67,7 @@ public class Settings {
 		if (isInitialized) return false;
 		//setBackgroundUri("12:00", "assets:///default_bg_1.jpg");
 		//setBackgroundUri("00:00", "assets:///default_bg_2.jpg");
+		setCtrlAction(Value.DOUBLE_TAP.name());
 		save();
 
 		SharedPreferences.Editor editor = mSharedPref.edit();
