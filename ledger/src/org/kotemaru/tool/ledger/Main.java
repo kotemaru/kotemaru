@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -23,11 +21,12 @@ public class Main {
 		main.start(args[0], args[1], args[2]);
 	}
 	public static final String 売上 = "売上";
-	public static final String 売掛 = "売掛";
-	public static final String 口座 = "口座";
+	public static final String 売掛 = "売掛金";
+	public static final String 口座 = "普通預金";
 	public static final String 事業主借 = "事業主借";
 	public static final String 事業主貸 = "事業主貸";
 	public static final String 経費 = "経費";
+	private static final int 経費SheetNo = 6;
 	
 	
 	enum InSheet {
@@ -39,22 +38,15 @@ public class Main {
 			this.no = no;
 		}
 	};
-	Map<String,Ledger> ledgerMap = new HashMap<String,Ledger>();
+	Ledgers ledgers = new Ledgers();
 
 	public void init() throws Exception {
-		ledgerMap.put(売上, new Ledger(売上,0,true));
-		ledgerMap.put(売掛, new Ledger(売掛,1,false));
-		ledgerMap.put(口座, new Ledger(口座,2,false));
-		ledgerMap.put(事業主借, new Ledger(事業主借,3,true));
-		ledgerMap.put(事業主貸, new Ledger(事業主貸,4,true));
-		//ledgerMap.put("経費", new Ledger("",5,false));
-	}
-	private Ledger getLedger(String name) {
-		Ledger ledger = ledgerMap.get(name);
-		if (ledger == null) {
-			throw new Error("Unknown ledger "+name+" in "+ledgerMap.keySet());
-		}
-		return ledger;
+		ledgers.add(new Ledger(売上,1,true));
+		ledgers.add(new Ledger(売掛,2,false));
+		ledgers.add(new Ledger(口座,3,false));
+		ledgers.add(new Ledger(事業主借,4,true));
+		ledgers.add(new Ledger(事業主貸,5,true));
+		//ledgers.put(new Ledger("経費",6,false));
 	}
 	
 	public void start(String inFile, String outBase, String outFile) throws Exception {
@@ -68,7 +60,9 @@ public class Main {
 		List<GenericRow> otherList = getOtherList(inBook);
 		makeOtherJournal(otherList);
 
-		for (Ledger ledger : ledgerMap.values()) {
+		new PlSheetMaker(ledgers).make(outBook.getSheetAt(0));
+		
+		for (Ledger ledger : ledgers.values()) {
 			makeSheet(outBook, ledger);
 		}
 		saveBook(outFile, outBook);
@@ -77,39 +71,40 @@ public class Main {
 	private void makeSalesJournal(List<SaleRow> list) {
 		for (SaleRow row : list) {
 			if (row.reqDate != null) {
-				getLedger(売掛).add(row.reqDate, "売上", row.summary, row.value, 0.0);
-				getLedger(売上).add(row.reqDate, "売掛金", row.summary, 0.0, row.value);
+				ledgers.get(売掛).add(row.reqDate, 売上, row.summary, row.value, 0.0);
+				ledgers.get(売上).add(row.reqDate, 売掛, row.summary, 0.0, row.value);
 			}
 			if (row.resDate != null) {
-				getLedger(口座).add(row.resDate, "売掛金", row.summary, row.value, 0.0);
-				getLedger(売掛).add(row.resDate, "普通預金", row.summary, 0.0 , row.value);
+				ledgers.get(口座).add(row.resDate, 売掛, row.summary, row.value, 0.0);
+				ledgers.get(売掛).add(row.resDate, 口座, row.summary, 0.0 , row.value);
 			}
 		}
 	}
 	private void makeExpenseJournal(HSSFWorkbook book, List<ExpenseRow> list) {
-		int sheetNo = 5;
+		int sheetNo = 経費SheetNo;
 		for (ExpenseRow row : list) {
 			if (row.date == null) continue;
-			Ledger ledger = ledgerMap.get(row.kind);
+			Ledger ledger = ledgers.getWithNull(row.kind);
 			if (ledger == null) {
 				sheetNo++;
-				book.cloneSheet(5);
+				book.cloneSheet(経費SheetNo);
 				book.setSheetName(sheetNo, row.kind);
 				Cell cell = book.getSheetAt(sheetNo).getRow(0).getCell(0);
 				cell.setCellValue(cell.getStringCellValue()+row.kind);
 				ledger =  new Ledger(row.kind,sheetNo,false);
-				ledgerMap.put(row.kind, ledger);
+				ledger.isExpense = true;
+				ledgers.add(ledger);
 			}
 			double value = row.value * (1.0F - row.discountRate);
 			ledger.add(row.date, "事業主借", row.summary, value, 0.0);
-			getLedger(事業主借).add(row.date, row.kind, row.summary, 0.0, value);
+			ledgers.get(事業主借).add(row.date, row.kind, row.summary, 0.0, value);
 		}
 	}
 	private void makeOtherJournal(List<GenericRow> list) {
 		for (GenericRow row : list) {
 			if (row.date == null) continue;
-			getLedger(row.debit).add(row.date, row.credit, row.summary, row.value, 0.0);
-			getLedger(row.credit).add(row.date, row.debit, row.summary, 0.0, row.value);
+			ledgers.get(row.debit).add(row.date, row.credit, row.summary, row.value, 0.0);
+			ledgers.get(row.credit).add(row.date, row.debit, row.summary, 0.0, row.value);
 		}
 	}
 
