@@ -16,7 +16,7 @@ public class PlSheetMaker {
 
 
 	public void make(Sheet sheet) {
-		int ROW_OFF = 3;
+		int ROW_OFF = 4;
 		int COL_OFF = 2;
 		
 		Ledger 売上帳 = ledgers.get(売上);
