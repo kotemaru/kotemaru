@@ -38,6 +38,7 @@ public class BlogTask extends Task  {
 		builders.put("arcive",   new BuilderArchive());
 		builders.put("recent",   new BuilderRecent());
 		builders.put("rss",      new BuilderRss());
+		builders.put("json",     new BuilderJson());
 		//builders.put("draft",    new BuilderDraft());
 		
 		List<String> builds = Tool.parseCamma(build);

@@ -25,6 +25,7 @@ public class VelocityUtil {
 	
 	public static VelocityContext getVelocityContext(BlogContext ctx, HashMap<String,?> params) {
 		VelocityContext vctx = new VelocityContext();
+		vctx.put("context", ctx);
 		vctx.put("sub-title", "");
 		vctx.put("root-path", ctx.getRootPath());
 		vctx.put("tool", new Tool());

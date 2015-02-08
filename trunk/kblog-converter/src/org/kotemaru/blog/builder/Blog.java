@@ -28,6 +28,7 @@ public class Blog extends HashMap<String, Object> {
 	public static final String HTML_TEXT = "html/text";
 	public static final String MARKDOWN_TEXT = "markdown/text";
 	
+	private File file;
 	private long lastModified;
 	private String relativePath;
 	private boolean update;
@@ -48,6 +49,7 @@ public class Blog extends HashMap<String, Object> {
 		blog.setRelativePath(relPath);
 		blog.setLastModified(file.lastModified());
 		blog.setUpdate(blog.isUpdate(ctx));
+		blog.file = file;
 		return blog.load(file);
 	}
 	public static Blog loadNoBody(BlogContext ctx, File file) throws IOException, ParseException {
@@ -57,6 +59,7 @@ public class Blog extends HashMap<String, Object> {
 	}
 
 	public Blog load(File file) throws IOException, ParseException {
+		this.file = file;
 		InputStream in = new FileInputStream(file);
 		Reader r1 = new InputStreamReader(in, "utf-8");
 		BufferedReader r = new BufferedReader(r1);
@@ -167,6 +170,8 @@ public class Blog extends HashMap<String, Object> {
 		this.update = update;
 	}
 
-
+	public File getFile() {
+		return this.file;
+	}
 	
 }
