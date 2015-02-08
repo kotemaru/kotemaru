@@ -1,0 +1,9 @@
+#parse("properties.vm")
+[
+#foreach ($blog in $blogs)
+#if( $velocityCount > 100 )
+#break
+#end
+{"title":${blog.subject},"category":"${blog.tags}","date":"${tool.rfc822($blog.date)}","thumbnail":"${tool.getThumbnail($context,$blog)}"},
+#end
+]

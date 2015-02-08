@@ -1,0 +1,79 @@
+Subject: AndroidのMVC
+Content-type: markdown/text
+Tags: Android,java
+Date: 2014/12/29
+Public: no
+
+AndroidとMVC
+
+Android アプリの基本的な実装構成を模索しているのだが未だによくわからない。<br>
+「Android MVC フレームワーク」とかでググると１件だけ出てくるが Ver0.3 で開発が止まっているっぽい。
+
+世に Android が出てから数年が経っているのに未だにまともなフレームワークとかなんで無いんだろう。<br>
+少し考えてみた。
+
+### そもそも Android OS フレームワークが破綻している
+
+Android ではアプリの起点は Activity になる。
+MVC モデルを Android アプリに適用しようとする解説も Activity==Controller だとしている。
+
+が、Activity は極めて既発性の高いオブジェクトである。<br>
+他の Activity の裏に隠れただけで onDestory() まで呼ばれる可能性がある。つまり廃棄されてしまう。
+Conntoller として持っていた各種状態もすべて消えてしまうわけで
+廃棄された Activity が復帰した時にこれらの状態を復元するのはすべてアプリの責任となる。
+
+確かにその為の仕掛けとして Bundle savedInstanceState が用意されている。
+しかし、これに保存できるのはプリミティブか直列化可能なオブジェクトだけで複雑化したアプリの情報を保存するのは実装工数がかかりすぎて現実的には不可能である。
+
+実際、私が見た幾つかのアプリも Activity が廃棄されない前提で実装されておりレアケースで落ちるのは
+ごめんなさいだった。
+
+おそらく、初期の Android OS 開発の時点ではハードウェアの制限が厳しく想定されるアプリの規模はこれで間に合う程度だったのではないかと思う。
+現在のハードのスペックは一昔前のパソコン並で要求される機能もPCアプリと同等になっている。
+この辺りのギャップが状況を難しくしているのではないだろうか。
+
+かくして Android OS フレームワーク自体がすでに破綻しているというのが私の個人的見解です。
+
+### で、どうすりゃいいのよ
+
+と、文句を言ってみてもしょうが無いので対策を考えます。
+
+私の考えた MVC の割り当てはこんな感じです。
+
+<table class="KTable">
+<tr><th>MVC		<th>担当クラス			<th>管理データ		</th></tr>
+<tr><td>Model		<td>Bean,Proverder,他 <td>永続化データ</td></tr>
+<tr><td>View		<td>Activity          <td>揮発性データ</td></tr>
+<tr><td>Controller	<td>Application       <td>操作中データ</td></tr>
+</table>
+
+Activity は単なる View として扱い不揮発性のデータは一切持たせません。<br>
+Application のライフサイクルはアプリのライフサイクルと同じなので操作中の状態等を持つ Controller 機能をもたせます。<br>
+更に永続的なデータは Model が持ちます。
+
+単純に Model,Controller のデータが Activity のライフサイクルに巻き込まれない用にしただけです。
+Android のアプリの思想から外れますがすでに破綻しているという認識なのでやむを得ません。
+
+実際の構成は Controller を Application から切り出してこんな感じになりそうです。<br>
+
+<img src="/2015/01/12/android-MVC-1.png" />
+
+Activity は View 扱いなので
+
+  - update() が呼ばれるたら Model からデータを取り出して画面更新する。
+  - 入力が有ったら Contoller に投げる。
+
+の２つしか処理をさせません。
+
+欠点はアプリのメモリ使用量が多くなることですが 4.x 以前の端末でなければ気にしなくてもいいじゃないでしょうか。
+
+サンプルコード：
+
+  - [https://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0](https://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0)
+    - [Model.java](http://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0/src/org/kotemaru/android/delegatehandler/sample/Model.java)
+    - [MainActivity.java](http://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0/src/org/kotemaru/android/delegatehandler/sample/MainActivity.java)
+    - [Controller.java](http://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0/src/org/kotemaru/android/delegatehandler/sample/Controller.java)
+      - @DelegateHandlerは非同期処理を補助する自作ツールです。[DelegateHandler](https://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandler-1.0)
+      - 関連：[「Androidの非同期処理を簡単にする実験」](http://localhost:8888/2013/09/14/android-apt.html)
+    - [MyApplication.java](http://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0/src/org/kotemaru/android/delegatehandler/sample/MyApplication.java)
+
