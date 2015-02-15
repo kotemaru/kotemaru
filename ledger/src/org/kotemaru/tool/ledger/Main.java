@@ -10,6 +10,7 @@ import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
@@ -20,6 +21,7 @@ public class Main {
 		main.init();
 		main.start(args[0], args[1], args[2]);
 	}
+
 	public static final String 売上 = "売上";
 	public static final String 売掛 = "売掛金";
 	public static final String 口座 = "普通預金";
@@ -27,28 +29,29 @@ public class Main {
 	public static final String 事業主貸 = "事業主貸";
 	public static final String 経費 = "経費";
 	private static final int 経費SheetNo = 6;
-	
-	
+
 	enum InSheet {
 		売上(0),
 		経費(1),
 		その他(2);
 		int no;
+
 		InSheet(int no) {
 			this.no = no;
 		}
 	};
+
 	Ledgers ledgers = new Ledgers();
 
 	public void init() throws Exception {
-		ledgers.add(new Ledger(売上,1,true));
-		ledgers.add(new Ledger(売掛,2,false));
-		ledgers.add(new Ledger(口座,3,false));
-		ledgers.add(new Ledger(事業主借,4,true));
-		ledgers.add(new Ledger(事業主貸,5,true));
-		//ledgers.put(new Ledger("経費",6,false));
+		ledgers.add(new Ledger(売上, 1, true));
+		ledgers.add(new Ledger(売掛, 2, false));
+		ledgers.add(new Ledger(口座, 3, false));
+		ledgers.add(new Ledger(事業主借, 4, true));
+		ledgers.add(new Ledger(事業主貸, 5, true));
+		// ledgers.put(new Ledger("経費",6,false));
 	}
-	
+
 	public void start(String inFile, String outBase, String outFile) throws Exception {
 		HSSFWorkbook inBook = loadBook(inFile);
 		HSSFWorkbook outBook = loadBook(outBase);
@@ -61,7 +64,7 @@ public class Main {
 		makeOtherJournal(otherList);
 
 		new PlSheetMaker(ledgers).make(outBook.getSheetAt(0));
-		
+
 		for (Ledger ledger : ledgers.values()) {
 			makeSheet(outBook, ledger);
 		}
@@ -76,7 +79,7 @@ public class Main {
 			}
 			if (row.resDate != null) {
 				ledgers.get(口座).add(row.resDate, 売掛, row.summary, row.value, 0.0);
-				ledgers.get(売掛).add(row.resDate, 口座, row.summary, 0.0 , row.value);
+				ledgers.get(売掛).add(row.resDate, 口座, row.summary, 0.0, row.value);
 			}
 		}
 	}
@@ -90,8 +93,8 @@ public class Main {
 				book.cloneSheet(経費SheetNo);
 				book.setSheetName(sheetNo, row.kind);
 				Cell cell = book.getSheetAt(sheetNo).getRow(0).getCell(0);
-				cell.setCellValue(cell.getStringCellValue()+row.kind);
-				ledger =  new Ledger(row.kind,sheetNo,false);
+				cell.setCellValue(cell.getStringCellValue() + row.kind);
+				ledger = new Ledger(row.kind, sheetNo, false);
 				ledger.isExpense = true;
 				ledgers.add(ledger);
 			}
@@ -119,18 +122,34 @@ public class Main {
 		});
 
 		int rowNo = 3;
+		Row row = null;
 		for (JournalRow journal : list) {
-			Row row = sheet.createRow(++rowNo);
+			row = sheet.createRow(++rowNo);
 			row.createCell(0).setCellValue(journal.date);
 			row.createCell(1).setCellValue(journal.contra);
 			row.createCell(2).setCellValue(journal.summary);
 			if (journal.inValue != 0.0) {
 				row.createCell(3).setCellValue(journal.inValue);
+			} else {
+				row.createCell(3);
 			}
 			if (journal.outValue != 0.0) {
 				row.createCell(4).setCellValue(journal.outValue);
+			} else {
+				row.createCell(4);
 			}
 			row.createCell(5).setCellFormula(Fn(rowNo - 1) + "+" + Dn(rowNo) + "-" + En(rowNo));
+		}
+		if (row != null) {
+			for (int i = 0; i < 6; i++) {
+				Cell cell = row.getCell(i);
+				CellStyle style = book.createCellStyle();
+				if (cell.getCellStyle() != null) {
+					style.cloneStyleFrom(cell.getCellStyle());
+				}
+				style.setBorderBottom(CellStyle.BORDER_MEDIUM);
+				cell.setCellStyle(style);
+			}
 		}
 	}
 
