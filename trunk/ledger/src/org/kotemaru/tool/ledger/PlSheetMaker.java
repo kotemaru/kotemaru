@@ -30,7 +30,7 @@ public class PlSheetMaker {
 			expenses.add(ledger.sheetName);
 		}
 		
-		for (int i=0; i<17; i++) {
+		for (int i=0; i<18; i++) {
 			String name = sheet.getRow(i+ROW_OFF).getCell(COL_OFF+2).getStringCellValue();
 			Ledger ledger = ledgers.getWithNull(name);
 			if (ledger != null) {
