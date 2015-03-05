@@ -1,0 +1,47 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="org.kotemaru.android.sample.activity.Sample1Activity" >
+    
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClickSample2"
+        android:text="Sample2" />
+    
+    <Button
+        android:id="@+id/alert_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="AlertDialog" />
+
+    <Button
+        android:id="@+id/confirm_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ConfirmDialog" />
+    
+    <Button
+        android:id="@+id/progress_dialog"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ProgressDialog" />
+
+    <Button
+        android:onClick="onClickSample3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sample3" />
+     <Button
+        android:onClick="onClickSample4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sample4" />
+    
+</LinearLayout>
