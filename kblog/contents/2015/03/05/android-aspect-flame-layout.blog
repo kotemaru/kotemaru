@@ -1,0 +1,93 @@
+Subject: 縦横比固定FrameLayout
+Content-type: markdown/text
+Tags: Android,java
+Date: 2015/03/05
+Public: yes
+
+Android の画面設計をやっていると縦横比（アスペクト比）を固定したまま
+端末の画面サイズ一杯にレイアウトしたい事がよく有るのだけど標準の機能に無い。
+
+ググってみたところ自力で計算して設定するしか無いらしい。
+
+  - 参考：[http://stackoverflow.com/a/13846628/804479](http://stackoverflow.com/a/13846628/804479)
+
+このサイトを参考に汎用的に使える FrameLayout を作ってみた。
+
+#### FixedAspectFrameLayout.java:
+
+	package org.kotemaru.android.fw.widget;
+	
+	import org.kotemaru.android.fw.R;
+	import android.content.Context;
+	import android.content.res.TypedArray;
+	import android.util.AttributeSet;
+	import android.widget.FrameLayout;
+	
+	/**
+	 * 縦横比固定FrameLayout。
+	 * - 上位のLayoutによって動的に決定された幅(or高さ)に応じて縦横比が一定になるように高さ(or幅)を決定する。
+	 * - 縦横比はカスタム属性 aspectRate に float (幅÷高さ) で与る。
+	 * - 参考：http://stackoverflow.com/a/13846628/804479
+	 * 
+	 * @author kotemaru.org
+	 */
+	public class FixedAspectFrameLayout extends FrameLayout {
+		private float mAspectRate;
+	
+		public FixedAspectFrameLayout(Context context, AttributeSet attrs) {
+			super(context, attrs);
+			TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.fw_FixedAspectFrameLayout);
+			this.mAspectRate = a.getFloat(R.styleable.fw_FixedAspectFrameLayout_aspectRate, 1.0F);
+			a.recycle();
+		}
+	
+		@Override
+		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+			int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+			int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+	
+			if (widthMode == MeasureSpec.EXACTLY && heightMode != MeasureSpec.EXACTLY) {
+				int h = (int) (MeasureSpec.getSize(widthMeasureSpec) / mAspectRate);
+				super.onMeasure(widthMeasureSpec, MeasureSpec.makeMeasureSpec(h, MeasureSpec.EXACTLY));
+			} else if (widthMode != MeasureSpec.EXACTLY && heightMode == MeasureSpec.EXACTLY) {
+				int w = (int) (MeasureSpec.getSize(heightMeasureSpec) * mAspectRate);
+				super.onMeasure(MeasureSpec.makeMeasureSpec(w, MeasureSpec.EXACTLY), heightMeasureSpec);
+			} else {
+				super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+			}
+		}
+	}
+
+#### attr.xml
+
+	<resources>
+	    <declare-styleable name="fw_FixedAspectFrameLayout">
+	        <attr name="aspectRate" format="float" />
+	    </declare-styleable>
+	</resources>
+
+　
+
+### 使い方
+
+使い方は layout.xml に FixedAspectFrameLayout を指定してカスタム属性の aspectRate を指定するだけ。
+
+#### layout.xml
+
+	    <org.kotemaru.android.fw.widget.FixedAspectFrameLayout
+	        xmlns:custom="http://schemas.android.com/apk/res/org.kotemaru.android.fw"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:background="#00ff00"
+	        custom:aspectRate="2.35" >
+	    </org.kotemaru.android.fw.widget.FixedAspectFrameLayout>
+
+  - この例ではシネスコのアスペクト比の FrameLayout になるので内側に適当な View を match_parent で入れれば良い。
+
+#### 実行結果
+<img src="/2015/03/05/android-aspect-frame-layout-1.png" style="vertical-align: top;">　
+<img src="/2015/03/05/android-aspect-frame-layout-2.png">
+
+  - 端末も縦横も関係無く縦横比を維持したしたまま画面一杯にレイアウトできている。
+
+

@@ -76,4 +76,3 @@ Activity は View 扱いなので
       - @DelegateHandlerは非同期処理を補助する自作ツールです。[DelegateHandler](https://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandler-1.0)
       - 関連：[「Androidの非同期処理を簡単にする実験」](http://localhost:8888/2013/09/14/android-apt.html)
     - [MyApplication.java](http://kotemaru-android-utils.googlecode.com/svn/tags/DelegateHandlerSample-1.0/src/org/kotemaru/android/delegatehandler/sample/MyApplication.java)
-
