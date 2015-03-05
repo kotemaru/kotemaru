@@ -1,0 +1,81 @@
+#*
+定義済変数
+${packageName}      : このクラスのパッケージ名
+${className}        : このクラスのクラス名
+${typeElement}      : アノテーションの定義された元クラスの TypeElement
+${annotation}       : 元クラスに定義されたアノテーション(HandlerHelper)
+${classDecl}        : ClassDeclインスタンス
+*#
+// This is generated code.
+package ${packageName};
+
+import org.kotemaru.android.delegatehandler.rt.DelegateRunner;
+import org.kotemaru.android.fw.thread.ThreadManager;
+import org.kotemaru.android.delegatehandler.rt.DelegateHandlerError;
+import android.util.Log;
+
+public class ${className}  $classDecl.implements
+{
+	private static final String TAG = "${className}";
+	private static final String TRACE_TAG = "DH-Trace";
+
+	private ThreadLocal<DelegateRunner> mCurrentRunner = new ThreadLocal<DelegateRunner>();
+	private final ${typeElement.simpleName} mOrigin;
+	private final ThreadManager mThreadManager;
+	private boolean mIsDebug = false;
+
+	public ${className}(${typeElement.simpleName} origin, ThreadManager threadManager) {
+		this.mOrigin = origin;
+		this.mThreadManager = threadManager;
+	}
+	public void setDebugMode(boolean isDebug) {
+		mIsDebug = isDebug;
+	}
+
+## 元クラスのメソッド一覧を取得
+#foreach( $method in $classDecl.getMethods() )
+#if( $method.hasHandling() )
+	public ${method.elem.returnType} ${method.name}(${method.params}) {
+		final DelegateRunner runner = new DelegateRunner(){
+			@Override public void run() {
+				mCurrentRunner.set(this);
+				try {
+					mOrigin.${method.name}(${method.arguments});
+				} catch (Throwable t) {
+#if( $method.retry > 0)
+					if (this.doRetry()) {
+						Log.e(TAG, "Retry : ${method.name} in handler:"+t);
+						mThreadManager.post($method.threadName, this, this.getInterval());
+					} else {
+#if( ! $method.isErrorHandler() )
+						onDelegateHandlerError(t, "${method.name}"  ${method.getArguments(true)});
+#end
+					}
+#else
+#if( ! $method.isErrorHandler() )
+					onDelegateHandlerError(t, "${method.name}"  ${method.getArguments(true)});
+#end
+#end
+				} finally {
+					mCurrentRunner.set(null);
+				}
+			}
+		};
+		if (mIsDebug) {
+			Log.v(TRACE_TAG, runner.toTraceString(mCurrentRunner.get(),$method.threadName,"${method.name}" ${method.getArguments(true)}));
+		}
+#if( $method.retry > 0)
+		runner.setRetryInfo($method.retry, $method.interval, ${method.intervalRate}F);
+#end
+		mThreadManager.post($method.threadName, runner, ${method.delay});
+	}
+#end
+#end
+
+#if( ! $classDecl.hasErrorHandler() )
+	private void onDelegateHandlerError(Throwable t, String methodName, Object... arguments) {
+		Log.e(TAG, methodName+" in handler",t);
+		throw new DelegateHandlerError(t);
+	}
+#end
+}
