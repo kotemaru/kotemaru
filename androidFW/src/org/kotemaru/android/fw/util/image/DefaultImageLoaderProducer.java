@@ -32,7 +32,7 @@ public class DefaultImageLoaderProducer implements ImageLoaderProducer {
 	protected long mCacheSize;
 	protected int mFailedImageResourceId = android.R.drawable.ic_delete;
 	protected int mLoadingImageResourceId = android.R.drawable.spinner_background;
-	protected int mImageViewTagKey = -1;
+	protected int mImageViewTagKey = Integer.MAX_VALUE;
 	protected Point mImageSize = null;
 	protected boolean mIsImageSizeJustFit = false;
 	
