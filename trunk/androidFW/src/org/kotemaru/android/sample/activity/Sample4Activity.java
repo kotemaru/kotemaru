@@ -73,7 +73,7 @@ public class Sample4Activity extends Activity implements FwActivity {
 		IndexerBar indexerBar = (IndexerBar) this.findViewById(R.id.indexerBar);
 		listView.setAdapter(adapter);
 		indexerBar.setListViewInfo(listView, adapter);
-		indexerBar.setItemLayoutId(R.layout.indexer_bar_item);
+		//indexerBar.setItemLayoutId(R.layout.indexer_bar_item);
 		indexerBar.setOnSelectSectionListener(new OnSelectSectionListener(){
 			@Override
 			public void onStartSelect(IndexerBar view) {

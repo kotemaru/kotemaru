@@ -4,5 +4,8 @@
     <declare-styleable name="fw_FixedAspectFrameLayout">
         <attr name="aspectRate" format="float" />
     </declare-styleable>
-
+    <declare-styleable name="fw_IndexerBar">
+        <attr name="itemLayout" format="reference" />
+    </declare-styleable>
+    
 </resources>
