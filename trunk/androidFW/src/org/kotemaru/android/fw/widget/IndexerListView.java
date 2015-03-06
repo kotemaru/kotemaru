@@ -22,19 +22,17 @@ public class IndexerListView extends ListView {
 	}
 	public IndexerListView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		this.setFastScrollEnabled(true);
+		//this.setFastScrollEnabled(true);
 	}
 
 	public static class IndexerItem<T> {
-		final T mData;
-		final boolean mIsHeader;
-		final int mSectionIntex;
-		final SectionItem mSectionItem;
+		private final T mData;
+		private final boolean mIsHeader;
+		private final SectionItem mSectionItem;
 
-		public IndexerItem(T data, SectionItem sectionItem, int sectionIntex, boolean isHeader) {
+		public IndexerItem(T data, SectionItem sectionItem, boolean isHeader) {
 			mData = data;
 			mSectionItem = sectionItem;
-			mSectionIntex = sectionIntex;
 			mIsHeader = isHeader;
 		}
 		public boolean isHeader() {
@@ -49,12 +47,14 @@ public class IndexerListView extends ListView {
 	}
 
 	public static class SectionItem {
-		final String mName;
-		final int mIndex;
+		private final String mName;
+		private final int mSectionIndex;
+		private final int mPosition;
 
-		public SectionItem(String name, int index) {
+		public SectionItem(String name, int sectionIndex, int position) {
 			mName = name;
-			mIndex = index;
+			mSectionIndex = sectionIndex;
+			mPosition = position;
 		}
 
 		public String toString() {
@@ -73,22 +73,21 @@ public class IndexerListView extends ListView {
 			return mOriginData;
 		}
 
-		public void setData(List<T> datas) {
+		public void setListData(List<T> datas) {
 			mOriginData = datas;
 			mItemList.clear();
 			List<SectionItem> sections = new LinkedList<SectionItem>();
 			String currentSectionName = "";
 			SectionItem sectionItem = null;
-			for (int i = 0; i < datas.size(); i++) {
-				T data = datas.get(i);
+			for (T data : datas) {
 				String sectionName = getSectionName(data);
 				if (!currentSectionName.equals(sectionName)) {
 					currentSectionName = sectionName;
-					sectionItem = new SectionItem(sectionName, i);
+					sectionItem = new SectionItem(sectionName, sections.size(), mItemList.size());
 					sections.add(sectionItem);
-					mItemList.add(new IndexerItem<T>(null, sectionItem, sections.size(), true));
+					mItemList.add(new IndexerItem<T>(null, sectionItem, true));
 				}
-				mItemList.add(new IndexerItem<T>(data, sectionItem, sections.size(), false));
+				mItemList.add(new IndexerItem<T>(data, sectionItem, false));
 			}
 			mSections = sections.toArray(new SectionItem[sections.size()]);
 			super.notifyDataSetChanged();
@@ -100,9 +99,9 @@ public class IndexerListView extends ListView {
 
 		// --------------------------------------------------------
 		// abstract
-		public abstract String getSectionName(T data);
 		@Override
 		public abstract View getView(int position, View convertView, ViewGroup parent);
+		public abstract String getSectionName(T data);
 
 		// -----------------------------------------
 		// implements BaseAdapter
@@ -130,15 +129,15 @@ public class IndexerListView extends ListView {
 		@Override
 		public int getPositionForSection(int sectionIndex) {
 			if (sectionIndex < 0) sectionIndex = 0;
-			if (sectionIndex >= mSections.length) sectionIndex = mSections.length-1;
-			return mSections[sectionIndex].mIndex;
+			if (sectionIndex >= mSections.length) sectionIndex = mSections.length - 1;
+			return mSections[sectionIndex].mPosition;
 		}
 
 		@Override
 		public int getSectionForPosition(int position) {
-			return 0; // not implement.
+			if (position < 0) position = 0;
+			if (position >= mItemList.size()) position = mItemList.size() - 1;
+			return mItemList.get(position).mSectionItem.mSectionIndex; // not implement.
 		}
-
 	}
-
 }

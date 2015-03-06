@@ -7,11 +7,41 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="org.kotemaru.android.sample.activity.Sample1Activity" >
+    tools:context="org.kotemaru.android.sample.activity.Sample1Activity"
+    tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" >
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickShort"
+            android:text="Short" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickMiddle"
+            android:text="Middle" />
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onClickLong"
+            android:text="Long" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="horizontal" >
 
         <org.kotemaru.android.fw.widget.IndexerListView
@@ -27,6 +57,5 @@
             android:layout_height="match_parent" >
         </org.kotemaru.android.fw.widget.IndexerBar>
     </LinearLayout>
-
 
 </LinearLayout>

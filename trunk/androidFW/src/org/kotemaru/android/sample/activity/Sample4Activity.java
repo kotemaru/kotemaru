@@ -10,6 +10,7 @@ import org.kotemaru.android.fw.dialog.DialogHelper;
 import org.kotemaru.android.fw.dialog.DialogHelper.OnDialogButtonListener;
 import org.kotemaru.android.fw.dialog.DialogHelper.OnDialogButtonListenerBase;
 import org.kotemaru.android.fw.widget.IndexerBar;
+import org.kotemaru.android.fw.widget.IndexerBar.OnSelectSectionListener;
 import org.kotemaru.android.fw.widget.IndexerListView;
 import org.kotemaru.android.fw.widget.IndexerListView.IndexerItem;
 import org.kotemaru.android.sample.MyApplication;
@@ -19,6 +20,7 @@ import org.kotemaru.android.sample.model.Sample4Model;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -28,6 +30,7 @@ public class Sample4Activity extends Activity implements FwActivity {
 	private DialogHelper mDialogHelper = new DialogHelper(this);
 	private Sample4Model mModel;
 	private Sample4Controller mController;
+	private IndexerListView.IndexerAdapter<String> mAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +39,7 @@ public class Sample4Activity extends Activity implements FwActivity {
 		MyApplication app = (MyApplication) getApplication();
 		mModel = app.getModel().getSample4Model();
 		mController = app.getController().getSample4Controller();
-		
+
 		IndexerListView.IndexerAdapter<String> adapter = new IndexerListView.IndexerAdapter<String>() {
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
@@ -59,22 +62,53 @@ public class Sample4Activity extends Activity implements FwActivity {
 
 			@Override
 			public String getSectionName(String data) {
-				return data.substring(0,1);
+				return data.substring(0, 1);
 			}
 		};
 		List<String> names = Arrays.asList(SAMPLE_NAMES);
 		Collections.sort(names);
-		adapter.setData(names);
+		adapter.setListData(names);
 
-		
-		
 		IndexerListView listView = (IndexerListView) this.findViewById(R.id.indexerListView);
 		IndexerBar indexerBar = (IndexerBar) this.findViewById(R.id.indexerBar);
 		listView.setAdapter(adapter);
 		indexerBar.setListViewInfo(listView, adapter);
 		indexerBar.setItemLayoutId(R.layout.indexer_bar_item);
+		indexerBar.setOnSelectSectionListener(new OnSelectSectionListener(){
+			@Override
+			public void onStartSelect(IndexerBar view) {
+				Log.d("DEBUG","onStartSelect");
+			}
+			@Override
+			public void onSelectSection(IndexerBar view, int sectionIndex) {
+				Log.d("DEBUG","onSelectSection="+view.getSectionIndexer().getSections()[sectionIndex]);
+			}
+			@Override
+			public void onFinishSelect(IndexerBar view) {
+				Log.d("DEBUG","onFinishSelect");
+			}
+		});
+
+		mAdapter = adapter;
 	}
 	
+	public void onClickShort(View view) {
+		List<String> names = Arrays.asList(SAMPLE_NAMES);
+		Collections.sort(names);
+		mAdapter.setListData(names.subList(0, names.size()/4) );
+	}
+	public void onClickMiddle(View view) {
+		List<String> names = Arrays.asList(SAMPLE_NAMES);
+		Collections.sort(names);
+		mAdapter.setListData(names.subList(0, names.size()/2) );
+	}
+	public void onClickLong(View view) {
+		List<String> names = Arrays.asList(SAMPLE_NAMES);
+		Collections.sort(names);
+		mAdapter.setListData(names);
+	}
+	
+
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -100,61 +134,57 @@ public class Sample4Activity extends Activity implements FwActivity {
 
 	};
 
-	
-	
 	private static final String[] SAMPLE_NAMES = {
-	"Lannie Boney",
-	"Taneka Hubbard",
-	"Rheba Elsen",
-	"Dorinda Farrelly",
-	"Adelina Bellon",
-	"Whitney Pennington",
-	"Jasper Wison",
-	"Selena Vazguez",
-	"Chasidy Schorr",
-	"Maranda Hanrahan",
-	"Camila Mcie",
-	"Kenya Blakeley",
-	"Carroll Mcgeorge",
-	"Delsie Baran",
-	"Layne Mango",
-	"Elda Millender",
-	"Kathi Remaley",
-	"Mai Degraff",
-	"Cecil Delaney",
-	"Deandrea Lemmond",
-	"Jessia Raney",
-	"Frank Jemison",
-	"Dominick Plasencia",
-	"Pilar Mart",
-	"Candis Luk",
-	"Ivelisse Grissett",
-	"Kristian Desai",
-	"Willa Kueter",
-	"Roscoe Kottke",
-	"Angeline Wysocki",
-	"Herschel Kincaid",
-	"Melodi Mcfetridge",
-	"Serafina Verret",
-	"Marquetta Heenan",
-	"Linette Maxwell",
-	"Polly Jan",
-	"Taren Millis",
-	"Gudrun Usher",
-	"Felicia Klink",
-	"Jennine Ruppe",
-	"Roxann Kellems",
-	"Tamar Ledwell",
-	"Chana Berra",
-	"Soo Harvell",
-	"Erlene Maguire",
-	"Chrystal Hirano",
-	"Megan Bourassa",
-	"Gertrud Mcneilly",
-	"Lahoma Batie",
-	"Myrna Krzeminski",
+			"Lannie Boney",
+			"Taneka Hubbard",
+			"Rheba Elsen",
+			"Dorinda Farrelly",
+			"Adelina Bellon",
+			"Whitney Pennington",
+			"Jasper Wison",
+			"Selena Vazguez",
+			"Chasidy Schorr",
+			"Maranda Hanrahan",
+			"Camila Mcie",
+			"Kenya Blakeley",
+			"Carroll Mcgeorge",
+			"Delsie Baran",
+			"Layne Mango",
+			"Elda Millender",
+			"Kathi Remaley",
+			"Mai Degraff",
+			"Cecil Delaney",
+			"Deandrea Lemmond",
+			"Jessia Raney",
+			"Frank Jemison",
+			"Dominick Plasencia",
+			"Pilar Mart",
+			"Candis Luk",
+			"Ivelisse Grissett",
+			"Kristian Desai",
+			"Willa Kueter",
+			"Roscoe Kottke",
+			"Angeline Wysocki",
+			"Herschel Kincaid",
+			"Melodi Mcfetridge",
+			"Serafina Verret",
+			"Marquetta Heenan",
+			"Linette Maxwell",
+			"Polly Jan",
+			"Taren Millis",
+			"Gudrun Usher",
+			"Felicia Klink",
+			"Jennine Ruppe",
+			"Roxann Kellems",
+			"Tamar Ledwell",
+			"Chana Berra",
+			"Soo Harvell",
+			"Erlene Maguire",
+			"Chrystal Hirano",
+			"Megan Bourassa",
+			"Gertrud Mcneilly",
+			"Lahoma Batie",
+			"Myrna Krzeminski",
 	};
-	
-	
-	
+
 }

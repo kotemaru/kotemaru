@@ -14,22 +14,49 @@ import android.widget.ListView;
 import android.widget.SectionIndexer;
 import android.widget.TextView;
 
+@SuppressLint("ClickableViewAccessibility")
 public class IndexerBar extends LinearLayout {
 	private ListView mListView;
 	private SectionIndexer mSectionIndexer;
 	private int mItemLayoutId = 0;
+	private OnSelectSectionListener mListener;
+
+	public interface OnSelectSectionListener {
+		public void onStartSelect(IndexerBar view);
+		public void onSelectSection(IndexerBar view, int sectionIndex);
+		public void onFinishSelect(IndexerBar view);
+	}
 
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
+		private int mCurrentSectionIndex = -1;
+		
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
-			int idx = (int)(event.getY() / (getHeight()/getChildCount()));
+			int sectionIndex = (int) (event.getY() / (getHeight() / getChildCount()));
+			if (sectionIndex < 0) sectionIndex = 0;
+			if (sectionIndex >= getChildCount()) sectionIndex = getChildCount() - 1;
+			
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
+				if (mListener != null) {
+					mListener.onStartSelect(IndexerBar.this);
+				}
+				mCurrentSectionIndex = -1;
+				// not break.
 			case MotionEvent.ACTION_MOVE:
-				mListView.setSelection(mSectionIndexer.getPositionForSection(idx));
+				if (mCurrentSectionIndex != sectionIndex) {
+					mCurrentSectionIndex = sectionIndex;
+					int position = mSectionIndexer.getPositionForSection(sectionIndex);
+					mListView.setSelection(position);
+					if (mListener != null) {
+						mListener.onSelectSection(IndexerBar.this, sectionIndex);
+					}
+				}
 				return true;
 			case MotionEvent.ACTION_UP:
-				view.performClick();
+				if (mListener != null) {
+					mListener.onFinishSelect(IndexerBar.this);
+				}
 				return true;
 			}
 			return false;
@@ -42,7 +69,6 @@ public class IndexerBar extends LinearLayout {
 	public IndexerBar(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
 	}
-	@SuppressLint("ClickableViewAccessibility")
 	public IndexerBar(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		setOrientation(LinearLayout.VERTICAL);
@@ -62,13 +88,12 @@ public class IndexerBar extends LinearLayout {
 		});
 	}
 	public void setItemLayoutId(int id) {
-		mItemLayoutId  = id;
+		mItemLayoutId = id;
 		if (mSectionIndexer != null) {
 			removeAllViews();
 			setSections(mSectionIndexer.getSections());
 		}
 	}
-	
 
 	public void setSections(Object[] sections) {
 		if (sections == null) return;
@@ -90,12 +115,12 @@ public class IndexerBar extends LinearLayout {
 			textView.setText(section.toString());
 		}
 	}
-	
+
 	private TextView createTextView() {
 		if (mItemLayoutId == 0) {
 			TextView textView = new TextView(getContext());
-			LinearLayout.LayoutParams params = 
-					new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,0);
+			LinearLayout.LayoutParams params =
+					new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0);
 			params.weight = 1.0F;
 			textView.setLayoutParams(params);
 			textView.setTypeface(Typeface.DEFAULT_BOLD);
@@ -103,9 +128,24 @@ public class IndexerBar extends LinearLayout {
 			return textView;
 		} else {
 			LayoutInflater inflater = LayoutInflater.from(getContext());
-			TextView textView =  (TextView) inflater.inflate(mItemLayoutId, this, false);
+			TextView textView = (TextView) inflater.inflate(mItemLayoutId, this, false);
 			textView.setVisibility(View.VISIBLE);
 			return textView;
 		}
 	}
+
+	public ListView getListView() {
+		return mListView;
+	}
+	public SectionIndexer getSectionIndexer() {
+		return mSectionIndexer;
+	}
+
+	public OnSelectSectionListener getOnSelectSectionListener() {
+		return mListener;
+	}
+	public void setOnSelectSectionListener(OnSelectSectionListener listener) {
+		mListener = listener;
+	}
+
 }
