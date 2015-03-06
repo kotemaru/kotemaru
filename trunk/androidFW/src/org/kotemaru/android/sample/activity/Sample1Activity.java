@@ -61,6 +61,9 @@ public class Sample1Activity extends Activity implements FwActivity {
 	public void onClickSample4(View view) {
 		Launcher.startSample4(this);
 	}
+	public void onClickSample5(View view) {
+		Launcher.startSample5(this);
+	}
 	
 	@Override
 	public void onResume() {
