@@ -1,7 +1,10 @@
 package org.kotemaru.android.fw.widget;
 
+import org.kotemaru.android.fw.R;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
@@ -27,6 +30,23 @@ public class IndexerBar extends LinearLayout {
 		public void onFinishSelect(IndexerBar view);
 	}
 
+
+	public IndexerBar(Context context) {
+		this(context, null);
+	}
+	public IndexerBar(Context context, AttributeSet attrs) {
+		this(context, attrs, 0);
+	}
+	public IndexerBar(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		setOrientation(LinearLayout.VERTICAL);
+		setOnTouchListener(mOnTouchListener);
+		
+		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.fw_IndexerBar);
+		mItemLayoutId = a.getResourceId(R.styleable.fw_IndexerBar_itemLayout, 0);
+		a.recycle();
+	}
+	
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
 		private int mCurrentSectionIndex = -1;
 		
@@ -62,18 +82,6 @@ public class IndexerBar extends LinearLayout {
 			return false;
 		}
 	};
-
-	public IndexerBar(Context context) {
-		this(context, null);
-	}
-	public IndexerBar(Context context, AttributeSet attrs) {
-		this(context, attrs, 0);
-	}
-	public IndexerBar(Context context, AttributeSet attrs, int defStyleAttr) {
-		super(context, attrs, defStyleAttr);
-		setOrientation(LinearLayout.VERTICAL);
-		setOnTouchListener(mOnTouchListener);
-	}
 
 	public void setListViewInfo(ListView listView, SectionIndexer sectionIndexer) {
 		mListView = listView;
@@ -129,7 +137,6 @@ public class IndexerBar extends LinearLayout {
 		} else {
 			LayoutInflater inflater = LayoutInflater.from(getContext());
 			TextView textView = (TextView) inflater.inflate(mItemLayoutId, this, false);
-			textView.setVisibility(View.VISIBLE);
 			return textView;
 		}
 	}

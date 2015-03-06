@@ -22,7 +22,6 @@ public class IndexerListView extends ListView {
 	}
 	public IndexerListView(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		//this.setFastScrollEnabled(true);
 	}
 
 	public static class IndexerItem<T> {
@@ -56,7 +55,6 @@ public class IndexerListView extends ListView {
 			mSectionIndex = sectionIndex;
 			mPosition = position;
 		}
-
 		public String toString() {
 			return mName;
 		}
@@ -137,7 +135,7 @@ public class IndexerListView extends ListView {
 		public int getSectionForPosition(int position) {
 			if (position < 0) position = 0;
 			if (position >= mItemList.size()) position = mItemList.size() - 1;
-			return mItemList.get(position).mSectionItem.mSectionIndex; // not implement.
+			return mItemList.get(position).mSectionItem.mSectionIndex;
 		}
 	}
 }
