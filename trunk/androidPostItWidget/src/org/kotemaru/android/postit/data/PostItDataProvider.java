@@ -126,6 +126,7 @@ public class PostItDataProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		SQLiteDatabase db = sqlHelper.getWritableDatabase();
 		long id = db.replace(MAIN_TABLE, null, values);
+		getContext().getContentResolver().notifyChange(uri, null);
 		return Uri.parse(CONTENT_URI_BASE + '/' + MAIN_TABLE + '/' + id);
 	}
 	
@@ -134,6 +135,7 @@ public class PostItDataProvider extends ContentProvider {
 			String[] selectionArgs) {
 		SQLiteDatabase db = sqlHelper.getWritableDatabase();
 		int n = db.update(MAIN_TABLE, values, selection, selectionArgs);
+		getContext().getContentResolver().notifyChange(uri, null);
 		return n;
 	}
 
@@ -150,6 +152,7 @@ public class PostItDataProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		SQLiteDatabase db = sqlHelper.getWritableDatabase();
 		db.delete(MAIN_TABLE, selection, selectionArgs);
+		getContext().getContentResolver().notifyChange(uri, null);
 		return 0;
 	}
 
