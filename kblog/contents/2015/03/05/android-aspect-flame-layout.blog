@@ -15,6 +15,7 @@ Android の画面設計をやっていると縦横比（アスペクト比）を
 
 #### FixedAspectFrameLayout.java:
 
+	// Copyright (c) 2015 kotemaru.org  / License is APL-2.0
 	package org.kotemaru.android.fw.widget;
 	
 	import org.kotemaru.android.fw.R;
