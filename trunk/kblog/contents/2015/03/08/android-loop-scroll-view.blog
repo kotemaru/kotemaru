@@ -1,0 +1,288 @@
+Subject: ループする HorizontalScrollView
+Content-type: markdown/text
+Tags: Android,java
+Date: 2015/03/08
+Public: yes
+
+Android の widget に有りそうで無いのが左右が繋がって循環ループできる View。<br>
+横スクロールする HorizontalScrollView は有るけど端っこで止まってしまう。
+
+ググっても質問ばかりでまともな回答が無いようなので汎用的な widget を作ってみた。
+
+### ソース
+
+200 行程のクラス１つに収まった。
+
+#### LoopHScrollView.java:
+
+<pre style="height:300px"><code>package org.kotemaru.android.fw.widget;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Canvas;
+import android.os.Handler;
+import android.util.AttributeSet;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
+
+public class LoopHScrollView extends HorizontalScrollView {
+	private InnerLayout mInnerLayout;
+	private AnimeManager mAnimeManager;
+	private GestureDetector mGestureDetector;
+	private CsutomOnGestureListener mOnGestureListener = new CsutomOnGestureListener();
+
+	public LoopHScrollView(Context context) {
+		this(context, null);
+	}
+	public LoopHScrollView(Context context, AttributeSet attrs) {
+		this(context, attrs, 0);
+	}
+	public LoopHScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		mAnimeManager = new AnimeManager();
+		mGestureDetector = new GestureDetector(context, mOnGestureListener);
+
+		mInnerLayout = new InnerLayout(context);
+		mInnerLayout.setOrientation(LinearLayout.HORIZONTAL);
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		mInnerLayout.setLayoutParams(params);
+		this.addView(mInnerLayout);
+	}
+
+	public void setChildViewGroup(ViewGroup child) {
+		CloneView clone1 = new CloneView(getContext(), child);
+		CloneView clone2 = new CloneView(getContext(), child);
+
+		LinearLayout.LayoutParams childParams = new LinearLayout.LayoutParams(
+				LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+		mInnerLayout.removeAllViews();
+		mInnerLayout.addView(clone1, childParams);
+		mInnerLayout.addView(child, childParams);
+		mInnerLayout.addView(clone2, childParams);
+	}
+
+	public class InnerLayout extends LinearLayout {
+		public InnerLayout(Context context) {
+			super(context);
+		}
+		@Override
+		public void onWindowFocusChanged(boolean hasFocus) {
+			super.onWindowFocusChanged(hasFocus);
+			resizing();
+		}
+		@Override
+		public void onSizeChanged(int w, int h, int oldw, int oldh) {
+			super.onSizeChanged(w, h, oldw, oldh);
+			resizing();
+		}
+		private void resizing() {
+			if (getChildCount() == 3) {
+				View clone1 = this.getChildAt(0);
+				View origin = this.getChildAt(1);
+				View clone2 = this.getChildAt(2);
+				int width = origin.getMeasuredWidth();
+				if (width < LoopHScrollView.this.getMeasuredWidth()) {
+					// TODO: Can not scroll small child view.
+					mInnerLayout.removeView(clone1);
+					mInnerLayout.removeView(clone2);
+				} else {
+					clone1.setMinimumWidth(width);
+					clone2.setMinimumWidth(width);
+				}
+			}
+		}
+	}
+
+	public static class CloneView extends ViewGroup {
+		ViewGroup mOrigin;
+
+		public CloneView(Context context, ViewGroup origin) {
+			super(context);
+			mOrigin = origin;
+		}
+		@Override
+		protected void onLayout(boolean changed, int l, int t, int r, int b) {
+		}
+		@Override
+		protected void dispatchDraw(Canvas canvas) {
+			mOrigin.draw(canvas);
+		}
+		@Override
+		public boolean dispatchKeyEvent(KeyEvent event) {
+			return mOrigin.dispatchKeyEvent(event);
+		}
+		@Override
+		public boolean dispatchTouchEvent(MotionEvent ev) {
+			boolean result = mOrigin.dispatchTouchEvent(ev);
+			this.invalidate();
+			return result;
+		}
+	}
+
+	@Override
+	public boolean onInterceptTouchEvent(MotionEvent ev) {
+		if (ev.getAction() == MotionEvent.ACTION_DOWN) mOnGestureListener.onDown(ev);
+		return super.onInterceptTouchEvent(ev);
+	}
+	@SuppressLint("ClickableViewAccessibility")
+	@Override
+	public boolean onTouchEvent(MotionEvent ev) {
+		return mGestureDetector.onTouchEvent(ev);
+	}
+
+	private class CsutomOnGestureListener extends GestureDetector.SimpleOnGestureListener {
+		boolean mIsFirstScroll = true; // Note: 子要素のACTION_DOWNが届かず誤動作するので初回を無視する。
+
+		@Override
+		public boolean onScroll(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			if (!mIsFirstScroll) mAnimeManager.startScroll(velocityX);
+			mIsFirstScroll = false;
+			return true;
+		}
+		@Override
+		public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+			mAnimeManager.startFling(-velocityX / 50);
+			return true;
+		}
+		@Override
+		public boolean onDown(MotionEvent ev) {
+			mAnimeManager.stopFling();
+			mIsFirstScroll = true;
+			return true;
+		}
+	};
+
+	private class AnimeManager {
+		private static final int INTERVAL = 50; // ms
+		private static final float ATTENUAION_RATE = 0.90F;
+		private float mDelta = 0;
+		private final Runnable mUpdateRunner = new Runnable() {
+			@Override
+			public void run() {
+				onUpdate();
+			}
+		};
+		public void update() {
+			Handler handler = getHandler();
+			if (handler == null) return;
+			handler.postDelayed(mUpdateRunner, INTERVAL);
+		}
+
+		public void startScroll(float delta) {
+			stopFling();
+			if (!loopScrollPosition()) {
+				scrollBy((int) delta, 0);
+			}
+		}
+		public void startFling(float delta) {
+			mDelta = delta;
+			update();
+		}
+		public void stopFling() {
+			mDelta = 0.0F;
+		}
+		private void onUpdate() {
+			if (Math.abs(mDelta) > 1.0F) {
+				scrollBy((int) mDelta, 0);
+				mDelta = mDelta * ATTENUAION_RATE;
+				loopScrollPosition();
+				update();
+			} else {
+				stopFling();
+			}
+		}
+		private boolean loopScrollPosition() {
+			int curX = computeHorizontalScrollOffset();
+			int unitWidth = computeHorizontalScrollRange() / 3;
+			if (curX > unitWidth * 1.8F) {
+				scrollTo(curX - unitWidth, 0);
+				return true;
+			} else if (curX < unitWidth * 0.2F) {
+				scrollTo(curX + unitWidth, 0);
+				return true;
+			}
+			return false;
+		}
+	}
+}
+</code></pre>
+
+  - やっていることは同じ 子View を３つ横に並べてスクロールさせているだけ。
+    - 端に来ると真ん中にジャンプする。
+  - 肝は指定された子Viewの表示をコピーする CloneView 内部クラス。
+    - dispatch{Draw|KeyEvent|MotionEvent}() メソッドをオリジナルに転送するだけだがほぼ同じ動きをさせる事ができている。
+
+### 使い方
+
+使い方は layout.xml に LoopHScrollView を指定して Activity.onCreate() からループする内容となる子ViewGroupを設定するだけ。<br>
+ループする内容は実装上の都合により別の layout に定義する必要がある。
+
+#### Activity の main_activity.xml の抜粋
+
+	    <org.kotemaru.android.fw.widget.LoopHScrollView
+	        android:id="@+id/loopHScrollView"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" >
+	    </org.kotemaru.android.fw.widget.LoopHScrollView>
+
+  - LoopHScrollView を好きな所へ埋め込む。
+
+#### ループする内容 の loop_scroll_item.xml の例
+
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content" android:layout_height="match_parent"
+	    android:orientation="vertical" >
+	    <LinearLayout  android:layout_width="wrap_content" android:layout_height="wrap_content"
+	        android:orientation="horizontal" >
+	        <CheckBox android:layout_width="100dp" android:layout_height="wrap_content"
+	            android:background="#ff8888" android:text="Red" android:textSize="24dp" />
+	        <CheckBox android:layout_width="100dp" android:layout_height="wrap_content"
+	            android:background="#ffff88" android:text="Yellow" android:textSize="20dp" />
+	        <CheckBox android:layout_width="100dp" android:layout_height="wrap_content"
+	            android:background="#88ff88" android:text="Green" android:textSize="24dp" />
+	        <CheckBox android:layout_width="100dp" android:layout_height="wrap_content"
+	            android:background="#88ffff" android:text="Cyan" android:textSize="24dp" />
+	        <CheckBox android:layout_width="100dp" android:layout_height="wrap_content"
+	            android:background="#8888ff" android:text="Blue" android:textSize="24dp" />
+	    </LinearLayout>
+	</LinearLayout>
+
+  - 横幅は LoopHScrollView より大きい幅が必要。
+     - 小さいとスクロールできない。
+  - トップ要素は ViewGroup が必須。
+
+#### onCreate() の実装
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main_activity);
+		
+		LoopHScrollView scrollView = (LoopHScrollView) findViewById(R.id.loopHScrollView);
+		LayoutInflater inflater = LayoutInflater.from(this);
+		ViewGroup child = (ViewGroup) inflater.inflate(R.layout.loop_scroll_item, null, false);
+		scrollView.setChildViewGroup(child);
+	}
+
+  - 子要素を生成して設定しているだけ。
+    - 子要素は ViewGroup なら何でも良い。
+  - イベントは KeyKevent と MotionEvent は拾う。
+    - 但し、ドラッグ系の操作はできない。（HorizontalScrollViewと同じ）
+  
+
+#### 実行結果
+
+<iframe id="ytplayer" type="text/html" width="250" height="390"
+  src="http://www.youtube.com/embed/OT-nItrC0Yk?autoplay=0&origin=http://www.kotemaru.org"
+  frameborder="0"></iframe>
+
+ちゃんとループ出来てます。<br>
+セレクタ系 UI では使えそうな気がする。
+
