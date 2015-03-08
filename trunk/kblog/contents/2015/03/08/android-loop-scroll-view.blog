@@ -15,7 +15,8 @@ Android の widget に有りそうで無いのが左右が繋がって循環ル�
 
 #### LoopHScrollView.java:
 
-<pre style="height:300px"><code>package org.kotemaru.android.fw.widget;
+<pre style="height:300px"><code>// Copyright (c) 2015 kotemaru.org  /  License is APL-2.0
+package org.kotemaru.android.fw.widget;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
