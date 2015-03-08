@@ -84,7 +84,7 @@ public class Sample4Activity extends Activity implements FwActivity {
 				Log.d("DEBUG","onSelectSection="+view.getSectionIndexer().getSections()[sectionIndex]);
 			}
 			@Override
-			public void onFinishSelect(IndexerBar view) {
+			public void onEndSelect(IndexerBar view) {
 				Log.d("DEBUG","onFinishSelect");
 			}
 		});

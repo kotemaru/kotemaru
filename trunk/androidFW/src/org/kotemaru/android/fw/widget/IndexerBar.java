@@ -27,9 +27,8 @@ public class IndexerBar extends LinearLayout {
 	public interface OnSelectSectionListener {
 		public void onStartSelect(IndexerBar view);
 		public void onSelectSection(IndexerBar view, int sectionIndex);
-		public void onFinishSelect(IndexerBar view);
+		public void onEndSelect(IndexerBar view);
 	}
-
 
 	public IndexerBar(Context context) {
 		this(context, null);
@@ -41,21 +40,21 @@ public class IndexerBar extends LinearLayout {
 		super(context, attrs, defStyleAttr);
 		setOrientation(LinearLayout.VERTICAL);
 		setOnTouchListener(mOnTouchListener);
-		
+
 		TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.fw_IndexerBar);
 		mItemLayoutId = a.getResourceId(R.styleable.fw_IndexerBar_itemLayout, 0);
 		a.recycle();
 	}
-	
+
 	private OnTouchListener mOnTouchListener = new OnTouchListener() {
 		private int mCurrentSectionIndex = -1;
-		
+
 		@Override
 		public boolean onTouch(View view, MotionEvent event) {
 			int sectionIndex = (int) (event.getY() / (getHeight() / getChildCount()));
 			if (sectionIndex < 0) sectionIndex = 0;
 			if (sectionIndex >= getChildCount()) sectionIndex = getChildCount() - 1;
-			
+
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
 				if (mListener != null) {
@@ -75,7 +74,7 @@ public class IndexerBar extends LinearLayout {
 				return true;
 			case MotionEvent.ACTION_UP:
 				if (mListener != null) {
-					mListener.onFinishSelect(IndexerBar.this);
+					mListener.onEndSelect(IndexerBar.this);
 				}
 				return true;
 			}
@@ -95,7 +94,7 @@ public class IndexerBar extends LinearLayout {
 			}
 		});
 	}
-	public void setItemLayoutId(int id) {
+	public void setItemLayout(int id) {
 		mItemLayoutId = id;
 		if (mSectionIndexer != null) {
 			removeAllViews();
