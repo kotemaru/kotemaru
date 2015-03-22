@@ -41,6 +41,13 @@ public abstract class FwApplicationBase<M, V extends FwActivity, C extends FwCon
 	public abstract M createModel();
 	public abstract C createController();
 	
+	public void onApplicationResume() {
+		// abstract
+	}
+	public void onApplicationPause() {
+		// abstract
+	}
+	
 	public ThreadManager getThreadManager() {
 		return mThreadManager;
 	}
@@ -79,6 +86,8 @@ public abstract class FwApplicationBase<M, V extends FwActivity, C extends FwCon
 	}
 
 	ActivityLifecycleCallbacks mActivityMonitor = new ActivityLifecycleCallbacks() {
+		private int mForegroundCount = 0;
+
 		@Override
 		public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
 			mActivityStack.add(toGenericsActivity(activity));
@@ -88,11 +97,26 @@ public abstract class FwApplicationBase<M, V extends FwActivity, C extends FwCon
 			mCurrentActivity = toGenericsActivity(activity);
 			mActivityStack.remove(mCurrentActivity);
 			mActivityStack.add(mCurrentActivity);
+			
+			if (mForegroundCount++ == 0) {
+				onApplicationResume();
+			}
 		}
 		@Override
 		public void onActivityPaused(Activity activity) {
 			if (mCurrentActivity == activity) mCurrentActivity = null;
+			mThreadManager.post(ThreadManager.UI, mOnPauseDelayRunner, 1000);
 		}
+		private final Runnable mOnPauseDelayRunner = new Runnable() {
+			@Override
+			public void run() {
+				if (--mForegroundCount == 0) {
+					onApplicationPause();
+				}
+			}
+		};
+		
+		
 		@Override
 		public void onActivityDestroyed(Activity activity) {
 			mActivityStack.remove(activity);
