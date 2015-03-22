@@ -1,29 +1,21 @@
 package org.kotemaru.android.sample.model;
 
-import java.util.ArrayList;
-
 import org.kotemaru.android.fw.ModelLock;
 import org.kotemaru.android.fw.dialog.DialogModel;
 
 public class Sample3Model extends ModelLock {
 	private DialogModel mDialogModel = new DialogModel();
-	private ArrayList<Blog> mBlogList = new ArrayList<Blog>();
+	private int playPosition;
 
 	public DialogModel getDialogModel() {
 		return mDialogModel;
 	}
 
-	public ArrayList<Blog> getBlogList() {
-		return mBlogList;
+	public int getPlayPosition() {
+		return playPosition;
 	}
 
-	public void setBlogList(ArrayList<Blog> blogList) {
-		mBlogList = blogList;
-	}
-
-	public static class Blog {
-		public String title;
-		public String date;
-		public String thumbnail;
+	public void setPlayPosition(int playPosition) {
+		this.playPosition = playPosition;
 	}
 }
