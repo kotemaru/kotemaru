@@ -145,6 +145,7 @@ public class PostItDataProvider extends ContentProvider {
 		SQLiteDatabase db = sqlHelper.getReadableDatabase();
 		Cursor cursor = db.query(MAIN_TABLE,
 				projection, selection, selectionArgs, null, null, sortOrder);
+		cursor.setNotificationUri(getContext().getContentResolver(), uri);
 		return cursor;
 	}
 
